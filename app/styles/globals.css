@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* @tailwind theme */
+
+/* @import 'shared-library/dist/styles.css'; */
+
+* {
+    text-rendering: optimizeLegibility !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.005);
+}
+
+:root {
+    --font-poppins: 'Poppins', sans-serif;
+    --font-inter: 'Inter', sans-serif;
+}
+
+/*hide scrollbar*/
+body::-webkit-scrollbar:horizontal {
+    width: 0;
+    height: 0;
+}
