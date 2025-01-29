@@ -8,8 +8,261 @@ const config: Config = {
     ],
     theme: {
         extend: {
-            colors: {},
-            typography: {},
+            colors: {
+                primary: '#005F73',
+                secondary: '#FFC300',
+                text_one: '#333333',
+                text_two: '#4D4D4D',
+                text_three: '#666666',
+                text_four: '#999999',
+                white: '#ffffff',
+                border_gray: '#e6e6e6'
+            },
+            typography: {
+                heading_large_bold: {
+                    css: {
+                        fontSize: '32px',
+                        lineHeight: '120%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 700,
+                        fontStyle: 'normal'
+                    }
+                },
+                heading_large_semibold: {
+                    css: {
+                        fontSize: '32px',
+                        lineHeight: '120%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 600,
+                        fontStyle: 'normal'
+                    }
+                },
+                heading_medium_bold: {
+                    css: {
+                        fontSize: '24px',
+                        lineHeight: '120%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 700,
+                        fontStyle: 'normal'
+                    }
+                },
+                heading_medium_semibold: {
+                    css: {
+                        fontSize: '24px',
+                        lineHeight: '120%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 600,
+                        fontStyle: 'normal'
+                    }
+                },
+                heading_medium_medium: {
+                    css: {
+                        fontSize: '24px',
+                        lineHeight: '120%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 500,
+                        fontStyle: 'normal'
+                    }
+                },
+                heading_medium_regular: {
+                    css: {
+                        fontSize: '24px',
+                        lineHeight: '120%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 400,
+                        fontStyle: 'normal'
+                    }
+                },
+                heading_medium_light: {
+                    css: {
+                        fontSize: '24px',
+                        lineHeight: '120%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 300,
+                        fontStyle: 'normal'
+                    }
+                },
+                heading_small_bold: {
+                    css: {
+                        fontSize: '20px',
+                        lineHeight: '140%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 700,
+                        fontStyle: 'normal'
+                    }
+                },
+                heading_small_semibold: {
+                    css: {
+                        fontSize: '20px',
+                        lineHeight: '140%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 600,
+                        fontStyle: 'normal'
+                    }
+                },
+                heading_small_medium: {
+                    css: {
+                        fontSize: '20px',
+                        lineHeight: '140%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 500,
+                        fontStyle: 'normal'
+                    }
+                },
+                heading_small_regular: {
+                    css: {
+                        fontSize: '20px',
+                        lineHeight: '140%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 400,
+                        fontStyle: 'normal'
+                    }
+                },
+                heading_small_light: {
+                    css: {
+                        fontSize: '20px',
+                        lineHeight: '140%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 300,
+                        fontStyle: 'normal'
+                    }
+                },
+                body_large_bold: {
+                    css: {
+                        fontSize: '16px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 700,
+                        fontStyle: 'normal'
+                    }
+                },
+                body_large_semibold: {
+                    css: {
+                        fontSize: '16px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 600,
+                        fontStyle: 'normal'
+                    }
+                },
+                body_large_medium: {
+                    css: {
+                        fontSize: '16px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 500,
+                        fontStyle: 'normal'
+                    }
+                },
+                body_large_regular: {
+                    css: {
+                        fontSize: '16px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 400,
+                        fontStyle: 'normal'
+                    }
+                },
+                body_large_light: {
+                    css: {
+                        fontSize: '16px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 300,
+                        fontStyle: 'normal'
+                    }
+                },
+                body_medium_bold: {
+                    css: {
+                        fontSize: '14px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 700,
+                        fontStyle: 'normal'
+                    }
+                },
+                body_medium_semibold: {
+                    css: {
+                        fontSize: '14px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 600,
+                        fontStyle: 'normal'
+                    }
+                },
+                body_medium_medium: {
+                    css: {
+                        fontSize: '14px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 500,
+                        fontStyle: 'normal'
+                    }
+                },
+                body_medium_regular: {
+                    css: {
+                        fontSize: '14px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 400,
+                        fontStyle: 'normal'
+                    }
+                },
+                body_medium_light: {
+                    css: {
+                        fontSize: '14px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 300,
+                        fontStyle: 'normal'
+                    }
+                },
+                body_small_bold: {
+                    css: {
+                        fontSize: '12px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 700,
+                        fontStyle: 'normal'
+                    }
+                },
+                body_small_semibold: {
+                    css: {
+                        fontSize: '12px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 600,
+                        fontStyle: 'normal'
+                    }
+                },
+                body_small_medium: {
+                    css: {
+                        fontSize: '12px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 500,
+                        fontStyle: 'normal'
+                    }
+                },
+                body_small_regular: {
+                    css: {
+                        fontSize: '12px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 400,
+                        fontStyle: 'normal'
+                    }
+                },
+                body_small_light: {
+                    css: {
+                        fontSize: '12px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 300,
+                        fontStyle: 'normal'
+                    }
+                }
+            },
             borderRadius: {},
 
             screens: {

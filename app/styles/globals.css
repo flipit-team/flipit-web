@@ -3,8 +3,6 @@
 @tailwind utilities;
 /* @tailwind theme */
 
-/* @import 'shared-library/dist/styles.css'; */
-
 * {
     text-rendering: optimizeLegibility !important;
     -webkit-font-smoothing: antialiased !important;
