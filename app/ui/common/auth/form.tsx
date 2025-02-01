@@ -48,7 +48,7 @@ const Form = () => {
               }
           ];
     return (
-        <div className='flex items-center h-full pb-[74px] xs:pb-0'>
+        <div className='flex items-center h-full -mt-[74px] xs:pb-0'>
             <div className='w-full'>
                 <h1 className='typo-heading_large_bold text-primary mb-2 xs:mb-4  xs:text-center'>
                     {isLogin ? 'Sign In' : 'Create an Account'}

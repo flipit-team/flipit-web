@@ -7,8 +7,8 @@ const Home = async () => {
     try {
         return (
             <div className='flex-1 grid grid-cols-2 xs:grid-cols-1 w-full xs:grid-sizes'>
-                <div className='w-[454px] xs:w-full mx-auto'>
-                    <div className='typo-heading_small_bold text-primary flex w-full mt-[46px] xs:justify-center'>
+                <div className='w-[454px] xs:w-full mx-auto overflow-y-auto no-scrollbar'>
+                    <div className='typo-heading_small_bold text-primary flex w-full mt-[46px] mb-[90px] xs:mb-0 xs:justify-center'>
                         Flipit
                     </div>
                     <Form />

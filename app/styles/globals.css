@@ -3,6 +3,18 @@
 @tailwind utilities;
 /* @tailwind theme */
 
+@layer utilities {
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+    }
+}
+
 * {
     text-rendering: optimizeLegibility !important;
     -webkit-font-smoothing: antialiased !important;
