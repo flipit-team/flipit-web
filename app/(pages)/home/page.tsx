@@ -62,7 +62,7 @@ const page = () => {
                     <div className='hidden mt-5 mb-5 xs:flex items-center justify-center bg-[#005f732b] text-[#333333] typo-body_large_semibold w-max px-[10px] rounded-lg h-[36px]'>
                         Categories
                     </div>
-                    <div className='mb-4 typo-heading_medium_semibold'>Available Items</div>
+                    <div className='py-9 xs:py-0 xs:mb-4 typo-heading_medium_semibold'>Available Items</div>
                     <div className='grid grid-cols-3 xs:grid-cols-2 gap-6 xs:gap-4'>
                         {Array.from('111111111111111').map((item, i) => {
                             return (
