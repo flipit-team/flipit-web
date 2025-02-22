@@ -26,6 +26,8 @@ export default async function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const menu = ['vehicles', 'apparel', 'Electronics', 'Entertainment', 'Home Appliances', 'Phones', 'Fashion'];
+
     return (
         <html lang='en'>
             <head>
@@ -35,8 +37,8 @@ export default async function RootLayout({
                 <link rel='icon' href='/favicon-16x16.png' sizes='16x16' type='image/png' />
                 <link rel='manifest' href='/site.webmanifest' /> */}
             </head>
-            <body className={`${inter.variable} ${poppins.variable} antialiased flex flex-col min-h-[100vh]`}>
-                <Header />
+            <body className={`relative ${inter.variable} ${poppins.variable} antialiased flex flex-col min-h-[100vh]`}>
+                {/* <Header menu={menu} /> */}
 
                 <main className='flex flex-col flex-1'>
                     <ErrorBoundary>{children}</ErrorBoundary>
