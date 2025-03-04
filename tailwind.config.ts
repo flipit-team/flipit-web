@@ -333,9 +333,10 @@ const config: Config = {
         function ({addUtilities}: {addUtilities: any}) {
             const newUtilities = {
                 '.grid-sizes': {
-                    width: '1188px',
+                    width: '1320px',
                     padding: '0 24px',
-                    margin: 'auto'
+                    marginLeft: 'auto',
+                    marginRight: 'auto'
                 },
                 '.grid-sizes-swiper': {
                     width: '1188px',

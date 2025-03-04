@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import React, {useState} from 'react';
+import UsedBadge from '~/ui/common/badges/UsedBadge';
 import Header from '~/ui/common/layout/header';
 
 const page = () => {
@@ -88,9 +89,7 @@ const page = () => {
                                             <p className='typo-body_small_regular xs:text-[11px] xs:mb-1'>
                                                 Cash/Item offers
                                             </p>
-                                            <span className='flex items-center px-2 h-[26px] xs:h-[18px] typo-body_small_regular bg-[#FAE6D3] text-[#e47208]'>
-                                                Fairly Used
-                                            </span>
+                                            <UsedBadge text='Fairly Used' />
                                         </div>
                                     </div>
                                 </div>

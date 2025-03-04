@@ -1,7 +1,7 @@
 'use client';
 import React, {useState} from 'react';
 import InputBox from '../input-box';
-import AuthButton from '../buttons/auth-button';
+import AuthButton from '../buttons/AuthButton';
 
 const Form = () => {
     const [isLogin, setIsLogin] = useState(false);
