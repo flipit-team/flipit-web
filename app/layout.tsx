@@ -4,6 +4,7 @@ import Header from '~/ui/common/layout/header';
 import Footer from '~/ui/common/layout/footer';
 import React from 'react';
 import ErrorBoundary from '~/error-boundary';
+import {AppProvider} from './contexts/AppContext';
 
 const poppins = Poppins({
     display: 'swap',
@@ -37,14 +38,17 @@ export default async function RootLayout({
                 <link rel='icon' href='/favicon-16x16.png' sizes='16x16' type='image/png' />
                 <link rel='manifest' href='/site.webmanifest' /> */}
             </head>
-            <body className={`relative ${inter.variable} ${poppins.variable} antialiased flex flex-col min-h-[100vh]`}>
-                {/* <Header menu={menu} /> */}
-
-                <main className='flex flex-col flex-1'>
-                    <ErrorBoundary>{children}</ErrorBoundary>
-                </main>
-                <Footer />
-            </body>
+            <AppProvider>
+                <body
+                    className={`relative ${inter.variable} ${poppins.variable} antialiased flex flex-col min-h-[100vh]`}
+                >
+                    {/* <Header menu={menu} /> */}
+                    <main className='flex flex-col flex-1'>
+                        <ErrorBoundary>{children}</ErrorBoundary>
+                    </main>
+                    <Footer />
+                </body>
+            </AppProvider>
         </html>
     );
 }
