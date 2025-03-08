@@ -50,7 +50,7 @@ const MakeAnOffer = () => {
                             onClick={() => setShowPopup(false)}
                         />
                     </div>
-                    <div className='flex flex-col xs:items-center mb-4 border-b border-border_gray pb-[20px] xs:px-4'>
+                    <div className='flex flex-col  mb-4 xs:px-4'>
                         <div className='mb-4'>
                             <p className='typo-heading_medium_semibold xs:typo-body_large_semibold'>
                                 Canon EOS RP Camera +Small Rig{' '}
@@ -65,7 +65,7 @@ const MakeAnOffer = () => {
                                 height={439}
                                 width={443}
                                 alt='picture'
-                                className='h-[439px] w-[443px] xs:h-[327px] xs:w-[330px]'
+                                className='h-[439px] w-[443px] xs:h-[327px] xs:w-full'
                             />
                             <div className='flex flex-col gap-6'>
                                 <p className='typo-heading_small_semibold xs:typo-body_large_semibold'>
