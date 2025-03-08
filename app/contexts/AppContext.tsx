@@ -12,7 +12,7 @@ interface AppContextProps {
 const AppContext = createContext<AppContextProps | undefined>(undefined);
 
 export const AppProvider = ({children}: {children: ReactNode}) => {
-    const [showPopup, setShowPopup] = useState<boolean>(true);
+    const [showPopup, setShowPopup] = useState<boolean>(false);
 
     return (
         <AppContext.Provider

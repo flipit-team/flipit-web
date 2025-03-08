@@ -19,9 +19,6 @@ const page = () => {
                 </div>
                 <div className='relative h-[49px] w-[586px] xs:w-full xs:flex-none mx-auto my-auto outline-none border-none'>
                     <input
-                        // onChange={(e) => setSearchVal(e.target.value)}
-                        // onKeyDown={handleKeyDown}
-                        // value={searchVal}
                         type='text'
                         placeholder='Search...'
                         className='w-full h-[49px] pl-6 pr-4 py-2 typo-body_mr text-text-primary bg-odds-buttons-bg-primary-color border border-none outline-none rounded-md focus:outline-none  focus:ring-transparent focus:border-none'

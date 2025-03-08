@@ -3,6 +3,7 @@ import React from 'react';
 import UsedBadge from '~/ui/common/badges/UsedBadge';
 import RegularButton from '~/ui/common/buttons/RegularButton';
 import PopupSheet from '~/ui/common/popup-sheet/PopupSheet';
+import MakeAnOffer from '~/ui/homepage/make-an-offer';
 import ProfilePopup from '~/ui/homepage/profile-popup';
 import SellersInfo from '~/ui/homepage/sellers-info';
 
@@ -51,7 +52,7 @@ const page = () => {
                         ₦1,300,000
                     </p>
                     <p className='typo-body_medium_regular text-text_four mb-[42px]'>Posted 3 weeks ago</p>
-                    <RegularButton text='Make an offer' />
+                    <RegularButton text='Make an offer' slug='make-an-offer' usePopup />
                     <div className='h-6'></div>
                     <RegularButton text='Buy right away' isLight />
                     <div className='typo-body_large_medium text-text_one mt-6'>Details</div>
@@ -99,6 +100,7 @@ const page = () => {
             </div>
             <PopupSheet>
                 <ProfilePopup />
+                <MakeAnOffer />
             </PopupSheet>
         </>
     );
