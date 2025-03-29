@@ -6,11 +6,10 @@ import React, {useState} from 'react';
 
 interface Props {
     menu: string[];
-    fromHomePage?: boolean;
 }
 
 const Header = (props: Props) => {
-    const {menu, fromHomePage} = props;
+    const {menu} = props;
     const [showFlyout, setShowFlyout] = useState(false);
     const router = useRouter();
     const pathname = usePathname();
