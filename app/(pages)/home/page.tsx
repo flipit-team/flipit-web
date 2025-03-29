@@ -1,8 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import React, {useState} from 'react';
+import React from 'react';
 import UsedBadge from '~/ui/common/badges/UsedBadge';
-import Header from '~/ui/common/layout/header';
 
 const page = () => {
     const menu = ['vehicles', 'apparel', 'Electronics', 'Entertainment', 'Home Appliances', 'Phones', 'Fashion'];
