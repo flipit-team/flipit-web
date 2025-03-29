@@ -8,7 +8,6 @@ const page = () => {
     const menu = ['vehicles', 'apparel', 'Electronics', 'Entertainment', 'Home Appliances', 'Phones', 'Fashion'];
     return (
         <div className='flex flex-col relative'>
-            {/* <Header menu={menu} /> */}
             <div className='xs:px-4 h-[206px] xs:h-[184px] bg-[#005f73f5] flex flex-col gap-7 xs:gap-6 py-11 xs:pt-[36px] xs:pb-[29px]'>
                 <div className='flex items-center gap-4 mx-auto text-white'>
                     <p className='typo-body_large_regular'>Items near me</p>
