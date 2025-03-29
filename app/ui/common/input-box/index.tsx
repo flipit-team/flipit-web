@@ -1,3 +1,4 @@
+'use client';
 import React, {useState} from 'react';
 import {Eye, EyeOff} from 'lucide-react';
 
@@ -26,8 +27,8 @@ const InputBox = (props: Props) => {
     };
     if (isPassword) {
         return (
-            <div>
-                <label htmlFor={name} className='block mb-2'>
+            <div className='w-full'>
+                <label htmlFor={name} className='block mb-2 typo-body_medium_regular'>
                     {label}
                 </label>
                 <div className='relative'>
@@ -50,8 +51,8 @@ const InputBox = (props: Props) => {
         );
     }
     return (
-        <div>
-            <label htmlFor={name} className='block mb-2'>
+        <div className='w-full'>
+            <label htmlFor={name} className='block mb-2 typo-body_medium_regular'>
                 {label}
             </label>
             <input

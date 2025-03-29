@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import React, {useState} from 'react';
 import UsedBadge from '~/ui/common/badges/UsedBadge';
 import Header from '~/ui/common/layout/header';
@@ -7,7 +8,7 @@ const page = () => {
     const menu = ['vehicles', 'apparel', 'Electronics', 'Entertainment', 'Home Appliances', 'Phones', 'Fashion'];
     return (
         <div className='flex flex-col relative'>
-            <Header menu={menu} />
+            {/* <Header menu={menu} /> */}
             <div className='xs:px-4 h-[206px] xs:h-[184px] bg-[#005f73f5] flex flex-col gap-7 xs:gap-6 py-11 xs:pt-[36px] xs:pb-[29px]'>
                 <div className='flex items-center gap-4 mx-auto text-white'>
                     <p className='typo-body_large_regular'>Items near me</p>
@@ -56,7 +57,7 @@ const page = () => {
                     })}
                 </div>
 
-                <div className='grid-sizes xs:w-full'>
+                <div className='xs:grid-sizes xs:w-full'>
                     <div className='hidden mt-5 mb-5 xs:flex items-center justify-center bg-[#005f732b] text-[#333333] typo-body_large_semibold w-max px-[10px] rounded-lg h-[36px]'>
                         Categories
                     </div>
@@ -64,7 +65,8 @@ const page = () => {
                     <div className='grid grid-cols-3 xs:grid-cols-2 gap-6 xs:gap-4'>
                         {Array.from('111111111111111').map((item, i) => {
                             return (
-                                <div
+                                <Link
+                                    href={'/home/camera'}
                                     key={i}
                                     className='h-[400px] w-[349px] xs:w-full xs:h-[260px] border border-border_gray rounded-md'
                                 >
@@ -89,7 +91,7 @@ const page = () => {
                                             <UsedBadge text='Fairly Used' />
                                         </div>
                                     </div>
-                                </div>
+                                </Link>
                             );
                         })}
                     </div>

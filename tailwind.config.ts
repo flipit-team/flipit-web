@@ -16,7 +16,12 @@ const config: Config = {
                 text_three: '#666666',
                 text_four: '#999999',
                 white: '#ffffff',
-                border_gray: '#e6e6e6'
+                border_gray: '#e6e6e6',
+                'tab-bar': {
+                    'bg-primary-color': 'var(--neutral-50)',
+                    default: '#7e919a',
+                    active: '#005F73'
+                }
             },
             typography: {
                 heading_large_bold: {

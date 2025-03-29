@@ -5,6 +5,7 @@ import Footer from '~/ui/common/layout/footer';
 import React from 'react';
 import ErrorBoundary from '~/error-boundary';
 import {AppProvider} from './contexts/AppContext';
+import BottomNavBar from './ui/common/layout/bottom-nav-bar';
 
 const poppins = Poppins({
     display: 'swap',
@@ -42,11 +43,15 @@ export default async function RootLayout({
                 <body
                     className={`relative ${inter.variable} ${poppins.variable} antialiased flex flex-col min-h-[100vh]`}
                 >
-                    {/* <Header menu={menu} /> */}
-                    <main className='flex flex-col flex-1'>
+                    <main className='flex flex-col flex-1 xs:pb-[100px]'>
+                        <Header menu={menu} />
+
                         <ErrorBoundary>{children}</ErrorBoundary>
                     </main>
                     <Footer />
+                    <div className='xs:flex hidden relative'>
+                        <BottomNavBar />
+                    </div>
                 </body>
             </AppProvider>
         </html>

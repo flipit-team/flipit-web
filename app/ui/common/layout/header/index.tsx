@@ -1,5 +1,7 @@
 'use client';
 import Image from 'next/image';
+import Link from 'next/link';
+import {usePathname, useRouter} from 'next/navigation';
 import React, {useState} from 'react';
 
 interface Props {
@@ -9,35 +11,52 @@ interface Props {
 const Header = (props: Props) => {
     const {menu} = props;
     const [showFlyout, setShowFlyout] = useState(false);
+    const router = useRouter();
+    const pathname = usePathname();
 
     return (
         <>
             <div className='xs:grid-sizes bg-primary h-[102px] xs:h-[56px] flex items-center xs:justify-between px-[120px] xs:px-0 text-white'>
                 <div className='flex items-center'>
-                    <Image
-                        src={'/mobile-nav.svg'}
-                        height={24}
-                        width={24}
-                        alt='bell'
-                        className='h-6 w-6 mr-[18px] hidden xs:block'
-                        onClick={() => setShowFlyout(true)}
-                    />
+                    {pathname.includes('messages/m') ? (
+                        <Image
+                            src={'/back-white.svg'}
+                            height={24}
+                            width={24}
+                            alt='bell'
+                            className='h-6 w-6 mr-[18px] hidden xs:block'
+                            onClick={() => router.back()}
+                        />
+                    ) : (
+                        <Image
+                            src={'/mobile-nav.svg'}
+                            height={24}
+                            width={24}
+                            alt='bell'
+                            className='h-6 w-6 mr-[18px] hidden xs:block'
+                            onClick={() => setShowFlyout(true)}
+                        />
+                    )}
+
                     <h1 className='typo-heading_medium_bold xs:typo-heading_small_bold xs:text-center'>Flipit</h1>
                 </div>
 
                 <div className='flex xs:hidden gap-[42px] typo-body_large_semibold mx-auto'>
-                    <p>Home</p>
-                    <p>Messages</p>
-                    <p>Current Bids</p>
+                    <Link href={'/'}>Home</Link>
+                    <Link href={'/messages'}>Messages</Link>
+                    <Link href={'/current-bids'}>Current Bids</Link>
                 </div>
                 <div className='flex items-center'>
-                    <Image
-                        src={'/bell.svg'}
-                        height={32}
-                        width={32}
-                        alt='bell'
-                        className='h-7 w-7 mr-[27px] xs:h-6 xs:w-6'
-                    />
+                    <Link href={'/notifications'}>
+                        <Image
+                            src={'/bell.svg'}
+                            height={32}
+                            width={32}
+                            alt='bell'
+                            className='h-7 w-7 mr-[27px] xs:h-6 xs:w-6'
+                        />
+                    </Link>
+
                     <Image
                         src={'/profile-picture.svg'}
                         height={32}
