@@ -17,8 +17,6 @@ const RegularButton = ({isLight, text, slug, usePopup}: Props) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('q', slug ?? '');
 
-    console.log(slug, 88, usePopup);
-
     return (
         <Link
             href={`?${params.toString()}`}

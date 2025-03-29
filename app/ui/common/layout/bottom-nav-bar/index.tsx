@@ -1,7 +1,7 @@
 'use client';
 import NavItem from './NavItem';
 import {HomeIcon} from './tab-icons.tsx/HomeIcon';
-import {usePathname, useSearchParams} from 'next/navigation';
+import {usePathname} from 'next/navigation';
 import {MessagesIcon} from './tab-icons.tsx/MessagesIcon';
 import {PostItemIcon} from './tab-icons.tsx/PostItemIcon';
 import clsx from 'clsx';
@@ -15,12 +15,7 @@ interface tabs {
     listForActiveLink: string[];
 }
 
-interface BottomNavProps {
-    accountsEnabled?: boolean;
-}
-
-const BottomNavBar = (props: BottomNavProps) => {
-    const searchParams = useSearchParams();
+const BottomNavBar = () => {
     const pathName = usePathname();
 
     const tabs: tabs[] = [

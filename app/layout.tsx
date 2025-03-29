@@ -2,7 +2,7 @@ import '~/styles/globals.css';
 import {Poppins, Inter} from 'next/font/google';
 import Header from '~/ui/common/layout/header';
 import Footer from '~/ui/common/layout/footer';
-import React from 'react';
+import React, {Suspense} from 'react';
 import ErrorBoundary from '~/error-boundary';
 import {AppProvider} from './contexts/AppContext';
 import BottomNavBar from './ui/common/layout/bottom-nav-bar';
