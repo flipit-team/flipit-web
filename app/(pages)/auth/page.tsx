@@ -12,7 +12,7 @@ const Auth = () => {
             <div className='bg-primary text-white flex items-center justify-center flex-col xs:hidden'>
                 <Image src={'/auth-banner.png'} height={365} width={365} alt='banner' />
                 <h2 className='typo-heading_large_bold mt-[31px]'>Trade smart, swap easy</h2>
-                <p className='w-[492px] typo-heading_small_regular text-center  mt-2'>
+                <p className='w-[492px] typo-heading_small_regular text-center mt-2'>
                     Turn the items you have into the ones you need. Start trading today!
                 </p>
             </div>
