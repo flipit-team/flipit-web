@@ -13,7 +13,7 @@ const page = () => {
                     <div className='border border-border_gray h-[37px] px-4 flex items-center rounded-md'>
                         <Image src={'/location.svg'} height={24} width={24} alt='bell' className='h-6 w-6 mr-2' />
                         <p className='typo-body_medium_regular'>Ogude,Lagos</p>
-                        <Image src={'/arrow-down.svg'} height={16} width={16} alt='bell' className='h-4 wl4 ml-2' />
+                        <Image src={'/arrow-down.svg'} height={16} width={16} alt='bell' className='h-4 w-4 ml-2' />
                     </div>
                 </div>
                 <div className='relative h-[49px] w-[586px] xs:w-full xs:flex-none mx-auto my-auto outline-none border-none'>
@@ -33,8 +33,8 @@ const page = () => {
                     </div>
                 </div>
             </div>
-            <div className='grid grid-cols-[260px_1fr] xs:grid-cols-1 gap-6 px-[120px] xs:px-0'>
-                <div className='w-full flex flex-col mt-7 xs:hidden'>
+            <div className='grid grid-cols-[260px_1fr] xs:grid-cols-1 gap-6'>
+                <div className='w-full flex flex-col pl-[60px] pt-7 shadow-[0px_4px_10px_rgba(0,0,0,0.2)] xs:hidden'>
                     <div className='h-[58px] flex items-center gap-2'>
                         <Image
                             className='h-5 w-5 cursor-pointer'
@@ -55,7 +55,7 @@ const page = () => {
                     })}
                 </div>
 
-                <div className='xs:grid-sizes xs:w-full'>
+                <div className='xs:grid-sizes xs:w-full pr-[60px]'>
                     <div className='hidden mt-5 mb-5 xs:flex items-center justify-center bg-[#005f732b] text-[#333333] typo-body_large_semibold w-max px-[10px] rounded-lg h-[36px]'>
                         Categories
                     </div>
@@ -66,10 +66,10 @@ const page = () => {
                                 <Link
                                     href={'/home/camera'}
                                     key={i}
-                                    className='h-[400px] w-[349px] xs:w-full xs:h-[260px] border border-border_gray rounded-md'
+                                    className='h-[400px] w-full xs:h-[260px] border border-border_gray rounded-md'
                                 >
                                     <Image
-                                        className='h-[302px] w-[349px] xs:w-full xs:h-[128px] cursor-pointer'
+                                        className='h-[302px] xs:w-full xs:h-[128px] cursor-pointer'
                                         src={'/camera.png'}
                                         alt='search'
                                         height={302}
