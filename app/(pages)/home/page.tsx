@@ -69,7 +69,7 @@ const page = () => {
                                     className='h-[400px] w-full xs:h-[260px] border border-border_gray rounded-md'
                                 >
                                     <Image
-                                        className='h-[302px] xs:w-full xs:h-[128px] cursor-pointer'
+                                        className='h-[302px] w-full xs:h-[128px] cursor-pointer'
                                         src={'/camera.png'}
                                         alt='search'
                                         height={302}

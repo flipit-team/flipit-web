@@ -1,7 +1,7 @@
 import React from 'react';
 import {redirect} from 'next/navigation';
 import Image from 'next/image';
-import Form from '~/ui/common/auth/Form';
+import Form from '~/ui/common/auth/form';
 import VerifyProfile from '~/ui/common/auth/VerifyProfile';
 import ResetPassword from '~/ui/common/auth/ResetPassword';
 
