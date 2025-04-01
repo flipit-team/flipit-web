@@ -1,17 +1,31 @@
 import React from 'react';
 import {redirect} from 'next/navigation';
 import Image from 'next/image';
-import Form from '~/ui/common/auth/form';
+import Form from '~/ui/common/auth/Form';
+import VerifyProfile from '~/ui/common/auth/VerifyProfile';
+import ResetPassword from '~/ui/common/auth/ResetPassword';
 
-const Home = async () => {
+const Home = async ({searchParams}: {searchParams: Promise<{[key: string]: string | undefined}>}) => {
     try {
+        const resolvedSearchParams = await searchParams; // Await the searchParams
+
+        const authValue = resolvedSearchParams.auth; // Now you can access `auth`
+
         return (
             <div className='flex-1 grid grid-cols-2 xs:grid-cols-1 w-full xs:grid-sizes'>
                 <div className='w-[454px] xs:w-full mx-auto overflow-y-auto no-scrollbar'>
-                    <div className='typo-heading_small_bold text-primary flex w-full mt-[46px] mb-[90px] xs:justify-center'>
+                    <div className='typo-heading_small_bold text-primary flex w-full mt-[46px] xs:justify-center'>
                         Flipit
                     </div>
-                    <Form />
+                    {authValue === 'verify' ? (
+                        <VerifyProfile forVerify={true} />
+                    ) : authValue === 'code' ? (
+                        <VerifyProfile forVerify={false} />
+                    ) : authValue === 'reset' ? (
+                        <ResetPassword />
+                    ) : (
+                        <Form />
+                    )}
                 </div>
                 <div className='h-full bg-primary text-white flex items-center justify-center flex-col xs:hidden'>
                     <Image

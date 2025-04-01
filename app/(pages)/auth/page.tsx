@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import React from 'react';
-import Form from '~/ui/common/auth/form';
+import Form from '~/ui/common/auth/Form';
 
 const Auth = () => {
     return (

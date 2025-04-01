@@ -7,16 +7,17 @@ interface Props {
     titleTwo: string;
     nameOne: string;
     nameTwo: string;
+    col?: boolean;
 }
 
 const RadioButtons = (props: Props) => {
-    const {title, titleOne, titleTwo, nameOne, nameTwo} = props;
+    const {title, titleOne, titleTwo, nameOne, nameTwo, col} = props;
     const [selected, setSelected] = useState(nameOne);
 
     return (
         <div>
             <p className='typo-body_medium_regular mb-[18px]'>{title}</p>
-            <div className='flex space-x-6'>
+            <div className={`flex ${col ? 'flex-col space-y-4' : 'flex-row space-x-6'}`}>
                 {/* Radio Button 1 */}
                 <label className='flex items-center space-x-2 cursor-pointer'>
                     <input
