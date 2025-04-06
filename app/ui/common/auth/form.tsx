@@ -1,10 +1,33 @@
 'use client';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import InputBox from '../input-box';
 import AuthButton from '../buttons/AuthButton';
+import useSWRMutation from 'swr/mutation';
+import {loginFetcher, signupFetcher} from '~/utils/helpers';
+import {useRouter} from 'next/navigation';
 
 const Form = () => {
     const [isLogin, setIsLogin] = useState(false);
+    const [api, setApi] = useState('');
+    const [email, setEmail] = useState('');
+    const [name, setName] = useState('');
+
+    const [password, setPassword] = useState('');
+
+    const [phone, setPhone] = useState('');
+    const [err, setErr] = useState(false);
+
+    const router = useRouter();
+    const {trigger, isMutating, error, data} = useSWRMutation(
+        '/api/signup', // Your actual signup endpoint
+        isLogin ? loginFetcher : signupFetcher
+    );
+
+    useEffect(() => {
+        setEmail('');
+        setPassword('');
+        setPhone('');
+    }, [isLogin]);
 
     const formInputs = isLogin
         ? [
@@ -47,9 +70,81 @@ const Form = () => {
                   name: 'phone'
               }
           ];
+
+    const handleInput = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
+        setErr(false);
+        if (type === 'email') {
+            setEmail(e.target.value);
+        }
+        if (type === 'password') {
+            setPassword(e.target.value);
+        }
+        if (type === 'fullname') {
+            setName(e.target.value);
+        }
+        if (type === 'phone') {
+            setPhone(e.target.value);
+        }
+    };
+
+    const handleValue = (input: {label: string; placeholder: string; type: string; name: string}) => {
+        if (input.name === 'email') {
+            return email;
+        }
+        if (input.name === 'password') {
+            return password;
+        }
+        if (input.name === 'fullname') {
+            return name;
+        }
+        if (input.name === 'phone') {
+            return phone;
+        }
+    };
+    const handleAuth = async () => {
+        console.log(email, password, name, phone);
+        setErr(false);
+
+        const formData = isLogin
+            ? {
+                  username: name,
+                  password: password
+              }
+            : {
+                  title: 'mr',
+                  firstName: name,
+                  middleName: name,
+                  lastName: name,
+                  email: email,
+                  phoneNumber: phone,
+                  password: password,
+                  roleIds: [0],
+                  verified: false,
+                  deactivated: false
+              };
+        try {
+            const response = await trigger(formData);
+            console.log('Success:', response);
+            if (isLogin) {
+                sessionStorage.setItem('token', response.jwt);
+                router.push('/');
+            } else {
+                setIsLogin(true);
+            }
+        } catch (e) {
+            console.error('Error:', e);
+            setErr(true);
+        }
+    };
     return (
         <div className='flex items-center h-full xs:pb-0'>
             <div className='w-full'>
+                {error && (
+                    <div className='mb-4 text-red-600 typo-body_large_regular'>
+                        Something went wring, please try again later
+                    </div>
+                )}
+
                 <h1 className='typo-heading_large_bold text-primary mb-2 xs:mb-4  xs:text-center'>
                     {isLogin ? 'Sign In' : 'Create an Account'}
                 </h1>
@@ -69,6 +164,8 @@ const Form = () => {
                     {formInputs.map((item, i) => {
                         return (
                             <InputBox
+                                value={handleValue(item)}
+                                setValue={handleInput}
                                 key={i}
                                 label={item.label}
                                 name={item.name}
@@ -85,7 +182,12 @@ const Form = () => {
                         <></>
                     )}
                     <div className='xs:mt-[24px]'>
-                        <AuthButton bg title={isLogin ? 'Sign In' : 'Sign Up'} />
+                        <AuthButton
+                            bg
+                            title={isLogin ? 'Sign In' : 'Sign Up'}
+                            onClick={() => handleAuth()}
+                            isLoading={isMutating}
+                        />
                     </div>
                 </form>
 
@@ -96,8 +198,8 @@ const Form = () => {
                 </div>
 
                 <div className='flex flex-col gap-4'>
-                    <AuthButton title='Continue with Google' icon='/google-icon.svg' border />
-                    <AuthButton title='Continue with Facebook' icon='/facebook-icon.svg' border />
+                    <AuthButton title='Continue with Google' icon='/google-icon.svg' border link='/home' />
+                    <AuthButton title='Continue with Facebook' icon='/facebook-icon.svg' border link='/home' />
                 </div>
             </div>
         </div>

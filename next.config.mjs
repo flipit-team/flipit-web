@@ -5,15 +5,20 @@ const nextConfig = {
     output: 'standalone',
     reactStrictMode: false,
     experimental: {
-        webpackBuildWorker: true,
+        webpackBuildWorker: true
     },
     images: {
         unoptimized: false,
-        remotePatterns: [
-        
-        ]
+        remotePatterns: []
     },
- 
+    async rewrites() {
+        return [
+            {
+                source: '/api/signup',
+                destination: 'https://flipit-api.onrender.com/api/v1/user/signup'
+            }
+        ];
+    }
 };
 
 export default nextConfig;

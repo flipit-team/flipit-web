@@ -7,10 +7,12 @@ interface Props {
     placeholder: string;
     type: React.HTMLInputTypeAttribute | undefined;
     name: string;
+    value?: string;
+    setValue?: (e: React.ChangeEvent<HTMLInputElement>, type: string) => void;
 }
 
 const InputBox = (props: Props) => {
-    const {label, placeholder, type, name} = props;
+    const {label, placeholder, type, name, value, setValue} = props;
 
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [phone, setPhone] = useState('');
@@ -33,6 +35,8 @@ const InputBox = (props: Props) => {
                 </label>
                 <div className='relative'>
                     <input
+                        value={value}
+                        onChange={setValue ? (e) => setValue(e, name) : () => {}}
                         type={passwordVisible ? 'text' : 'password'}
                         id={name}
                         name={name}
@@ -56,6 +60,8 @@ const InputBox = (props: Props) => {
                 {label}
             </label>
             <input
+                value={value}
+                onChange={setValue ? (e) => setValue(e, name) : () => {}}
                 type={type}
                 id={name}
                 name={name}
