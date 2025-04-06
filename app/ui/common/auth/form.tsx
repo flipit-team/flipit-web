@@ -16,7 +16,6 @@ const Form = () => {
 
     const [phone, setPhone] = useState('');
     const [err, setErr] = useState(false);
-    const [token, setToken] = useState<null | string>(null);
 
     const router = useRouter();
     const {trigger, isMutating, error, data} = useSWRMutation(
@@ -29,13 +28,6 @@ const Form = () => {
         setPassword('');
         setPhone('');
     }, [isLogin]);
-
-    useEffect(() => {
-        // Runs only on client
-        if (token) {
-            sessionStorage.setItem('token', token);
-        }
-    }, [token]);
 
     const formInputs = isLogin
         ? [
@@ -134,7 +126,7 @@ const Form = () => {
             const response = await trigger(formData);
             console.log('Success:', response);
             if (isLogin) {
-                setToken(response.jwt);
+                sessionStorage.setItem('token', response.jwt);
                 router.push('/');
             } else {
                 setIsLogin(true);
