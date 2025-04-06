@@ -47,7 +47,7 @@ const Form = () => {
         : [
               {
                   label: 'Full name',
-                  placeholder: 'Enter Full Name',
+                  placeholder: 'Enter firstname and lastname',
                   type: 'text',
                   name: 'fullname'
               },
@@ -65,7 +65,7 @@ const Form = () => {
               },
               {
                   label: 'Phone number',
-                  placeholder: 'Enter digits only',
+                  placeholder: '08012345678',
                   type: 'number',
                   name: 'phone'
               }
@@ -77,7 +77,7 @@ const Form = () => {
             setEmail(e.target.value);
         }
         if (type === 'password') {
-            setPassword(e.target.value);
+            setPassword(e.target.value.toString());
         }
         if (type === 'fullname') {
             setName(e.target.value);
@@ -111,16 +111,11 @@ const Form = () => {
                   password: password
               }
             : {
-                  title: 'mr',
-                  firstName: name,
-                  middleName: name,
-                  lastName: name,
+                  firstName: name.slice(0),
+                  lastName: name.slice(-1),
                   email: email,
-                  phoneNumber: phone,
-                  password: password,
-                  roleIds: [0],
-                  verified: false,
-                  deactivated: false
+                  phoneNumber: `+234${phone}`,
+                  password: password
               };
         try {
             const response = await trigger(formData);
@@ -129,6 +124,7 @@ const Form = () => {
                 sessionStorage.setItem('token', response.jwt);
                 router.push('/');
             } else {
+                sessionStorage.setItem('token', response.jwt);
                 setIsLogin(true);
             }
         } catch (e) {
