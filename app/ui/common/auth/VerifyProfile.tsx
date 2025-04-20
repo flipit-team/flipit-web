@@ -112,6 +112,8 @@ const VerifyProfile = ({forVerify}: {forVerify: boolean}) => {
                         <InputBox label='BVN' name='bvn' placeholder='1234567890' type='number' />
                     </div>
                     <RadioButtons
+                        selected=''
+                        setSelected={() => {}}
                         nameOne='passport'
                         nameTwo='id'
                         title='Select your government issued document type'

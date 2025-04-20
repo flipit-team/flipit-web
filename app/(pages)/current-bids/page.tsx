@@ -1,7 +1,8 @@
+'use client';
 import Image from 'next/image';
 import React from 'react';
 
-const page = () => {
+const Page = () => {
     return (
         <div className='mx-[120px] xs:mx-0 my-6 xs:my-0'>
             <h1 className='typo-heading_medium_semibold my-6 xs:mx-4'>Current Bids</h1>
@@ -42,7 +43,7 @@ const page = () => {
                     <div>
                         <div className='flex items-center'>
                             <p className='text-primary typo-body_large_semibold xs:typo-body_medium_semibold'>
-                                Canon EOS RP Camera +Small Rig{' '}
+                                Canon EOS RP Camera +Small Rig
                             </p>
                             <span className='xs:hidden py-1 px-2 text-[#039509] typo-body_small_regular bg-[rgba(3,149,9,0.18)] rounded ml-4'>
                                 Successful
@@ -86,4 +87,4 @@ const page = () => {
     );
 };
 
-export default page;
+export default Page;

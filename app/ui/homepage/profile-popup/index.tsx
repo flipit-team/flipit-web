@@ -1,17 +1,36 @@
 'use client';
 import Image from 'next/image';
 import {useSearchParams} from 'next/navigation';
-import React from 'react';
+import React, {useState} from 'react';
 import {useAppContext} from '~/contexts/AppContext';
 import RegularButton from '~/ui/common/buttons/RegularButton';
 
-const ProfilePopup = () => {
+interface Props {
+    seller:
+        | {
+              title: string;
+              firstName: string;
+              middleName: string;
+              lastName: string;
+              email: string;
+              phoneNumber: string;
+              avatar: string;
+              avg_rating: 0;
+              status: string;
+              phoneNumberVerified: true;
+              dateVerified: Date;
+          }
+        | undefined;
+}
+const ProfilePopup = (props: Props) => {
+    const {seller} = props;
+    const [viewPhone, setViewPhone] = useState(false);
     const {setShowPopup} = useAppContext();
     const searchParams = useSearchParams();
     const query = searchParams.get('q');
     if (query === 'profile-popup')
         return (
-            <div className='w-full xs:px-4'>
+            <div className='w-full flex flex-col justify-center items-center xs:px-4'>
                 <div className='w-[708px] xs:hidden'>
                     <Image
                         src={'/close-white.svg'}
@@ -42,9 +61,9 @@ const ProfilePopup = () => {
                             className='h-[194px] w-[194px] rounded-full'
                         />
                         <div className='w-full ml-[36px] xs:ml-0 xs:flex xs:flex-col xs:items-center mt-4'>
-                            <div className='typo-body_large_medium'>Emmanuel Christian</div>
+                            <div className='typo-body_large_medium'>{seller?.firstName + ' ' + seller?.lastName}</div>
                             <div className='h-[23px] w-max px-[2px] bg-[#005f7329] text-primary  flex items-center justify-center rounded typo-body_medium_regular'>
-                                Verified profile
+                                {seller?.dateVerified ? 'Verified profile' : 'Unverified profile'}
                             </div>
                             <div className='flex my-1'>
                                 {Array.from('11111').map((item, i) => {
@@ -62,7 +81,12 @@ const ProfilePopup = () => {
                             </div>
                             <p className='typo-body_medium_regular text-text_four'>Responds within minutes</p>
                             <p className='typo-body_medium_regular text-text_four mb-5'>Joined Flipit in 2024</p>
-                            <RegularButton text='Contact via Phone' />
+                            <div
+                                onClick={() => setViewPhone(!viewPhone)}
+                                className={`w-full flex items-center justify-center h-[51px] bg-[#005f7329] rounded-lg text-primary typo-body_large_semibold`}
+                            >
+                                {viewPhone ? seller?.phoneNumber : 'Contact via Phone'}
+                            </div>{' '}
                         </div>
                     </div>
                     <div className='mt-[20px] flex flex-col gap-4 xs:px-4'>

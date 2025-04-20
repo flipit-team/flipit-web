@@ -2,32 +2,56 @@
 import React, {useEffect, useState} from 'react';
 import InputBox from '../input-box';
 import AuthButton from '../buttons/AuthButton';
-import useSWRMutation from 'swr/mutation';
-import {loginFetcher, signupFetcher} from '~/utils/helpers';
 import {useRouter} from 'next/navigation';
+import {useAppContext} from '~/contexts/AppContext';
 
 const Form = () => {
-    const [isLogin, setIsLogin] = useState(false);
-    const [api, setApi] = useState('');
+    const {setUserId} = useAppContext();
+    const [isLogin, setIsLogin] = useState(true);
+    // const [api, setApi] = useState('');
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
 
     const [password, setPassword] = useState('');
 
     const [phone, setPhone] = useState('');
-    const [err, setErr] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const router = useRouter();
-    const {trigger, isMutating, error, data} = useSWRMutation(
-        '/api/signup', // Your actual signup endpoint
-        isLogin ? loginFetcher : signupFetcher
-    );
+    const api = isLogin ? '/api/login' : '/api/signup';
 
     useEffect(() => {
         setEmail('');
         setPassword('');
         setPhone('');
     }, [isLogin]);
+
+    const handleGoogleSignIn = async () => {
+        setIsLoading(true);
+        try {
+            const res = await fetch('/api/auth/google'); // no CORS issues now
+            console.log(res, 222);
+
+            if (!res.ok) throw new Error('Failed to get Google login URL');
+
+            const data = await res.json();
+            const googleLoginUrl = data?.url || data?.redirect_url;
+
+            if (googleLoginUrl) {
+                console.log(googleLoginUrl, 55);
+
+                window.location.href = googleLoginUrl;
+            } else {
+                throw new Error('No redirect URL in response');
+            }
+        } catch (err) {
+            console.error('Google login error:', err);
+            // alert('Something went wrong logging in.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const formInputs = isLogin
         ? [
@@ -72,7 +96,7 @@ const Form = () => {
           ];
 
     const handleInput = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
-        setErr(false);
+        setErrorMessage('');
         if (type === 'email') {
             setEmail(e.target.value);
         }
@@ -102,43 +126,52 @@ const Form = () => {
         }
     };
     const handleAuth = async () => {
-        console.log(email, password, name, phone);
-        setErr(false);
+        setIsLoading(true);
+        setErrorMessage('');
+        const [firstName, lastName] = name.split(' ');
 
         const formData = isLogin
             ? {
-                  username: name,
+                  username: email,
                   password: password
               }
             : {
-                  firstName: name.slice(0),
-                  lastName: name.slice(-1),
+                  firstName: firstName.trim(),
+                  lastName: lastName.trim(),
                   email: email,
                   phoneNumber: `+234${phone}`,
                   password: password
               };
+
         try {
-            const response = await trigger(formData);
-            console.log('Success:', response);
-            if (isLogin) {
-                sessionStorage.setItem('token', response.jwt);
-                router.push('/');
-            } else {
-                sessionStorage.setItem('token', response.jwt);
-                setIsLogin(true);
+            const res = await fetch(isLogin ? '/api/auth/login' : '/api/auth/register', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(formData)
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.apierror?.message ?? 'Login failed');
             }
-        } catch (e) {
-            console.error('Error:', e);
-            setErr(true);
+            console.log(data);
+
+            setIsLoading(false);
+            setUserId(data?.message?.user?.id);
+            router.replace('/home');
+        } catch (err: any) {
+            // display err.message in your UI
+            setErrorMessage(err.message);
+            setIsLoading(false);
         }
     };
+
     return (
         <div className='flex items-center h-full xs:pb-0'>
             <div className='w-full'>
-                {error && (
-                    <div className='mb-4 text-red-600 typo-body_large_regular'>
-                        Something went wring, please try again later
-                    </div>
+                {errorMessage && (
+                    <div className='mb-4 text-red-600 typo-body_large_regular capitalize'>{errorMessage}</div>
                 )}
 
                 <h1 className='typo-heading_large_bold text-primary mb-2 xs:mb-4  xs:text-center'>
@@ -182,7 +215,7 @@ const Form = () => {
                             bg
                             title={isLogin ? 'Sign In' : 'Sign Up'}
                             onClick={() => handleAuth()}
-                            isLoading={isMutating}
+                            isLoading={isLoading}
                         />
                     </div>
                 </form>
@@ -194,7 +227,12 @@ const Form = () => {
                 </div>
 
                 <div className='flex flex-col gap-4'>
-                    <AuthButton title='Continue with Google' icon='/google-icon.svg' border link='/home' />
+                    <AuthButton
+                        title='Continue with Google'
+                        icon='/google-icon.svg'
+                        border
+                        onClick={handleGoogleSignIn}
+                    />
                     <AuthButton title='Continue with Facebook' icon='/facebook-icon.svg' border link='/home' />
                 </div>
             </div>

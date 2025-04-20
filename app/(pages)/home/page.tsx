@@ -1,9 +1,57 @@
+'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react';
+import {useRouter} from 'next/navigation';
+import React, {useEffect, useState} from 'react';
+import useAuth from '~/hooks/useAuth';
 import UsedBadge from '~/ui/common/badges/UsedBadge';
+import Loader from '~/ui/common/loader/Loader';
+import {formatToNaira} from '~/utils/helpers';
+import {Item} from '~/utils/interface';
 
-const page = () => {
+const Page = () => {
+    const isAuthenticated = useAuth();
+    const [items, setItems] = useState<Item[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
+
+    useEffect(() => {
+        if (isAuthenticated === false) {
+            router.replace('/');
+            return;
+        }
+        const fetchItems = async () => {
+            try {
+                const res = await fetch('/api/items/get-items?page=0&size=20', {
+                    cache: 'no-store'
+                });
+
+                if (!res.ok) {
+                    const errData = await res.json();
+                    throw new Error(errData.apierror?.message || 'Failed to fetch items');
+                }
+
+                const data = await res.json();
+                setItems(data);
+                console.log(data);
+            } catch (err: any) {
+                setError(err.message || 'Something went wrong');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchItems();
+    }, [isAuthenticated]);
+
+    if (loading)
+        return (
+            <div className='py-10'>
+                <Loader color='green' />
+            </div>
+        );
+
     const menu = ['vehicles', 'apparel', 'Electronics', 'Entertainment', 'Home Appliances', 'Phones', 'Fashion'];
     return (
         <div className='flex flex-col relative'>
@@ -61,10 +109,10 @@ const page = () => {
                     </div>
                     <div className='py-9 xs:py-0 xs:mb-4 typo-heading_medium_semibold'>Available Items</div>
                     <div className='grid grid-cols-3 xs:grid-cols-2 gap-6 xs:gap-4'>
-                        {Array.from('111111111111111').map((item, i) => {
+                        {items.map((item, i) => {
                             return (
                                 <Link
-                                    href={'/home/camera'}
+                                    href={`/home/${item.id}`}
                                     key={i}
                                     className='h-[400px] w-full xs:h-[260px] border border-border_gray rounded-md'
                                 >
@@ -76,17 +124,17 @@ const page = () => {
                                         width={349}
                                     />
                                     <div className='p-4 xs:p-3 h-[98px] xs:h-[132px]'>
-                                        <p className='typo-body_medium_regular xs:typo-body_small_regular xs:mb-2'>
-                                            Canon EOS RP Camera +Small Rig | Clean U...{' '}
+                                        <p className='typo-body_medium_regular xs:typo-body_small_regular xs:mb-2 capitalize'>
+                                            {item.title}
                                         </p>
                                         <p className='typo-body_large_medium xs:typo-body_medium_medium xs:mb-1'>
-                                            ₦1,300,000
+                                            {formatToNaira(item.cashAmount)}
                                         </p>
                                         <div className='flex xs:flex-col justify-between items-center xs:items-start rounded'>
-                                            <p className='typo-body_small_regular xs:text-[11px] xs:mb-1'>
-                                                Cash/Item offers
+                                            <p className='typo-body_small_regular xs:text-[11px] xs:mb-1 capitalize'>
+                                                {item.acceptCash ? 'cash' : 'item'} offers
                                             </p>
-                                            <UsedBadge text='Fairly Used' />
+                                            <UsedBadge text={item.condition} />
                                         </div>
                                     </div>
                                 </Link>
@@ -99,4 +147,4 @@ const page = () => {
     );
 };
 
-export default page;
+export default Page;

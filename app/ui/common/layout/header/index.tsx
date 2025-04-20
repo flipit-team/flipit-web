@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {usePathname, useRouter} from 'next/navigation';
 import React, {useState} from 'react';
+import useAuth from '~/hooks/useAuth';
 
 interface Props {
     menu: string[];
@@ -13,6 +14,7 @@ const Header = (props: Props) => {
     const [showFlyout, setShowFlyout] = useState(false);
     const router = useRouter();
     const pathname = usePathname();
+    const isAuthenticated = useAuth();
 
     if (pathname === '/') return;
 
@@ -44,32 +46,44 @@ const Header = (props: Props) => {
                 </div>
 
                 <div className='flex xs:hidden gap-[42px] typo-body_large_semibold mx-auto'>
-                    <Link href={'/'}>Home</Link>
+                    <Link href={'/home'}>Home</Link>
                     <Link href={'/messages'}>Messages</Link>
                     <Link href={'/current-bids'}>Current Bids</Link>
                 </div>
-                <div className='flex items-center'>
-                    <Link href={'/notifications'}>
+                {true ? (
+                    <div className='flex items-center'>
+                        <Link href={'/notifications'}>
+                            <Image
+                                src={'/bell.svg'}
+                                height={32}
+                                width={32}
+                                alt='bell'
+                                className='h-7 w-7 mr-[27px] xs:h-6 xs:w-6'
+                            />
+                        </Link>
+
                         <Image
-                            src={'/bell.svg'}
+                            src={'/profile-picture.svg'}
                             height={32}
                             width={32}
                             alt='bell'
-                            className='h-7 w-7 mr-[27px] xs:h-6 xs:w-6'
+                            className='h-7 w-7 xs:h-[30px] xs:w-[30px]'
                         />
+                        <Link
+                            href={'/post-an-item'}
+                            className='flex items-center justify-center bg-secondary xs:hidden typo-body_medium_semibold h-[45px] w-[145px] text-white rounded-lg ml-[43px]'
+                        >
+                            Post Item
+                        </Link>
+                    </div>
+                ) : (
+                    <Link
+                        href={'/'}
+                        className='flex items-center justify-center border border-white xs:hidden typo-body_medium_semibold h-[45px] w-[145px] text-white rounded-lg'
+                    >
+                        Sign In
                     </Link>
-
-                    <Image
-                        src={'/profile-picture.svg'}
-                        height={32}
-                        width={32}
-                        alt='bell'
-                        className='h-7 w-7 xs:h-[30px] xs:w-[30px]'
-                    />
-                    <button className='bg-secondary xs:hidden typo-body_medium_semibold h-[45px] w-[145px] text-white rounded-lg ml-[43px]'>
-                        Post Item
-                    </button>
-                </div>
+                )}
             </div>
             <div
                 className={`hidden xs:block fixed h-[100vh] w-full top-0 bg-[#000000b3] px-4 left-[0px] z-[1000] transition-transform transform duration-300 origin-top ${

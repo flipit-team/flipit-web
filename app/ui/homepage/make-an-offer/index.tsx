@@ -1,21 +1,31 @@
 'use client';
 import Image from 'next/image';
-import {useSearchParams} from 'next/navigation';
-import React, {useState} from 'react';
+import Link from 'next/link';
+import {useRouter, useSearchParams} from 'next/navigation';
+import React, {useEffect, useState} from 'react';
 import {useAppContext} from '~/contexts/AppContext';
 import RegularButton from '~/ui/common/buttons/RegularButton';
+import {formatToNaira} from '~/utils/helpers';
+import {Item} from '~/utils/interface';
 
 const options = [
     {id: 1, title: 'iPhone 12 Promax', img: '/camera.png'},
     {id: 2, title: 'Sony Camera', img: '/camera.png'}
 ];
 
-const MakeAnOffer = () => {
-    const {setShowPopup} = useAppContext();
+interface Props {
+    item?: Item | null;
+}
+
+const MakeAnOffer = (props: Props) => {
+    const {item} = props;
+    const router = useRouter();
+    const {setShowPopup, userId} = useAppContext();
     const searchParams = useSearchParams();
     const query = searchParams.get('q');
-
+    const [myItems, setMyItems] = useState<Item[]>([]);
     const [selected, setSelected] = useState('with-cash');
+    const [amount, setAmount] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState<
         | {
@@ -25,6 +35,83 @@ const MakeAnOffer = () => {
           }
         | undefined
     >();
+
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>('');
+    const [success, setSuccess] = useState(false);
+
+    useEffect(() => {
+        const fetchItems = async () => {
+            try {
+                const res = await fetch(`/api/items/get-user-items?userId=${userId}`, {
+                    cache: 'no-store'
+                });
+
+                if (!res.ok) {
+                    const errData = await res.json();
+                    throw new Error(errData.apierror?.message || 'Failed to fetch items');
+                }
+
+                const data = await res.json();
+                setMyItems(data);
+                console.log(data);
+            } catch (err: any) {
+                setError(err.message || 'Something went wrong');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchItems();
+    }, [userId]);
+
+    const handleSubmit = async () => {
+        setLoading(true);
+        setError(null);
+        setSuccess(false);
+
+        const payload =
+            selected === 'with-cash'
+                ? {
+                      auctionItemId: item?.id,
+                      withCash: true,
+                      cashAmount: Number(amount)
+                  }
+                : {
+                      auctionItemId: item?.id,
+                      withCash: false,
+                      offeredItemId: selectedOption?.id
+                  };
+        console.log(payload);
+
+        try {
+            const res = await fetch('/api/bids/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                const parsedDetails = JSON.parse(data.details);
+                const debugMessage = parsedDetails.apierror?.debugMessage;
+                setError(debugMessage);
+
+                console.error('Bid failed:', debugMessage || 'Unknown error');
+            } else {
+                console.log('Bid successful:', data);
+                setSuccess(true);
+                router.replace('/current-bids');
+            }
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     if (query === 'make-an-offer')
         return (
@@ -51,12 +138,13 @@ const MakeAnOffer = () => {
                         />
                     </div>
                     <div className='flex flex-col  mb-4 xs:px-4'>
+                        {error && <div className='mb-4 text-center text-red-500'>{error}</div>}
                         <div className='mb-4'>
-                            <p className='typo-heading_medium_semibold xs:typo-body_large_semibold'>
-                                Canon EOS RP Camera +Small Rig{' '}
+                            <p className='typo-heading_medium_semibold xs:typo-body_large_semibold capitalize'>
+                                {item?.title}
                             </p>
                             <p className='typo-heading_medium_semibold xs:typo-body_large_semibold text-primary'>
-                                ₦1,300,000
+                                {formatToNaira(item?.cashAmount ?? 0)}
                             </p>
                         </div>
                         <div className='grid grid-cols-[443px_1fr] xs:flex xs:flex-col gap-[44px] xs:gap-[22px] '>
@@ -130,7 +218,9 @@ const MakeAnOffer = () => {
                                     {selected === 'with-cash' ? (
                                         <input
                                             type='text'
-                                            placeholder='Search...'
+                                            placeholder='amount'
+                                            value={amount}
+                                            onChange={(e) => setAmount(e.target.value)}
                                             className='w-full h-[49px] pl-6 pr-4 py-2 typo-body_large_regular xs:typo-body_medium_regular text-text_one border border-border_gray outline-none rounded-md focus:outline-none  focus:ring-transparent focus:border-none'
                                         />
                                     ) : (
@@ -184,17 +274,21 @@ const MakeAnOffer = () => {
                                             {isOpen && (
                                                 <div className='absolute left-0 p-[22px] w-full bg-white border rounded-lg shadow-md z-10'>
                                                     <ul className='max-h-48 overflow-auto'>
-                                                        {options.map((option) => (
+                                                        {myItems.map((option) => (
                                                             <li
                                                                 key={option.id}
                                                                 className='flex h-[54px] items-center gap-4 mb-[24px] xs:mb-0 hover:bg-gray-100 cursor-pointer'
                                                                 onClick={() => {
-                                                                    setSelectedOption(option);
+                                                                    setSelectedOption({
+                                                                        id: option.id,
+                                                                        img: '/camera.png',
+                                                                        title: option.title
+                                                                    });
                                                                     setIsOpen(false);
                                                                 }}
                                                             >
                                                                 <Image
-                                                                    src={option.img}
+                                                                    src={'/camera.png'}
                                                                     alt={option.title}
                                                                     width={54}
                                                                     height={54}
@@ -206,16 +300,19 @@ const MakeAnOffer = () => {
                                                             </li>
                                                         ))}
                                                     </ul>
-                                                    <button className='w-max mt-[20px] text-center typo-heading_small_medium xs:typo-body_large_medium text-primary'>
+                                                    <Link
+                                                        href={'/post-an-item'}
+                                                        className='w-max mt-[20px] text-center typo-heading_small_medium xs:typo-body_large_medium text-primary'
+                                                    >
                                                         + Add New Item
-                                                    </button>
+                                                    </Link>
                                                 </div>
                                             )}
                                         </div>
                                     )}
                                 </div>
                                 <div className='w-full'>
-                                    <RegularButton text='Place offer' />
+                                    <RegularButton text='Place offer' action={handleSubmit} isLoading={loading} />
                                 </div>
                             </div>
                         </div>

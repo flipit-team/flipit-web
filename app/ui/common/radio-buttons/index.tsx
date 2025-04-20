@@ -8,11 +8,12 @@ interface Props {
     nameOne: string;
     nameTwo: string;
     col?: boolean;
+    setSelected: React.Dispatch<React.SetStateAction<string>>;
+    selected: string;
 }
 
 const RadioButtons = (props: Props) => {
-    const {title, titleOne, titleTwo, nameOne, nameTwo, col} = props;
-    const [selected, setSelected] = useState(nameOne);
+    const {title, titleOne, titleTwo, nameOne, nameTwo, col, selected, setSelected} = props;
 
     return (
         <div>
