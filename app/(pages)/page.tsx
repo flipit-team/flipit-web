@@ -17,6 +17,7 @@ const Home = async ({searchParams}: {searchParams: Promise<{[key: string]: strin
                     <div className='typo-heading_small_bold text-primary flex w-full mt-[46px] xs:justify-center'>
                         Flipit
                     </div>
+
                     {authValue === 'verify' ? (
                         <VerifyProfile forVerify={true} />
                     ) : authValue === 'code' ? (

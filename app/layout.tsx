@@ -42,7 +42,9 @@ export default async function RootLayout({
                     className={`relative ${inter.variable} ${poppins.variable} antialiased flex flex-col min-h-[100vh]`}
                 >
                     <main className='flex flex-col flex-1 xs:pb-[100px]'>
-                        <Header />
+                        <Suspense fallback={<p>Loading...</p>}>
+                            <Header />
+                        </Suspense>
 
                         <ErrorBoundary>{children}</ErrorBoundary>
                     </main>
