@@ -1,8 +1,8 @@
 'use client';
-import React from 'react';
+
 import Form from '~/ui/post-an-item/Form';
 
-const Page = () => {
+const page = () => {
     return (
         <div className='w-full h-full'>
             <div className='flex flex-col items-center mt-[35px] xs:mt-0 py-6 mx-auto h-max w-[648px] xs:w-full lg:shadow-[0px_4px_10px_rgba(0,0,0,0.2)] px-[30px]'>
@@ -13,4 +13,4 @@ const Page = () => {
     );
 };
 
-export default Page;
+export default page;
