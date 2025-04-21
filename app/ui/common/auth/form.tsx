@@ -10,7 +10,8 @@ const Form = () => {
     const [isLogin, setIsLogin] = useState(true);
     // const [api, setApi] = useState('');
     const [email, setEmail] = useState('');
-    const [name, setName] = useState('');
+    const [firstname, setFirstname] = useState('');
+    const [lastname, setLastname] = useState('');
 
     const [password, setPassword] = useState('');
 
@@ -19,7 +20,6 @@ const Form = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     const router = useRouter();
-    const api = isLogin ? '/api/login' : '/api/signup';
 
     useEffect(() => {
         setEmail('');
@@ -27,30 +27,8 @@ const Form = () => {
         setPhone('');
     }, [isLogin]);
 
-    const handleGoogleSignIn = async () => {
-        setIsLoading(true);
-        try {
-            const res = await fetch('/api/auth/google'); // no CORS issues now
-            console.log(res, 222);
-
-            if (!res.ok) throw new Error('Failed to get Google login URL');
-
-            const data = await res.json();
-            const googleLoginUrl = data?.url || data?.redirect_url;
-
-            if (googleLoginUrl) {
-                console.log(googleLoginUrl, 55);
-
-                window.location.href = googleLoginUrl;
-            } else {
-                throw new Error('No redirect URL in response');
-            }
-        } catch (err) {
-            console.error('Google login error:', err);
-            // alert('Something went wrong logging in.');
-        } finally {
-            setIsLoading(false);
-        }
+    const loginWithGoogle = () => {
+        window.location.href = '/api/auth/google-login';
     };
 
     const formInputs = isLogin
@@ -103,8 +81,11 @@ const Form = () => {
         if (type === 'password') {
             setPassword(e.target.value.toString());
         }
-        if (type === 'fullname') {
-            setName(e.target.value);
+        if (type === 'firstname') {
+            setFirstname(e.target.value);
+        }
+        if (type === 'lastname') {
+            setLastname(e.target.value);
         }
         if (type === 'phone') {
             setPhone(e.target.value);
@@ -118,8 +99,11 @@ const Form = () => {
         if (input.name === 'password') {
             return password;
         }
-        if (input.name === 'fullname') {
-            return name;
+        if (input.name === 'firstname') {
+            return firstname;
+        }
+        if (input.name === 'lastname') {
+            return lastname;
         }
         if (input.name === 'phone') {
             return phone;
@@ -128,7 +112,6 @@ const Form = () => {
     const handleAuth = async () => {
         setIsLoading(true);
         setErrorMessage('');
-        const [firstName, lastName] = name.split(' ');
 
         const formData = isLogin
             ? {
@@ -136,8 +119,8 @@ const Form = () => {
                   password: password
               }
             : {
-                  firstName: firstName.trim(),
-                  lastName: lastName.trim(),
+                  firstName: firstname,
+                  lastName: lastname,
                   email: email,
                   phoneNumber: `+234${phone}`,
                   password: password
@@ -227,12 +210,7 @@ const Form = () => {
                 </div>
 
                 <div className='flex flex-col gap-4'>
-                    <AuthButton
-                        title='Continue with Google'
-                        icon='/google-icon.svg'
-                        border
-                        onClick={handleGoogleSignIn}
-                    />
+                    <AuthButton title='Continue with Google' icon='/google-icon.svg' border onClick={loginWithGoogle} />
                     <AuthButton title='Continue with Facebook' icon='/facebook-icon.svg' border link='/home' />
                 </div>
             </div>

@@ -2,23 +2,21 @@
 import {NextRequest, NextResponse} from 'next/server';
 
 export async function POST(req: NextRequest) {
-    try {
-        const {code} = await req.json();
+    const {code} = await req.json();
 
-        // Send code to your backend to exchange for token
-        const res = await fetch('https://flipit-api.onrender.com/api/v1/auth/google/callback', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({code})
-        });
+    const res = await fetch(`https://flipit-api.onrender.com/api/v1/auth/google/callback?code=${code}`);
+    if (!res.ok) return NextResponse.json({error: 'Invalid code'}, {status: 401});
 
-        const data = await res.json();
+    const userData = await res.json();
 
-        return NextResponse.json(data);
-    } catch (error) {
-        console.error('Google callback error:', error);
-        return NextResponse.json({error: 'Failed to complete Google login'}, {status: 500});
-    }
+    const response = NextResponse.json({success: true});
+    response.cookies.set('user', JSON.stringify(userData), {
+        httpOnly: true,
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 7 // 1 week
+    });
+
+    return response;
 }

@@ -28,8 +28,6 @@ export default async function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const menu = ['vehicles', 'apparel', 'Electronics', 'Entertainment', 'Home Appliances', 'Phones', 'Fashion'];
-
     return (
         <html lang='en'>
             <head>
@@ -44,7 +42,7 @@ export default async function RootLayout({
                     className={`relative ${inter.variable} ${poppins.variable} antialiased flex flex-col min-h-[100vh]`}
                 >
                     <main className='flex flex-col flex-1 xs:pb-[100px]'>
-                        <Header menu={menu} />
+                        <Header />
 
                         <ErrorBoundary>{children}</ErrorBoundary>
                     </main>

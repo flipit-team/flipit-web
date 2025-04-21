@@ -3,7 +3,6 @@ import Image from 'next/image';
 import {useSearchParams} from 'next/navigation';
 import React, {useState} from 'react';
 import {useAppContext} from '~/contexts/AppContext';
-import RegularButton from '~/ui/common/buttons/RegularButton';
 
 interface Props {
     seller:
@@ -15,9 +14,9 @@ interface Props {
               email: string;
               phoneNumber: string;
               avatar: string;
-              avg_rating: 0;
+              avg_rating: number;
               status: string;
-              phoneNumberVerified: true;
+              phoneNumberVerified: boolean;
               dateVerified: Date;
           }
         | undefined;

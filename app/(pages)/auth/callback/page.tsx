@@ -1,45 +1,37 @@
 // app/auth/callback/page.tsx
 'use client';
 
-import {useEffect} from 'react';
-import {useSearchParams, useRouter} from 'next/navigation';
+import {useEffect, Suspense} from 'react';
+import {useRouter, useSearchParams} from 'next/navigation';
 
-export default function GoogleCallback() {
-    const params = useSearchParams();
+function GoogleCallbackHandler() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const code = searchParams.get('code');
 
     useEffect(() => {
-        const code = params.get('code');
-        if (!code) return;
+        const handleAuth = async () => {
+            if (!code) return;
 
-        const exchangeCode = async () => {
-            try {
-                const res = await fetch('/api/auth/callback', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({code})
-                });
+            const res = await fetch(`/api/v1/auth/google/callback?code=${code}`);
 
-                const data = await res.json();
-
-                if (data.token) {
-                    // Store token in localStorage, cookie, etc.
-                    localStorage.setItem('auth_token', data.token);
-
-                    // Redirect to dashboard or homepage
-                    router.replace('/home');
-                } else {
-                    console.error('No token returned');
-                }
-            } catch (err) {
-                console.error('Callback error:', err);
+            if (res.ok) {
+                router.push('/home');
+            } else {
+                router.push('/login?error=auth_failed');
             }
         };
 
-        exchangeCode();
-    }, [params, router]);
+        handleAuth();
+    }, [code, router]);
 
-    return <p>Signing you in with Google...</p>;
+    return <p>Logging you in...</p>;
+}
+
+export default function Page() {
+    return (
+        <Suspense fallback={<p>Loading...</p>}>
+            <GoogleCallbackHandler />
+        </Suspense>
+    );
 }

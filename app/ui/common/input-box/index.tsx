@@ -18,6 +18,7 @@ const InputBox = (props: Props) => {
     const [phone, setPhone] = useState('');
 
     const isPassword = name === 'password';
+    const isFullname = name === 'fullname';
 
     const togglePasswordVisibility = () => {
         setPasswordVisible(!passwordVisible);
@@ -27,6 +28,41 @@ const InputBox = (props: Props) => {
         const value = e.target.value.replace(/\D/g, ''); // Remove non-digit characters
         setPhone(value);
     };
+    if (isFullname) {
+        return (
+            <div className='w-full flex items-center gap-2'>
+                <div className='w-full'>
+                    <label htmlFor={name} className='block mb-2 typo-body_medium_regular'>
+                        First name
+                    </label>
+                    <input
+                        value={value}
+                        onChange={setValue ? (e) => setValue(e, 'firstname') : () => {}}
+                        type={type}
+                        id={name}
+                        name={name}
+                        placeholder={'enter firstname'}
+                        className='h-[49px] w-full px-4 border border-border_gray rounded-md shadow-sm focus:ring-transparent outline-none'
+                    />
+                </div>
+                <div className='w-full'>
+                    <label htmlFor={name} className='block mb-2 typo-body_medium_regular'>
+                        Last name
+                    </label>
+
+                    <input
+                        value={value}
+                        onChange={setValue ? (e) => setValue(e, 'lastname') : () => {}}
+                        type={type}
+                        id={name}
+                        name={name}
+                        placeholder={'enter lastname'}
+                        className='h-[49px] w-full px-4 border border-border_gray rounded-md shadow-sm focus:ring-transparent outline-none'
+                    />
+                </div>
+            </div>
+        );
+    }
     if (isPassword) {
         return (
             <div className='w-full'>

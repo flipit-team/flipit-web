@@ -1,20 +1,27 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import {usePathname, useRouter} from 'next/navigation';
+import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import React, {useState} from 'react';
+import {useAppContext} from '~/contexts/AppContext';
 import useAuth from '~/hooks/useAuth';
 
-interface Props {
-    menu: string[];
-}
+interface Props {}
 
 const Header = (props: Props) => {
-    const {menu} = props;
     const [showFlyout, setShowFlyout] = useState(false);
     const router = useRouter();
     const pathname = usePathname();
     const isAuthenticated = useAuth();
+    const {defaultCategories} = useAppContext();
+    const searchParams = useSearchParams();
+
+    const pushParam = (name: string) => {
+        setShowFlyout(false);
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('categories', name);
+        router.push(`${pathname}?${params.toString()}`);
+    };
 
     if (pathname === '/') return;
 
@@ -42,7 +49,9 @@ const Header = (props: Props) => {
                         />
                     )}
 
-                    <h1 className='typo-heading_medium_bold xs:typo-heading_small_bold xs:text-center'>Flipit</h1>
+                    <Link href={'/home'} className='typo-heading_medium_bold xs:typo-heading_small_bold xs:text-center'>
+                        Flipit
+                    </Link>
                 </div>
 
                 <div className='flex xs:hidden gap-[42px] typo-body_large_semibold mx-auto'>
@@ -105,11 +114,11 @@ const Header = (props: Props) => {
                         />
                     </div>
                     <div className={`overflow-auto custom-scrollbar`}>
-                        {menu?.map((item, index) => {
+                        {defaultCategories?.map((item, index) => {
                             if (index < 8)
                                 return (
-                                    <p key={index} className='h-[58px]'>
-                                        {item}
+                                    <p onClick={() => pushParam(item.name)} key={index} className='h-[58px]'>
+                                        {item.name}
                                     </p>
                                 );
                         })}

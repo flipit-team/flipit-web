@@ -1,11 +1,13 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import {useRouter} from 'next/navigation';
+import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import React, {useEffect, useState} from 'react';
+import {useAppContext} from '~/contexts/AppContext';
 import useAuth from '~/hooks/useAuth';
 import UsedBadge from '~/ui/common/badges/UsedBadge';
 import Loader from '~/ui/common/loader/Loader';
+import NoData from '~/ui/common/no-data/NoData';
 import {formatToNaira} from '~/utils/helpers';
 import {Item} from '~/utils/interface';
 
@@ -14,16 +16,22 @@ const Page = () => {
     const [items, setItems] = useState<Item[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const searchParams = useSearchParams();
+    const categories = searchParams.get('categories');
+    const {defaultCategories} = useAppContext();
     const router = useRouter();
+    const pathname = usePathname();
+
+    const pushParam = (name: string) => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('categories', name);
+        router.push(`${pathname}?${params.toString()}`);
+    };
 
     useEffect(() => {
-        if (isAuthenticated === false) {
-            router.replace('/');
-            return;
-        }
         const fetchItems = async () => {
             try {
-                const res = await fetch('/api/items/get-items?page=0&size=20', {
+                const res = await fetch(`/api/items/get-items?page=0&size=20&categories=${categories}`, {
                     cache: 'no-store'
                 });
 
@@ -41,9 +49,8 @@ const Page = () => {
                 setLoading(false);
             }
         };
-
         fetchItems();
-    }, [isAuthenticated]);
+    }, [categories]);
 
     if (loading)
         return (
@@ -52,7 +59,6 @@ const Page = () => {
             </div>
         );
 
-    const menu = ['vehicles', 'apparel', 'Electronics', 'Entertainment', 'Home Appliances', 'Phones', 'Fashion'];
     return (
         <div className='flex flex-col relative'>
             <div className='xs:px-4 h-[206px] xs:h-[184px] bg-[#005f73f5] flex flex-col gap-7 xs:gap-6 py-11 xs:pt-[36px] xs:pb-[29px]'>
@@ -94,10 +100,14 @@ const Page = () => {
                         <p className='typo-body_medium_medium text-primary'>Browse all</p>
                     </div>
                     <p className='h-[58px] typo-heading_small_semibold'>Categories</p>
-                    {menu.map((item, i) => {
+                    {defaultCategories.map((item, i) => {
                         return (
-                            <p key={i} className='h-[58px] typo-body_medium_medium capitalize'>
-                                {item}
+                            <p
+                                onClick={() => pushParam(item.name)}
+                                key={i}
+                                className='h-[58px] typo-body_medium_medium capitalize'
+                            >
+                                {item.name}
                             </p>
                         );
                     })}
@@ -108,39 +118,43 @@ const Page = () => {
                         Categories
                     </div>
                     <div className='py-9 xs:py-0 xs:mb-4 typo-heading_medium_semibold'>Available Items</div>
-                    <div className='grid grid-cols-3 xs:grid-cols-2 gap-6 xs:gap-4'>
-                        {items.map((item, i) => {
-                            return (
-                                <Link
-                                    href={`/home/${item.id}`}
-                                    key={i}
-                                    className='h-[400px] w-full xs:h-[260px] border border-border_gray rounded-md'
-                                >
-                                    <Image
-                                        className='h-[302px] w-full xs:h-[128px] cursor-pointer'
-                                        src={'/camera.png'}
-                                        alt='search'
-                                        height={302}
-                                        width={349}
-                                    />
-                                    <div className='p-4 xs:p-3 h-[98px] xs:h-[132px]'>
-                                        <p className='typo-body_medium_regular xs:typo-body_small_regular xs:mb-2 capitalize'>
-                                            {item.title}
-                                        </p>
-                                        <p className='typo-body_large_medium xs:typo-body_medium_medium xs:mb-1'>
-                                            {formatToNaira(item.cashAmount)}
-                                        </p>
-                                        <div className='flex xs:flex-col justify-between items-center xs:items-start rounded'>
-                                            <p className='typo-body_small_regular xs:text-[11px] xs:mb-1 capitalize'>
-                                                {item.acceptCash ? 'cash' : 'item'} offers
+                    {items.length ? (
+                        <div className='grid grid-cols-3 xs:grid-cols-2 gap-6 xs:gap-4'>
+                            {items.map((item, i) => {
+                                return (
+                                    <Link
+                                        href={`/home/${item.id}`}
+                                        key={i}
+                                        className='h-[400px] w-full xs:h-[260px] border border-border_gray rounded-md'
+                                    >
+                                        <Image
+                                            className='h-[302px] w-full xs:h-[128px] cursor-pointer'
+                                            src={'/camera.png'}
+                                            alt='search'
+                                            height={302}
+                                            width={349}
+                                        />
+                                        <div className='p-4 xs:p-3 h-[98px] xs:h-[132px]'>
+                                            <p className='typo-body_medium_regular xs:typo-body_small_regular xs:mb-2 capitalize'>
+                                                {item.title}
                                             </p>
-                                            <UsedBadge text={item.condition} />
+                                            <p className='typo-body_large_medium xs:typo-body_medium_medium xs:mb-1'>
+                                                {formatToNaira(item.cashAmount)}
+                                            </p>
+                                            <div className='flex xs:flex-col justify-between items-center xs:items-start rounded'>
+                                                <p className='typo-body_small_regular xs:text-[11px] xs:mb-1 capitalize'>
+                                                    {item.acceptCash ? 'cash' : 'item'} offers
+                                                </p>
+                                                <UsedBadge text={item.condition} />
+                                            </div>
                                         </div>
-                                    </div>
-                                </Link>
-                            );
-                        })}
-                    </div>
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <NoData />
+                    )}
                 </div>
             </div>
         </div>
