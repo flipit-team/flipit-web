@@ -1,7 +1,7 @@
-import CurrentBids from '~/ui/wrappers/CurrentBids';
+import ClientCurrentBidsPage from '~/ui/wrappers/ClientCurrentBidsPage';
 
 const page = () => {
-    return <CurrentBids />;
+    return <ClientCurrentBidsPage />;
 };
 
 export default page;
