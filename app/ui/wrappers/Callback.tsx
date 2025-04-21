@@ -16,7 +16,7 @@ export default function GoogleCallbackHandler() {
             if (res.ok) {
                 router.push('/home');
             } else {
-                router.push('/login?error=auth_failed');
+                router.push('/?error=auth_failed');
             }
         };
 
