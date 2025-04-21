@@ -50,7 +50,9 @@ export default async function RootLayout({
                     </main>
                     <Footer />
                     <div className='xs:flex hidden relative'>
-                        <BottomNavBar />
+                        <Suspense fallback={<p>Loading...</p>}>
+                            <BottomNavBar />
+                        </Suspense>
                     </div>
                 </body>
             </AppProvider>

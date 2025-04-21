@@ -40,9 +40,7 @@ const CurrentBids = () => {
             fetchItems();
         }
     }, [userId]);
-    if (typeof document === 'undefined') {
-        return;
-    }
+
     if (loading)
         return (
             <div className='py-10'>
@@ -52,7 +50,7 @@ const CurrentBids = () => {
     return (
         <div className='mx-[120px] xs:mx-0 my-6 xs:my-0'>
             <h1 className='typo-heading_medium_semibold my-6 xs:mx-4'>Current Bids</h1>
-            {bids?.length ? (
+            {/* {bids?.length ? (
                 <div className='shadow-[0px_4px_10px_rgba(0,0,0,0.2)] xs:shadow-transparent flex flex-col gap-6 p-8 xs:p-4'>
                     {bids?.map((bid, i) => {
                         return (
@@ -90,7 +88,7 @@ const CurrentBids = () => {
                 </div>
             ) : (
                 <NoData />
-            )}
+            )} */}
         </div>
     );
 };
