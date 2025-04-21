@@ -40,7 +40,9 @@ const CurrentBids = () => {
             fetchItems();
         }
     }, [userId]);
-
+    if (typeof document === 'undefined') {
+        return;
+    }
     if (loading)
         return (
             <div className='py-10'>
