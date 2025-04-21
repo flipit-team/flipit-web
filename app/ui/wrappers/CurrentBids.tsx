@@ -11,35 +11,35 @@ const CurrentBids = () => {
     const [bids, setBids] = useState<Bid[] | null>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    // const {userId} = useAppContext();
+    const {userId} = useAppContext();
 
-    // useEffect(() => {
-    //     setLoading(true);
+    useEffect(() => {
+        setLoading(true);
 
-    //     const fetchItems = async () => {
-    //         try {
-    //             const res = await fetch(`/api/bids/get-user-bids?userId=${userId}`, {
-    //                 cache: 'no-store'
-    //             });
+        const fetchItems = async () => {
+            try {
+                const res = await fetch(`/api/bids/get-user-bids?userId=${userId}`, {
+                    cache: 'no-store'
+                });
 
-    //             if (!res.ok) {
-    //                 const errData = await res.json();
-    //                 throw new Error(errData.apierror?.message || 'Failed to fetch items');
-    //             }
+                if (!res.ok) {
+                    const errData = await res.json();
+                    throw new Error(errData.apierror?.message || 'Failed to fetch items');
+                }
 
-    //             const data = await res.json();
-    //             setBids(data);
-    //             console.log(data);
-    //         } catch (err: any) {
-    //             setError(err.message || 'Something went wrong');
-    //         } finally {
-    //             setLoading(false);
-    //         }
-    //     };
-    //     if (userId) {
-    //         fetchItems();
-    //     }
-    // }, [userId]);
+                const data = await res.json();
+                setBids(data);
+                console.log(data);
+            } catch (err: any) {
+                setError(err.message || 'Something went wrong');
+            } finally {
+                setLoading(false);
+            }
+        };
+        if (userId) {
+            fetchItems();
+        }
+    }, [userId]);
 
     if (loading)
         return (

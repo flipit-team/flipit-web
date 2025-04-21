@@ -6,8 +6,7 @@ import CurrentBids from '~/ui/wrappers/CurrentBids';
 export default function ClientCurrentBidsPage() {
     return (
         <Suspense fallback={<p>Loading...</p>}>
-            {/* <CurrentBids /> */}
-            <div></div>
+            <CurrentBids />
         </Suspense>
     );
 }
