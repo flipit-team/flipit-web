@@ -1,39 +1,21 @@
-// middleware.ts
-import {NextRequest, NextResponse} from 'next/server';
-
-const PUBLIC_PATHS = [
-    '/', // exact‐match only
-    '/home',
-    '/login', // exact‐match only
-    '/error-page', // exact‐match only
-    '/api/auth/login', // your login endpoint
-    '/api/auth/me' // your “whoami” endpoint
-];
+import {NextResponse, NextRequest} from 'next/server';
 
 export function middleware(request: NextRequest) {
-    const {pathname} = request.nextUrl;
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set('x-url', request.url);
 
-    // Grab the token (works because we’re using NextRequest)
-    const token = request.cookies.get('token')?.value;
-
-    // Determine if this path is public:
-    const isExactPublic = PUBLIC_PATHS.includes(pathname);
-    const isSubpathPublic = ['/dashboard-public' /* …other public subfolders… */].some((p) =>
-        pathname.startsWith(p + '/')
-    );
-    const isPublic = isExactPublic || isSubpathPublic;
-
-    if (!isPublic && !token) {
-        // No token + non‑public route → redirect to login
-        const loginUrl = new URL('/login', request.url);
-        return NextResponse.redirect(loginUrl);
+    if (request.nextUrl.pathname === '/error-500') {
+        return NextResponse.next({
+            request: {
+                headers: requestHeaders
+            },
+            status: 500
+        });
     }
 
-    // If you really want to force an error status on /error-page…
-    if (pathname === '/error-page') {
-        return new NextResponse('Something went wrong', {status: 500});
-    }
-
-    // Otherwise continue
-    return NextResponse.next();
+    return NextResponse.next({
+        request: {
+            headers: requestHeaders
+        }
+    });
 }
