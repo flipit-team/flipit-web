@@ -4,7 +4,7 @@ import {cookies} from 'next/headers';
 import {NextRequest, NextResponse} from 'next/server';
 
 export async function GET(req: NextRequest) {
-    const apiUrl = `https://flipit-api.onrender.com/api/v1/auth/categories`;
+    const apiUrl = `https://flipit-api.onrender.com/api/v1/items/categories`;
 
     try {
         const res = await fetch(apiUrl, {

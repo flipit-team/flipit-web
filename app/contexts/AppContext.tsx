@@ -20,7 +20,6 @@ export const AppProvider = ({children}: {children: ReactNode}) => {
     const [defaultCategories, setDefaultCategories] = useState<{name: string; description: string | null}[]>([]);
 
     useEffect(() => {
-        if (typeof window === 'undefined') return;
         const handleGetCategories = async () => {
             const res = await fetch('/api/items/get-categories', {
                 method: 'GET',
