@@ -104,7 +104,7 @@ const MainHome = () => {
                             <p
                                 onClick={() => pushParam(item.name)}
                                 key={i}
-                                className='h-[58px] typo-body_medium_medium capitalize'
+                                className='h-[58px] typo-body_medium_medium capitalize cursor-pointer'
                             >
                                 {item.name}
                             </p>

@@ -20,7 +20,7 @@ const Header = (props: Props) => {
         setShowFlyout(false);
         const params = new URLSearchParams(searchParams.toString());
         params.set('categories', name);
-        router.push(`${pathname}?${params.toString()}`);
+        router.push(`/home?${params.toString()}`);
     };
 
     if (pathname === '/') return;
