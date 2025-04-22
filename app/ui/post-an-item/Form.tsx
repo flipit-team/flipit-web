@@ -50,28 +50,28 @@ const Form = () => {
         };
         console.log(payload);
 
-        try {
-            const res = await fetch('/api/items/create', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            });
+        // try {
+        //     const res = await fetch('/api/items/create', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json'
+        //         },
+        //         body: JSON.stringify(payload)
+        //     });
 
-            const data = await res.json();
+        //     const data = await res.json();
 
-            if (!res.ok) {
-                throw new Error(data.error || 'Something went wrong');
-            }
+        //     if (!res.ok) {
+        //         throw new Error(data.error || 'Something went wrong');
+        //     }
 
-            setSuccess(true);
-            router.replace('/home');
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
+        //     setSuccess(true);
+        //     router.replace('/home');
+        // } catch (err: any) {
+        //     setError(err.message);
+        // } finally {
+        //     setLoading(false);
+        // }
     };
 
     const handleGetCategories = async () => {
