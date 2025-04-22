@@ -1,3 +1,4 @@
+'use client';
 import ClientCurrentBidsPage from '~/ui/wrappers/ClientCurrentBidsPage';
 
 const page = () => {
