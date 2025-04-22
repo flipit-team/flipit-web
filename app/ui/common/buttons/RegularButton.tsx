@@ -3,7 +3,7 @@ import Link from 'next/link';
 import {useSearchParams} from 'next/navigation';
 import React from 'react';
 import {useAppContext} from '~/contexts/AppContext';
-import Loader from '../loader/Loader';
+import dynamic from 'next/dynamic';
 
 interface Props {
     isLight?: boolean;
@@ -13,6 +13,8 @@ interface Props {
     isLoading?: boolean;
     action?: () => void;
 }
+
+const Loader = dynamic(() => import('../loader/Loader'), {ssr: false});
 
 const RegularButton = ({isLight, text, slug, usePopup, isLoading, action}: Props) => {
     const {setShowPopup} = useAppContext();
