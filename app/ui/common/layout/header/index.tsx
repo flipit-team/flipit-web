@@ -5,6 +5,8 @@ import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import React, {useState} from 'react';
 import {useAppContext} from '~/contexts/AppContext';
 import useAuth from '~/hooks/useAuth';
+import {UserCircle2} from 'lucide-react'; // optional icon library
+import LogoutButton from '../../auth/Logout';
 
 interface Props {}
 
@@ -15,6 +17,7 @@ const Header = (props: Props) => {
     const isAuthenticated = useAuth();
     const {defaultCategories} = useAppContext();
     const searchParams = useSearchParams();
+    const [hovered, setHovered] = useState(false);
 
     const pushParam = (name: string) => {
         setShowFlyout(false);
@@ -59,7 +62,7 @@ const Header = (props: Props) => {
                     <Link href={'/messages'}>Messages</Link>
                     <Link href={'/current-bids'}>Current Bids</Link>
                 </div>
-                {true ? (
+                {isAuthenticated ? (
                     <div className='flex items-center'>
                         <Link href={'/notifications'}>
                             <Image
@@ -70,14 +73,26 @@ const Header = (props: Props) => {
                                 className='h-7 w-7 mr-[27px] xs:h-6 xs:w-6'
                             />
                         </Link>
+                        <div className='relative group'>
+                            {/* Profile Icon */}
+                            <div className='cursor-pointer p-2 rounded-full hover:bg-gray-200 transition'>
+                                <Image
+                                    src={'/profile-picture.svg'}
+                                    height={32}
+                                    width={32}
+                                    alt='bell'
+                                    className='h-7 w-7 xs:h-[30px] xs:w-[30px]'
+                                />
+                            </div>
 
-                        <Image
-                            src={'/profile-picture.svg'}
-                            height={32}
-                            width={32}
-                            alt='bell'
-                            className='h-7 w-7 xs:h-[30px] xs:w-[30px]'
-                        />
+                            {/* Logout Button (stays visible when hovering over it) */}
+                            {isAuthenticated && (
+                                <div className='absolute right-0  bg-white shadow-md rounded px-4 py-2 text-sm z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto'>
+                                    <LogoutButton setShowFlyout={setShowFlyout} />
+                                </div>
+                            )}
+                        </div>
+
                         <Link
                             href={'/post-an-item'}
                             className='flex items-center justify-center bg-secondary xs:hidden typo-body_medium_semibold h-[45px] w-[145px] text-white rounded-lg ml-[43px]'
@@ -122,6 +137,7 @@ const Header = (props: Props) => {
                                     </p>
                                 );
                         })}
+                        {isAuthenticated && <LogoutButton setShowFlyout={setShowFlyout} />}
                     </div>
                 </div>
             </div>
