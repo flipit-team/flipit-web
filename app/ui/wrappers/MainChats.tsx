@@ -2,9 +2,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import React, {useEffect, useState} from 'react';
-import Loader from '../common/loader/Loader';
 import {useAppContext} from '~/contexts/AppContext';
 import {Chat} from '~/utils/interface';
+import dynamic from 'next/dynamic';
+const Loader = dynamic(() => import('../common/loader/Loader'), {ssr: false});
 
 const MainChats = () => {
     const [chats, setChats] = useState<Chat[] | null>([]);

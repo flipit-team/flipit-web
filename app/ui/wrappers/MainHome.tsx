@@ -8,7 +8,8 @@ import NoData from '../common/no-data/NoData';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import {useAppContext} from '~/contexts/AppContext';
 import {Item} from '~/utils/interface';
-import Loader from '../common/loader/Loader';
+import dynamic from 'next/dynamic';
+const Loader = dynamic(() => import('../common/loader/Loader'), {ssr: false});
 
 const MainHome = () => {
     const [items, setItems] = useState<Item[]>([]);

@@ -1,11 +1,12 @@
 'use client';
 import Image from 'next/image';
 import React, {useEffect, useState} from 'react';
-import Loader from '../common/loader/Loader';
 import {useAppContext} from '~/contexts/AppContext';
 import {Bid} from '~/utils/interface';
 import NoData from '../common/no-data/NoData';
 import {formatToNaira} from '~/utils/helpers';
+import dynamic from 'next/dynamic';
+const Loader = dynamic(() => import('../common/loader/Loader'), {ssr: false});
 
 const CurrentBids = () => {
     const [bids, setBids] = useState<Bid[] | null>([]);

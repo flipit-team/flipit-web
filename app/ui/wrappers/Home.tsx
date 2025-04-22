@@ -5,12 +5,13 @@ import SellersInfo from '../homepage/sellers-info';
 import RegularButton from '../common/buttons/RegularButton';
 import {formatToNaira, timeAgo} from '~/utils/helpers';
 import UsedBadge from '../common/badges/UsedBadge';
-import Loader from '../common/loader/Loader';
 import {Item} from '~/utils/interface';
 import {useParams} from 'next/navigation';
 import PopupSheet from '../common/popup-sheet/PopupSheet';
 import ProfilePopup from '../homepage/profile-popup';
 import MakeAnOffer from '../homepage/make-an-offer';
+import dynamic from 'next/dynamic';
+const Loader = dynamic(() => import('../common/loader/Loader'), {ssr: false});
 
 const Home = () => {
     const params = useParams();
