@@ -14,6 +14,7 @@
     "dependencies": {
         "clsx": "^2.1.1",
         "date-fns": "^4.1.0",
+        "js-cookie": "^3.0.5",
         "lucide-react": "^0.474.0",
         "next": "^15.0.2",
         "react": "^19.0.0-rc-603e6108-20241029",
@@ -28,6 +29,7 @@
         "@testing-library/jest-dom": "^6.5.0",
         "@testing-library/react": "^16.0.1",
         "@types/jest": "^29.5.13",
+        "@types/js-cookie": "^3.0.6",
         "@types/node": "^20",
         "@types/react": "^18.3.12",
         "@types/react-dom": "^18.3.1",
