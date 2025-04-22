@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
-import dynamic from 'next/dynamic';
+import Loader from '../loader/Loader';
 
 interface Props {
     title: string;
@@ -12,8 +12,6 @@ interface Props {
     isLoading?: boolean;
     onClick?: React.MouseEventHandler<HTMLDivElement>;
 }
-
-const Loader = dynamic(() => import('../loader/Loader'), {ssr: false});
 
 const AuthButton = (props: Props) => {
     const {bg, title, icon, border, link, isLoading, onClick} = props;
