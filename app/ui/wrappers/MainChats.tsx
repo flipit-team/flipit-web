@@ -15,15 +15,19 @@ const LoaderMain = dynamic(() => import('../common/loader/Loader'), {ssr: false}
 const MainChats = () => {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const [userChats, setUserChats] = useState<Chat[] | null>([]);
+    const [sellerChats, setSellerChats] = useState<Chat[] | null>([]);
+    const [buyerChats, setBuyerChats] = useState<Chat[] | null>([]);
+
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const {userId} = useAppContext();
     // const [chatId, setChatId] = useState('');
     // const [chats, setChats] = useState<Message[] | null>([]);
-    const [activeChat, setActiveChat] = useState<Chat | null>(null);
     const chatId = searchParams.get('chatId');
+    const [activeTab, setActiveTab] = useState<'seller' | 'buyer'>('buyer');
+    const displayedChat = activeTab === 'buyer' ? buyerChats : sellerChats;
+    const [activeChat, setActiveChat] = useState<Chat | null>(null);
 
     const pushParam = (id: string) => {
         const params = new URLSearchParams(searchParams.toString());
@@ -52,7 +56,9 @@ const MainChats = () => {
                 }
 
                 const data = await res.json();
-                setUserChats(data);
+                setSellerChats(data.seller);
+                setBuyerChats(data.buyer);
+                setActiveChat(data.buyer[0]);
                 console.log(data);
             } catch (err: any) {
                 setError(err.message || 'Something went wrong');
@@ -88,23 +94,34 @@ const MainChats = () => {
                 <LoaderMain color='green' />
             </div>
         );
-    if (!userChats?.length) {
+    if (!sellerChats?.length && !buyerChats?.length) {
         return (
             <div className='h-full my-auto'>
                 <NoData text='No Chats Available' />;
             </div>
         );
     }
+
     return (
         <div className='mx-[120px] xs:mx-0 my-6 xs:my-0'>
             <h1 className='typo-heading_medium_semibold my-6 xs:hidden'>My Messages</h1>
             <div className='grid grid-cols-[424px_1fr] xs:grid-cols-1 gap-6'>
                 <div className='shadow-[0px_4px_10px_rgba(0,0,0,0.2)] xs:shadow-transparent xs:hidden'>
                     <div className='px-6 flex items-center gap-[34px] typo-body_large_medium'>
-                        <div className='text-primary py-6 border-b border-primary'>Selling</div>
-                        <div className='text-text_four py-6'>Buying</div>
+                        <div
+                            className={` py-6 ${activeTab === 'seller' ? ' border-b border-primary text-primary' : 'text-text_four'}`}
+                            onClick={() => setActiveTab('seller')}
+                        >
+                            Selling
+                        </div>
+                        <div
+                            className={` py-6 ${activeTab === 'buyer' ? ' border-b border-primary text-primary' : 'text-text_four'}`}
+                            onClick={() => setActiveTab('buyer')}
+                        >
+                            Buying
+                        </div>
                     </div>
-                    {userChats?.map((chat, i) => {
+                    {displayedChat?.map((chat, i) => {
                         return (
                             <div
                                 key={i}
@@ -112,7 +129,7 @@ const MainChats = () => {
                                     pushParam(chat.chatId);
                                     setActiveChat(chat);
                                 }}
-                                className='h-[130px] bg-[rgba(0,95,115,0.1)] flex p-6 border-b border-[#EEEEE9]'
+                                className={`h-[130px] ${chat.chatId === activeChat?.chatId ? 'bg-[rgba(0,95,115,0.1)]' : ''} flex p-6 border-b border-[#EEEEE9]`}
                             >
                                 <Image
                                     src={chat.initiatorAvatar ?? '/profile-picture.svg'}
@@ -135,15 +152,25 @@ const MainChats = () => {
                 </div>
                 <div className='shadow-[0px_4px_10px_rgba(0,0,0,0.2)] xs:shadow-transparent hidden xs:block'>
                     <div className='px-6 flex items-center gap-[34px] typo-body_large_medium'>
-                        <div className='text-primary py-6 border-b border-primary'>Selling</div>
-                        <div className='text-text_four py-6'>Buying</div>
+                        <div
+                            className={`text-primary py-6 ${activeTab === 'seller' ? ' border-b border-primary' : ''}`}
+                            onClick={() => setActiveTab('seller')}
+                        >
+                            Selling
+                        </div>
+                        <div
+                            className={`text-text_four py-6 ${activeTab === 'buyer' ? ' border-b border-primary' : ''}`}
+                            onClick={() => setActiveTab('buyer')}
+                        >
+                            Buying
+                        </div>
                     </div>
-                    {userChats?.map((chat, i) => {
+                    {displayedChat?.map((chat, i) => {
                         return (
                             <Link
                                 key={i}
                                 href={`/messages/${chat.chatId}`}
-                                className='h-[130px] bg-[rgba(0,95,115,0.1)] flex p-6 border-b border-[#EEEEE9]'
+                                className={`h-[130px] ${chat.chatId === activeChat?.chatId ? 'bg-[rgba(0,95,115,0.1)]' : ''} flex p-6 border-b border-[#EEEEE9]`}
                             >
                                 <Image
                                     src={chat.initiatorAvatar ?? '/profile-picture.svg'}
@@ -185,9 +212,9 @@ const MainChats = () => {
                     <div className='p-[40px] flex flex-col gap-2'>
                         {messages?.map((item, i) => {
                             return (
-                                <div key={i} className={`w-2/4 ${item.sentBy === userId ? 'mr-auto' : 'ml-auto'}`}>
+                                <div key={i} className={`w-2/4 ${item.sentBy === userId ? 'ml-auto' : 'mr-auto'}`}>
                                     <div
-                                        className={`${item.sentBy === userId ? 'bg-[#f8f8f7]' : 'bg-[rgba(0,95,115,0.1)]'} p-3 rounded-lg`}
+                                        className={`${item.sentBy === userId ? 'bg-[rgba(0,95,115,0.1)]' : 'bg-[#f8f8f7]'} p-3 rounded-lg`}
                                     >
                                         {item.message}
                                     </div>

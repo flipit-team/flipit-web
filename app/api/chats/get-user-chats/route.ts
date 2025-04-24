@@ -4,8 +4,7 @@ import {cookies} from 'next/headers';
 export async function GET(req: NextRequest) {
     console.log('✅ /api/items/get-items HIT');
 
-    const userId = req.nextUrl.searchParams.get('userId') ?? '1';
-    const apiUrl = `https://flipit-api.onrender.com/api/v1/chats/user/${userId}`;
+    const apiUrl = `https://flipit-api.onrender.com/api/v1/chats`;
 
     // ✅ Get token from cookies
     const cookieStore = await cookies();
