@@ -69,7 +69,7 @@ const CurrentBids = () => {
                                 <div>
                                     <div className='flex items-center'>
                                         <p className='text-primary typo-body_large_semibold xs:typo-body_medium_semibold'>
-                                            {bid.auctionItem.title}
+                                            {bid?.auctionItem?.title}
                                         </p>
                                         <span className='xs:hidden py-1 px-2 text-[#e40808] typo-body_small_regular bg-[rgba(228,8,8,0.18)] rounded ml-4'>
                                             {bid.status}
@@ -77,7 +77,7 @@ const CurrentBids = () => {
                                     </div>
                                     <p className='typo-body_medium_regular xs:typo-body_medium_regular text-text_one'>
                                         Your bid:&nbsp;{' '}
-                                        {`${bid.offeredItem.title} ${bid.offeredItem && bid.cashAmount && '+'} ${formatToNaira(bid.cashAmount)}`}
+                                        {`${bid?.offeredItem?.title ?? ''} ${bid?.offeredItem && bid?.cashAmount ? '+' : ''} ${formatToNaira(bid?.cashAmount)}`}
                                     </p>
                                     <span className='hidden w-max xs:flex py-1 px-2 text-[#e40808] typo-body_small_regular bg-[rgba(228,8,8,0.18)] rounded'>
                                         {bid.status}
