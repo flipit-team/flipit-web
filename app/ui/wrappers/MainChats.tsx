@@ -165,21 +165,23 @@ const MainChats = () => {
                     })}
                 </div>
                 <div className='shadow-[0px_4px_10px_rgba(0,0,0,0.2)] xs:shadow-transparent xs:hidden'>
-                    <div className='flex items-center p-6'>
-                        <Image
-                            src={activeChat?.initiatorAvatar ?? userChats[0].initiatorAvatar ?? '/profile-picture.svg'}
-                            height={50}
-                            width={50}
-                            alt='picture'
-                            className='h-[50px] w-[50px] mr-4'
-                        />
-                        <p className='typo-body_large_medium capitalize'>
-                            {activeChat?.initiatorName ?? userChats[0].initiatorName}
-                        </p>
-                    </div>
-                    <div className='flex items-center justify-center typo-heading_small_medium text-primary bg-[rgba(0,95,115,0.2)] h-[42px]'>
-                        {activeChat?.title ?? userChats[0].title}
-                    </div>
+                    {activeChat && (
+                        <div className='flex items-center p-6'>
+                            <Image
+                                src={activeChat?.initiatorAvatar ?? '/profile-picture.svg'}
+                                height={50}
+                                width={50}
+                                alt='picture'
+                                className='h-[50px] w-[50px] mr-4'
+                            />
+                            <p className='typo-body_large_medium capitalize'>{activeChat?.initiatorName}</p>
+                        </div>
+                    )}
+                    {activeChat && (
+                        <div className='flex items-center justify-center typo-heading_small_medium text-primary bg-[rgba(0,95,115,0.2)] h-[42px]'>
+                            {activeChat?.title}
+                        </div>
+                    )}
                     <div className='p-[40px] flex flex-col gap-2'>
                         {messages?.map((item, i) => {
                             return (
@@ -198,34 +200,36 @@ const MainChats = () => {
                             );
                         })}
                     </div>
-                    <div className='h-[96px] border-t border-border_gray flex items-center px-[40px]'>
-                        <Image
-                            src={'/microphone.svg'}
-                            height={24}
-                            width={24}
-                            alt='mic'
-                            className='h-[24px] w-[24px] mr-2'
-                        />
-                        <input
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            type='text'
-                            className='h-full w-full typo-body_large_regular focus:ring-transparent outline-none'
-                            placeholder='Type in your message here'
-                        />
-                        {loading ? (
-                            <Loader height={35} width={35} />
-                        ) : (
+                    {activeChat && (
+                        <div className='h-[96px] border-t border-border_gray flex items-center px-[40px]'>
                             <Image
-                                onClick={handleSend}
-                                src={'/send.svg'}
-                                height={39}
-                                width={87}
+                                src={'/microphone.svg'}
+                                height={24}
+                                width={24}
                                 alt='mic'
-                                className='h-[39px] w-[87px]'
+                                className='h-[24px] w-[24px] mr-2'
                             />
-                        )}
-                    </div>
+                            <input
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                type='text'
+                                className='h-full w-full typo-body_large_regular focus:ring-transparent outline-none'
+                                placeholder='Type in your message here'
+                            />
+                            {loading ? (
+                                <Loader height={35} width={35} />
+                            ) : (
+                                <Image
+                                    onClick={handleSend}
+                                    src={'/send.svg'}
+                                    height={39}
+                                    width={87}
+                                    alt='mic'
+                                    className='h-[39px] w-[87px]'
+                                />
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
