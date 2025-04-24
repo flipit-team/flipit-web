@@ -128,5 +128,15 @@ export interface Chat {
     title: string;
     initiatorId: number;
     receiverId: number;
-    createdDate: Date;
+    initiatorAvatar: string;
+    receiverAvatar: string;
+    initiatorName: string;
+    receiverName: string;
+    dateCreated: Date;
+}
+export interface Message {
+    message: string;
+    sentBy: number;
+    chatId: string;
+    dateCreated: Date;
 }

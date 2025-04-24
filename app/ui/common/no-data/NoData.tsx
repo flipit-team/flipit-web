@@ -1,9 +1,9 @@
 import React from 'react';
 
-const NoData = () => {
+const NoData = ({text}: {text?: string}) => {
     return (
         <div className='w-full h-full typo-heading_medium_semibold flex justify-center items-center'>
-            No Items Avaialable
+            {text ?? 'No Items Avaialable'}
         </div>
     );
 };

@@ -5,7 +5,6 @@ import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import React, {useState} from 'react';
 import {useAppContext} from '~/contexts/AppContext';
 import useAuth from '~/hooks/useAuth';
-import {UserCircle2} from 'lucide-react'; // optional icon library
 import LogoutButton from '../../auth/Logout';
 
 interface Props {}

@@ -3,7 +3,7 @@ import Image from 'next/image';
 import React, {useEffect, useState} from 'react';
 import SellersInfo from '../homepage/sellers-info';
 import RegularButton from '../common/buttons/RegularButton';
-import {formatToNaira, timeAgo} from '~/utils/helpers';
+import {createMessage, formatToNaira, timeAgo} from '~/utils/helpers';
 import UsedBadge from '../common/badges/UsedBadge';
 import {Item} from '~/utils/interface';
 import {useParams} from 'next/navigation';
@@ -11,18 +11,43 @@ import PopupSheet from '../common/popup-sheet/PopupSheet';
 import ProfilePopup from '../homepage/profile-popup';
 import MakeAnOffer from '../homepage/make-an-offer';
 import dynamic from 'next/dynamic';
-const Loader = dynamic(() => import('../common/loader/Loader'), {ssr: false});
+import {Loader} from 'lucide-react';
+const LoaderMain = dynamic(() => import('../common/loader/Loader'), {ssr: false});
 
 const Home = () => {
     const params = useParams();
     const slug = params?.slug;
     const [item, setItem] = useState<Item | null>();
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [viewPhone, setViewPhone] = useState(false);
+    const [input, setInput] = useState('');
+    const [inputActive, setInputActive] = useState(false);
+    const [createLoading, setCreateLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
+
+    const handleCreate = async () => {
+        if (!input) return;
+
+        setCreateLoading(true);
+        setError(null);
+
+        try {
+            const data = await createMessage(item?.seller.id ?? '', input, item?.id.toString() ?? '');
+            console.log('✅ Message sent:', data);
+            setInput('');
+            setSuccess(true);
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setCreateLoading(false);
+        }
+    };
 
     useEffect(() => {
         const fetchItems = async () => {
+            setLoading(true);
+
             try {
                 const res = await fetch(`/api/items/get-item?id=${slug}`, {
                     cache: 'no-store'
@@ -49,7 +74,7 @@ const Home = () => {
     if (loading)
         return (
             <div className='py-10'>
-                <Loader color='green' />
+                <LoaderMain color='green' />
             </div>
         );
     return (
@@ -98,7 +123,35 @@ const Home = () => {
                     <p className='typo-body_medium_regular text-text_four mb-[42px]'>{timeAgo(item?.dateCreated)}</p>
                     <RegularButton text='Make an offer' slug='make-an-offer' usePopup />
                     <div className='h-6'></div>
-                    <RegularButton text='Buy right away' isLight slug={`/messages?id=${item?.seller.id}`} />
+                    <RegularButton text='Buy right away' isLight action={() => setInputActive(!inputActive)} />
+                    {inputActive && !success ? (
+                        <div className='flex items-center mt-2 border border-border_gray rounded-md shadow-sm'>
+                            <input
+                                autoFocus
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                type={'text'}
+                                placeholder={'enter message'}
+                                className='h-[80px] w-full px-4 focus:ring-transparent outline-none'
+                            />
+                            {createLoading ? (
+                                <Loader height={35} width={35} />
+                            ) : (
+                                <Image
+                                    onClick={handleCreate}
+                                    src={'/send-mobile.svg'}
+                                    height={39}
+                                    width={87}
+                                    alt='mic'
+                                    className='h-[39px] w-[87px]'
+                                />
+                            )}
+                        </div>
+                    ) : success ? (
+                        <div className='typo-body_large_semibold mt-4 text-primary text-center'>Message sent</div>
+                    ) : (
+                        <></>
+                    )}
                     <div className='typo-body_large_medium text-text_one mt-6'>Details</div>
                     <p className='typo-body_medium_regular text-text_one mt-2 mb-4'>{item?.description}</p>
                     <div className='typo-body_medium_medium text-text_one'>Location</div>

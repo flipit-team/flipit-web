@@ -142,7 +142,8 @@ const Form = () => {
 
             setIsLoading(false);
             setUserId(data?.message?.user?.id);
-            router.replace('/home');
+            window.location.href = '/home';
+            router.refresh();
         } catch (err: any) {
             // display err.message in your UI
             setErrorMessage(err.message);

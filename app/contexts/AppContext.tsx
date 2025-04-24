@@ -3,20 +3,20 @@ import React, {createContext, ReactNode, useContext, useEffect, useState} from '
 
 interface AppContextProps {
     showPopup: boolean;
-    userId: string;
+    userId: number | null;
     defaultCategories: {
         name: string;
         description: string | null;
     }[];
     setShowPopup: React.Dispatch<React.SetStateAction<boolean>>;
-    setUserId: React.Dispatch<React.SetStateAction<string>>;
+    setUserId: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 const AppContext = createContext<AppContextProps | undefined>(undefined);
 
 export const AppProvider = ({children}: {children: ReactNode}) => {
     const [showPopup, setShowPopup] = useState<boolean>(false);
-    const [userId, setUserId] = useState('');
+    const [userId, setUserId] = useState<number | null>(null);
     const [defaultCategories, setDefaultCategories] = useState<{name: string; description: string | null}[]>([]);
 
     useEffect(() => {

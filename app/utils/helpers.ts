@@ -30,3 +30,49 @@ export function timeAgo(date?: Date | string): string {
         return '';
     }
 }
+
+export function formatTimeTo12Hour(date: Date | string): string {
+    const d = typeof date === 'string' ? new Date(date) : date;
+    const hours = d.getHours();
+    const minutes = d.getMinutes();
+
+    const ampm = hours >= 12 ? 'pm' : 'am';
+    const hour12 = hours % 12 || 12;
+    const paddedMinutes = minutes.toString().padStart(2, '0');
+
+    return `${hour12}:${paddedMinutes}${ampm}`;
+}
+
+export async function sendMessage(chatId: string, message: string) {
+    const res = await fetch('/api/chats/send-chat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({chatId, message})
+    });
+
+    if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.details || 'Failed to send message');
+    }
+
+    return res.json();
+}
+
+export async function createMessage(receiverId: string, title: string, itemId: string) {
+    const res = await fetch('/api/chats/create', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({receiverId: Number(receiverId), title, itemId: Number(itemId)})
+    });
+
+    if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.details || 'Failed to send message');
+    }
+
+    return res.json();
+}

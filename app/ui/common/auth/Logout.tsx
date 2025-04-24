@@ -20,7 +20,7 @@ export default function LogoutButton(props: Props) {
         Cookies.remove('token', {path: '/'});
         Cookies.remove('userId', {path: '/'});
         props.setShowFlyout(false);
-        router.push('/home');
+        window.location.href = '/home';
         router.refresh();
     };
     return (
