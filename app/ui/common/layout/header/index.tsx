@@ -6,6 +6,7 @@ import React, {useState} from 'react';
 import {useAppContext} from '~/contexts/AppContext';
 import useAuth from '~/hooks/useAuth';
 import LogoutButton from '../../auth/Logout';
+import Notifications from '../../modals/Notifications';
 
 interface Props {}
 
@@ -14,7 +15,7 @@ const Header = (props: Props) => {
     const router = useRouter();
     const pathname = usePathname();
     const isAuthenticated = useAuth();
-    const {defaultCategories} = useAppContext();
+    const {defaultCategories, notifications} = useAppContext();
     const searchParams = useSearchParams();
     const [hovered, setHovered] = useState(false);
 
@@ -63,15 +64,20 @@ const Header = (props: Props) => {
                 </div>
                 {isAuthenticated ? (
                     <div className='flex items-center'>
-                        <Link href={'/notifications'}>
-                            <Image
-                                src={'/bell.svg'}
-                                height={32}
-                                width={32}
-                                alt='bell'
-                                className='h-7 w-7 mr-[27px] xs:h-6 xs:w-6'
-                            />
-                        </Link>
+                        <div className='relative group'>
+                            <Link href={'/notifications'}>
+                                <Image
+                                    src={'/bell.svg'}
+                                    height={32}
+                                    width={32}
+                                    alt='bell'
+                                    className='h-7 w-7 mr-[27px] xs:h-6 xs:w-6'
+                                />
+                            </Link>
+                            <div className='absolute right-0 mt-2 xs:hidden bg-white shadow-md rounded px-4 py-2 text-sm z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto'>
+                                <Notifications setHovered={setHovered} notifications={notifications?.content} pointer />
+                            </div>
+                        </div>
                         <div className='relative group'>
                             {/* Profile Icon */}
                             <div className='cursor-pointer p-2 rounded-full hover:bg-gray-200 transition'>

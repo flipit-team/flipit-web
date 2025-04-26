@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
         });
 
         if (response.ok) {
-            return NextResponse.json({isAuthenticated: true, userId: userId});
+            return NextResponse.json({isAuthenticated: true, userId: userId, token});
         } else {
             return NextResponse.json({isAuthenticated: false});
         }

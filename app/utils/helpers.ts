@@ -76,3 +76,9 @@ export async function createMessage(receiverId: string, title: string, itemId: s
 
     return res.json();
 }
+
+export function formatToMonthDay(dateInput: Date | string) {
+    const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
+    const options: Intl.DateTimeFormatOptions = {month: 'short', day: 'numeric'};
+    return date.toLocaleDateString('en-US', options);
+}
