@@ -24,7 +24,7 @@ export const AppProvider = ({children}: {children: ReactNode}) => {
 
     useEffect(() => {
         const handleGetCategories = async () => {
-            const res = await fetch('/api/items/get-notifications', {
+            const res = await fetch('/api/items/get-categories', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'

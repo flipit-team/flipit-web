@@ -9,7 +9,8 @@ const nextConfig = {
     },
     images: {
         unoptimized: false,
-        remotePatterns: []
+        remotePatterns: [],
+        domains: ['flipitimages1.s3.amazonaws.com', 'images.pexels.com']
     }
 };
 

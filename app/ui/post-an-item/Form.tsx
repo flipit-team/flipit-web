@@ -19,8 +19,8 @@ const Form = () => {
     const [price, setPrice] = useState(0);
     const [condition, setCondition] = useState('');
     const [cash, setCash] = useState('');
-    const [defaultCategories, setDefaultCategories] = useState<{name: string; description: string | null}[]>([]);
-    const {userId} = useAppContext();
+    const {userId, defaultCategories} = useAppContext();
+    const [urls, setUrls] = useState<string[]>([]);
 
     const handleInput = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
         setError('');
@@ -33,14 +33,14 @@ const Form = () => {
     };
 
     const handleSubmit = async () => {
-        setLoading(true);
+        // setLoading(true);
         setError(null);
         setSuccess(false);
 
         const payload = {
             title: title,
             description: 'This is a sample item description.',
-            imageUrls: ['https://images.pexels.com/photos/1323550/pexels-photo-1323550.jpeg'],
+            imageUrls: urls,
             flipForImgUrls: ['https://images.pexels.com/photos/1323550/pexels-photo-1323550.jpeg'],
             acceptCash: cash === 'yes' ? true : false,
             cashAmount: price,
@@ -74,27 +74,6 @@ const Form = () => {
         }
     };
 
-    const handleGetCategories = async () => {
-        const res = await fetch('/api/items/get-categories', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-
-        const data = await res.json();
-        console.log(data, 88);
-
-        setDefaultCategories(data);
-        if (!res.ok) {
-            throw new Error(data.error || 'Something went wrong');
-        }
-    };
-
-    useEffect(() => {
-        handleGetCategories();
-    }, []);
-
     return (
         <form className='w-full flex flex-col gap-6'>
             <InputBox label='Name' name='title' placeholder='Enter item name' type='text' setValue={handleInput} />
@@ -125,7 +104,7 @@ const Form = () => {
             <div className='typo-body_medium_regular'>
                 <p>Add photo</p>
                 <p className='mb-3'>Upload at least 3 photos</p>
-                <ImageUpload />
+                <ImageUpload setUrls={setUrls} />
             </div>
             <Suspense fallback={<div>Loading...</div>}>
                 <RegularButton text='Post Item' action={handleSubmit} isLoading={loading} />
