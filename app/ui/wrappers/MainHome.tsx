@@ -41,7 +41,7 @@ const MainHome = () => {
 
                 const data = await res.json();
                 setItems(data);
-                console.log(data);
+                console.log(data, 77);
             } catch (err: any) {
                 setError(err.message || 'Something went wrong');
             } finally {
@@ -121,6 +121,7 @@ const MainHome = () => {
                         <div className='grid grid-cols-3 xs:grid-cols-2 gap-6 xs:gap-4'>
                             {items.map((item, i) => {
                                 const url = item.imageUrls[0] ?? `/camera.png`;
+
                                 return (
                                     <Link
                                         href={`/home/${item.id}`}
@@ -143,7 +144,6 @@ const MainHome = () => {
                                                 alt='search'
                                                 height={302}
                                                 width={349}
-                                                unoptimized
                                             />
                                         )}
                                         <div className='p-4 xs:p-3 h-[98px] xs:h-[132px]'>
