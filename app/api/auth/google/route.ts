@@ -1,9 +1,10 @@
 // app/api/auth/google/route.ts
 import {NextResponse} from 'next/server';
+import { API_BASE_PATH } from '~/lib/config';
 
 export async function GET() {
     try {
-        const res = await fetch('https://flipit-api.onrender.com/api/v1/auth/login/google', {
+        const res = await fetch(`${API_BASE_PATH}/auth/login/google`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'

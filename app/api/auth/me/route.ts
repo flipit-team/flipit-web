@@ -1,4 +1,5 @@
 import {NextRequest, NextResponse} from 'next/server';
+import { API_BASE_URL } from '~/lib/config';
 
 export async function GET(req: NextRequest) {
     const token = req.cookies.get('token')?.value;
@@ -10,7 +11,7 @@ export async function GET(req: NextRequest) {
 
     // Call external API to verify the token
     try {
-        const response = await fetch('https://flipit-api.onrender.com/checkJwt', {
+        const response = await fetch(`${API_BASE_URL}/checkJwt`, {
             headers: {
                 Authorization: `Bearer ${token}`
             },

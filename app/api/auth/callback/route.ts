@@ -1,10 +1,11 @@
 // app/api/auth/callback/route.ts
 import {NextRequest, NextResponse} from 'next/server';
+import { API_BASE_PATH } from '~/lib/config';
 
 export async function POST(req: NextRequest) {
     const {code} = await req.json();
 
-    const res = await fetch(`https://flipit-api.onrender.com/api/v1/auth/google/callback?code=${code}`);
+    const res = await fetch(`${API_BASE_PATH}/auth/google/callback?code=${code}`);
     if (!res.ok) return NextResponse.json({error: 'Invalid code'}, {status: 401});
 
     const userData = await res.json();

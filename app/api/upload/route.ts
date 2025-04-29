@@ -1,4 +1,5 @@
 import {NextRequest, NextResponse} from 'next/server';
+import { API_BASE_PATH } from '~/lib/config';
 
 export const runtime = 'nodejs';
 
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest) {
     const form = new FormData();
     form.append('file', file); // append Blob directly, no Buffer needed
 
-    const res = await fetch('https://flipit-api.onrender.com/api/v1/files/upload', {
+    const res = await fetch(`${API_BASE_PATH}/files/upload`, {
         method: 'POST',
         body: form,
         headers: {

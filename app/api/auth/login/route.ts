@@ -1,9 +1,10 @@
 import {NextResponse} from 'next/server';
+import { API_BASE_PATH } from '~/lib/config';
 
 export async function POST(req: Request) {
     const body = await req.json();
 
-    const apiRes = await fetch('https://flipit-api.onrender.com/api/v1/auth/login', {
+    const apiRes = await fetch(`${API_BASE_PATH}/auth/login`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(body)

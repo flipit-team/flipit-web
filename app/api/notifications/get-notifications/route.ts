@@ -1,5 +1,6 @@
 import {NextRequest, NextResponse} from 'next/server';
 import {cookies} from 'next/headers';
+import { API_BASE_PATH } from '~/lib/config';
 
 export async function GET(req: NextRequest) {
     console.log('✅ /api/items/get-items HIT');
@@ -8,7 +9,7 @@ export async function GET(req: NextRequest) {
     const size = req.nextUrl.searchParams.get('size') ?? '10';
     const read = req.nextUrl.searchParams.get('read') ?? '';
 
-    const apiUrl = `https://flipit-api.onrender.com/api/v1/notifications?page=${page}&size=${size}&read=${read}`;
+    const apiUrl = `${API_BASE_PATH}/notifications?page=${page}&size=${size}&read=${read}`;
 
     // ✅ Get token from cookies
     const cookieStore = await cookies(); // ← must await!

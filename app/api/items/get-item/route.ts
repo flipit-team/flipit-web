@@ -1,11 +1,12 @@
 import {NextRequest, NextResponse} from 'next/server';
 import {cookies} from 'next/headers';
+import { API_BASE_PATH } from '~/lib/config';
 
 export async function GET(req: NextRequest) {
     console.log('✅ /api/items/get-items HIT');
 
     const id = req.nextUrl.searchParams.get('id') ?? '1';
-    const apiUrl = `https://flipit-api.onrender.com/api/v1/items/${id}`;
+    const apiUrl = `${API_BASE_PATH}/items/${id}`;
 
     // ✅ Get token from cookies
     const cookieStore = await cookies(); // ← must await!

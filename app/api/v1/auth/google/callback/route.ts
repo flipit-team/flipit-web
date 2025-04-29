@@ -1,4 +1,5 @@
 import {NextRequest, NextResponse} from 'next/server';
+import { API_BASE_PATH } from '~/lib/config';
 
 export async function GET(req: NextRequest) {
     const code = req.nextUrl.searchParams.get('code');
@@ -9,7 +10,7 @@ export async function GET(req: NextRequest) {
 
     try {
         // Fetch token as plain text (not JSON)
-        const res = await fetch(`https://flipit-api.onrender.com/api/v1/auth/google/callback?code=${code}`);
+        const res = await fetch(`${API_BASE_PATH}/auth/google/callback?code=${code}`);
 
         if (!res.ok) {
             return NextResponse.redirect('/login?error=callback_failed');

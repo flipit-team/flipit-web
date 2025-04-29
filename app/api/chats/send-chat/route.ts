@@ -1,6 +1,7 @@
 // app/api/items/create/route.ts
 import {cookies} from 'next/headers';
 import {NextRequest, NextResponse} from 'next/server';
+import { API_BASE_PATH } from '~/lib/config';
 
 export async function POST(req: NextRequest) {
     const cookieStore = await cookies();
@@ -9,7 +10,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
 
     try {
-        const res = await fetch('https://flipit-api.onrender.com/api/v1/chats/message', {
+        const res = await fetch(`${API_BASE_PATH}/chats/message`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

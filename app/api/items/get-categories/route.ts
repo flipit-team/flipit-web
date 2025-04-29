@@ -2,9 +2,10 @@
 
 import {cookies} from 'next/headers';
 import {NextRequest, NextResponse} from 'next/server';
+import { API_BASE_PATH } from '~/lib/config';
 
 export async function GET(req: NextRequest) {
-    const apiUrl = `https://flipit-api.onrender.com/api/v1/items/categories`;
+    const apiUrl = `${API_BASE_PATH}/items/categories`;
 
     try {
         const res = await fetch(apiUrl, {
