@@ -1,5 +1,5 @@
 import {NextRequest, NextResponse} from 'next/server';
-import { API_BASE_PATH } from '~/lib/config';
+import {API_BASE_PATH} from '~/lib/config';
 
 export const runtime = 'nodejs';
 

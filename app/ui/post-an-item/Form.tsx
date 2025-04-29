@@ -33,14 +33,14 @@ const Form = () => {
     };
 
     const handleSubmit = async () => {
-        // setLoading(true);
+        setLoading(true);
         setError(null);
         setSuccess(false);
 
         const payload = {
             title: title,
             description: 'This is a sample item description.',
-            imageUrls: urls,
+            imageKeys: urls,
             flipForImgUrls: ['https://images.pexels.com/photos/1323550/pexels-photo-1323550.jpeg'],
             acceptCash: cash === 'yes' ? true : false,
             cashAmount: price,
