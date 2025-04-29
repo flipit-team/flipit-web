@@ -5,13 +5,13 @@ import React, {useEffect, useState} from 'react';
 
 interface Props {
     setUrls: React.Dispatch<React.SetStateAction<string[]>>;
+    uploading?: boolean;
+    setUploading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 const ImageUpload = (props: Props) => {
-    const {setUrls} = props;
-    const [images, setImages] = useState<string[]>([]);
+    const {uploading, setUploading, setUrls} = props;
     const [file, setFile] = useState<File | null>(null);
     const [previewUrls, setPreviewUrls] = useState<string[]>([]);
-    const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
         if (!file) return;

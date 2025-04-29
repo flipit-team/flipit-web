@@ -21,6 +21,7 @@ const Form = () => {
     const [cash, setCash] = useState('');
     const {userId, defaultCategories} = useAppContext();
     const [urls, setUrls] = useState<string[]>([]);
+    const [uploading, setUploading] = useState(false);
 
     const handleInput = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
         setError('');
@@ -104,10 +105,10 @@ const Form = () => {
             <div className='typo-body_medium_regular'>
                 <p>Add photo</p>
                 <p className='mb-3'>Upload at least 3 photos</p>
-                <ImageUpload setUrls={setUrls} />
+                <ImageUpload setUrls={setUrls} setUploading={setUploading} uploading={uploading} />
             </div>
             <Suspense fallback={<div>Loading...</div>}>
-                <RegularButton text='Post Item' action={handleSubmit} isLoading={loading} />
+                <RegularButton text='Post Item' action={handleSubmit} isLoading={loading} disabled={uploading} />
             </Suspense>
         </form>
     );
