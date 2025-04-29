@@ -63,25 +63,29 @@ const ImageUpload = (props: Props) => {
         <div className=''>
             <div className='flex flex-wrap gap-2 items-center'>
                 {/* Upload Button */}
-                {uploading ? (
-                    <Loader />
-                ) : (
-                    <label className='cursor-pointer flex items-center justify-center w-[64px] h-[64px] border-2 border-dashed bg- border-gray-300 rounded-lg text-gray-500 hover:border-gray-400'>
-                        <input
-                            type='file'
-                            accept='image/*'
-                            multiple
-                            className='hidden'
-                            onChange={(e) => {
-                                const selected = e.target.files?.[0];
-                                if (selected) {
-                                    setFile(selected);
-                                }
-                            }}
-                        />
-                        +
-                    </label>
-                )}
+
+                <label className='cursor-pointer flex items-center justify-center w-[64px] h-[64px] border-2 border-dashed bg- border-gray-300 rounded-lg text-gray-500 hover:border-gray-400'>
+                    {uploading ? (
+                        <Loader />
+                    ) : (
+                        <>
+                            <input
+                                type='file'
+                                accept='image/*'
+                                multiple
+                                className='hidden'
+                                onChange={(e) => {
+                                    const selected = e.target.files?.[0];
+                                    if (selected) {
+                                        setFile(selected);
+                                    }
+                                }}
+                            />
+                            +
+                        </>
+                    )}
+                </label>
+
                 {/* Display Images */}
                 {previewUrls.map((src, index) => (
                     <div key={index} className='w-[64px] h-[64px] overflow-hidden rounded-lg border border-gray-300'>
