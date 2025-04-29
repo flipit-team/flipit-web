@@ -1,10 +1,11 @@
 import {NextResponse} from 'next/server';
+import { API_BASE_PATH } from '~/lib/config';
 
 export async function POST(req: Request) {
     const body = await req.json();
 
     // replace with your real auth logic
-    const response = await fetch('https://flipit-api.onrender.com/api/v1/user/signup', {
+    const response = await fetch(`${API_BASE_PATH}/user/signup`, {
         method: 'POST',
         body: JSON.stringify(body),
         headers: {'Content-Type': 'application/json'}
