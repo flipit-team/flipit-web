@@ -2,10 +2,10 @@ export interface Item {
     id: number;
     title: string;
     description: string;
-    imageUrls: [string];
-    flipForImgUrls: [string];
+    imageUrls: string[];
+    flipForImgUrls: string[];
     acceptCash: boolean;
-    cashAmount: 0;
+    cashAmount: number;
     condition: string | null;
     published: boolean;
     location: string;
@@ -19,17 +19,15 @@ export interface Item {
         email: string;
         phoneNumber: string;
         avatar: string;
-        avg_rating: 0;
+        avg_rating: number;
         status: string;
         phoneNumberVerified: boolean;
         dateVerified: Date;
     };
-    itemCategories: [
-        {
-            name: string;
-            description: string;
-        }
-    ];
+    itemCategories: {
+        name: string;
+        description: string;
+    }[];
 }
 
 export interface Bid {

@@ -2,6 +2,7 @@
 'use client';
 
 import Cookies from 'js-cookie';
+import {LogOutIcon} from 'lucide-react';
 import {useRouter} from 'next/navigation';
 interface Props {
     setShowFlyout: React.Dispatch<React.SetStateAction<boolean>>;
@@ -24,7 +25,8 @@ export default function LogoutButton(props: Props) {
         router.refresh();
     };
     return (
-        <button onClick={handleLogout} className='text-red-500 hover:text-red-700 font-medium'>
+        <button onClick={handleLogout} className='text-red-500 hover:text-red-700 font-medium flex items-center gap-2'>
+            <LogOutIcon height={16} width={16} />
             Logout
         </button>
     );

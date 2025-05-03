@@ -7,6 +7,7 @@ import {useAppContext} from '~/contexts/AppContext';
 import useAuth from '~/hooks/useAuth';
 import LogoutButton from '../../auth/Logout';
 import Notifications from '../../modals/Notifications';
+import {ShoppingBagIcon, ShoppingCart, ShoppingCartIcon} from 'lucide-react';
 
 interface Props {}
 
@@ -92,7 +93,21 @@ const Header = (props: Props) => {
 
                             {/* Logout Button (stays visible when hovering over it) */}
                             {isAuthenticated && (
-                                <div className='absolute right-0  bg-white shadow-md rounded px-4 py-2 text-sm z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto'>
+                                <div className='flex flex-col gap-2 absolute right-0  bg-white shadow-md rounded px-4 py-2 text-sm z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto'>
+                                    <Link
+                                        href={'/my-items'}
+                                        className='text-text_one font-medium flex items-center gap-2 whitespace-nowrap'
+                                    >
+                                        <ShoppingBagIcon height={16} width={16} />
+                                        My Items
+                                    </Link>
+                                    <Link
+                                        href={'/profile'}
+                                        className='text-text_one font-medium flex items-center gap-2 whitespace-nowrap'
+                                    >
+                                        <ShoppingBagIcon height={16} width={16} />
+                                        My Profile
+                                    </Link>
                                     <LogoutButton setShowFlyout={setShowFlyout} />
                                 </div>
                             )}

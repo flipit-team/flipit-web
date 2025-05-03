@@ -43,7 +43,7 @@ const BottomNavBar = () => {
         },
         {
             id: 4,
-            link: '/',
+            link: '/profile',
             icon: (isActive: boolean) => <ProfileIcon isActive={isActive} />,
             label: 'Profile',
             listForActiveLink: ['/']
