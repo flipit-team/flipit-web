@@ -1,12 +1,43 @@
 import {Suspense} from 'react';
 import MainHome from '~/ui/wrappers/MainHome';
+import {Item} from '~/utils/interface';
 
-const page = () => {
+interface SearchParams {
+    q?: string;
+    size?: string;
+    page?: string;
+}
+
+export default async function Page({searchParams}: {searchParams?: Promise<SearchParams>}) {
+    // Await the searchParams promise
+    const resolvedSearchParams = searchParams ? await searchParams : {};
+
+    const size = resolvedSearchParams?.size ?? '10';
+    const page = resolvedSearchParams?.page ?? '0';
+    const query = resolvedSearchParams?.q ?? '';
+
+    const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/items/get-items?page=${page}&size=${size}&q=${encodeURIComponent(query)}`,
+        {
+            cache: 'no-store'
+        }
+    );
+
+    const data: Item[] = await res.json();
+
+    const categoriesRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/items/get-categories`, {
+        cache: 'no-store'
+    });
+
+    const categories = await categoriesRes.json();
+
+    if (!res.ok) {
+        return <div>Error: {'Failed to fetch items'}</div>;
+    }
+
     return (
         <Suspense fallback={<p>Loading...</p>}>
-            <MainHome />
+            <MainHome items={data} defaultCategories={categories} />
         </Suspense>
     );
-};
-
-export default page;
+}

@@ -6,6 +6,7 @@ import React, {Suspense} from 'react';
 import ErrorBoundary from '~/error-boundary';
 import {AppProvider} from './contexts/AppContext';
 import BottomNavBar from './ui/common/layout/bottom-nav-bar';
+import Overlay from './ui/common/modals/Overlay';
 
 const poppins = Poppins({
     display: 'swap',
@@ -44,6 +45,9 @@ export default async function RootLayout({
                     <main className='flex flex-col flex-1 xs:pb-[100px]'>
                         <Suspense fallback={<p>Loading...</p>}>
                             <Header />
+                        </Suspense>
+                        <Suspense fallback={<p>Loading...</p>}>
+                            <Overlay />
                         </Suspense>
 
                         <ErrorBoundary>{children}</ErrorBoundary>

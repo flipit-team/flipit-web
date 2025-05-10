@@ -1,13 +1,15 @@
 import {NextRequest, NextResponse} from 'next/server';
 import {cookies} from 'next/headers';
-import { API_BASE_PATH } from '~/lib/config';
+import {API_BASE_PATH} from '~/lib/config';
 
 export async function GET(req: NextRequest) {
     console.log('✅ /api/items/get-items HIT');
 
-    const page = req.nextUrl.searchParams.get('page') ?? '1';
+    const page = req.nextUrl.searchParams.get('page') ?? '0';
     const size = req.nextUrl.searchParams.get('size') ?? '10';
-    const apiUrl = `${API_BASE_PATH}/items?page=${page}&size=${size}`;
+    const query = req.nextUrl.searchParams.get('q') ?? '';
+
+    const apiUrl = `${API_BASE_PATH}/items?page=${page}&size=${size}&search=${encodeURIComponent(query)}`;
 
     // ✅ Get token from cookies
     const cookieStore = await cookies(); // ← must await!
@@ -21,9 +23,9 @@ export async function GET(req: NextRequest) {
             },
             cache: 'no-store'
         });
-        console.log(apiRes, 999);
 
         const apiData = await apiRes.json();
+        console.log(apiData, 999);
 
         if (!apiRes.ok) {
             return NextResponse.json(

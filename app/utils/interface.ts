@@ -177,3 +177,16 @@ export interface Notification {
     first: boolean;
     empty: boolean;
 }
+
+export interface ApiError {
+    timestamp: string;
+    status: string;
+    message: string;
+    debugMessage: string;
+    subErrors: any;
+}
+
+export interface ErrorResponse {
+    error: string;
+    details: string;
+}

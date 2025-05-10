@@ -1,4 +1,5 @@
 import {formatDistanceToNow} from 'date-fns';
+import {ApiError, ErrorResponse} from './interface';
 
 export const fetcher = async (url: string, {arg}: {arg: any}) => {
     const res = await fetch(url, {
@@ -81,4 +82,14 @@ export function formatToMonthDay(dateInput: Date | string) {
     const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
     const options: Intl.DateTimeFormatOptions = {month: 'short', day: 'numeric'};
     return date.toLocaleDateString('en-US', options);
+}
+
+export function handleApiError(response: ErrorResponse) {
+    try {
+        const parsedDetails: {apierror: ApiError} = JSON.parse(response.details);
+        return parsedDetails.apierror.message;
+    } catch (err) {
+        console.error('Failed to parse error details', err);
+        return 'An unexpected error occurred.';
+    }
 }

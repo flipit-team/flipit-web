@@ -10,8 +10,10 @@ interface AppContextProps {
         description: string | null;
     }[];
     notifications: Notification | null;
+    modalMessage: string;
     setShowPopup: React.Dispatch<React.SetStateAction<boolean>>;
     setUserId: React.Dispatch<React.SetStateAction<number | null>>;
+    setModalMessage: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const AppContext = createContext<AppContextProps | undefined>(undefined);
@@ -21,27 +23,7 @@ export const AppProvider = ({children}: {children: ReactNode}) => {
     const [userId, setUserId] = useState<number | null>(null);
     const [defaultCategories, setDefaultCategories] = useState<{name: string; description: string | null}[]>([]);
     const [notifications, setNotifications] = useState<Notification | null>(null);
-
-    useEffect(() => {
-        const handleGetCategories = async () => {
-            const res = await fetch('/api/items/get-categories', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            const data = await res.json();
-            console.log(data, 88);
-
-            setDefaultCategories(data);
-            if (!res.ok) {
-                throw new Error(data.error || 'Something went wrong');
-            }
-        };
-
-        handleGetCategories();
-    }, []);
+    const [modalMessage, setModalMessage] = useState('');
 
     useEffect(() => {
         const handleGetNotifications = async () => {
@@ -71,6 +53,8 @@ export const AppProvider = ({children}: {children: ReactNode}) => {
                 showPopup,
                 defaultCategories,
                 notifications,
+                modalMessage,
+                setModalMessage,
                 setUserId,
                 setShowPopup
             }}

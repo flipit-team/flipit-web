@@ -142,7 +142,11 @@ const Form = () => {
 
             setIsLoading(false);
             setUserId(data?.message?.user?.id);
-            window.location.href = '/home';
+            if (isLogin) {
+                window.location.href = '/home';
+            } else {
+                window.location.href = '/home?modal=check-inbox';
+            }
             router.refresh();
         } catch (err: any) {
             // display err.message in your UI

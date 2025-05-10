@@ -1,8 +1,11 @@
 'use client';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import InputBox from '../common/input-box';
 import Image from 'next/image';
 import RegularButton from '../common/buttons/RegularButton';
+import {useAppContext} from '~/contexts/AppContext';
+import {ErrorResponse} from '~/utils/interface';
+import {handleApiError} from '~/utils/helpers';
 
 const Profile = () => {
     const [email, setEmail] = useState('');
@@ -10,35 +13,43 @@ const Profile = () => {
     const [lastname, setLastname] = useState('');
 
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
     const [phone, setPhone] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const {userId} = useAppContext();
 
     const formInputs = [
         {
-            label: 'Full name',
-            placeholder: 'Enter firstname and lastname',
+            label: 'First name',
+            placeholder: '',
             type: 'text',
-            name: 'fullname'
+            name: 'firstname',
+            disabled: true
+        },
+        {
+            label: 'Last name',
+            placeholder: '',
+            type: 'text',
+            name: 'lastname',
+            disabled: true
         },
         {
             label: 'Email address',
             placeholder: 'Enter email address',
             type: 'email',
-            name: 'email'
+            name: 'email',
+            disabled: true
         },
-        {
-            label: 'Password',
-            placeholder: 'Enter password',
-            type: 'password',
-            name: 'password'
-        },
+
         {
             label: 'Phone number',
             placeholder: '08012345678',
-            type: 'number',
-            name: 'phone'
+            type: 'text',
+            name: 'phone',
+            disabled: false
         }
     ];
 
@@ -49,6 +60,9 @@ const Profile = () => {
         }
         if (type === 'password') {
             setPassword(e.target.value.toString());
+        }
+        if (type === 'confirm-password') {
+            setConfirmPassword(e.target.value.toString());
         }
         if (type === 'firstname') {
             setFirstname(e.target.value);
@@ -68,6 +82,9 @@ const Profile = () => {
         if (input.name === 'password') {
             return password;
         }
+        if (input.name === 'confirm-password') {
+            return confirmPassword;
+        }
         if (input.name === 'firstname') {
             return firstname;
         }
@@ -78,6 +95,107 @@ const Profile = () => {
             return phone;
         }
     };
+
+    const handleUpdate = async () => {
+        setIsLoading(true);
+        setErrorMessage('');
+
+        const formData = {
+            phoneNumber: `+234${phone}`
+        };
+        console.log(formData);
+
+        try {
+            const res = await fetch(`/api/profile/update-user?userId=${userId}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(formData)
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.apierror?.message ?? 'Login failed');
+            }
+
+            console.log(data);
+            setIsLoading(false);
+        } catch (err: any) {
+            setErrorMessage(err.message);
+            setIsLoading(false);
+        }
+    };
+
+    const handleChangePassword = async () => {
+        if (!password) {
+            setErrorMessage('Please add password');
+            return;
+        }
+        if (password !== confirmPassword) {
+            setErrorMessage('Passwords do not match');
+            return;
+        }
+        setIsLoading(true);
+        setErrorMessage('');
+
+        const formData = {
+            newPassword: password,
+            confirmPassword: confirmPassword
+        };
+        console.log(formData);
+
+        try {
+            const res = await fetch(`/api/profile/update-password`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(formData)
+            });
+
+            const data = await res.json();
+            console.log(data);
+
+            if (!res.ok) {
+                const message = handleApiError(data);
+                setErrorMessage(message);
+            }
+            setSuccessMessage('Password changed successfully');
+            console.log(data);
+            setIsLoading(false);
+        } catch (err: any) {
+            console.log(err.message);
+
+            setErrorMessage(err.message);
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        const fetchItems = async () => {
+            try {
+                const res = await fetch(`/api/profile/get-profile`, {
+                    cache: 'no-store'
+                });
+
+                if (!res.ok) {
+                    const errData = await res.json();
+                    throw new Error(errData.apierror?.message || 'Failed to fetch items');
+                }
+
+                const data = await res.json();
+                console.log(data, 77);
+                setFirstname(data.firstName);
+                setLastname(data.lastName);
+                setEmail(data.email);
+                setPhone(data.phoneNumber);
+            } catch (err: any) {
+                setErrorMessage(err.message || 'Something went wrong');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchItems();
+    }, []);
+
     return (
         <div className='flex items-center justify-center flex-col'>
             <div className='flex flex-col justify-center w-[984px] xs:w-full mt-[92px] xs:mt-6 shadow-[0px_4px_10px_rgba(0,0,0,0.2)] xs:shadow-transparent rounded-lg p-6'>
@@ -96,11 +214,12 @@ const Profile = () => {
                                     name={item.name}
                                     placeholder={item.placeholder}
                                     type={item.type}
+                                    disabled={item.disabled}
                                 />
                             );
                         })}
                         <div className='w-[167px]'>
-                            <RegularButton text='Save Changes' action={() => {}} />
+                            <RegularButton text='Save Changes' action={handleUpdate} />
                         </div>
                     </form>
                     <div className='flex flex-col flex-1 items-center justify-center xs:order-1'>
@@ -117,10 +236,17 @@ const Profile = () => {
                     </div>
                 </div>
             </div>
-            <div className='flex justify-center w-[984px] xs:w-full mt-[92px] xs:mt-6 shadow-[0px_4px_10px_rgba(0,0,0,0.2)] xs:shadow-transparent rounded-lg p-6 flex-col'>
+            <div className='flex justify-center w-[984px] xs:w-full mt-6 shadow-[0px_4px_10px_rgba(0,0,0,0.2)] xs:shadow-transparent rounded-lg p-6 flex-col'>
                 <div className='typo-heading_small_medium pb-4 mb-6 border-b border-border_gray xs:border-none'>
                     Change Password
                 </div>
+
+                {errorMessage && (
+                    <div className='typo-body_medium_medium text-red-400 text-center mb-6'>{errorMessage}</div>
+                )}
+                {successMessage && (
+                    <div className='typo-body_medium_medium text-green-400 text-center mb-6'>{successMessage}</div>
+                )}
 
                 <form className='typo-body_medium_regular text-text_one flex gap-[26px] xs:flex-col'>
                     <InputBox
@@ -132,16 +258,21 @@ const Profile = () => {
                         type={'password'}
                     />
                     <InputBox
-                        value={handleValue({label: 'password', name: 'password', placeholder: '', type: ''})}
+                        value={handleValue({
+                            label: 'confirm-password',
+                            name: 'confirm-password',
+                            placeholder: '',
+                            type: ''
+                        })}
                         setValue={handleInput}
                         label={'Confirm Password'}
-                        name={'password'}
+                        name={'confirm-password'}
                         placeholder={'password'}
                         type={'password'}
                     />
                 </form>
                 <div className='w-[194px] mt-6'>
-                    <RegularButton text='Change Password' action={() => {}} />
+                    <RegularButton text='Change Password' action={handleChangePassword} isLoading={isLoading} />
                 </div>
             </div>
         </div>

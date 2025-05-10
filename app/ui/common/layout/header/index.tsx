@@ -7,7 +7,7 @@ import {useAppContext} from '~/contexts/AppContext';
 import useAuth from '~/hooks/useAuth';
 import LogoutButton from '../../auth/Logout';
 import Notifications from '../../modals/Notifications';
-import {ShoppingBagIcon, ShoppingCart, ShoppingCartIcon} from 'lucide-react';
+import {ShoppingBagIcon} from 'lucide-react';
 
 interface Props {}
 

@@ -8,16 +8,17 @@ interface Props {
     type: React.HTMLInputTypeAttribute | undefined;
     name: string;
     value?: string;
+    disabled?: boolean;
     setValue?: (e: React.ChangeEvent<HTMLInputElement>, type: string) => void;
 }
 
 const InputBox = (props: Props) => {
-    const {label, placeholder, type, name, value, setValue} = props;
+    const {label, placeholder, type, name, value, disabled, setValue} = props;
 
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [phone, setPhone] = useState('');
 
-    const isPassword = name === 'password';
+    const isPassword = name === 'password' || name === 'confirm-password';
     const isFullname = name === 'fullname';
 
     const togglePasswordVisibility = () => {
@@ -42,6 +43,7 @@ const InputBox = (props: Props) => {
                         id={name}
                         name={name}
                         placeholder={'enter firstname'}
+                        disabled={disabled}
                         className='h-[49px] w-full px-4 border border-border_gray rounded-md shadow-sm focus:ring-transparent outline-none'
                     />
                 </div>
@@ -57,6 +59,7 @@ const InputBox = (props: Props) => {
                         id={name}
                         name={name}
                         placeholder={'enter lastname'}
+                        disabled={disabled}
                         className='h-[49px] w-full px-4 border border-border_gray rounded-md shadow-sm focus:ring-transparent outline-none'
                     />
                 </div>
@@ -77,6 +80,7 @@ const InputBox = (props: Props) => {
                         id={name}
                         name={name}
                         placeholder={placeholder}
+                        disabled={disabled}
                         className='h-[49px] w-full px-4 border border-border_gray rounded-md shadow-sm focus:ring-transparent outline-none'
                     />
                     <button
@@ -102,6 +106,7 @@ const InputBox = (props: Props) => {
                 id={name}
                 name={name}
                 placeholder={placeholder}
+                disabled={disabled}
                 className='h-[49px] w-full px-4 border border-border_gray rounded-md shadow-sm focus:ring-transparent outline-none'
             />
         </div>
