@@ -2,13 +2,12 @@
 import React, {useEffect, useState} from 'react';
 import InputBox from '../input-box';
 import AuthButton from '../buttons/AuthButton';
-import {useRouter} from 'next/navigation';
+import {useRouter, useSearchParams} from 'next/navigation';
 import {useAppContext} from '~/contexts/AppContext';
 
 const Form = () => {
     const {setUserId} = useAppContext();
     const [isLogin, setIsLogin] = useState(true);
-    // const [api, setApi] = useState('');
     const [email, setEmail] = useState('');
     const [firstname, setFirstname] = useState('');
     const [lastname, setLastname] = useState('');
@@ -18,7 +17,7 @@ const Form = () => {
     const [phone, setPhone] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-
+    const searchParams = useSearchParams();
     const router = useRouter();
 
     useEffect(() => {
@@ -29,6 +28,15 @@ const Form = () => {
 
     const loginWithGoogle = () => {
         window.location.href = '/api/auth/google-login';
+    };
+
+    const pushParam = (param: string) => {
+        // Push new URL param without full page reload
+        const newParams = new URLSearchParams(searchParams.toString());
+        newParams.set('auth', param);
+        setTimeout(() => {
+            router.replace(`/?${newParams.toString()}`);
+        }, 0);
     };
 
     const formInputs = isLogin
@@ -192,7 +200,10 @@ const Form = () => {
                         );
                     })}
                     {isLogin ? (
-                        <h5 className='ml-auto underline text-primary typo-body_large_semibold -mt-[18px]'>
+                        <h5
+                            className='ml-auto underline text-primary typo-body_large_semibold -mt-[18px] cursor-pointer'
+                            onClick={() => pushParam('reset')}
+                        >
                             Forgot Password?
                         </h5>
                     ) : (
