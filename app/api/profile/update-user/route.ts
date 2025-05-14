@@ -3,15 +3,13 @@ import {NextRequest, NextResponse} from 'next/server';
 import {API_BASE_PATH} from '~/lib/config';
 
 export async function PUT(req: NextRequest) {
-    const userId = req.nextUrl.searchParams.get('userId') ?? '0';
-
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
 
     const body = await req.json();
 
     try {
-        const res = await fetch(`${API_BASE_PATH}/user/${userId}`, {
+        const res = await fetch(`${API_BASE_PATH}/user/update-profile`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

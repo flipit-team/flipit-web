@@ -8,6 +8,7 @@ import NoData from '../no-data/NoData';
 
 interface Props {
     items: Item[];
+    forEdit?: boolean;
 }
 
 const GridItems = (props: Props) => {
@@ -19,7 +20,7 @@ const GridItems = (props: Props) => {
 
                     return (
                         <Link
-                            href={`/edit-item/${item.id}`}
+                            href={`/${props.forEdit ? 'edit-item' : 'home'}/${item.id}`}
                             key={i}
                             className='h-[400px] w-full xs:h-[260px] border border-border_gray rounded-md'
                         >

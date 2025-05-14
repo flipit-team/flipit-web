@@ -64,7 +64,7 @@ const ImageUpload = (props: Props) => {
             <div className='flex flex-wrap gap-2 items-center'>
                 {/* Upload Button */}
 
-                <label className='cursor-pointer flex items-center justify-center w-[64px] h-[64px] border-2 border-dashed bg- border-gray-300 rounded-lg text-gray-500 hover:border-gray-400'>
+                <label className='cursor-pointer flex items-center justify-center w-[64px] h-[64px] border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-gray-400'>
                     {uploading ? (
                         <Loader />
                     ) : (

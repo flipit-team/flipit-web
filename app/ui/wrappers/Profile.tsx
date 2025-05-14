@@ -3,15 +3,21 @@ import React, {useEffect, useState} from 'react';
 import InputBox from '../common/input-box';
 import Image from 'next/image';
 import RegularButton from '../common/buttons/RegularButton';
-import {useAppContext} from '~/contexts/AppContext';
-import {ErrorResponse} from '~/utils/interface';
+
 import {handleApiError} from '~/utils/helpers';
+import {usePathname, useRouter, useSearchParams} from 'next/navigation';
+import ProfileImageUpload from '../common/profile-image-upload/ProfileImageUpload';
+import {useAppContext} from '~/contexts/AppContext';
 
 const Profile = () => {
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
+    const {setModalMessage} = useAppContext();
     const [email, setEmail] = useState('');
     const [firstname, setFirstname] = useState('');
     const [lastname, setLastname] = useState('');
-
+    const [imgUrl, setImgUrl] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
@@ -19,8 +25,12 @@ const Profile = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const {userId} = useAppContext();
-
+    const [passwordLoading, setPasswordLoading] = useState(false);
+    const pushParam = (param: string) => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('modal', param);
+        router.push(`${pathname}?${params.toString()}`);
+    };
     const formInputs = [
         {
             label: 'First name',
@@ -101,12 +111,13 @@ const Profile = () => {
         setErrorMessage('');
 
         const formData = {
-            phoneNumber: `+234${phone}`
+            phoneNumber: `${phone}`,
+            profileImgKey: imgUrl
         };
         console.log(formData);
 
         try {
-            const res = await fetch(`/api/profile/update-user?userId=${userId}`, {
+            const res = await fetch(`/api/profile/update-user`, {
                 method: 'PUT',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(formData)
@@ -118,6 +129,10 @@ const Profile = () => {
                 throw new Error(data.apierror?.message ?? 'Login failed');
             }
 
+            setModalMessage('Profile Updated Succesfully');
+            setTimeout(() => {
+                pushParam('success');
+            }, 0);
             console.log(data);
             setIsLoading(false);
         } catch (err: any) {
@@ -135,7 +150,7 @@ const Profile = () => {
             setErrorMessage('Passwords do not match');
             return;
         }
-        setIsLoading(true);
+        setPasswordLoading(true);
         setErrorMessage('');
 
         const formData = {
@@ -160,12 +175,12 @@ const Profile = () => {
             }
             setSuccessMessage('Password changed successfully');
             console.log(data);
-            setIsLoading(false);
+            setPasswordLoading(false);
         } catch (err: any) {
             console.log(err.message);
 
             setErrorMessage(err.message);
-            setIsLoading(false);
+            setPasswordLoading(false);
         }
     };
 
@@ -219,21 +234,10 @@ const Profile = () => {
                             );
                         })}
                         <div className='w-[167px]'>
-                            <RegularButton text='Save Changes' action={handleUpdate} />
+                            <RegularButton text='Save Changes' action={handleUpdate} isLoading={isLoading} />
                         </div>
                     </form>
-                    <div className='flex flex-col flex-1 items-center justify-center xs:order-1'>
-                        <Image
-                            src={'/camera.png'}
-                            height={224}
-                            width={224}
-                            alt='profile picture'
-                            className='h-[224px] w-[224px] rounded-full'
-                        />
-                        <div className='flex items-center justify-center h-[45px] w-[159px] border border-primary text-primary rounded-lg typo-body_medium_semibold mt-5'>
-                            Choose Image
-                        </div>
-                    </div>
+                    <ProfileImageUpload setImgUrl={setImgUrl} />
                 </div>
             </div>
             <div className='flex justify-center w-[984px] xs:w-full mt-6 shadow-[0px_4px_10px_rgba(0,0,0,0.2)] xs:shadow-transparent rounded-lg p-6 flex-col'>
@@ -272,7 +276,7 @@ const Profile = () => {
                     />
                 </form>
                 <div className='w-[194px] mt-6'>
-                    <RegularButton text='Change Password' action={handleChangePassword} isLoading={isLoading} />
+                    <RegularButton text='Change Password' action={handleChangePassword} isLoading={passwordLoading} />
                 </div>
             </div>
         </div>

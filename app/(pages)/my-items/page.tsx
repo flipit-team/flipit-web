@@ -106,7 +106,7 @@ const page = () => {
     return (
         <div className='grid-sizes xs:w-full pr-[60px]'>
             <div className='py-9 xs:pt-6 xs:py-0 xs:mb-4 typo-heading_medium_semibold'>My Items</div>
-            <GridItems items={data} />
+            <GridItems items={data} forEdit />
         </div>
     );
 };
