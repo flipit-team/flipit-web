@@ -14,9 +14,7 @@ const Home = async ({searchParams}: {searchParams: Promise<{[key: string]: strin
         return (
             <div className='flex-1 grid grid-cols-2 xs:grid-cols-1 w-full xs:grid-sizes'>
                 <div className='w-[454px] xs:w-full mx-auto overflow-y-auto no-scrollbar'>
-                    <div className='typo-heading_small_bold text-primary flex w-full mt-[46px] xs:justify-center'>
-                        Flipit
-                    </div>
+                    <div className='typo-heading_sb text-primary flex w-full mt-[46px] xs:justify-center'>Flipit</div>
 
                     {authValue === 'verify' ? (
                         <VerifyProfile forVerify={true} />
@@ -36,8 +34,8 @@ const Home = async ({searchParams}: {searchParams: Promise<{[key: string]: strin
                         alt='banner'
                         className='h-[365px] w-[365px]'
                     />
-                    <h2 className='typo-heading_large_bold mt-[31px]'>Trade smart, swap easy</h2>
-                    <p className='w-[492px] typo-heading_small_regular text-center  mt-2'>
+                    <h2 className='typo-heading_lb mt-[31px]'>Trade smart, swap easy</h2>
+                    <p className='w-[492px] typo-heading_sr text-center  mt-2'>
                         Turn the items you have into the ones you need. Start trading today!
                     </p>
                 </div>

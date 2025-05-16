@@ -11,10 +11,10 @@ const SellersInfo = () => {
     params.set('q', 'profile-popup');
     return (
         <div className='flex items-center justify-between'>
-            <span className='typo-heading_small_medium'>Seller Information</span>
+            <span className='typo-heading_sm'>Seller Information</span>
             <Link
                 href={`?${params.toString()}`}
-                className='typo-body_medium_regular text-primary underline'
+                className='typo-body_mr text-primary underline'
                 onClick={() => setShowPopup(true)}
             >
                 View Seller Details

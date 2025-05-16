@@ -39,7 +39,7 @@ const MobileChat = () => {
 
     return (
         <div className='shadow-[0px_4px_10px_rgba(0,0,0,0.2)] xs:shadow-transparent h-full flex flex-col flex-1'>
-            <div className='flex items-center justify-center typo-heading_small_medium xs:typo-body_large_medium text-primary bg-[rgba(0,95,115,0.2)] h-[42px]'>
+            <div className='flex items-center justify-center typo-heading_sm xs:typo-body_lm text-primary bg-[rgba(0,95,115,0.2)] h-[42px]'>
                 iPhone 12 promax
             </div>
 
@@ -52,9 +52,7 @@ const MobileChat = () => {
                             >
                                 {item.message}
                             </div>
-                            <p
-                                className={`text-[#87928A] typo-body_medium_regular  ${item.sentBy === userId ? '' : 'text-right'}`}
-                            >
+                            <p className={`text-[#87928A] typo-body_mr  ${item.sentBy === userId ? '' : 'text-right'}`}>
                                 {formatTimeTo12Hour(item.dateCreated)}
                             </p>
                         </div>
@@ -67,7 +65,7 @@ const MobileChat = () => {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     type='text'
-                    className='h-full w-full typo-body_large_regular focus:ring-transparent outline-none'
+                    className='h-full w-full typo-body_lr focus:ring-transparent outline-none'
                     placeholder='Type in your message here'
                 />
                 {loading ? (

@@ -190,3 +190,27 @@ export interface ErrorResponse {
     error: string;
     details: string;
 }
+
+export interface Profile {
+    id: number;
+    title: string;
+    firstName: string;
+    middleName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+    avatar: string;
+    avgRating: number;
+    reviewCount: number;
+    status: string;
+    mostRecentReview: {
+        rating: number;
+        message: string;
+        userId: number;
+        postedById: number;
+        createdDate: Date;
+    };
+    phoneNumberVerified: boolean;
+    dateVerified: Date;
+    dateCreated: Date;
+}

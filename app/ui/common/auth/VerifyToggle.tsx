@@ -9,7 +9,7 @@ const VerifyToggle = (props: Props) => {
     return (
         <div className='xs:hidden'>
             <Image src={'/back-dark.svg'} height={24} width={24} alt='back' className='h-6 w-6 my-[40px]' />
-            <div className='flex items-center gap-[14px] typo-body_small_medium mb-[44px]'>
+            <div className='flex items-center gap-[14px] typo-body_sm mb-[44px]'>
                 <div
                     onClick={() => setIsVerify(true)}
                     className={`w-[220px] border-b-4 pb-1 ${isVerify ? 'text-primary border-primary' : 'text-text_four border-[#f4f4f9]'}`}

@@ -1,6 +1,6 @@
 'use client';
 
-import {useEffect, useState} from 'react';
+import {useEffect} from 'react';
 import {useSearchParams, useRouter} from 'next/navigation';
 import {useAppContext} from '~/contexts/AppContext';
 
@@ -8,7 +8,6 @@ export default function Verify() {
     const searchParams = useSearchParams();
     const router = useRouter();
 
-    const [message, setMessage] = useState<string | null>(null);
     const {setModalMessage} = useAppContext();
 
     useEffect(() => {
@@ -22,16 +21,16 @@ export default function Verify() {
             const newParams = new URLSearchParams(searchParams.toString());
             newParams.set('modal', 'verified');
             setTimeout(() => {
-                router.replace(`/verify?${newParams.toString()}`);
+                router.replace(`/home?${newParams.toString()}`);
             }, 0);
         } else {
-            setModalMessage(messageParam || 'Your account has been verified.');
+            setModalMessage(messageParam || 'Link is invalid or expired.');
 
             // Push new URL param without full page reload
             const newParams = new URLSearchParams(searchParams.toString());
             newParams.set('modal', 'error');
             setTimeout(() => {
-                router.replace(`/verify?${newParams.toString()}`);
+                router.replace(`/home?${newParams.toString()}`);
             }, 0);
         }
     }, [searchParams, router]);

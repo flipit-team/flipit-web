@@ -4,6 +4,7 @@ import InputBox from '../input-box';
 import AuthButton from '../buttons/AuthButton';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {useAppContext} from '~/contexts/AppContext';
+import Image from 'next/image';
 
 const Form = () => {
     const {setUserId} = useAppContext();
@@ -163,30 +164,76 @@ const Form = () => {
         }
     };
 
+    const getIcon = (condition?: boolean) => {
+        return condition ? (
+            <Image src={'/green-check.svg'} height={20} width={20} alt='check' className='h-[20px] w-[20px]' />
+        ) : (
+            <Image src={'/grey-check.svg'} height={20} width={20} alt='check' className='h-[20px] w-[20px]' />
+        );
+    };
+
+    const lengthValid = password.length >= 8 && password.length <= 20;
+    const letterValid = /[A-Za-z]/.test(password);
+    const numberValid = /\d/.test(password);
+    const specialCharValid = /[^A-Za-z0-9]/.test(password);
+    const isStrong = lengthValid && letterValid && numberValid && specialCharValid;
+
+    const btnActive = isLogin ? !!email && !!password : !!email && isStrong && !!firstname && !!lastname && !!phone;
+
     return (
         <div className='flex items-center h-full xs:pb-0'>
             <div className='w-full'>
-                {errorMessage && (
-                    <div className='mb-4 text-red-600 typo-body_large_regular capitalize'>{errorMessage}</div>
-                )}
+                {errorMessage && <div className='mb-4 text-red-600 typo-body_lr capitalize'>{errorMessage}</div>}
 
-                <h1 className='typo-heading_large_bold text-primary mb-2 xs:mb-4  xs:text-center'>
+                <h1 className='typo-heading_lb text-primary mb-2 xs:mb-4  xs:text-center'>
                     {isLogin ? 'Sign In' : 'Create an Account'}
                 </h1>
                 <div className='flex items-center gap-1 mb-[38px] xs:justify-center'>
-                    <p className='text-text_one typo-body_large_regular'>
+                    <p className='text-text_one typo-body_lr'>
                         {isLogin ? `Don't have an account?` : 'Already have an account?'}
                     </p>
                     <p
                         onClick={() => setIsLogin(!isLogin)}
-                        className='text-primary typo-body_large_semibold underline cursor-pointer'
+                        className='text-primary typo-body_ls underline cursor-pointer'
                     >
                         {isLogin ? 'Create one' : 'Sign In'}
                     </p>
                 </div>
 
-                <form className='typo-body_medium_regular text-text_one flex flex-col gap-[26px]'>
+                <form className='typo-body_mr text-text_one flex flex-col gap-[26px]'>
                     {formInputs.map((item, i) => {
+                        if (item.name === 'password') {
+                            return (
+                                <div key={i}>
+                                    <InputBox
+                                        value={handleValue(item)}
+                                        setValue={handleInput}
+                                        key={i}
+                                        label={item.label}
+                                        name={item.name}
+                                        placeholder={item.placeholder}
+                                        type={item.type}
+                                    />
+                                    {!isLogin && (
+                                        <div className='space-y-2 text-text-tertiary typo-label_xsr mt-7'>
+                                            <div className='flex items-center gap-2'>
+                                                {getIcon(lengthValid)}
+                                                <span>8 characters (20 max)</span>
+                                            </div>
+                                            <div className='flex items-center gap-2'>
+                                                {getIcon(letterValid && numberValid && specialCharValid)}
+                                                <span>1 letter, 1 number, 1 special character (# ? ! @)</span>
+                                            </div>
+
+                                            <div className='flex items-center gap-2'>
+                                                {getIcon(lengthValid && letterValid && numberValid && specialCharValid)}
+                                                <span>Strong password</span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        }
                         return (
                             <InputBox
                                 value={handleValue(item)}
@@ -201,7 +248,7 @@ const Form = () => {
                     })}
                     {isLogin ? (
                         <h5
-                            className='ml-auto underline text-primary typo-body_large_semibold -mt-[18px] cursor-pointer'
+                            className='ml-auto underline text-primary typo-body_ls -mt-[18px] cursor-pointer'
                             onClick={() => pushParam('reset')}
                         >
                             Forgot Password?
@@ -211,7 +258,7 @@ const Form = () => {
                     )}
                     <div className='xs:mt-[24px]'>
                         <AuthButton
-                            bg
+                            bg={btnActive}
                             title={isLogin ? 'Sign In' : 'Sign Up'}
                             onClick={() => handleAuth()}
                             isLoading={isLoading}
@@ -221,7 +268,7 @@ const Form = () => {
 
                 <div className='flex items-center justify-between my-[18px]'>
                     <hr className='w-full border-border_gray' />
-                    <span className='px-2 typo-body_medium_regular text-text_four'>OR</span>
+                    <span className='px-2 typo-body_mr text-text_four'>OR</span>
                     <hr className='w-full border-border_gray' />
                 </div>
 

@@ -1,12 +1,24 @@
+import {redirect} from 'next/navigation';
 import {Suspense} from 'react';
 import Home from '~/ui/wrappers/Home';
+import {Item} from '~/utils/interface';
 
-const page = () => {
-    return (
-        <Suspense fallback={<p>Loading...</p>}>
-            <Home />
-        </Suspense>
-    );
+type Props = {
+    params: Promise<{slug: string}>;
+};
+const page = async ({params}: Props) => {
+    try {
+        const {slug} = await params;
+
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/items/get-item?id=${slug}`, {
+            cache: 'no-store'
+        });
+        const data: Item = await res.json();
+
+        return <Home item={data} />;
+    } catch {
+        redirect('/error-page');
+    }
 };
 
 export default page;

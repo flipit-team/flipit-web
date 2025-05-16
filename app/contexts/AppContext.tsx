@@ -1,6 +1,6 @@
 'use client';
 import React, {createContext, ReactNode, useContext, useEffect, useState} from 'react';
-import {Notification} from '~/utils/interface';
+import {Notification, Profile} from '~/utils/interface';
 
 interface AppContextProps {
     showPopup: boolean;
@@ -11,9 +11,11 @@ interface AppContextProps {
     }[];
     notifications: Notification | null;
     modalMessage: string;
+    profile: Profile | null;
     setShowPopup: React.Dispatch<React.SetStateAction<boolean>>;
     setUserId: React.Dispatch<React.SetStateAction<number | null>>;
     setModalMessage: React.Dispatch<React.SetStateAction<string>>;
+    setProfile: React.Dispatch<React.SetStateAction<Profile | null>>;
 }
 
 const AppContext = createContext<AppContextProps | undefined>(undefined);
@@ -24,6 +26,7 @@ export const AppProvider = ({children}: {children: ReactNode}) => {
     const [defaultCategories, setDefaultCategories] = useState<{name: string; description: string | null}[]>([]);
     const [notifications, setNotifications] = useState<Notification | null>(null);
     const [modalMessage, setModalMessage] = useState('');
+    const [profile, setProfile] = useState<Profile | null>(null);
 
     useEffect(() => {
         const handleGetNotifications = async () => {
@@ -46,6 +49,28 @@ export const AppProvider = ({children}: {children: ReactNode}) => {
         if (userId) handleGetNotifications();
     }, [userId]);
 
+    useEffect(() => {
+        const fetchItems = async () => {
+            try {
+                const res = await fetch(`/api/profile/get-profile`, {
+                    cache: 'no-store'
+                });
+
+                if (!res.ok) {
+                    const errData = await res.json();
+                    throw new Error(errData.apierror?.message || 'Failed to fetch items');
+                }
+
+                const data = await res.json();
+                setProfile(data);
+                console.log(data, 77);
+            } catch (err: any) {
+                console.log(err.message || 'Something went wrong');
+            }
+        };
+        fetchItems();
+    }, []);
+
     return (
         <AppContext.Provider
             value={{
@@ -54,9 +79,11 @@ export const AppProvider = ({children}: {children: ReactNode}) => {
                 defaultCategories,
                 notifications,
                 modalMessage,
+                profile,
                 setModalMessage,
                 setUserId,
-                setShowPopup
+                setShowPopup,
+                setProfile
             }}
         >
             {children}

@@ -24,7 +24,7 @@ const SelectBox = () => {
     >();
     return (
         <div className='relative w-full xs:flex-none mx-auto outline-none border-none'>
-            <label htmlFor='category' className='typo-body_large_regular block mb-2'>
+            <label htmlFor='category' className='typo-body_lr block mb-2'>
                 Category
             </label>
 
@@ -46,7 +46,7 @@ const SelectBox = () => {
                                 <span>{selectedOption.title}</span>
                             </>
                         ) : (
-                            <span className='typo-body_large_regular text-text_one '>Select option</span>
+                            <span className='typo-body_lr text-text_one '>Select option</span>
                         )}
                     </div>
                     <div className='flex items-center gap-2'>
@@ -87,11 +87,11 @@ const SelectBox = () => {
                                         height={54}
                                         className='h-[54px] w-[54px] xs:h-[32px] xs:w-[32px]'
                                     />
-                                    <span className='xs:typo-body_medium_regular'>{option.title}</span>
+                                    <span className='xs:typo-body_mr'>{option.title}</span>
                                 </li>
                             ))}
                         </ul>
-                        <button className='w-max mt-[20px] text-center typo-heading_small_medium xs:typo-body_large_medium text-primary'>
+                        <button className='w-max mt-[20px] text-center typo-heading_sm xs:typo-body_lm text-primary'>
                             + Add New Item
                         </button>
                     </div>

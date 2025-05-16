@@ -43,14 +43,10 @@ const GridItems = (props: Props) => {
                                 />
                             )}
                             <div className='p-4 xs:p-3 h-[98px] xs:h-[132px]'>
-                                <p className='typo-body_medium_regular xs:typo-body_small_regular xs:mb-2 capitalize'>
-                                    {item.title}
-                                </p>
-                                <p className='typo-body_large_medium xs:typo-body_medium_medium xs:mb-1'>
-                                    {formatToNaira(item.cashAmount)}
-                                </p>
+                                <p className='typo-body_mr xs:typo-body_sr xs:mb-2 capitalize'>{item.title}</p>
+                                <p className='typo-body_lm xs:typo-body_mm xs:mb-1'>{formatToNaira(item.cashAmount)}</p>
                                 <div className='flex xs:flex-col justify-between items-center xs:items-start rounded'>
-                                    <p className='typo-body_small_regular xs:text-[11px] xs:mb-1 capitalize'>
+                                    <p className='typo-body_sr xs:text-[11px] xs:mb-1 capitalize'>
                                         {item.acceptCash ? 'cash' : 'item'} offers
                                     </p>
                                     <UsedBadge text={item.condition} />

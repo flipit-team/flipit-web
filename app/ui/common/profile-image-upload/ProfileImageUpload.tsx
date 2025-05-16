@@ -2,7 +2,13 @@ import {Loader} from 'lucide-react';
 import Image from 'next/image';
 import React, {useEffect, useRef, useState} from 'react';
 
-const ProfileImageUpload = ({setImgUrl}: {setImgUrl: React.Dispatch<React.SetStateAction<string>>}) => {
+const ProfileImageUpload = ({
+    setImgUrl,
+    currentAvatar
+}: {
+    setImgUrl: React.Dispatch<React.SetStateAction<string>>;
+    currentAvatar?: string;
+}) => {
     const [previewUrl, setPreviewUrl] = useState<string>('');
     const [uploading, setUploading] = useState(false);
     const [file, setFile] = useState<File | null>(null);
@@ -18,6 +24,10 @@ const ProfileImageUpload = ({setImgUrl}: {setImgUrl: React.Dispatch<React.SetSta
 
         return () => URL.revokeObjectURL(url);
     }, [file]);
+
+    useEffect(() => {
+        if (currentAvatar) setPreviewUrl(currentAvatar);
+    }, [currentAvatar]);
 
     const handleUpload = async (selectedFile: File) => {
         setUploading(true);
@@ -82,7 +92,7 @@ const ProfileImageUpload = ({setImgUrl}: {setImgUrl: React.Dispatch<React.SetSta
                     />
                     <div
                         onClick={() => inputRef.current?.click()}
-                        className='flex items-center justify-center h-[45px] w-[159px] border border-primary text-primary rounded-lg typo-body_medium_semibold mt-5 cursor-pointer'
+                        className='flex items-center justify-center h-[45px] w-[159px] border border-primary text-primary rounded-lg typo-body_ms mt-5 cursor-pointer'
                     >
                         Choose Image
                     </div>

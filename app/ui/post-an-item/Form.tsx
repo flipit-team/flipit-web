@@ -1,7 +1,6 @@
 'use client';
 import React, {Suspense, useEffect, useState} from 'react';
 import InputBox from '../common/input-box';
-import SelectBox from '../common/select-box';
 import RadioButtons from '../common/radio-buttons';
 import ImageUpload from '../common/image-upload';
 import RegularButton from '../common/buttons/RegularButton';
@@ -102,7 +101,7 @@ const Form = () => {
                 selected={cash}
                 setSelected={setCash}
             />
-            <div className='typo-body_medium_regular'>
+            <div className='typo-body_mr'>
                 <p>Add photo</p>
                 <p className='mb-3'>Upload at least 3 photos</p>
                 <ImageUpload setUrls={setUrls} setUploading={setUploading} uploading={uploading} />

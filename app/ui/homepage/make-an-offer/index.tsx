@@ -140,10 +140,8 @@ const MakeAnOffer = (props: Props) => {
                     <div className='flex flex-col  mb-4 xs:px-4'>
                         {error && <div className='mb-4 text-center text-red-500'>{error}</div>}
                         <div className='mb-4'>
-                            <p className='typo-heading_medium_semibold xs:typo-body_large_semibold capitalize'>
-                                {item?.title}
-                            </p>
-                            <p className='typo-heading_medium_semibold xs:typo-body_large_semibold text-primary'>
+                            <p className='typo-heading_ms xs:typo-body_ls capitalize'>{item?.title}</p>
+                            <p className='typo-heading_ms xs:typo-body_ls text-primary'>
                                 {formatToNaira(item?.cashAmount ?? 0)}
                             </p>
                         </div>
@@ -156,9 +154,7 @@ const MakeAnOffer = (props: Props) => {
                                 className='h-[439px] w-[443px] xs:h-[327px] xs:w-full'
                             />
                             <div className='flex flex-col gap-6'>
-                                <p className='typo-heading_small_semibold xs:typo-body_large_semibold'>
-                                    How do you want to bid?
-                                </p>
+                                <p className='typo-heading_ss xs:typo-body_ls'>How do you want to bid?</p>
                                 <div className='flex space-x-6'>
                                     {/* Radio Button 1 */}
                                     <label className='flex items-center space-x-2 cursor-pointer'>
@@ -179,9 +175,7 @@ const MakeAnOffer = (props: Props) => {
                                                 <div className='w-2 h-2 bg-white rounded-full'></div>
                                             )}
                                         </div>
-                                        <span className='typo-body_large_regular xs:typo-body_medium_regular'>
-                                            With Cash
-                                        </span>
+                                        <span className='typo-body_lr xs:typo-body_mr'>With Cash</span>
                                     </label>
 
                                     {/* Radio Button 2 */}
@@ -203,16 +197,11 @@ const MakeAnOffer = (props: Props) => {
                                                 <div className='w-2 h-2 bg-white rounded-full'></div>
                                             )}
                                         </div>
-                                        <span className='typo-body_large_regular xs:typo-body_medium_regular'>
-                                            With an Item
-                                        </span>
+                                        <span className='typo-body_lr xs:typo-body_mr'>With an Item</span>
                                     </label>
                                 </div>
                                 <div className='relative w-full xs:flex-none mx-auto outline-none border-none'>
-                                    <label
-                                        htmlFor='Offer your price'
-                                        className='typo-body_medium_regular xs:typo-body_medium_regular'
-                                    >
+                                    <label htmlFor='Offer your price' className='typo-body_mr xs:typo-body_mr'>
                                         {selected === 'with-cash' ? 'Offer your price' : 'Select an Item'}
                                     </label>
                                     {selected === 'with-cash' ? (
@@ -221,7 +210,7 @@ const MakeAnOffer = (props: Props) => {
                                             placeholder='amount'
                                             value={amount}
                                             onChange={(e) => setAmount(e.target.value)}
-                                            className='w-full h-[49px] pl-6 pr-4 py-2 typo-body_large_regular xs:typo-body_medium_regular text-text_one border border-border_gray outline-none rounded-md focus:outline-none  focus:ring-transparent focus:border-none'
+                                            className='w-full h-[49px] pl-6 pr-4 py-2 typo-body_lr xs:typo-body_mr text-text_one border border-border_gray outline-none rounded-md focus:outline-none  focus:ring-transparent focus:border-none'
                                         />
                                     ) : (
                                         <div className='relative w-full h-[49px]'>
@@ -242,7 +231,7 @@ const MakeAnOffer = (props: Props) => {
                                                             <span>{selectedOption.title}</span>
                                                         </>
                                                     ) : (
-                                                        <span className='typo-body_large_regular text-text_one '>
+                                                        <span className='typo-body_lr text-text_one '>
                                                             Select option
                                                         </span>
                                                     )}
@@ -294,15 +283,13 @@ const MakeAnOffer = (props: Props) => {
                                                                     height={54}
                                                                     className='h-[54px] w-[54px] xs:h-[32px] xs:w-[32px]'
                                                                 />
-                                                                <span className='xs:typo-body_medium_regular'>
-                                                                    {option.title}
-                                                                </span>
+                                                                <span className='xs:typo-body_mr'>{option.title}</span>
                                                             </li>
                                                         ))}
                                                     </ul>
                                                     <Link
                                                         href={'/post-an-item'}
-                                                        className='w-max mt-[20px] text-center typo-heading_small_medium xs:typo-body_large_medium text-primary'
+                                                        className='w-max mt-[20px] text-center typo-heading_sm xs:typo-body_lm text-primary'
                                                     >
                                                         + Add New Item
                                                     </Link>

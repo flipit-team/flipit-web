@@ -28,7 +28,7 @@ const Notifications = (props: Props) => {
                 <></>
             )}
 
-            <div className='min-w-[200px] bg-white typo-body_medium_medium'>
+            <div className='min-w-[200px] bg-white typo-body_mm'>
                 {notifications?.map((item, i) => {
                     if (i > 2) return;
                     return (

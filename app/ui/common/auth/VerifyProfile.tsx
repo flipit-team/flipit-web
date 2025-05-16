@@ -14,6 +14,7 @@ const VerifyProfile = ({forVerify}: {forVerify: boolean}) => {
     const [imageTwo, setImageTwo] = useState<string | null>(null);
     const [fileInfo, setFileInfo] = useState<{name: string; size: string} | null>(null);
     const [code, setCode] = useState<string[]>(Array(6).fill(''));
+    const [selected, setSelected] = useState('');
     const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
     const searchParams = useSearchParams();
     const pathname = usePathname();
@@ -72,10 +73,10 @@ const VerifyProfile = ({forVerify}: {forVerify: boolean}) => {
         <div className='h-full flex flex-col justify-center xs:justify-normal xs:pt-14'>
             <VerifyToggle isVerify={isVerify} setIsVerify={setIsVerify} />
 
-            <h1 className='typo-heading_large_bold xs:typo-heading_medium_bold xs:text-center text-primary mb-2'>
+            <h1 className='typo-heading_lb xs:typo-heading_mb xs:text-center text-primary mb-2'>
                 {isVerify ? 'Verify Your Profile' : 'Verify Your Phone number'}
             </h1>
-            <p className='typo-body_large_regular xs:typo-body_medium_regular xs:text-center text-text_one'>
+            <p className='typo-body_lr xs:typo-body_mr xs:text-center text-text_one'>
                 {isVerify
                     ? 'Secure your account and gain trust in the community'
                     : 'Please enter the OTP sent to the phone number you provided to verify your phone number'}
@@ -102,8 +103,8 @@ const VerifyProfile = ({forVerify}: {forVerify: boolean}) => {
                             )}
                         </label>
                         <div>
-                            <p className='typo-body_large_semibold'>Upload your photo</p>
-                            <p className='typo-body_medium_regular text-text_four'>
+                            <p className='typo-body_ls'>Upload your photo</p>
+                            <p className='typo-body_mr text-text_four'>
                                 This photo will be used for your public profile
                             </p>
                         </div>
@@ -112,13 +113,15 @@ const VerifyProfile = ({forVerify}: {forVerify: boolean}) => {
                         <InputBox label='BVN' name='bvn' placeholder='1234567890' type='number' />
                     </div>
                     <RadioButtons
-                        selected=''
-                        setSelected={() => {}}
+                        selected={selected}
+                        setSelected={setSelected}
                         nameOne='passport'
                         nameTwo='id'
+                        nameThree='license'
                         title='Select your government issued document type'
                         titleOne='International passport'
                         titleTwo='National ID'
+                        titleThree="Driver's License"
                         col
                     />
                     <div className='my-6'>
@@ -131,14 +134,14 @@ const VerifyProfile = ({forVerify}: {forVerify: boolean}) => {
                                 className='hidden'
                             />
                             <Upload className='text-primary' />
-                            <p className='typo-body_large_regular ml-2'>Click to upload file</p>
+                            <p className='typo-body_lr ml-2'>Click to upload file</p>
                         </label>
                         {fileInfo && (
                             <div className='h-[68px] flex items-center border border-border_gray px-4 mt-6 rounded-md'>
                                 <File className='text-primary h-9 w-9' />
                                 <div className='ml-2'>
-                                    <p className='typo-body_small_semibold'>{fileInfo?.name}</p>
-                                    <p className='typo-body_small_regular text-[#6d6d6d]'>{fileInfo.size}</p>
+                                    <p className='typo-body_ss'>{fileInfo?.name}</p>
+                                    <p className='typo-body_sr text-[#6d6d6d]'>{fileInfo.size}</p>
                                 </div>
                                 <Image
                                     src={'/cancel-circle.svg'}
@@ -181,7 +184,7 @@ const VerifyProfile = ({forVerify}: {forVerify: boolean}) => {
                 bg
                 link={pushParam(isVerify ? 'verify' : 'code')}
             />
-            <div className='flex items-center gap-2 mt-6 justify-center typo-body_medium_regular'>
+            <div className='flex items-center gap-2 mt-6 justify-center typo-body_mr'>
                 <RefreshCcw size={16} /> Resend Code
             </div>
         </div>

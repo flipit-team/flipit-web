@@ -17,7 +17,7 @@ const NormalSelectBox = (props: Props) => {
     const [isOpen, setIsOpen] = useState(false);
     return (
         <div className='relative w-full xs:flex-none mx-auto outline-none border-none'>
-            <label htmlFor='category' className='typo-body_large_regular block mb-2'>
+            <label htmlFor='category' className='typo-body_lr block mb-2'>
                 Category
             </label>
 
@@ -30,7 +30,7 @@ const NormalSelectBox = (props: Props) => {
                         {selectedOption ? (
                             <span>{selectedOption}</span>
                         ) : (
-                            <span className='typo-body_large_regular text-text_one '>Select option</span>
+                            <span className='typo-body_lr text-text_one '>Select option</span>
                         )}
                     </div>
                     <div className='flex items-center gap-2'>
@@ -64,7 +64,7 @@ const NormalSelectBox = (props: Props) => {
                                         setIsOpen(false);
                                     }}
                                 >
-                                    <span className='xs:typo-body_medium_regular'>{option.name}</span>
+                                    <span className='xs:typo-body_mr'>{option.name}</span>
                                 </li>
                             ))}
                         </ul>

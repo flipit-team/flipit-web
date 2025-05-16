@@ -60,8 +60,8 @@ const ProfilePopup = (props: Props) => {
                             className='h-[194px] w-[194px] rounded-full'
                         />
                         <div className='w-full ml-[36px] xs:ml-0 xs:flex xs:flex-col xs:items-center mt-4'>
-                            <div className='typo-body_large_medium'>{seller?.firstName + ' ' + seller?.lastName}</div>
-                            <div className='h-[23px] w-max px-[2px] bg-[#005f7329] text-primary  flex items-center justify-center rounded typo-body_medium_regular'>
+                            <div className='typo-body_lm'>{seller?.firstName + ' ' + seller?.lastName}</div>
+                            <div className='h-[23px] w-max px-[2px] bg-[#005f7329] text-primary  flex items-center justify-center rounded typo-body_mr'>
                                 {seller?.dateVerified ? 'Verified profile' : 'Unverified profile'}
                             </div>
                             <div className='flex my-1'>
@@ -78,18 +78,18 @@ const ProfilePopup = (props: Props) => {
                                     );
                                 })}
                             </div>
-                            <p className='typo-body_medium_regular text-text_four'>Responds within minutes</p>
-                            <p className='typo-body_medium_regular text-text_four mb-5'>Joined Flipit in 2024</p>
+                            <p className='typo-body_mr text-text_four'>Responds within minutes</p>
+                            <p className='typo-body_mr text-text_four mb-5'>Joined Flipit in 2024</p>
                             <div
                                 onClick={() => setViewPhone(!viewPhone)}
-                                className={`w-full flex items-center justify-center h-[51px] bg-[#005f7329] rounded-lg text-primary typo-body_large_semibold`}
+                                className={`w-full flex items-center justify-center h-[51px] bg-[#005f7329] rounded-lg text-primary typo-body_ls`}
                             >
                                 {viewPhone ? seller?.phoneNumber : 'Contact via Phone'}
                             </div>{' '}
                         </div>
                     </div>
                     <div className='mt-[20px] flex flex-col gap-4 xs:px-4'>
-                        <div className='typo-body_large_medium flex '>
+                        <div className='typo-body_lm flex '>
                             Verified reviews <p className='text-[#d7b0b0]'>(2)</p>
                         </div>
                         <div className='flex flex-col gap-3'>
@@ -107,9 +107,9 @@ const ProfilePopup = (props: Props) => {
                                     );
                                 })}
                             </div>
-                            <p className='typo-body_medium_medium'>Good Product</p>
-                            <p className='typo-body_small_regular text-[#666666]'>More than what I expected</p>
-                            <p className='typo-body_small_regular text-[#666666]'>by Collins</p>
+                            <p className='typo-body_mm'>Good Product</p>
+                            <p className='typo-body_sr text-[#666666]'>More than what I expected</p>
+                            <p className='typo-body_sr text-[#666666]'>by Collins</p>
                         </div>
                     </div>
                 </div>

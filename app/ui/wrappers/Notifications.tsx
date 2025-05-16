@@ -16,7 +16,7 @@ const Notifications = () => {
     }
     return (
         <div className='mx-[120px] xs:mx-0 my-6 xs:my-0'>
-            <h1 className='typo-heading_medium_semibold my-6 xs:mx-4'>Notifications</h1>
+            <h1 className='typo-heading_ms my-6 xs:mx-4'>Notifications</h1>
             <div className='shadow-[0px_4px_10px_rgba(0,0,0,0.2)] xs:shadow-transparent flex flex-col gap-6'>
                 {notifications?.content.map((item, i) => {
                     return (
@@ -29,8 +29,8 @@ const Notifications = () => {
                                 className='mr-[18px] rounded h-[24px] w-[24px]'
                             />
                             <div>
-                                <p className='typo-body_large_regular xs:typo-body_medium_regular'>{item.title}</p>
-                                <p className='typo-body_large_regular xs:typo-body_medium_regular text-text_four'>
+                                <p className='typo-body_lr xs:typo-body_mr'>{item.title}</p>
+                                <p className='typo-body_lr xs:typo-body_mr text-text_four'>
                                     {formatToMonthDay(item.dateCreated)}
                                 </p>
                             </div>

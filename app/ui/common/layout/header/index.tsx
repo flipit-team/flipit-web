@@ -9,14 +9,17 @@ import LogoutButton from '../../auth/Logout';
 import Notifications from '../../modals/Notifications';
 import {ShoppingBagIcon} from 'lucide-react';
 
-interface Props {}
+interface Props {
+    avatar?: string;
+    isAuthenticated?: boolean;
+}
 
 const Header = (props: Props) => {
+    const {avatar, isAuthenticated} = props;
     const [showFlyout, setShowFlyout] = useState(false);
     const router = useRouter();
     const pathname = usePathname();
-    const isAuthenticated = useAuth();
-    const {defaultCategories, notifications} = useAppContext();
+    const {defaultCategories, notifications, profile} = useAppContext();
     const searchParams = useSearchParams();
     const [hovered, setHovered] = useState(false);
 
@@ -53,12 +56,12 @@ const Header = (props: Props) => {
                         />
                     )}
 
-                    <Link href={'/home'} className='typo-heading_medium_bold xs:typo-heading_small_bold xs:text-center'>
+                    <Link href={'/home'} className='typo-heading_mb xs:typo-heading_sb xs:text-center'>
                         Flipit
                     </Link>
                 </div>
 
-                <div className='flex xs:hidden gap-[42px] typo-body_large_semibold mx-auto'>
+                <div className='flex xs:hidden gap-[42px] typo-body_ls mx-auto'>
                     <Link href={'/home'}>Home</Link>
                     <Link href={'/messages'}>Messages</Link>
                     <Link href={'/current-bids'}>Current Bids</Link>
@@ -83,11 +86,11 @@ const Header = (props: Props) => {
                             {/* Profile Icon */}
                             <div className='cursor-pointer p-2 rounded-full hover:bg-gray-200 transition'>
                                 <Image
-                                    src={'/profile-picture.svg'}
+                                    src={profile?.avatar ? profile.avatar : '/profile-picture.svg'}
                                     height={32}
                                     width={32}
                                     alt='bell'
-                                    className='h-7 w-7 xs:h-[30px] xs:w-[30px]'
+                                    className='h-7 w-7 xs:h-[30px] xs:w-[30px] rounded-full'
                                 />
                             </div>
 
@@ -115,7 +118,7 @@ const Header = (props: Props) => {
 
                         <Link
                             href={'/post-an-item'}
-                            className='flex items-center justify-center bg-secondary xs:hidden typo-body_medium_semibold h-[45px] w-[145px] text-white rounded-lg ml-[43px]'
+                            className='flex items-center justify-center bg-secondary xs:hidden typo-body_ms h-[45px] w-[145px] text-white rounded-lg ml-[43px]'
                         >
                             Post Item
                         </Link>
@@ -123,7 +126,7 @@ const Header = (props: Props) => {
                 ) : (
                     <Link
                         href={'/'}
-                        className='flex items-center justify-center border border-white xs:hidden typo-body_medium_semibold h-[45px] w-[145px] text-white rounded-lg'
+                        className='flex items-center justify-center border border-white xs:hidden typo-body_ms h-[45px] w-[145px] text-white rounded-lg'
                     >
                         Sign In
                     </Link>
@@ -136,9 +139,7 @@ const Header = (props: Props) => {
             >
                 <div className={`bg-white flex flex-col rounded-lg p-6 w-full mt-[50px] shadow-md`}>
                     <div className='mb-10 w-full flex items-center'>
-                        <p className='block mx-auto w-max text-[#333333] typo-heading_small_semibold'>
-                            Select Category
-                        </p>
+                        <p className='block mx-auto w-max text-[#333333] typo-heading_ss'>Select Category</p>
                         <Image
                             src={'/cancel.svg'}
                             height={13}

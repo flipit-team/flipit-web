@@ -33,7 +33,7 @@ const InputBox = (props: Props) => {
         return (
             <div className='w-full flex items-center gap-2'>
                 <div className='w-full'>
-                    <label htmlFor={name} className='block mb-2 typo-body_medium_regular'>
+                    <label htmlFor={name} className='block mb-2 typo-body_mr'>
                         First name
                     </label>
                     <input
@@ -48,7 +48,7 @@ const InputBox = (props: Props) => {
                     />
                 </div>
                 <div className='w-full'>
-                    <label htmlFor={name} className='block mb-2 typo-body_medium_regular'>
+                    <label htmlFor={name} className='block mb-2 typo-body_mr'>
                         Last name
                     </label>
 
@@ -69,7 +69,7 @@ const InputBox = (props: Props) => {
     if (isPassword) {
         return (
             <div className='w-full'>
-                <label htmlFor={name} className='block mb-2 typo-body_medium_regular'>
+                <label htmlFor={name} className='block mb-2 typo-body_mr'>
                     {label}
                 </label>
                 <div className='relative'>
@@ -96,7 +96,7 @@ const InputBox = (props: Props) => {
     }
     return (
         <div className='w-full'>
-            <label htmlFor={name} className='block mb-2 typo-body_medium_regular'>
+            <label htmlFor={name} className='block mb-2 typo-body_mr'>
                 {label}
             </label>
             <input

@@ -24,7 +24,7 @@ const config: Config = {
                 }
             },
             typography: {
-                heading_large_bold: {
+                heading_lb: {
                     css: {
                         fontSize: '32px',
                         lineHeight: '120%',
@@ -33,7 +33,7 @@ const config: Config = {
                         fontStyle: 'normal'
                     }
                 },
-                heading_large_semibold: {
+                heading_ls: {
                     css: {
                         fontSize: '32px',
                         lineHeight: '120%',
@@ -42,7 +42,7 @@ const config: Config = {
                         fontStyle: 'normal'
                     }
                 },
-                heading_medium_bold: {
+                heading_mb: {
                     css: {
                         fontSize: '24px',
                         lineHeight: '120%',
@@ -51,7 +51,7 @@ const config: Config = {
                         fontStyle: 'normal'
                     }
                 },
-                heading_medium_semibold: {
+                heading_ms: {
                     css: {
                         fontSize: '24px',
                         lineHeight: '120%',
@@ -60,7 +60,7 @@ const config: Config = {
                         fontStyle: 'normal'
                     }
                 },
-                heading_medium_medium: {
+                heading_mm: {
                     css: {
                         fontSize: '24px',
                         lineHeight: '120%',
@@ -69,7 +69,7 @@ const config: Config = {
                         fontStyle: 'normal'
                     }
                 },
-                heading_medium_regular: {
+                heading_mr: {
                     css: {
                         fontSize: '24px',
                         lineHeight: '120%',
@@ -78,7 +78,7 @@ const config: Config = {
                         fontStyle: 'normal'
                     }
                 },
-                heading_medium_light: {
+                heading_ml: {
                     css: {
                         fontSize: '24px',
                         lineHeight: '120%',
@@ -87,7 +87,7 @@ const config: Config = {
                         fontStyle: 'normal'
                     }
                 },
-                heading_small_bold: {
+                heading_sb: {
                     css: {
                         fontSize: '20px',
                         lineHeight: '140%',
@@ -96,7 +96,7 @@ const config: Config = {
                         fontStyle: 'normal'
                     }
                 },
-                heading_small_semibold: {
+                heading_ss: {
                     css: {
                         fontSize: '20px',
                         lineHeight: '140%',
@@ -105,7 +105,7 @@ const config: Config = {
                         fontStyle: 'normal'
                     }
                 },
-                heading_small_medium: {
+                heading_sm: {
                     css: {
                         fontSize: '20px',
                         lineHeight: '140%',
@@ -114,7 +114,7 @@ const config: Config = {
                         fontStyle: 'normal'
                     }
                 },
-                heading_small_regular: {
+                heading_sr: {
                     css: {
                         fontSize: '20px',
                         lineHeight: '140%',
@@ -123,7 +123,7 @@ const config: Config = {
                         fontStyle: 'normal'
                     }
                 },
-                heading_small_light: {
+                heading_sl: {
                     css: {
                         fontSize: '20px',
                         lineHeight: '140%',
@@ -132,7 +132,7 @@ const config: Config = {
                         fontStyle: 'normal'
                     }
                 },
-                body_large_bold: {
+                body_lb: {
                     css: {
                         fontSize: '16px',
                         lineHeight: '160%',
@@ -141,7 +141,7 @@ const config: Config = {
                         fontStyle: 'normal'
                     }
                 },
-                body_large_semibold: {
+                body_ls: {
                     css: {
                         fontSize: '16px',
                         lineHeight: '160%',
@@ -150,7 +150,7 @@ const config: Config = {
                         fontStyle: 'normal'
                     }
                 },
-                body_large_medium: {
+                body_lm: {
                     css: {
                         fontSize: '16px',
                         lineHeight: '160%',
@@ -159,7 +159,7 @@ const config: Config = {
                         fontStyle: 'normal'
                     }
                 },
-                body_large_regular: {
+                body_lr: {
                     css: {
                         fontSize: '16px',
                         lineHeight: '160%',
@@ -168,7 +168,7 @@ const config: Config = {
                         fontStyle: 'normal'
                     }
                 },
-                body_large_light: {
+                body_ll: {
                     css: {
                         fontSize: '16px',
                         lineHeight: '160%',
@@ -177,7 +177,7 @@ const config: Config = {
                         fontStyle: 'normal'
                     }
                 },
-                body_medium_bold: {
+                body_mb: {
                     css: {
                         fontSize: '14px',
                         lineHeight: '160%',
@@ -186,7 +186,7 @@ const config: Config = {
                         fontStyle: 'normal'
                     }
                 },
-                body_medium_semibold: {
+                body_ms: {
                     css: {
                         fontSize: '14px',
                         lineHeight: '160%',
@@ -195,7 +195,7 @@ const config: Config = {
                         fontStyle: 'normal'
                     }
                 },
-                body_medium_medium: {
+                body_mm: {
                     css: {
                         fontSize: '14px',
                         lineHeight: '160%',
@@ -204,7 +204,7 @@ const config: Config = {
                         fontStyle: 'normal'
                     }
                 },
-                body_medium_regular: {
+                body_mr: {
                     css: {
                         fontSize: '14px',
                         lineHeight: '160%',
@@ -213,7 +213,7 @@ const config: Config = {
                         fontStyle: 'normal'
                     }
                 },
-                body_medium_light: {
+                body_ml: {
                     css: {
                         fontSize: '14px',
                         lineHeight: '160%',
@@ -222,7 +222,7 @@ const config: Config = {
                         fontStyle: 'normal'
                     }
                 },
-                body_small_bold: {
+                body_sb: {
                     css: {
                         fontSize: '12px',
                         lineHeight: '160%',
@@ -231,7 +231,7 @@ const config: Config = {
                         fontStyle: 'normal'
                     }
                 },
-                body_small_semibold: {
+                body_ss: {
                     css: {
                         fontSize: '12px',
                         lineHeight: '160%',
@@ -240,7 +240,7 @@ const config: Config = {
                         fontStyle: 'normal'
                     }
                 },
-                body_small_medium: {
+                body_sm: {
                     css: {
                         fontSize: '12px',
                         lineHeight: '160%',
@@ -249,7 +249,7 @@ const config: Config = {
                         fontStyle: 'normal'
                     }
                 },
-                body_small_regular: {
+                body_sr: {
                     css: {
                         fontSize: '12px',
                         lineHeight: '160%',
@@ -258,7 +258,7 @@ const config: Config = {
                         fontStyle: 'normal'
                     }
                 },
-                body_small_light: {
+                body_sl: {
                     css: {
                         fontSize: '12px',
                         lineHeight: '160%',

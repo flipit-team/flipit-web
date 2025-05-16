@@ -1,32 +1,31 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {useAppContext} from '~/contexts/AppContext';
-import {Chat, Message} from '~/utils/interface';
+import {Chat} from '~/utils/interface';
 import dynamic from 'next/dynamic';
-import {createMessage, formatTimeTo12Hour, sendMessage} from '~/utils/helpers';
+import {formatTimeTo12Hour, sendMessage} from '~/utils/helpers';
 import NoData from '../common/no-data/NoData';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {useChatMessages, useUserMessages} from '~/hooks/useChatMessages';
 import {Loader} from 'lucide-react';
 const LoaderMain = dynamic(() => import('../common/loader/Loader'), {ssr: false});
 
-const MainChats = () => {
+interface Props {
+    chatData: {buyer: Chat[]; seller: Chat[]};
+}
+const MainChats = (props: Props) => {
+    const {chatData} = props;
     const searchParams = useSearchParams();
     const router = useRouter();
-    const [sellerChats, setSellerChats] = useState<Chat[] | null>([]);
-    const [buyerChats, setBuyerChats] = useState<Chat[] | null>([]);
-
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const {userId} = useAppContext();
-    // const [chatId, setChatId] = useState('');
-    // const [chats, setChats] = useState<Message[] | null>([]);
     const chatId = searchParams.get('chatId');
     const [activeTab, setActiveTab] = useState<'seller' | 'buyer'>('buyer');
-    const displayedChat = activeTab === 'buyer' ? buyerChats : sellerChats;
+    const displayedChat = activeTab === 'buyer' ? chatData.buyer : chatData.seller;
     const [activeChat, setActiveChat] = useState<Chat | null>(null);
 
     const pushParam = (id: string) => {
@@ -41,35 +40,6 @@ const MainChats = () => {
         isLoading: userMessagesLoading,
         error: userMessagesError
     } = useUserMessages(userId?.toString());
-
-    useEffect(() => {
-        setLoading(true);
-        const fetchItems = async () => {
-            try {
-                const res = await fetch(`/api/chats/get-user-chats?userId=${userId}`, {
-                    cache: 'no-store'
-                });
-
-                if (!res.ok) {
-                    const errData = await res.json();
-                    throw new Error(errData.apierror?.message || 'Failed to fetch items');
-                }
-
-                const data = await res.json();
-                setSellerChats(data.seller);
-                setBuyerChats(data.buyer);
-                setActiveChat(data.buyer[0]);
-                console.log(data);
-            } catch (err: any) {
-                setError(err.message || 'Something went wrong');
-            } finally {
-                setLoading(false);
-            }
-        };
-        if (userId) {
-            fetchItems();
-        }
-    }, [userId]);
 
     const handleSend = async () => {
         if (!input.trim()) return;
@@ -94,7 +64,7 @@ const MainChats = () => {
                 <LoaderMain color='green' />
             </div>
         );
-    if (!sellerChats?.length && !buyerChats?.length) {
+    if (!chatData.seller?.length && !chatData.buyer?.length) {
         return (
             <div className='h-full my-auto'>
                 <NoData text='No Chats Available' />;
@@ -104,10 +74,10 @@ const MainChats = () => {
 
     return (
         <div className='mx-[120px] xs:mx-0 my-6 xs:my-0'>
-            <h1 className='typo-heading_medium_semibold my-6 xs:hidden'>My Messages</h1>
+            <h1 className='typo-heading_ms my-6 xs:hidden'>My Messages</h1>
             <div className='grid grid-cols-[424px_1fr] xs:grid-cols-1 gap-6'>
                 <div className='shadow-[0px_4px_10px_rgba(0,0,0,0.2)] xs:shadow-transparent xs:hidden'>
-                    <div className='px-6 flex items-center gap-[34px] typo-body_large_medium'>
+                    <div className='px-6 flex items-center gap-[34px] typo-body_lm'>
                         <div
                             className={` py-6 ${activeTab === 'seller' ? ' border-b border-primary text-primary' : 'text-text_four'}`}
                             onClick={() => setActiveTab('seller')}
@@ -139,19 +109,17 @@ const MainChats = () => {
                                     className='h-[50px] w-[50px] mr-4'
                                 />
                                 <div>
-                                    <p className='text-primary typo-body_large_medium capitalize'>
-                                        {chat.initiatorName}
-                                    </p>
-                                    <p className='typo-body_medium_regular w-[203px] line-clamp-2'>{chat.title}</p>
+                                    <p className='text-primary typo-body_lm capitalize'>{chat.initiatorName}</p>
+                                    <p className='typo-body_mr w-[203px] line-clamp-2'>{chat.title}</p>
                                 </div>
-                                <p className='typo-body_small_regular xs:hidden'></p>
+                                <p className='typo-body_sr xs:hidden'></p>
                                 {formatTimeTo12Hour(chat.dateCreated)}
                             </div>
                         );
                     })}
                 </div>
                 <div className='shadow-[0px_4px_10px_rgba(0,0,0,0.2)] xs:shadow-transparent hidden xs:block'>
-                    <div className='px-6 flex items-center gap-[34px] typo-body_large_medium'>
+                    <div className='px-6 flex items-center gap-[34px] typo-body_lm'>
                         <div
                             className={`text-primary py-6 ${activeTab === 'seller' ? ' border-b border-primary' : ''}`}
                             onClick={() => setActiveTab('seller')}
@@ -180,12 +148,10 @@ const MainChats = () => {
                                     className='h-[50px] w-[50px] mr-4'
                                 />
                                 <div>
-                                    <p className='text-primary typo-body_large_medium capitalize'>
-                                        {chat.initiatorName}
-                                    </p>
-                                    <p className='typo-body_medium_regular w-[203px] line-clamp-2'>{chat.title}</p>
+                                    <p className='text-primary typo-body_lm capitalize'>{chat.initiatorName}</p>
+                                    <p className='typo-body_mr w-[203px] line-clamp-2'>{chat.title}</p>
                                 </div>
-                                <p className='typo-body_small_regular xs:hidden'></p>
+                                <p className='typo-body_sr xs:hidden'></p>
                                 {formatTimeTo12Hour(chat.dateCreated)}
                             </Link>
                         );
@@ -201,11 +167,11 @@ const MainChats = () => {
                                 alt='picture'
                                 className='h-[50px] w-[50px] mr-4'
                             />
-                            <p className='typo-body_large_medium capitalize'>{activeChat?.initiatorName}</p>
+                            <p className='typo-body_lm capitalize'>{activeChat?.initiatorName}</p>
                         </div>
                     )}
                     {activeChat && (
-                        <div className='flex items-center justify-center typo-heading_small_medium text-primary bg-[rgba(0,95,115,0.2)] h-[42px]'>
+                        <div className='flex items-center justify-center typo-heading_sm text-primary bg-[rgba(0,95,115,0.2)] h-[42px]'>
                             {activeChat?.title}
                         </div>
                     )}
@@ -219,7 +185,7 @@ const MainChats = () => {
                                         {item.message}
                                     </div>
                                     <p
-                                        className={`text-[#87928A] typo-body_medium_regular ${item.sentBy === userId ? '' : 'text-right'}`}
+                                        className={`text-[#87928A] typo-body_mr ${item.sentBy === userId ? '' : 'text-right'}`}
                                     >
                                         {formatTimeTo12Hour(item.dateCreated)}
                                     </p>
@@ -240,7 +206,7 @@ const MainChats = () => {
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 type='text'
-                                className='h-full w-full typo-body_large_regular focus:ring-transparent outline-none'
+                                className='h-full w-full typo-body_lr focus:ring-transparent outline-none'
                                 placeholder='Type in your message here'
                             />
                             {loading ? (

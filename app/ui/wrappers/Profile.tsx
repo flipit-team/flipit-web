@@ -8,20 +8,16 @@ import {handleApiError} from '~/utils/helpers';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import ProfileImageUpload from '../common/profile-image-upload/ProfileImageUpload';
 import {useAppContext} from '~/contexts/AppContext';
+import {Profile as ProfileType} from '~/utils/interface';
 
 const Profile = () => {
     const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
-    const {setModalMessage} = useAppContext();
-    const [email, setEmail] = useState('');
-    const [firstname, setFirstname] = useState('');
-    const [lastname, setLastname] = useState('');
+    const {setModalMessage, profile, setProfile} = useAppContext();
     const [imgUrl, setImgUrl] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-
-    const [phone, setPhone] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -66,7 +62,9 @@ const Profile = () => {
     const handleInput = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
         setErrorMessage('');
         if (type === 'email') {
-            setEmail(e.target.value);
+            setProfile((prev) => {
+                return {...prev, email: e.target.value} as ProfileType;
+            });
         }
         if (type === 'password') {
             setPassword(e.target.value.toString());
@@ -75,19 +73,25 @@ const Profile = () => {
             setConfirmPassword(e.target.value.toString());
         }
         if (type === 'firstname') {
-            setFirstname(e.target.value);
+            setProfile((prev) => {
+                return {...prev, firstName: e.target.value} as ProfileType;
+            });
         }
         if (type === 'lastname') {
-            setLastname(e.target.value);
+            setProfile((prev) => {
+                return {...prev, lastName: e.target.value} as ProfileType;
+            });
         }
         if (type === 'phone') {
-            setPhone(e.target.value);
+            setProfile((prev) => {
+                return {...prev, phoneNumber: e.target.value} as ProfileType;
+            });
         }
     };
 
     const handleValue = (input: {label: string; placeholder: string; type: string; name: string}) => {
         if (input.name === 'email') {
-            return email;
+            return profile?.email;
         }
         if (input.name === 'password') {
             return password;
@@ -96,13 +100,13 @@ const Profile = () => {
             return confirmPassword;
         }
         if (input.name === 'firstname') {
-            return firstname;
+            return profile?.firstName;
         }
         if (input.name === 'lastname') {
-            return lastname;
+            return profile?.lastName;
         }
         if (input.name === 'phone') {
-            return phone;
+            return profile?.phoneNumber;
         }
     };
 
@@ -111,7 +115,7 @@ const Profile = () => {
         setErrorMessage('');
 
         const formData = {
-            phoneNumber: `${phone}`,
+            phoneNumber: `${profile?.phoneNumber}`,
             profileImgKey: imgUrl
         };
         console.log(formData);
@@ -184,41 +188,12 @@ const Profile = () => {
         }
     };
 
-    useEffect(() => {
-        const fetchItems = async () => {
-            try {
-                const res = await fetch(`/api/profile/get-profile`, {
-                    cache: 'no-store'
-                });
-
-                if (!res.ok) {
-                    const errData = await res.json();
-                    throw new Error(errData.apierror?.message || 'Failed to fetch items');
-                }
-
-                const data = await res.json();
-                console.log(data, 77);
-                setFirstname(data.firstName);
-                setLastname(data.lastName);
-                setEmail(data.email);
-                setPhone(data.phoneNumber);
-            } catch (err: any) {
-                setErrorMessage(err.message || 'Something went wrong');
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchItems();
-    }, []);
-
     return (
         <div className='flex items-center justify-center flex-col'>
             <div className='flex flex-col justify-center w-[984px] xs:w-full mt-[92px] xs:mt-6 shadow-[0px_4px_10px_rgba(0,0,0,0.2)] xs:shadow-transparent rounded-lg p-6'>
-                <div className='typo-heading_small_medium pb-4 mb-6 border-b border-border_gray xs:hidden'>
-                    My Profile
-                </div>
+                <div className='typo-heading_sm pb-4 mb-6 border-b border-border_gray xs:hidden'>My Profile</div>
                 <div className='flex items-center gap-6 xs:flex-col'>
-                    <form className='typo-body_medium_regular text-text_one flex flex-col gap-[26px] w-[512px] xs:w-full xs:order-2'>
+                    <form className='typo-body_mr text-text_one flex flex-col gap-[26px] w-[512px] xs:w-full xs:order-2'>
                         {formInputs.map((item, i) => {
                             return (
                                 <InputBox
@@ -237,22 +212,18 @@ const Profile = () => {
                             <RegularButton text='Save Changes' action={handleUpdate} isLoading={isLoading} />
                         </div>
                     </form>
-                    <ProfileImageUpload setImgUrl={setImgUrl} />
+                    <ProfileImageUpload setImgUrl={setImgUrl} currentAvatar={profile?.avatar} />
                 </div>
             </div>
             <div className='flex justify-center w-[984px] xs:w-full mt-6 shadow-[0px_4px_10px_rgba(0,0,0,0.2)] xs:shadow-transparent rounded-lg p-6 flex-col'>
-                <div className='typo-heading_small_medium pb-4 mb-6 border-b border-border_gray xs:border-none'>
+                <div className='typo-heading_sm pb-4 mb-6 border-b border-border_gray xs:border-none'>
                     Change Password
                 </div>
 
-                {errorMessage && (
-                    <div className='typo-body_medium_medium text-red-400 text-center mb-6'>{errorMessage}</div>
-                )}
-                {successMessage && (
-                    <div className='typo-body_medium_medium text-green-400 text-center mb-6'>{successMessage}</div>
-                )}
+                {errorMessage && <div className='typo-body_mm text-red-400 text-center mb-6'>{errorMessage}</div>}
+                {successMessage && <div className='typo-body_mm text-green-400 text-center mb-6'>{successMessage}</div>}
 
-                <form className='typo-body_medium_regular text-text_one flex gap-[26px] xs:flex-col'>
+                <form className='typo-body_mr text-text_one flex gap-[26px] xs:flex-col'>
                     <InputBox
                         value={handleValue({label: 'password', name: 'password', placeholder: '', type: ''})}
                         setValue={handleInput}

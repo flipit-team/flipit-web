@@ -31,8 +31,9 @@ const Overlay = () => {
         params.delete('modal');
 
         const queryString = params.toString();
-        router.push(queryString ? `${pathname}?${queryString}` : pathname);
+        router.replace(queryString ? `${pathname}?${queryString}` : pathname);
         setIsOpen(false);
+        router.refresh();
     };
 
     useEffect(() => {
