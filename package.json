@@ -20,6 +20,7 @@
         "react": "^19.0.0-rc-603e6108-20241029",
         "react-dom": "^19.0.0-rc-603e6108-20241029",
         "react-lottie": "^1.2.10",
+        "swiper": "^11.2.10",
         "swr": "^2.2.5"
     },
     "devDependencies": {

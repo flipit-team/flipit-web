@@ -32,3 +32,13 @@ body::-webkit-scrollbar:horizontal {
     width: 0;
     height: 0;
 }
+
+.grid-swiper .swiper-slide {
+    width: fit-content;
+}
+
+@media (max-width: 767px) {
+    .grid-swiper .swiper {
+        width: 335px;
+    }
+}

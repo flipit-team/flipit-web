@@ -1,10 +1,13 @@
+import {cookies} from 'next/headers';
 import {redirect} from 'next/navigation';
 import React from 'react';
 import GridItems from '~/ui/common/grid-items/GridItems';
+import NoData from '~/ui/common/no-data/NoData';
+import {Chat, Item} from '~/utils/interface';
 
-const page = () => {
+const page = async () => {
     try {
-        const data = [
+        const data2 = [
             {
                 id: 1,
                 title: 'Canon EOS RP Camera +Small Rig | Clean U... ',
@@ -105,6 +108,19 @@ const page = () => {
                 ]
             }
         ];
+
+        const cookieStore = await cookies();
+        const userId = cookieStore.get('userId')?.value;
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/items/get-user-items?userId=${userId}`, {
+            cache: 'no-store'
+        });
+        console.log(res, 8);
+
+        const data: Item[] = await res.json();
+
+        if (!res.ok) {
+            return <NoData text='Failed to fetch items' />;
+        }
         return (
             <div className='grid-sizes xs:w-full pr-[60px]'>
                 <div className='py-9 xs:pt-6 xs:py-0 xs:mb-4 typo-heading_ms'>My Items</div>

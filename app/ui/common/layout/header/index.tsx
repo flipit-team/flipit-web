@@ -61,13 +61,35 @@ const Header = (props: Props) => {
                     </Link>
                 </div>
 
-                <div className='flex xs:hidden gap-[42px] typo-body_ls mx-auto'>
-                    <Link href={'/home'}>Home</Link>
+                <div className='flex xs:hidden gap-[42px] typo-body_ls ml-[70px]'>
+                    <Link href={'/home'}>Live Auction</Link>
                     <Link href={'/messages'}>Messages</Link>
                     <Link href={'/current-bids'}>Current Bids</Link>
                 </div>
                 {isAuthenticated ? (
-                    <div className='flex items-center'>
+                    <div className='flex items-center ml-auto'>
+                        <div className='relative group'>
+                            <Link href={'/notifications'}>
+                                <Image
+                                    src={'/help.svg'}
+                                    height={32}
+                                    width={32}
+                                    alt='bell'
+                                    className='h-7 w-7 mr-[27px] xs:h-6 xs:w-6'
+                                />
+                            </Link>
+                        </div>
+                        <div className='relative group'>
+                            <Link href={'/notifications'}>
+                                <Image
+                                    src={'/save.svg'}
+                                    height={32}
+                                    width={32}
+                                    alt='bell'
+                                    className='h-7 w-7 mr-[27px] xs:h-6 xs:w-6'
+                                />
+                            </Link>
+                        </div>
                         <div className='relative group'>
                             <Link href={'/notifications'}>
                                 <Image
@@ -75,7 +97,7 @@ const Header = (props: Props) => {
                                     height={32}
                                     width={32}
                                     alt='bell'
-                                    className='h-7 w-7 mr-[27px] xs:h-6 xs:w-6'
+                                    className='h-6 w-6 mr-[27px] xs:h-6 xs:w-6'
                                 />
                             </Link>
                             <div className='absolute right-0 mt-2 xs:hidden bg-white shadow-md rounded px-4 py-2 text-sm z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto'>
@@ -84,13 +106,21 @@ const Header = (props: Props) => {
                         </div>
                         <div className='relative group'>
                             {/* Profile Icon */}
-                            <div className='cursor-pointer p-2 rounded-full hover:bg-gray-200 transition'>
+                            <div className='flex items-center gap-2 cursor-pointer p-2 rounded-full transition'>
                                 <Image
                                     src={profile?.avatar ? profile.avatar : '/profile-picture.svg'}
                                     height={32}
                                     width={32}
                                     alt='bell'
                                     className='h-7 w-7 xs:h-[30px] xs:w-[30px] rounded-full'
+                                />
+                                <div className='typo-body_ls'>Omolara</div>
+                                <Image
+                                    src={'/arrow-down.svg'}
+                                    height={32}
+                                    width={32}
+                                    alt='bell'
+                                    className='h-4 w-4 xs:h-4 xs:w-4 rounded-full'
                                 />
                             </div>
 
@@ -124,12 +154,27 @@ const Header = (props: Props) => {
                         </Link>
                     </div>
                 ) : (
-                    <Link
-                        href={'/'}
-                        className='flex items-center justify-center border border-white xs:hidden typo-body_ms h-[45px] w-[145px] text-white rounded-lg'
-                    >
-                        Sign In
-                    </Link>
+                    <div className='flex items-center ml-auto'>
+                        <Image
+                            src={'/question.svg'}
+                            height={32}
+                            width={32}
+                            alt='bell'
+                            className='h-8 w-8 xs:h-4 xs:w-4 rounded-full'
+                        />
+                        <Link
+                            href={'/'}
+                            className='flex items-center justify-center xs:hidden typo-body_ms h-[45px] w-[145px] text-white rounded-lg'
+                        >
+                            Sign In
+                        </Link>
+                        <Link
+                            href={'/post-an-item'}
+                            className='flex items-center justify-center bg-secondary xs:hidden typo-body_ms h-[45px] w-[145px] text-white rounded-lg ml-[43px]'
+                        >
+                            Post Item
+                        </Link>
+                    </div>
                 )}
             </div>
             <div

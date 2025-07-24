@@ -5,6 +5,8 @@ import {Item} from '~/utils/interface';
 import Categories from '../homepage/categories';
 import GridItems from '../common/grid-items/GridItems';
 import SearchBar from '../homepage/search-bar';
+import HorizontalSlider from '../common/scroll/HorizontalSlider';
+import GridSwiper from '../common/grid-items/GridSwiper';
 
 interface Props {
     items: Item[];
@@ -30,14 +32,19 @@ const MainHome = (props: Props) => {
                 </div>
                 <SearchBar />
             </div>
-            <div className='grid grid-cols-[260px_1fr] xs:grid-cols-1 gap-6'>
+            <div className='grid grid-cols-[260px_1fr] xs:grid-cols-1 gap-6 overflow-hidden max-w-full'>
                 <Categories defaultCategories={defaultCategories} />
 
-                <div className='xs:grid-sizes xs:w-full pr-[60px]'>
+                <div className='w-full max-w-full overflow-x-hidden pr-[60px]'>
                     <div className='hidden mt-5 mb-5 xs:flex items-center justify-center bg-[#005f732b] text-[#333333] typo-body_ls w-max px-[10px] rounded-lg h-[36px]'>
                         Categories
                     </div>
-                    <div className='py-9 xs:py-0 xs:mb-4 typo-heading_ms'>Available Items</div>
+                    <div className='py-9 xs:py-0 xs:mb-4 typo-heading_ms overflow-hidden'>Live Auction</div>
+                    <div className=''>
+                        <GridSwiper items={items} />
+                    </div>
+                    <div className='py-9 xs:py-0 xs:mb-4 typo-heading_ms overflow-hidden'>Listed Items</div>
+
                     {items.length ? <GridItems items={items} /> : <NoData />}
                 </div>
             </div>

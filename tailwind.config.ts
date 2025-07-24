@@ -343,6 +343,12 @@ const config: Config = {
                     marginLeft: 'auto',
                     marginRight: 'auto'
                 },
+                '.grid-sizes-home': {
+                    maxWidth: '1320px',
+                    padding: '0 24px 0 0',
+                    marginLeft: 'auto',
+                    marginRight: 'auto'
+                },
                 '.grid-sizes-swiper': {
                     width: '1188px',
                     padding: '0 24px',
@@ -350,6 +356,10 @@ const config: Config = {
                 },
                 '@media (min-width: 768px) and (max-width: 1187px)': {
                     '.grid-sizes': {
+                        width: '768px',
+                        padding: '0 24px'
+                    },
+                    '.grid-sizes-home': {
                         width: '768px',
                         padding: '0 24px'
                     },
@@ -361,6 +371,11 @@ const config: Config = {
 
                 '@media (max-width: 767px)': {
                     '.grid-sizes': {
+                        maxWidth: '550px',
+                        width: '100%;',
+                        padding: '0 16px'
+                    },
+                    '.grid-sizes-home': {
                         maxWidth: '550px',
                         width: '100%;',
                         padding: '0 16px'

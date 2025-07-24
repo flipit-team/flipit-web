@@ -1,12 +1,9 @@
 import {redirect} from 'next/navigation';
-import {Suspense} from 'react';
 import Home from '~/ui/wrappers/Home';
+// import {dummyItems} from '~/utils/dummy';
 import {Item} from '~/utils/interface';
 
-type Props = {
-    params: Promise<{slug: string}>;
-};
-const page = async ({params}: Props) => {
+const page = async ({params}: {params: {slug: string}}) => {
     try {
         const {slug} = await params;
 
