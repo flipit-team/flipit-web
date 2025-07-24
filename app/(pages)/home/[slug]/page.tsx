@@ -3,7 +3,10 @@ import Home from '~/ui/wrappers/Home';
 // import {dummyItems} from '~/utils/dummy';
 import {Item} from '~/utils/interface';
 
-const page = async ({params}: {params: {slug: string}}) => {
+type Props = {
+    params: Promise<{slug: string}>;
+};
+const page = async ({params}: Props) => {
     try {
         const {slug} = await params;
 
