@@ -18,6 +18,7 @@ export async function getUserFromServer() {
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
     const userId = cookieStore.get('userId')?.value;
+    const userName = cookieStore.get('userName')?.value;
 
     if (!token) return null;
 
@@ -32,7 +33,7 @@ export async function getUserFromServer() {
 
         if (!res.ok) return null;
 
-        return {token, userId};
+        return {token, userId, userName};
     } catch (err) {
         console.error('Auth check failed:', err);
         return null;

@@ -4,7 +4,7 @@ import {Notification, Profile} from '~/utils/interface';
 
 interface AppContextProps {
     showPopup: boolean;
-    userId: number | null;
+    user: {token: string; userId: string | undefined; userName: string | undefined} | null;
     defaultCategories: {
         name: string;
         description: string | null;
@@ -21,7 +21,9 @@ interface AppContextProps {
     modalMessage: string;
     profile: Profile | null;
     setShowPopup: React.Dispatch<React.SetStateAction<boolean>>;
-    setUserId: React.Dispatch<React.SetStateAction<number | null>>;
+    setUser: React.Dispatch<
+        React.SetStateAction<{token: string; userId: string | undefined; userName: string | undefined} | null>
+    >;
     setModalMessage: React.Dispatch<React.SetStateAction<string>>;
     setProfile: React.Dispatch<React.SetStateAction<Profile | null>>;
 }
@@ -30,7 +32,9 @@ const AppContext = createContext<AppContextProps | undefined>(undefined);
 
 export const AppProvider = ({children}: {children: ReactNode}) => {
     const [showPopup, setShowPopup] = useState<boolean>(false);
-    const [userId, setUserId] = useState<number | null>(null);
+    const [user, setUser] = useState<{token: string; userId: string | undefined; userName: string | undefined} | null>(
+        null
+    );
     const [defaultCategories, setDefaultCategories] = useState<{name: string; description: string | null}[]>([]);
     const [notifications, setNotifications] = useState<Notification | null>(null);
     const [modalMessage, setModalMessage] = useState('');
@@ -53,8 +57,8 @@ export const AppProvider = ({children}: {children: ReactNode}) => {
             }
         };
 
-        if (userId) handleGetNotifications();
-    }, [userId]);
+        if (user?.userId) handleGetNotifications();
+    }, [user]);
 
     useEffect(() => {
         const fetchItems = async () => {
@@ -80,14 +84,14 @@ export const AppProvider = ({children}: {children: ReactNode}) => {
     return (
         <AppContext.Provider
             value={{
-                userId,
+                user,
                 showPopup,
                 defaultCategories,
                 notifications,
                 modalMessage,
                 profile,
                 setModalMessage,
-                setUserId,
+                setUser,
                 setShowPopup,
                 setProfile,
                 setDefaultCategories

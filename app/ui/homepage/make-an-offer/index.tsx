@@ -22,7 +22,7 @@ interface Props {
 const MakeAnOffer = (props: Props) => {
     const {item, onClose, onSubmit} = props;
     const router = useRouter();
-    const {userId} = useAppContext();
+    const {user} = useAppContext();
     const searchParams = useSearchParams();
     const query = searchParams.get('q');
     const [myItems, setMyItems] = useState<Item[]>([]);
@@ -43,13 +43,13 @@ const MakeAnOffer = (props: Props) => {
 
     useEffect(() => {
         const fetchItems = async () => {
-            if (!userId) {
+            if (!user?.userId) {
                 setLoading(false);
                 return;
             }
 
             try {
-                const res = await fetch(`/api/items/get-user-items?userId=${userId}`, {
+                const res = await fetch(`/api/items/get-user-items?userId=${user.userId}`, {
                     cache: 'no-store'
                 });
 
@@ -69,7 +69,7 @@ const MakeAnOffer = (props: Props) => {
         };
 
         fetchItems();
-    }, [userId]);
+    }, [user?.userId]);
 
     const handleSubmit = async () => {
         setLoading(true);

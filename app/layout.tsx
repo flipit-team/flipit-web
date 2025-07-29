@@ -47,7 +47,7 @@ export default async function RootLayout({
                 >
                     <main className='flex flex-col flex-1 xs:pb-[100px]'>
                         <Suspense fallback={<p>Loading...</p>}>
-                            <Header isAuthenticated={user ? true : false} />
+                            <Header user={user} />
                         </Suspense>
                         <Suspense fallback={<p>Loading...</p>}>
                             <Overlay />

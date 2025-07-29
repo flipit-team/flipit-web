@@ -22,7 +22,7 @@ const MainChats = (props: Props) => {
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const {userId} = useAppContext();
+    const {user} = useAppContext();
     const chatId = searchParams.get('chatId');
     const [activeTab, setActiveTab] = useState<'seller' | 'buyer'>('buyer');
     const displayedChat = activeTab === 'buyer' ? chatData.buyer : chatData.seller;
@@ -39,7 +39,7 @@ const MainChats = (props: Props) => {
         messages: userMessages,
         isLoading: userMessagesLoading,
         error: userMessagesError
-    } = useUserMessages(userId?.toString());
+    } = useUserMessages(user?.userId?.toString());
 
     const handleSend = async () => {
         if (!input.trim()) return;
@@ -178,14 +178,14 @@ const MainChats = (props: Props) => {
                     <div className='p-[40px] flex flex-col gap-2'>
                         {messages?.map((item, i) => {
                             return (
-                                <div key={i} className={`w-2/4 ${item.sentBy === userId ? 'ml-auto' : 'mr-auto'}`}>
+                                <div key={i} className={`w-2/4 ${item.sentBy === Number(user?.userId) ? 'ml-auto' : 'mr-auto'}`}>
                                     <div
-                                        className={`${item.sentBy === userId ? 'bg-[rgba(0,95,115,0.1)]' : 'bg-[#f8f8f7]'} p-3 rounded-lg`}
+                                        className={`${item.sentBy === Number(user?.userId) ? 'bg-[rgba(0,95,115,0.1)]' : 'bg-[#f8f8f7]'} p-3 rounded-lg`}
                                     >
                                         {item.message}
                                     </div>
                                     <p
-                                        className={`text-[#87928A] typo-body_mr ${item.sentBy === userId ? '' : 'text-right'}`}
+                                        className={`text-[#87928A] typo-body_mr ${item.sentBy === Number(user?.userId) ? '' : 'text-right'}`}
                                     >
                                         {formatTimeTo12Hour(item.dateCreated)}
                                     </p>

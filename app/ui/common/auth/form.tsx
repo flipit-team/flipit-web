@@ -7,7 +7,7 @@ import {useAppContext} from '~/contexts/AppContext';
 import Image from 'next/image';
 
 const Form = () => {
-    const {setUserId} = useAppContext();
+    const {setUser, user} = useAppContext();
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
     const [firstname, setFirstname] = useState('');
@@ -150,7 +150,11 @@ const Form = () => {
             console.log(data);
 
             setIsLoading(false);
-            setUserId(data?.message?.user?.id);
+            setUser({
+                token: data?.message?.token ?? '',
+                userId: data?.message?.user?.id,
+                userName: data?.message?.user?.firstName ?? ''
+            });
             if (isLogin) {
                 window.location.href = '/home';
             } else {

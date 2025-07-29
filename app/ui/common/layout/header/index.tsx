@@ -11,11 +11,15 @@ import {ShoppingBagIcon} from 'lucide-react';
 
 interface Props {
     avatar?: string;
-    isAuthenticated?: boolean;
+    user: {
+        token: string;
+        userId: string | undefined;
+        userName: string | undefined;
+    } | null;
 }
 
 const Header = (props: Props) => {
-    const {avatar, isAuthenticated} = props;
+    const {user} = props;
     const [showFlyout, setShowFlyout] = useState(false);
     const router = useRouter();
     const pathname = usePathname();
@@ -66,7 +70,7 @@ const Header = (props: Props) => {
                     <Link href={'/messages'}>Messages</Link>
                     <Link href={'/current-bids'}>Current Bids</Link>
                 </div>
-                {isAuthenticated ? (
+                {user ? (
                     <div className='flex items-center ml-auto'>
                         <div className='relative group'>
                             <Link href={'/faq'}>
@@ -114,7 +118,7 @@ const Header = (props: Props) => {
                                     alt='bell'
                                     className='h-7 w-7 xs:h-[30px] xs:w-[30px] rounded-full'
                                 />
-                                <div className='typo-body_ls'>Omolara</div>
+                                <div className='typo-body_ls capitalize'>{user.userName ?? 'John Doe'}</div>
                                 <Image
                                     src={'/arrow-down.svg'}
                                     height={32}
@@ -125,7 +129,7 @@ const Header = (props: Props) => {
                             </div>
 
                             {/* Logout Button (stays visible when hovering over it) */}
-                            {isAuthenticated && (
+                            {user && (
                                 <div className='flex flex-col gap-2 absolute right-0  bg-white shadow-md rounded px-4 py-2 text-sm z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto'>
                                     <Link
                                         href={'/my-items'}
@@ -147,7 +151,7 @@ const Header = (props: Props) => {
                         </div>
 
                         <Link
-                            href={isAuthenticated ? '/post-an-item/entry' : '/'}
+                            href={user ? '/post-an-item/entry' : '/'}
                             className='flex items-center justify-center bg-secondary xs:hidden typo-body_ms h-[45px] w-[145px] text-white rounded-lg ml-[43px]'
                         >
                             Post Item
@@ -169,7 +173,7 @@ const Header = (props: Props) => {
                             Sign In
                         </Link>
                         <Link
-                            href={isAuthenticated ? '/post-an-item/entry' : '/'}
+                            href={user ? '/post-an-item/entry' : '/'}
                             className='flex items-center justify-center bg-secondary xs:hidden typo-body_ms h-[45px] w-[145px] text-white rounded-lg ml-[43px]'
                         >
                             Post Item
@@ -203,7 +207,7 @@ const Header = (props: Props) => {
                                     </p>
                                 );
                         })}
-                        {isAuthenticated && <LogoutButton setShowFlyout={setShowFlyout} />}
+                        {user && <LogoutButton setShowFlyout={setShowFlyout} />}
                     </div>
                 </div>
             </div>

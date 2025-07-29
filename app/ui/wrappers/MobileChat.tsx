@@ -14,7 +14,7 @@ const MobileChat = () => {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const {userId} = useAppContext();
+    const {user} = useAppContext();
     const [chats, setChats] = useState<Message[] | null>([]);
     const [input, setInput] = useState('');
 
@@ -46,13 +46,13 @@ const MobileChat = () => {
             <div className='p-[40px] flex flex-col gap-2 flex-1 h-full'>
                 {messages?.map((item, i) => {
                     return (
-                        <div key={i} className={`w-[90%] ${item.sentBy === userId ? 'mr-auto' : 'ml-auto'}`}>
+                        <div key={i} className={`w-[90%] ${item.sentBy === Number(user?.userId) ? 'mr-auto' : 'ml-auto'}`}>
                             <div
-                                className={`${item.sentBy === userId ? 'bg-[#f8f8f7]' : 'bg-[rgba(0,95,115,0.1)]'} p-3 rounded-lg`}
+                                className={`${item.sentBy === Number(user?.userId) ? 'bg-[#f8f8f7]' : 'bg-[rgba(0,95,115,0.1)]'} p-3 rounded-lg`}
                             >
                                 {item.message}
                             </div>
-                            <p className={`text-[#87928A] typo-body_mr  ${item.sentBy === userId ? '' : 'text-right'}`}>
+                            <p className={`text-[#87928A] typo-body_mr  ${item.sentBy === Number(user?.userId) ? '' : 'text-right'}`}>
                                 {formatTimeTo12Hour(item.dateCreated)}
                             </p>
                         </div>

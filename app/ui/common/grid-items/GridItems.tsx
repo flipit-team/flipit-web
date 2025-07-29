@@ -12,11 +12,12 @@ interface Props {
 }
 
 const GridItems = (props: Props) => {
+    console.log(props.items);
     return (
         <div className='grid grid-cols-3 xs:grid-cols-2 gap-6 xs:gap-4'>
             {props.items ? (
                 props.items.map((item, i) => {
-                    const url = `/camera.png`;
+                    const url = item.imageUrls[0] || '/camera.png';
 
                     return (
                         <Link

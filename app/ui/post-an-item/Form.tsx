@@ -18,7 +18,7 @@ const Form = () => {
     const [price, setPrice] = useState(0);
     const [condition, setCondition] = useState('');
     const [cash, setCash] = useState('');
-    const {userId, defaultCategories} = useAppContext();
+    const {user, defaultCategories} = useAppContext();
     const [urls, setUrls] = useState<string[]>([]);
     const [uploading, setUploading] = useState(false);
 
@@ -44,7 +44,7 @@ const Form = () => {
             flipForImgUrls: ['https://images.pexels.com/photos/1323550/pexels-photo-1323550.jpeg'],
             acceptCash: cash === 'yes' ? true : false,
             cashAmount: price,
-            sellerId: userId ?? 1,
+            sellerId: user?.userId ?? 1,
             itemCategories: categories.split(','),
             condition: condition === 'brand-new' ? 'NEW' : 'FAIRLY_USED'
         };
