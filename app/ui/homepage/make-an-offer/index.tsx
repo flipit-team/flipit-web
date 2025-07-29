@@ -15,12 +15,14 @@ const options = [
 
 interface Props {
     item?: Item | null;
+    onClose: () => void;
+    onSubmit: (payload: any) => void;
 }
 
 const MakeAnOffer = (props: Props) => {
-    const {item} = props;
+    const {item, onClose, onSubmit} = props;
     const router = useRouter();
-    const {setShowPopup, userId} = useAppContext();
+    const {userId} = useAppContext();
     const searchParams = useSearchParams();
     const query = searchParams.get('q');
     const [myItems, setMyItems] = useState<Item[]>([]);
@@ -35,13 +37,17 @@ const MakeAnOffer = (props: Props) => {
           }
         | undefined
     >();
-
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>('');
     const [success, setSuccess] = useState(false);
 
     useEffect(() => {
         const fetchItems = async () => {
+            if (!userId) {
+                setLoading(false);
+                return;
+            }
+
             try {
                 const res = await fetch(`/api/items/get-user-items?userId=${userId}`, {
                     cache: 'no-store'
@@ -123,7 +129,7 @@ const MakeAnOffer = (props: Props) => {
                         width={45}
                         alt='bell'
                         className='h-[45px] w-[45px] ml-auto'
-                        onClick={() => setShowPopup(false)}
+                        onClick={() => onClose()}
                     />
                 </div>
                 <div className='h-[625px] w-full bg-white rounded-lg p-[50px] xs:p-0 xs:h-max xs:w-full xs:py-[32px]'>
@@ -134,7 +140,7 @@ const MakeAnOffer = (props: Props) => {
                             width={16}
                             alt='bell'
                             className='h-[16px] w-[16px] ml-auto mr-4'
-                            onClick={() => setShowPopup(false)}
+                            onClick={() => onClose()}
                         />
                     </div>
                     <div className='flex flex-col  mb-4 xs:px-4'>
@@ -155,7 +161,7 @@ const MakeAnOffer = (props: Props) => {
                             />
                             <div className='flex flex-col gap-6'>
                                 <p className='typo-heading_ss xs:typo-body_ls'>How do you want to bid?</p>
-                                <div className='flex space-x-6'>
+                                <div className='flex space-x-3'>
                                     {/* Radio Button 1 */}
                                     <label className='flex items-center space-x-2 cursor-pointer'>
                                         <input
@@ -198,6 +204,28 @@ const MakeAnOffer = (props: Props) => {
                                             )}
                                         </div>
                                         <span className='typo-body_lr xs:typo-body_mr'>With an Item</span>
+                                    </label>
+
+                                    {/* Radio Button 3 */}
+                                    <label className='flex items-center space-x-2 cursor-pointer'>
+                                        <input
+                                            type='radio'
+                                            name='toggle'
+                                            value='with-an-item'
+                                            checked={selected === 'with-an-item'}
+                                            onChange={() => setSelected('with-an-item')}
+                                            className='hidden'
+                                        />
+                                        <div
+                                            className={`w-6 h-6 flex items-center justify-center border-8 rounded-full transition ${
+                                                selected === 'with-an-item' ? 'border-green-500' : 'border-gray-400'
+                                            }`}
+                                        >
+                                            {selected === 'with-an-item' && (
+                                                <div className='w-2 h-2 bg-white rounded-full'></div>
+                                            )}
+                                        </div>
+                                        <span className='typo-body_lr xs:typo-body_mr'>With Cash and Item</span>
                                     </label>
                                 </div>
                                 <div className='relative w-full xs:flex-none mx-auto outline-none border-none'>

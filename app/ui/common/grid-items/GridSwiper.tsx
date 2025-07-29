@@ -74,6 +74,10 @@ const GridSwiper = (props: Props) => {
                                     width={349}
                                     unoptimized
                                 />
+                                <div className='h-[44px] w-[88px] typo-body_ls rounded-[35px] text-primary bg-white absolute top-4 right-3 flex items-center justify-center gap-2'>
+                                    <Image className='h-5 w-5' src={'/gavel.svg'} alt='search' height={20} width={20} />
+                                    <div className='text-primary'>12</div>
+                                </div>
                                 <div className='p-4 xs:p-3 h-[98px] xs:h-[132px]'>
                                     <p className='typo-body_mr xs:typo-body_sr xs:mb-2 capitalize'>{item.title}</p>
                                     <p className='typo-body_lm xs:typo-body_mm xs:mb-1'>

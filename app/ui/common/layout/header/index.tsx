@@ -62,14 +62,14 @@ const Header = (props: Props) => {
                 </div>
 
                 <div className='flex xs:hidden gap-[42px] typo-body_ls ml-[70px]'>
-                    <Link href={'/home'}>Live Auction</Link>
+                    <Link href={'#'}>Live Auction</Link>
                     <Link href={'/messages'}>Messages</Link>
                     <Link href={'/current-bids'}>Current Bids</Link>
                 </div>
                 {isAuthenticated ? (
                     <div className='flex items-center ml-auto'>
                         <div className='relative group'>
-                            <Link href={'/notifications'}>
+                            <Link href={'/faq'}>
                                 <Image
                                     src={'/help.svg'}
                                     height={32}
@@ -80,7 +80,7 @@ const Header = (props: Props) => {
                             </Link>
                         </div>
                         <div className='relative group'>
-                            <Link href={'/notifications'}>
+                            <Link href={'#'}>
                                 <Image
                                     src={'/save.svg'}
                                     height={32}
@@ -147,7 +147,7 @@ const Header = (props: Props) => {
                         </div>
 
                         <Link
-                            href={'/post-an-item'}
+                            href={isAuthenticated ? '/post-an-item/entry' : '/'}
                             className='flex items-center justify-center bg-secondary xs:hidden typo-body_ms h-[45px] w-[145px] text-white rounded-lg ml-[43px]'
                         >
                             Post Item
@@ -156,11 +156,11 @@ const Header = (props: Props) => {
                 ) : (
                     <div className='flex items-center ml-auto'>
                         <Image
-                            src={'/question.svg'}
+                            src={'/help.svg'}
                             height={32}
                             width={32}
                             alt='bell'
-                            className='h-8 w-8 xs:h-4 xs:w-4 rounded-full'
+                            className='h-7 w-7 xs:h-4 xs:w-4 rounded-full'
                         />
                         <Link
                             href={'/'}
@@ -169,7 +169,7 @@ const Header = (props: Props) => {
                             Sign In
                         </Link>
                         <Link
-                            href={'/post-an-item'}
+                            href={isAuthenticated ? '/post-an-item/entry' : '/'}
                             className='flex items-center justify-center bg-secondary xs:hidden typo-body_ms h-[45px] w-[145px] text-white rounded-lg ml-[43px]'
                         >
                             Post Item

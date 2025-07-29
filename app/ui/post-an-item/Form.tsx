@@ -46,7 +46,7 @@ const Form = () => {
             cashAmount: price,
             sellerId: userId ?? 1,
             itemCategories: categories.split(','),
-            condition: condition === 'brand-new' ? 'NEW' : 'USED_FAIR'
+            condition: condition === 'brand-new' ? 'NEW' : 'FAIRLY_USED'
         };
         console.log(payload);
 

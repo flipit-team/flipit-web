@@ -6,6 +6,8 @@ import Success from './Success';
 import Error from './Error';
 import {useAppContext} from '~/contexts/AppContext';
 import Image from 'next/image';
+import SendMessage from '~/ui/homepage/send-message';
+import CallbackRequest from '~/ui/homepage/callback-request';
 
 enum MODAL {
     LOGIN = 'login',
@@ -15,7 +17,9 @@ enum MODAL {
     SUCCESS = 'success',
     ERROR = 'error',
     EXPIREDLINK = 'expired-link',
-    VERIFIED = 'verified'
+    VERIFIED = 'verified',
+    SEND_MESSAGE = 'send-message',
+    CALLBACK_REQUEST = 'callback-request'
 }
 
 const Overlay = () => {
@@ -56,6 +60,10 @@ const Overlay = () => {
                 return <Error onClose={removeParam} message={'Link has expired'} />;
             case MODAL.ERROR:
                 return <Error onClose={removeParam} message={modalMessage} />;
+            case MODAL.SEND_MESSAGE:
+                return <SendMessage onClose={removeParam} title='Send message to seller' onSubmit={removeParam} />;
+            case MODAL.CALLBACK_REQUEST:
+                return <CallbackRequest onClose={removeParam} title='Request for Callback' onSubmit={removeParam} />;
             default:
                 break;
         }
@@ -63,14 +71,23 @@ const Overlay = () => {
 
     if (!isOpen) return;
 
+    const showCancel = () => {
+        if (modalType === MODAL.SEND_MESSAGE || modalType === MODAL.CALLBACK_REQUEST) {
+            return true;
+        }
+        return false;
+    };
+
     return (
         <div className=''>
             <div className={`fixed inset-0 bg-black bg-opacity-50 h-screen flex justify-center items-center z-[1001]`}>
                 <div
-                    className={`relative bg-white rounded-2xl w-[558px] h-max xs:w-full py-[48px] px-[56px] xs:px-8 xs:py-8 mx-6 text-text-primary`}
+                    className={`relative bg-white rounded-2xl w-[558px] h-max xs:w-full ${
+                        showCancel() ? 'py-0 px-0' : 'py-[48px] px-[56px]'
+                    } xs:px-8 xs:py-8 mx-6 text-text-primary`}
                     onClick={(e) => e.stopPropagation()}
                 >
-                    <div onClick={removeParam}>
+                    <div onClick={removeParam} className={`${showCancel() ? 'hidden' : ''}`}>
                         <Image
                             src={'/cancel-grey.svg'}
                             height={30}

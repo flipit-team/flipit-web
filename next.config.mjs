@@ -9,8 +9,16 @@ const nextConfig = {
     },
     images: {
         unoptimized: false,
-        remotePatterns: [],
-        domains: ['flipitimages1.s3.amazonaws.com', 'images.pexels.com']
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'flipitimages1.s3.amazonaws.com'
+            },
+            {
+                protocol: 'https',
+                hostname: 'images.pexels.com'
+            }
+        ]
     }
 };
 

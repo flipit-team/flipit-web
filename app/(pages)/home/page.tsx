@@ -1,6 +1,7 @@
 import {redirect} from 'next/navigation';
 import NoData from '~/ui/common/no-data/NoData';
 import MainHome from '~/ui/wrappers/MainHome';
+import {dummyItems} from '~/utils/dummy';
 // import {dummyItems} from '~/utils/dummy';
 import {Item} from '~/utils/interface';
 

@@ -12,6 +12,11 @@ import MakeAnOffer from '../homepage/make-an-offer';
 import {Loader} from 'lucide-react';
 import SafetyTips from '../common/safety-tips/SafetyTips';
 import ReportModalContent from '../homepage/report-issue';
+import CallbackRequest from '../homepage/callback-request';
+import Link from 'next/link';
+import {usePathname, useRouter, useSearchParams} from 'next/navigation';
+import {useAppContext} from '~/contexts/AppContext';
+import SendMessage from '../homepage/send-message';
 
 interface Props {
     item: Item;
@@ -25,6 +30,30 @@ const Home = (props: Props) => {
     const [inputActive, setInputActive] = useState(false);
     const [createLoading, setCreateLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+    const router = useRouter();
+    const pathname = usePathname();
+
+    const {setShowPopup} = useAppContext();
+    const searchParams = useSearchParams();
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('q', 'callback-request');
+
+    const pushParam = (param: string) => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('q', param);
+        router.replace(`${pathname}?${params.toString()}`);
+        setShowPopup(true);
+    };
+
+    const removeParam = () => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.delete('q');
+        setShowPopup(false);
+
+        const queryString = params.toString();
+        router.push(queryString ? `${pathname}?${queryString}` : pathname);
+        router.refresh();
+    };
 
     const handleCreate = async () => {
         if (!input) return;
@@ -172,34 +201,6 @@ const Home = (props: Props) => {
                     <RegularButton text='Make an offer' slug='make-an-offer' usePopup />
                     <div className='h-6'></div>
                     <RegularButton text='Buy right away' isLight action={() => setInputActive(!inputActive)} />
-                    {inputActive && !success ? (
-                        <div className='flex items-center mt-2 border border-border_gray rounded-md shadow-sm'>
-                            <input
-                                autoFocus
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
-                                type={'text'}
-                                placeholder={'enter message'}
-                                className='h-[80px] w-full px-4 focus:ring-transparent outline-none'
-                            />
-                            {createLoading ? (
-                                <Loader height={35} width={35} />
-                            ) : (
-                                <Image
-                                    onClick={handleCreate}
-                                    src={'/send-mobile.svg'}
-                                    height={39}
-                                    width={87}
-                                    alt='mic'
-                                    className='h-[39px] w-[87px]'
-                                />
-                            )}
-                        </div>
-                    ) : success ? (
-                        <div className='typo-body_ls mt-4 text-primary text-center'>Message sent</div>
-                    ) : (
-                        <></>
-                    )}
 
                     <div className='typo-body_mm text-text_one mt-6'>Location</div>
                     <div className='typo-body_mr text-text_four mb-8'>{item?.location}</div>
@@ -237,25 +238,48 @@ const Home = (props: Props) => {
                     </div>
                     <div className='flex gap-6 mb-6'>
                         <div
-                            // onClick={() => setViewPhone(!viewPhone)}
+                            onClick={() => pushParam('send-message')}
                             className={`w-[232px] border border-primary flex items-center justify-center h-[51px] bg-[#005f7329] rounded-lg text-primary typo-body_ls cursor-pointer`}
                         >
                             {'Send Message'}
                         </div>
                         <div
-                            // onClick={() => setViewPhone(!viewPhone)}
+                            onClick={() => pushParam('callback-request')}
                             className={`w-[232px] text-text_four border border-text_four flex items-center justify-center h-[51px] rounded-lg typo-body_ls cursor-pointer`}
                         >
                             {'Request for Callback'}
                         </div>
                     </div>
                     <SafetyTips />
+                    <div className='flex items-center gap-4 mt-6 justify-self-center'>
+                        <div className='typo-body_lm'>4 Feedback</div>
+                        <Link
+                            href={'/feedback'}
+                            className='border border-border_gray h-[30px] w-[93px] flex items-center justify-center typo-body_mr text-text_four rounded-lg cursor-pointer'
+                        >
+                            View all
+                        </Link>
+                    </div>
                 </div>
             </div>
             <PopupSheet>
-                <ProfilePopup seller={item?.seller} />
-                <MakeAnOffer item={item} />
-                <ReportModalContent title='Report this item' onClose={() => {}} onSubmit={() => {}} />
+                <ProfilePopup seller={item?.seller} onClose={() => removeParam()} onSubmit={() => removeParam()} />
+                <MakeAnOffer item={item} onClose={() => removeParam()} onSubmit={() => removeParam()} />
+                <ReportModalContent
+                    title='Report Canon EOS RP Camera +Small Rig'
+                    onClose={() => removeParam()}
+                    onSubmit={() => removeParam()}
+                />
+                <CallbackRequest
+                    title='Request for Callback'
+                    onClose={() => removeParam()}
+                    onSubmit={() => removeParam()}
+                />
+                <SendMessage
+                    title='Send message to seller'
+                    onClose={() => removeParam()}
+                    onSubmit={() => removeParam()}
+                />
             </PopupSheet>
         </>
     );

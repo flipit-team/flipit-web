@@ -20,9 +20,11 @@ interface Props {
               dateVerified: Date;
           }
         | undefined;
+    onClose: () => void;
+    onSubmit: (payload: any) => void;
 }
 const ProfilePopup = (props: Props) => {
-    const {seller} = props;
+    const {seller, onClose, onSubmit} = props;
     const [viewPhone, setViewPhone] = useState(false);
     const {setShowPopup} = useAppContext();
     const searchParams = useSearchParams();
@@ -37,7 +39,7 @@ const ProfilePopup = (props: Props) => {
                         width={45}
                         alt='bell'
                         className='h-[45px] w-[45px] ml-auto'
-                        onClick={() => setShowPopup(false)}
+                        onClick={() => onClose()}
                     />
                 </div>
                 <div className='h-[648px] w-[708px] bg-white rounded-lg p-[30px] xs:p-0 xs:h-max xs:w-full xs:py-[32px]'>
@@ -48,7 +50,7 @@ const ProfilePopup = (props: Props) => {
                             width={16}
                             alt='bell'
                             className='h-[16px] w-[16px] ml-auto mr-4'
-                            onClick={() => setShowPopup(false)}
+                            onClick={() => onClose()}
                         />
                     </div>
                     <div className='flex xs:flex-col xs:items-center mb-4 border-b border-border_gray pb-[20px] xs:px-4'>

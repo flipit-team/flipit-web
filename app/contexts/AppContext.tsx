@@ -9,6 +9,14 @@ interface AppContextProps {
         name: string;
         description: string | null;
     }[];
+    setDefaultCategories: React.Dispatch<
+        React.SetStateAction<
+            {
+                name: string;
+                description: string | null;
+            }[]
+        >
+    >;
     notifications: Notification | null;
     modalMessage: string;
     profile: Profile | null;
@@ -38,7 +46,6 @@ export const AppProvider = ({children}: {children: ReactNode}) => {
             });
 
             const data = await res.json();
-            console.log(data, 88);
 
             setNotifications(data);
             if (!res.ok) {
@@ -63,7 +70,6 @@ export const AppProvider = ({children}: {children: ReactNode}) => {
 
                 const data = await res.json();
                 setProfile(data);
-                console.log(data, 77);
             } catch (err: any) {
                 console.log(err.message || 'Something went wrong');
             }
@@ -83,7 +89,8 @@ export const AppProvider = ({children}: {children: ReactNode}) => {
                 setModalMessage,
                 setUserId,
                 setShowPopup,
-                setProfile
+                setProfile,
+                setDefaultCategories
             }}
         >
             {children}
