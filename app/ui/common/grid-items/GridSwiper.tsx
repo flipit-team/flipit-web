@@ -1,17 +1,13 @@
 'use client';
-import Image from 'next/image';
 import React, {useRef} from 'react';
-import {formatToNaira} from '~/utils/helpers';
-import UsedBadge from '../badges/UsedBadge';
-import Link from 'next/link';
 import {Item} from '~/utils/interface';
-import NoData from '../no-data/NoData';
 import {Swiper, SwiperSlide} from 'swiper/react';
 import {Navigation} from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import {ChevronLeft, ChevronRight} from 'lucide-react';
 import Countdown from '../badges/Countdown';
+import ItemCard from '../item-card/ItemCard';
 
 interface Props {
     items: Item[];
@@ -57,43 +53,24 @@ const GridSwiper = (props: Props) => {
                 mousewheel
                 updateOnWindowResize={false}
             >
-                {props.items?.map((item, i) => {
-                    const url = `/camera.png`;
-
-                    return (
-                        <SwiperSlide
-                            key={i}
-                            className='h-[400px] w-[349px] xs:h-[260px] border border-border_gray rounded-md'
-                        >
-                            <Link href={`/${props.forEdit ? 'edit-item' : 'home'}/${item.id}`}>
-                                <Image
-                                    className='h-[302px] w-full xs:h-[128px] cursor-pointer'
-                                    src={url}
-                                    alt='search'
-                                    height={302}
-                                    width={349}
-                                    unoptimized
-                                />
-                                <div className='h-[44px] w-[88px] typo-body_ls rounded-[35px] text-primary bg-white absolute top-4 right-3 flex items-center justify-center gap-2'>
-                                    <Image className='h-5 w-5' src={'/gavel.svg'} alt='search' height={20} width={20} />
-                                    <div className='text-primary'>12</div>
-                                </div>
-                                <div className='p-4 xs:p-3 h-[98px] xs:h-[132px]'>
-                                    <p className='typo-body_mr xs:typo-body_sr xs:mb-2 capitalize'>{item.title}</p>
-                                    <p className='typo-body_lm xs:typo-body_mm xs:mb-1'>
-                                        {formatToNaira(item.cashAmount)}
-                                    </p>
-                                    <div className='flex xs:flex-col justify-between items-center xs:items-start rounded'>
-                                        <p className='typo-body_sr xs:text-[11px] xs:mb-1 capitalize'>
-                                            {item.acceptCash ? 'cash' : 'item'} offers
-                                        </p>
-                                        <Countdown />
-                                    </div>
-                                </div>
-                            </Link>
-                        </SwiperSlide>
-                    );
-                })}
+                {props.items?.map((item, i) => (
+                    <SwiperSlide
+                        key={i}
+                        className='!h-[400px] w-[359px] max-w-[349px] xs:!h-[260px] border border-border_gray rounded-md !p-0'
+                    >
+                        <ItemCard
+                            item={item}
+                            forEdit={props.forEdit}
+                            className='h-full w-full'
+                            showSaveButton={false}
+                            showPromotedBadge={false}
+                            showVerifiedBadge={false}
+                            showAuctionBadge={true}
+                            auctionBidCount={12}
+                            customFooter={<Countdown />}
+                        />
+                    </SwiperSlide>
+                ))}
             </Swiper>
         </div>
     );

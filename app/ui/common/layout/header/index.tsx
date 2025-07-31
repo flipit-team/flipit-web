@@ -66,30 +66,45 @@ const Header = (props: Props) => {
                 </div>
 
                 <div className='flex xs:hidden gap-[42px] typo-body_ls ml-[70px]'>
-                    <Link href={'#'}>Live Auction</Link>
-                    <Link href={'/messages'}>Messages</Link>
-                    <Link href={'/current-bids'}>Current Bids</Link>
+                    <Link 
+                        href={'/live-auction'}
+                        className={pathname === '/live-auction' ? 'text-[#FFC300]' : 'text-white'}
+                    >
+                        Live Auction
+                    </Link>
+                    <Link 
+                        href={'/messages'}
+                        className={pathname.startsWith('/messages') ? 'text-[#FFC300]' : 'text-white'}
+                    >
+                        Messages
+                    </Link>
+                    <Link 
+                        href={'/current-bids'}
+                        className={pathname === '/current-bids' ? 'text-[#FFC300]' : 'text-white'}
+                    >
+                        Current Bids
+                    </Link>
                 </div>
                 {user ? (
                     <div className='flex items-center ml-auto'>
                         <div className='relative group'>
                             <Link href={'/faq'}>
                                 <Image
-                                    src={'/help.svg'}
+                                    src={pathname === '/faq' ? '/help-yellow.svg' : '/help.svg'}
                                     height={32}
                                     width={32}
-                                    alt='bell'
+                                    alt='help'
                                     className='h-7 w-7 mr-[27px] xs:h-6 xs:w-6'
                                 />
                             </Link>
                         </div>
                         <div className='relative group'>
-                            <Link href={'#'}>
+                            <Link href={'/saved-items'}>
                                 <Image
-                                    src={'/save.svg'}
+                                    src={pathname === '/saved-items' ? '/save-yellow.svg' : '/save.svg'}
                                     height={32}
                                     width={32}
-                                    alt='bell'
+                                    alt='saved items'
                                     className='h-7 w-7 mr-[27px] xs:h-6 xs:w-6'
                                 />
                             </Link>
@@ -97,10 +112,10 @@ const Header = (props: Props) => {
                         <div className='relative group'>
                             <Link href={'/notifications'}>
                                 <Image
-                                    src={'/bell.svg'}
+                                    src={pathname === '/notifications' ? '/bell-yellow.svg' : '/bell.svg'}
                                     height={32}
                                     width={32}
-                                    alt='bell'
+                                    alt='notifications'
                                     className='h-6 w-6 mr-[27px] xs:h-6 xs:w-6'
                                 />
                             </Link>

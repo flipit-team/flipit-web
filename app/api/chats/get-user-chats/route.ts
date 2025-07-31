@@ -1,6 +1,6 @@
 import {NextRequest, NextResponse} from 'next/server';
 import {cookies} from 'next/headers';
-import { API_BASE_PATH } from '~/lib/config';
+import {API_BASE_PATH} from '~/lib/config';
 
 export async function GET(req: NextRequest) {
     console.log('✅ /api/items/get-items HIT');
@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     // ✅ Get token from cookies
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
-
+    console.log(token, 999);
     try {
         const apiRes = await fetch(apiUrl, {
             headers: {

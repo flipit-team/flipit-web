@@ -18,7 +18,7 @@ const SearchBar = () => {
                 params.set('q', query);
             }
 
-            router.push(`/home?${params.toString()}`);
+            // router.push(`/home?${params.toString()}`);
         }, 500); // debounce delay
 
         return () => clearTimeout(timeout);

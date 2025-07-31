@@ -9,6 +9,7 @@ const page = async () => {
     try {
         const cookieStore = await cookies();
         const userId = cookieStore.get('userId')?.value;
+        console.log(userId);
         const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/chats/get-user-chats?userId=${userId}`, {
             cache: 'no-store'
         });

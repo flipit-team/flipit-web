@@ -7,10 +7,11 @@ interface Props {
     setSelectedOption: React.Dispatch<React.SetStateAction<string>>;
     selectedOption: string;
     options: {name: string; description: string | null}[];
+    title?: string;
 }
 
 const NormalSelectBox = (props: Props) => {
-    const {selectedOption, options, setSelectedOption} = props;
+    const {selectedOption, options, setSelectedOption, title} = props;
     const searchParams = useSearchParams();
     const query = searchParams.get('q');
 
@@ -18,7 +19,7 @@ const NormalSelectBox = (props: Props) => {
     return (
         <div className='relative w-full xs:flex-none mx-auto outline-none border-none'>
             <label htmlFor='category' className='typo-body_lr block mb-2'>
-                Category
+                {title || 'Category'}
             </label>
 
             <div className='relative w-full h-[49px]'>
