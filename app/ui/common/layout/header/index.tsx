@@ -66,19 +66,19 @@ const Header = (props: Props) => {
                 </div>
 
                 <div className='flex xs:hidden gap-[42px] typo-body_ls ml-[70px]'>
-                    <Link 
+                    <Link
                         href={'/live-auction'}
                         className={pathname === '/live-auction' ? 'text-[#FFC300]' : 'text-white'}
                     >
                         Live Auction
                     </Link>
-                    <Link 
+                    <Link
                         href={'/messages'}
                         className={pathname.startsWith('/messages') ? 'text-[#FFC300]' : 'text-white'}
                     >
                         Messages
                     </Link>
-                    <Link 
+                    <Link
                         href={'/current-bids'}
                         className={pathname === '/current-bids' ? 'text-[#FFC300]' : 'text-white'}
                     >

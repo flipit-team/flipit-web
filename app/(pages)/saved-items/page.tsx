@@ -79,14 +79,35 @@ const page = async () => {
 
         const cookieStore = await cookies();
         const userId = cookieStore.get('userId')?.value;
+        const token = cookieStore.get('token')?.value;
+
+        console.log('Saved-items page - userId:', userId);
+        console.log('Saved-items page - token exists:', !!token);
         
         // For now, using dummy data. Replace with actual saved items API call
         const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/items/get-saved-items?userId=${userId}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Cookie': `token=${token}; userId=${userId}`
+            },
             cache: 'no-store'
-        }).catch(() => null);
+        }).catch((error) => {
+            console.error('Saved-items page - Fetch error:', error);
+            return null;
+        });
+
+        console.log('Saved-items page - API response status:', res?.status);
 
         // Fallback to dummy data if API fails
-        const data: Item[] = res ? await res.json() : data2;
+        let data: Item[] = data2;
+        if (res?.ok) {
+            try {
+                data = await res.json();
+            } catch (error) {
+                console.error('Saved-items page - JSON parse error:', error);
+                data = data2;
+            }
+        }
 
         return (
             <div className='grid-sizes xs:w-full pr-[60px]'>
@@ -94,7 +115,8 @@ const page = async () => {
                 {data.length ? <GridItems items={data} /> : <NoData text="No saved items yet" />}
             </div>
         );
-    } catch {
+    } catch (error) {
+        console.error('Saved-items page - Error:', error);
         redirect('/error-page');
     }
 };
