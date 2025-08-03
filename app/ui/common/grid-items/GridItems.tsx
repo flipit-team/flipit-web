@@ -19,6 +19,7 @@ const GridItems = (props: Props) => {
                         key={i}
                         item={item}
                         forEdit={forEdit}
+                        forLiveAuction={forLiveAuction}
                         showSaveButton={forLiveAuction ? false : true}
                         showPromotedBadge={forLiveAuction ? false : true}
                         showVerifiedBadge={forLiveAuction ? false : true}

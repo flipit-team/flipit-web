@@ -17,6 +17,7 @@ import Link from 'next/link';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import {useAppContext} from '~/contexts/AppContext';
 import SendMessage from '../homepage/send-message';
+import ImageGallery from '../common/image-gallery/ImageGallery';
 
 interface Props {
     item: Item;
@@ -77,51 +78,36 @@ const Home = (props: Props) => {
         <>
             <div className='grid-sizes grid grid-cols-[712px_1fr] xs:grid-cols-1 gap-6 h-full mt-10 xs:mb-6'>
                 <div className='p-6 xs:p-0 shadow-[0px_4px_10px_rgba(0,0,0,0.2)]'>
-                    <div className='relative'>
-                        <Image
-                            src={'/camera-large.png'}
-                            height={443}
-                            width={712}
-                            alt='picture'
-                            className='h-[443px] w-[712px] xs:w-full xs:h-[222px] mb-6'
-                        />
-                        <div className='w-[76px] h-[26px] typo-body_sr text-white bg-primary absolute top-7 left-3 flex items-center justify-center rounded'>
-                            Promoted
-                        </div>
-                        <div className='absolute top-4 right-3'>
-                            <Image
-                                className='h-[46px] w-[43px] cursor-pointer'
-                                src={'/save-item.svg'}
-                                alt='search'
-                                height={46}
-                                width={43}
-                            />
-                        </div>
-                    </div>
-
-                    <div className='grid grid-cols-3 gap-6'>
-                        <Image
-                            src={'/camera-large.png'}
-                            height={150}
-                            width={222}
-                            alt='picture'
-                            className='h-[150px] w-[222px] xs:h-[76px] xs:w-[112px]'
-                        />{' '}
-                        <Image
-                            src={'/camera-large.png'}
-                            height={150}
-                            width={222}
-                            alt='picture'
-                            className='h-[150px] w-[222px] xs:h-[76px] xs:w-[112px]'
-                        />{' '}
-                        <Image
-                            src={'/camera-large.png'}
-                            height={150}
-                            width={222}
-                            alt='picture'
-                            className='h-[150px] w-[222px] xs:h-[76px] xs:w-[112px]'
-                        />
-                    </div>
+                    <ImageGallery
+                        mainImage={{
+                            src: '/camera-large.png',
+                            alt: 'picture',
+                            width: 712,
+                            height: 443
+                        }}
+                        thumbnails={[
+                            { src: '/camera-large.png', alt: 'picture', width: 222, height: 150 },
+                            { src: '/camera-large.png', alt: 'picture', width: 222, height: 150 },
+                            { src: '/camera-large.png', alt: 'picture', width: 222, height: 150 }
+                        ]}
+                        thumbnailPosition="bottom"
+                        overlayElements={
+                            <>
+                                <div className='w-[76px] h-[26px] typo-body_sr text-white bg-primary absolute top-7 left-3 flex items-center justify-center rounded'>
+                                    Promoted
+                                </div>
+                                <div className='absolute top-4 right-3'>
+                                    <Image
+                                        className='h-[46px] w-[43px] cursor-pointer'
+                                        src={'/save-item.svg'}
+                                        alt='search'
+                                        height={46}
+                                        width={43}
+                                    />
+                                </div>
+                            </>
+                        }
+                    />
                     <div className='flex items-center justify-between mt-4'>
                         <div className='flex items-center gap-1'>
                             <Image

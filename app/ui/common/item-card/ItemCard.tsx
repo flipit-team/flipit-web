@@ -8,6 +8,7 @@ import {Item} from '~/utils/interface';
 interface ItemCardProps {
     item: Item;
     forEdit?: boolean;
+    forLiveAuction?: boolean;
     className?: string;
     imageClassName?: string;
     contentClassName?: string;
@@ -22,6 +23,7 @@ interface ItemCardProps {
 const ItemCard: React.FC<ItemCardProps> = ({
     item,
     forEdit = false,
+    forLiveAuction = false,
     className = 'h-[400px] w-full xs:h-[260px] border border-border_gray rounded-md',
     imageClassName = 'h-[302px] w-full xs:h-[128px] cursor-pointer',
     contentClassName = 'p-4 xs:p-3 h-[98px] xs:h-[132px]',
@@ -34,9 +36,15 @@ const ItemCard: React.FC<ItemCardProps> = ({
 }) => {
     const url = item.imageUrls?.[0] || '/camera.png';
 
+    const getHref = () => {
+        if (forEdit) return `/edit-item/${item.id}`;
+        if (forLiveAuction) return `/live-auction/${item.id}`;
+        return `/home/${item.id}`;
+    };
+
     return (
         <Link
-            href={`/${forEdit ? 'edit-item' : 'home'}/${item.id}`}
+            href={getHref()}
             className={className}
         >
             <div className='relative h-[302px] w-full'>
