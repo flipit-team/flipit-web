@@ -6,7 +6,7 @@ export async function GET(req: NextRequest) {
     console.log('✅ /api/items/get-items HIT');
 
     const userId = req.nextUrl.searchParams.get('userId');
-    const apiUrl = `${API_BASE_PATH}/bidding/user/${userId}/bids`;
+    const apiUrl = `${API_BASE_PATH}/offer/user/${userId}/offers`;
 
     // ✅ Get token from cookies
     const cookieStore = await cookies(); // ← must await!
