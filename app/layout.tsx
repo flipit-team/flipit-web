@@ -44,6 +44,7 @@ export default async function RootLayout({
             <AppProvider>
                 <body
                     className={`relative ${inter.variable} ${poppins.variable} antialiased flex flex-col min-h-[100vh]`}
+                    suppressHydrationWarning={true}
                 >
                     <main className='flex flex-col flex-1 xs:pb-[100px]'>
                         <Suspense fallback={<p>Loading...</p>}>

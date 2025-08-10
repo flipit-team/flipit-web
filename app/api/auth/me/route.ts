@@ -4,8 +4,12 @@ import { API_BASE_URL } from '~/lib/config';
 export async function GET(req: NextRequest) {
     const token = req.cookies.get('token')?.value;
     const userId = req.cookies.get('userId')?.value;
+    const userName = req.cookies.get('userName')?.value;
+
+    console.log('Auth check - cookies:', { token: !!token, userId, userName });
 
     if (!token) {
+        console.log('No token found, user not authenticated');
         return NextResponse.json({isAuthenticated: false});
     }
 
@@ -19,7 +23,14 @@ export async function GET(req: NextRequest) {
         });
 
         if (response.ok) {
-            return NextResponse.json({isAuthenticated: true, userId: userId, token});
+            return NextResponse.json({
+                isAuthenticated: true,
+                user: {
+                    token: token,
+                    userId: userId,
+                    userName: userName
+                }
+            });
         } else {
             return NextResponse.json({isAuthenticated: false});
         }

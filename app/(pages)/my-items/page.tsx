@@ -1,147 +1,24 @@
-import {cookies} from 'next/headers';
-import {redirect} from 'next/navigation';
 import React from 'react';
-import GridItems from '~/ui/common/grid-items/GridItems';
-import NoData from '~/ui/common/no-data/NoData';
-import {Chat, Item} from '~/utils/interface';
+import Sidebar from '~/ui/common/layout/sidebar';
+import GoBack from '~/ui/common/go-back';
+import ItemsContainer from './components/ItemsContainer';
+import {mockItems} from './data/mockItems';
 
-const page = async () => {
-    try {
-        const data2 = [
-            {
-                id: 1,
-                title: 'Canon EOS RP Camera +Small Rig | Clean U... ',
-                description: 'string',
-                imageUrls: ['/camera.png'],
-                flipForImgUrls: ['/camera.png'],
-                acceptCash: true,
-                cashAmount: 5000,
-                condition: 'new',
-                dateCreated: '' as unknown as Date,
-                published: true,
-                location: 'string',
-                seller: {
-                    id: '1',
-                    title: 'string',
-                    firstName: 'Joe',
-                    middleName: 'string',
-                    lastName: 'Campos',
-                    email: 'campos@gmail.com',
-                    phoneNumber: '+23408095864533',
-                    avatar: 'string',
-                    avg_rating: 0,
-                    status: 'string',
-                    phoneNumberVerified: true,
-                    dateVerified: '' as unknown as Date
-                },
-                itemCategories: [
-                    {
-                        name: 'Vehicles',
-                        description: 'string'
-                    }
-                ]
-            },
-            {
-                id: 1,
-                title: 'Canon EOS RP Camera +Small Rig | Clean U... ',
-                description: 'string',
-                imageUrls: ['/camera.png'],
-                flipForImgUrls: ['/camera.png'],
-                acceptCash: true,
-                cashAmount: 5000,
-                condition: 'new',
-                dateCreated: '' as unknown as Date,
-                published: true,
-                location: 'string',
-                seller: {
-                    id: '1',
-                    title: 'string',
-                    firstName: 'Joe',
-                    middleName: 'string',
-                    lastName: 'Campos',
-                    email: 'campos@gmail.com',
-                    phoneNumber: '+23408095864533',
-                    avatar: 'string',
-                    avg_rating: 0,
-                    status: 'string',
-                    phoneNumberVerified: true,
-                    dateVerified: '' as unknown as Date
-                },
-                itemCategories: [
-                    {
-                        name: 'Vehicles',
-                        description: 'string'
-                    }
-                ]
-            },
-            {
-                id: 1,
-                title: 'Canon EOS RP Camera +Small Rig | Clean U... ',
-                description: 'string',
-                imageUrls: ['/camera.png'],
-                flipForImgUrls: ['/camera.png'],
-                acceptCash: true,
-                cashAmount: 5000,
-                condition: 'new',
-                dateCreated: '' as unknown as Date,
-                published: true,
-                location: 'string',
-                seller: {
-                    id: '1',
-                    title: 'string',
-                    firstName: 'Joe',
-                    middleName: 'string',
-                    lastName: 'Campos',
-                    email: 'campos@gmail.com',
-                    phoneNumber: '+23408095864533',
-                    avatar: 'string',
-                    avg_rating: 0,
-                    status: 'string',
-                    phoneNumberVerified: true,
-                    dateVerified: '' as unknown as Date
-                },
-                itemCategories: [
-                    {
-                        name: 'Vehicles',
-                        description: 'string'
-                    }
-                ]
-            }
-        ];
+export default function MyItemsPage() {
+    return (
+        <div className='flex min-h-screen bg-gray-50'>
+            <Sidebar username="John" />
+            
+            {/* Main Content Area */}
+            <div className='flex-1 p-8'>
+                <div className='max-w-6xl mx-auto'>
+                    <GoBack />
 
-        const cookieStore = await cookies();
-        const userId = cookieStore.get('userId')?.value;
-        const token = cookieStore.get('token')?.value;
+                    <div className='py-9 xs:pt-6 xs:py-0 xs:mb-4 typo-heading_ms'>My Items</div>
 
-        console.log('My-items page - userId:', userId);
-        console.log('My-items page - token exists:', !!token);
-
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/items/get-user-items?userId=${userId}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Cookie': `token=${token}; userId=${userId}`
-            },
-            cache: 'no-store'
-        });
-
-        console.log('My-items page - API response status:', res.status);
-
-        const data: Item[] = await res.json();
-
-        if (!res.ok) {
-            console.error('My-items page - API error:', data);
-            return <NoData text='Failed to fetch items' />;
-        }
-        return (
-            <div className='grid-sizes xs:w-full pr-[60px]'>
-                <div className='py-9 xs:pt-6 xs:py-0 xs:mb-4 typo-heading_ms'>My Items</div>
-                <GridItems items={data} forEdit />
+                    <ItemsContainer mockItems={mockItems} />
+                </div>
             </div>
-        );
-    } catch (error) {
-        console.error('My-items page - Error:', error);
-        redirect('/error-page');
-    }
-};
-
-export default page;
+        </div>
+    );
+}

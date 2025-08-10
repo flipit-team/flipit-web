@@ -81,6 +81,28 @@ export const AppProvider = ({children}: {children: ReactNode}) => {
         fetchItems();
     }, []);
 
+    // Initialize user state from auth endpoint
+    useEffect(() => {
+        const initializeAuth = async () => {
+            try {
+                const res = await fetch('/api/auth/me');
+                const data = await res.json();
+                console.log('Auth check response:', data);
+                if (data.isAuthenticated && data.user) {
+                    console.log('Setting user:', data.user);
+                    setUser(data.user);
+                } else {
+                    console.log('User not authenticated');
+                }
+            } catch (error) {
+                // User not authenticated, keep user as null
+                console.log('Error checking auth:', error);
+            }
+        };
+        
+        initializeAuth();
+    }, []);
+
     return (
         <AppContext.Provider
             value={{

@@ -2,12 +2,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
-import React, {useState} from 'react';
+import React, {useState, useEffect, Suspense} from 'react';
 import {useAppContext} from '~/contexts/AppContext';
-import useAuth from '~/hooks/useAuth';
 import LogoutButton from '../../auth/Logout';
 import Notifications from '../../modals/Notifications';
 import {ShoppingBagIcon} from 'lucide-react';
+import ProfileDropdown from './ProfileDropdown';
 
 interface Props {
     avatar?: string;
@@ -18,23 +18,41 @@ interface Props {
     } | null;
 }
 
-const Header = (props: Props) => {
-    const {user} = props;
+function HeaderContent(props: Props) {
+    const {user: serverUser} = props;
     const [showFlyout, setShowFlyout] = useState(false);
+    const [isClient, setIsClient] = useState(false);
+    const [hovered, setHovered] = useState(false);
     const router = useRouter();
     const pathname = usePathname();
-    const {defaultCategories, notifications, profile} = useAppContext();
+    const {defaultCategories, notifications, profile, user: clientUser} = useAppContext();
     const searchParams = useSearchParams();
-    const [hovered, setHovered] = useState(false);
+
+    // Debug mode: set to false to use real authentication
+    const DEBUG_MODE = false;
+
+    // Dummy user data for testing
+    const dummyUser = {
+        token: 'dummy-token-123',
+        userId: '1',
+        userName: 'John Doe'
+    };
+
+    // Prioritize client-side user state over server-side user prop
+    const user = DEBUG_MODE ? dummyUser : clientUser || serverUser;
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
 
     const pushParam = (name: string) => {
         setShowFlyout(false);
-        const params = new URLSearchParams(searchParams.toString());
+        const params = new URLSearchParams(searchParams?.toString() || '');
         params.set('categories', name);
         router.push(`/home?${params.toString()}`);
     };
 
-    if (pathname === '/') return;
+    if (!isClient || pathname === '/') return null;
 
     return (
         <>
@@ -143,26 +161,8 @@ const Header = (props: Props) => {
                                 />
                             </div>
 
-                            {/* Logout Button (stays visible when hovering over it) */}
-                            {user && (
-                                <div className='flex flex-col gap-2 absolute right-0  bg-white shadow-md rounded px-4 py-2 text-sm z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto'>
-                                    <Link
-                                        href={'/my-items'}
-                                        className='text-text_one font-medium flex items-center gap-2 whitespace-nowrap'
-                                    >
-                                        <ShoppingBagIcon height={16} width={16} />
-                                        My Items
-                                    </Link>
-                                    <Link
-                                        href={'/profile'}
-                                        className='text-text_one font-medium flex items-center gap-2 whitespace-nowrap'
-                                    >
-                                        <ShoppingBagIcon height={16} width={16} />
-                                        My Profile
-                                    </Link>
-                                    <LogoutButton setShowFlyout={setShowFlyout} />
-                                </div>
-                            )}
+                            {/* Profile Dropdown */}
+                            {user && <ProfileDropdown setShowFlyout={setShowFlyout} />}
                         </div>
 
                         <Link
@@ -227,6 +227,14 @@ const Header = (props: Props) => {
                 </div>
             </div>
         </>
+    );
+}
+
+const Header = (props: Props) => {
+    return (
+        <Suspense fallback={null}>
+            <HeaderContent {...props} />
+        </Suspense>
     );
 };
 

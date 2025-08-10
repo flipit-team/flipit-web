@@ -1,5 +1,5 @@
 'use client';
-import {useEffect, useState} from 'react';
+import {useEffect, useState, Suspense} from 'react';
 import {useSearchParams, useRouter, usePathname} from 'next/navigation';
 import CheckInbox from './CheckInbox';
 import Success from './Success';
@@ -22,16 +22,21 @@ enum MODAL {
     CALLBACK_REQUEST = 'callback-request'
 }
 
-const Overlay = () => {
+function OverlayContent() {
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
-    const modalType = searchParams.get('modal');
+    const [isClient, setIsClient] = useState(false);
+    const modalType = searchParams?.get('modal');
     const {modalMessage} = useAppContext();
 
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
     const removeParam = () => {
-        const params = new URLSearchParams(searchParams.toString());
+        const params = new URLSearchParams(searchParams?.toString() || '');
         params.delete('modal');
 
         const queryString = params.toString();
@@ -41,12 +46,16 @@ const Overlay = () => {
     };
 
     useEffect(() => {
-        if (modalType) {
-            setIsOpen(true);
-        } else {
-            setIsOpen(false);
+        if (isClient) {
+            if (modalType) {
+                setIsOpen(true);
+            } else {
+                setIsOpen(false);
+            }
         }
-    }, [modalType]);
+    }, [modalType, isClient]);
+
+    if (!isClient) return null;
 
     const getModal = () => {
         switch (modalType) {
@@ -100,6 +109,14 @@ const Overlay = () => {
                 </div>
             </div>
         </div>
+    );
+}
+
+const Overlay = () => {
+    return (
+        <Suspense fallback={null}>
+            <OverlayContent />
+        </Suspense>
     );
 };
 
