@@ -56,7 +56,7 @@ const ProfileVerificationStep = ({ onNext }: ProfileVerificationStepProps) => {
                     />
                     {profileImage ? (
                         <>
-                            <img src={profileImage} alt='Profile Preview' className='w-full h-full object-cover' />
+                            <Image src={profileImage} alt='Profile Preview' fill className='object-cover' />
                             <div className='absolute inset-0 flex items-center justify-center bg-black/30'>
                                 <Camera className='w-6 h-6 text-white opacity-80' />
                             </div>
@@ -81,7 +81,7 @@ const ProfileVerificationStep = ({ onNext }: ProfileVerificationStepProps) => {
                     placeholder='1234567890' 
                     type='number'
                     value={bvn}
-                    onChange={(e) => setBvn(e.target.value)}
+                    setValue={(e) => setBvn(e.target.value)}
                 />
             </div>
 
