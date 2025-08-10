@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
 
     try {
-        const res = await fetch(`${API_BASE_PATH}/bidding`, {
+        const res = await fetch(`${API_BASE_PATH}/offer`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
