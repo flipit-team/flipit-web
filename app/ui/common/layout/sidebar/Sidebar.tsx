@@ -43,7 +43,7 @@ const Sidebar = ({ username = 'User' }: SidebarProps) => {
     };
 
     return (
-        <div className='w-[260px] p-[22px] bg-white border-r border-border_gray h-full'>
+        <div className='w-[260px] p-[22px] bg-white border-r border-border_gray h-screen'>
             {/* User Element */}
             <div className='my-[28px] bg-primary bg-opacity-[8%] py-[16px] px-[24px] rounded-md'>
                 <div className='flex items-center gap-3'>
