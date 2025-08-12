@@ -20,12 +20,16 @@ interface AppContextProps {
     notifications: Notification | null;
     modalMessage: string;
     profile: Profile | null;
+    deleteConfirmCallback: (() => void) | null;
+    debugMode: boolean;
     setShowPopup: React.Dispatch<React.SetStateAction<boolean>>;
     setUser: React.Dispatch<
         React.SetStateAction<{token: string; userId: string | undefined; userName: string | undefined} | null>
     >;
     setModalMessage: React.Dispatch<React.SetStateAction<string>>;
     setProfile: React.Dispatch<React.SetStateAction<Profile | null>>;
+    setDeleteConfirmCallback: React.Dispatch<React.SetStateAction<(() => void) | null>>;
+    toggleDebugMode: () => void;
 }
 
 const AppContext = createContext<AppContextProps | undefined>(undefined);
@@ -39,69 +43,25 @@ export const AppProvider = ({children}: {children: ReactNode}) => {
     const [notifications, setNotifications] = useState<Notification | null>(null);
     const [modalMessage, setModalMessage] = useState('');
     const [profile, setProfile] = useState<Profile | null>(null);
+    const [deleteConfirmCallback, setDeleteConfirmCallback] = useState<(() => void) | null>(null);
+    const [debugMode, setDebugMode] = useState<boolean>(false);
 
+    // Initialize debug mode from localStorage
     useEffect(() => {
-        const handleGetNotifications = async () => {
-            const res = await fetch('/api/notifications/get-notifications', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            const data = await res.json();
-
-            setNotifications(data);
-            if (!res.ok) {
-                throw new Error(data.error || 'Something went wrong');
-            }
-        };
-
-        if (user?.userId) handleGetNotifications();
-    }, [user]);
-
-    useEffect(() => {
-        const fetchItems = async () => {
-            try {
-                const res = await fetch(`/api/profile/get-profile`, {
-                    cache: 'no-store'
-                });
-
-                if (!res.ok) {
-                    const errData = await res.json();
-                    throw new Error(errData.apierror?.message || 'Failed to fetch items');
-                }
-
-                const data = await res.json();
-                setProfile(data);
-            } catch (err: any) {
-                console.log(err.message || 'Something went wrong');
-            }
-        };
-        fetchItems();
+        const savedDebugMode = localStorage.getItem('debugMode');
+        if (savedDebugMode !== null) {
+            setDebugMode(JSON.parse(savedDebugMode));
+        }
     }, []);
 
-    // Initialize user state from auth endpoint
-    useEffect(() => {
-        const initializeAuth = async () => {
-            try {
-                const res = await fetch('/api/auth/me');
-                const data = await res.json();
-                console.log('Auth check response:', data);
-                if (data.isAuthenticated && data.user) {
-                    console.log('Setting user:', data.user);
-                    setUser(data.user);
-                } else {
-                    console.log('User not authenticated');
-                }
-            } catch (error) {
-                // User not authenticated, keep user as null
-                console.log('Error checking auth:', error);
-            }
-        };
-        
-        initializeAuth();
-    }, []);
+    const toggleDebugMode = () => {
+        const newDebugMode = !debugMode;
+        setDebugMode(newDebugMode);
+        localStorage.setItem('debugMode', JSON.stringify(newDebugMode));
+
+        // Refresh the page to apply debug mode changes
+        window.location.reload();
+    };
 
     return (
         <AppContext.Provider
@@ -112,11 +72,15 @@ export const AppProvider = ({children}: {children: ReactNode}) => {
                 notifications,
                 modalMessage,
                 profile,
+                deleteConfirmCallback,
+                debugMode,
                 setModalMessage,
                 setUser,
                 setShowPopup,
                 setProfile,
-                setDefaultCategories
+                setDefaultCategories,
+                setDeleteConfirmCallback,
+                toggleDebugMode
             }}
         >
             {children}

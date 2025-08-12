@@ -4,6 +4,7 @@ import {useSearchParams, useRouter, usePathname} from 'next/navigation';
 import CheckInbox from './CheckInbox';
 import Success from './Success';
 import Error from './Error';
+import DeleteConfirmation from './DeleteConfirmation';
 import {useAppContext} from '~/contexts/AppContext';
 import Image from 'next/image';
 import SendMessage from '~/ui/homepage/send-message';
@@ -19,7 +20,8 @@ enum MODAL {
     EXPIREDLINK = 'expired-link',
     VERIFIED = 'verified',
     SEND_MESSAGE = 'send-message',
-    CALLBACK_REQUEST = 'callback-request'
+    CALLBACK_REQUEST = 'callback-request',
+    DELETE_CONFIRMATION = 'delete-confirmation'
 }
 
 function OverlayContent() {
@@ -29,7 +31,7 @@ function OverlayContent() {
     const [isOpen, setIsOpen] = useState(false);
     const [isClient, setIsClient] = useState(false);
     const modalType = searchParams?.get('modal');
-    const {modalMessage} = useAppContext();
+    const {modalMessage, deleteConfirmCallback} = useAppContext();
 
     useEffect(() => {
         setIsClient(true);
@@ -73,6 +75,11 @@ function OverlayContent() {
                 return <SendMessage onClose={removeParam} title='Send message to seller' onSubmit={removeParam} />;
             case MODAL.CALLBACK_REQUEST:
                 return <CallbackRequest onClose={removeParam} title='Request for Callback' onSubmit={removeParam} />;
+            case MODAL.DELETE_CONFIRMATION:
+                return <DeleteConfirmation 
+                    onClose={removeParam} 
+                    onConfirm={deleteConfirmCallback || (() => {})} 
+                />;
             default:
                 break;
         }
@@ -86,6 +93,7 @@ function OverlayContent() {
         }
         return false;
     };
+
 
     return (
         <div className=''>

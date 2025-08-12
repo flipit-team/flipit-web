@@ -7,8 +7,6 @@ import ErrorBoundary from '~/error-boundary';
 import {AppProvider} from './contexts/AppContext';
 import BottomNavBar from './ui/common/layout/bottom-nav-bar';
 import Overlay from './ui/common/modals/Overlay';
-import {getUserFromServer} from '~/lib/auth';
-
 const poppins = Poppins({
     display: 'swap',
     variable: '--font-poppins',
@@ -30,7 +28,8 @@ export default async function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const user = await getUserFromServer();
+    // No server-side user fetching - let client-side AppContext handle authentication
+    const user = null;
 
     return (
         <html lang='en'>

@@ -1,12 +1,12 @@
-import {Item} from './interface';
+import {Item, Chat, Notification, Profile} from './interface';
 
 export const dummyItems: Item[] = [
     {
         id: 1,
         title: 'iPhone 13 Pro Max',
         description: 'Slightly used iPhone 13 Pro Max in excellent condition. Battery health at 96%.',
-        imageUrls: ['https://example.com/images/iphone13-front.jpg', 'https://example.com/images/iphone13-back.jpg'],
-        flipForImgUrls: ['https://example.com/images/iphone13-flip.jpg'],
+        imageUrls: ['/camera.png'],
+        flipForImgUrls: ['/camera.png'],
         acceptCash: true,
         cashAmount: 480000,
         condition: 'used',
@@ -21,7 +21,7 @@ export const dummyItems: Item[] = [
             lastName: 'Johnson',
             email: 'tunde.johnson@example.com',
             phoneNumber: '+2348012345678',
-            avatar: 'https://example.com/avatars/tunde.jpg',
+            avatar: '/profile-picture.svg',
             avg_rating: 4.7,
             status: 'Verified',
             phoneNumberVerified: true,
@@ -36,7 +36,7 @@ export const dummyItems: Item[] = [
         id: 2,
         title: 'Samsung Smart TV 55 inch',
         description: 'Brand new Samsung Smart TV with 4K resolution and voice control.',
-        imageUrls: ['https://example.com/images/tv1.jpg'],
+        imageUrls: ['/camera.png'],
         flipForImgUrls: [],
         acceptCash: false,
         cashAmount: 0,
@@ -52,7 +52,7 @@ export const dummyItems: Item[] = [
             lastName: 'Okoro',
             email: 'ada.okoro@example.com',
             phoneNumber: '+2348098765432',
-            avatar: 'https://example.com/avatars/ada.jpg',
+            avatar: '/profile-picture.svg',
             avg_rating: 4.5,
             status: 'Verified',
             phoneNumberVerified: true,
@@ -67,7 +67,7 @@ export const dummyItems: Item[] = [
         id: 3,
         title: 'MacBook Pro M1 2021',
         description: 'Lightly used MacBook Pro M1 with 16GB RAM, 512GB SSD.',
-        imageUrls: ['https://example.com/images/macbook.jpg'],
+        imageUrls: ['/camera.png'],
         flipForImgUrls: [],
         acceptCash: true,
         cashAmount: 950000,
@@ -83,7 +83,7 @@ export const dummyItems: Item[] = [
             lastName: 'Eze',
             email: 'chuka.eze@example.com',
             phoneNumber: '+2347034567890',
-            avatar: 'https://example.com/avatars/chuka.jpg',
+            avatar: '/profile-picture.svg',
             avg_rating: 4.8,
             status: 'Verified',
             phoneNumberVerified: true,
@@ -95,7 +95,7 @@ export const dummyItems: Item[] = [
         id: 4,
         title: 'Used Generator 3.5KVA',
         description: 'Working condition generator. Just changed the oil and plug.',
-        imageUrls: ['https://example.com/images/gen.jpg'],
+        imageUrls: ['/camera.png'],
         flipForImgUrls: [],
         acceptCash: true,
         cashAmount: 120000,
@@ -111,7 +111,7 @@ export const dummyItems: Item[] = [
             lastName: 'Doe',
             email: 'john.doe@example.com',
             phoneNumber: '+2347081234567',
-            avatar: 'https://example.com/avatars/john.jpg',
+            avatar: '/profile-picture.svg',
             avg_rating: 4.2,
             status: 'Verified',
             phoneNumberVerified: true,
@@ -123,7 +123,7 @@ export const dummyItems: Item[] = [
         id: 5,
         title: 'HP LaserJet Printer',
         description: 'Office printer with toner. Fully functional.',
-        imageUrls: ['https://example.com/images/printer.jpg'],
+        imageUrls: ['/camera.png'],
         flipForImgUrls: [],
         acceptCash: false,
         cashAmount: 0,
@@ -139,7 +139,7 @@ export const dummyItems: Item[] = [
             lastName: 'Smith',
             email: 'bola.smith@example.com',
             phoneNumber: '+2347011223344',
-            avatar: 'https://example.com/avatars/bola.jpg',
+            avatar: '/profile-picture.svg',
             avg_rating: 4.0,
             status: 'Verified',
             phoneNumberVerified: true,
@@ -151,7 +151,7 @@ export const dummyItems: Item[] = [
         id: 6,
         title: 'PlayStation 5 Console',
         description: 'Brand new PS5 console with one controller and FIFA 25.',
-        imageUrls: ['https://example.com/images/ps5.jpg'],
+        imageUrls: ['/camera.png'],
         flipForImgUrls: [],
         acceptCash: true,
         cashAmount: 620000,
@@ -167,7 +167,7 @@ export const dummyItems: Item[] = [
             lastName: 'Nwankwo',
             email: 'uche.nwankwo@example.com',
             phoneNumber: '+2348123456789',
-            avatar: 'https://example.com/avatars/uche.jpg',
+            avatar: '/profile-picture.svg',
             avg_rating: 4.6,
             status: 'Verified',
             phoneNumberVerified: true,
@@ -179,7 +179,7 @@ export const dummyItems: Item[] = [
         id: 7,
         title: 'Nike Air Max Sneakers',
         description: 'UK size 42, worn twice, still very neat.',
-        imageUrls: ['https://example.com/images/airmax.jpg'],
+        imageUrls: ['/camera.png'],
         flipForImgUrls: [],
         acceptCash: true,
         cashAmount: 35000,
@@ -195,7 +195,7 @@ export const dummyItems: Item[] = [
             lastName: 'Okafor',
             email: 'emeka.okafor@example.com',
             phoneNumber: '+2349098765432',
-            avatar: 'https://example.com/avatars/emeka.jpg',
+            avatar: '/profile-picture.svg',
             avg_rating: 4.3,
             status: 'Verified',
             phoneNumberVerified: true,
@@ -207,7 +207,7 @@ export const dummyItems: Item[] = [
         id: 8,
         title: 'Bluetooth Wireless Earbuds',
         description: 'Noise-canceling, touch control, waterproof earbuds. New.',
-        imageUrls: ['https://example.com/images/earbuds.jpg'],
+        imageUrls: ['/camera.png'],
         flipForImgUrls: [],
         acceptCash: true,
         cashAmount: 15000,
@@ -223,7 +223,7 @@ export const dummyItems: Item[] = [
             lastName: 'Afolabi',
             email: 'segun.afolabi@example.com',
             phoneNumber: '+2348076543210',
-            avatar: 'https://example.com/avatars/segun.jpg',
+            avatar: '/profile-picture.svg',
             avg_rating: 4.1,
             status: 'Verified',
             phoneNumberVerified: true,
@@ -235,7 +235,7 @@ export const dummyItems: Item[] = [
         id: 9,
         title: 'Wooden Dining Table Set',
         description: '6-seater dining set made from quality mahogany wood.',
-        imageUrls: ['https://example.com/images/dining.jpg'],
+        imageUrls: ['/camera.png'],
         flipForImgUrls: [],
         acceptCash: true,
         cashAmount: 220000,
@@ -251,7 +251,7 @@ export const dummyItems: Item[] = [
             lastName: 'Eme',
             email: 'ngozi.eme@example.com',
             phoneNumber: '+2348101234567',
-            avatar: 'https://example.com/avatars/ngozi.jpg',
+            avatar: '/profile-picture.svg',
             avg_rating: 4.4,
             status: 'Verified',
             phoneNumberVerified: true,
@@ -263,7 +263,7 @@ export const dummyItems: Item[] = [
         id: 10,
         title: 'Honda Civic 2008 Model',
         description: 'Engine in great shape, just repainted. Registered and used in Lagos.',
-        imageUrls: ['https://example.com/images/civic.jpg'],
+        imageUrls: ['/camera.png'],
         flipForImgUrls: [],
         acceptCash: true,
         cashAmount: 1800000,
@@ -279,7 +279,7 @@ export const dummyItems: Item[] = [
             lastName: 'Ahmed',
             email: 'ibrahim.ahmed@example.com',
             phoneNumber: '+2348023456789',
-            avatar: 'https://example.com/avatars/ibrahim.jpg',
+            avatar: '/profile-picture.svg',
             avg_rating: 4.6,
             status: 'Verified',
             phoneNumberVerified: true,
@@ -288,3 +288,103 @@ export const dummyItems: Item[] = [
         itemCategories: [{name: 'Automobiles', description: 'Cars, SUVs, vehicles'}]
     }
 ];
+
+export const dummyChats: {buyer: Chat[]; seller: Chat[]} = {
+    buyer: [
+        {
+            chatId: 'chat_001',
+            title: 'iPhone 13 Pro Max',
+            initiatorId: 1,
+            receiverId: 2,
+            initiatorName: 'Tunde Johnson',
+            receiverName: 'John Doe',
+            initiatorAvatar: '/profile-picture.svg',
+            receiverAvatar: '/profile-picture.svg',
+            dateCreated: new Date('2025-07-12T10:30:00Z')
+        },
+        {
+            chatId: 'chat_002', 
+            title: 'Samsung Smart TV 55 inch',
+            initiatorId: 3,
+            receiverId: 2,
+            initiatorName: 'Ada Okafor',
+            receiverName: 'John Doe',
+            initiatorAvatar: '/profile-picture.svg',
+            receiverAvatar: '/profile-picture.svg',
+            dateCreated: new Date('2025-07-11T14:20:00Z')
+        }
+    ],
+    seller: [
+        {
+            chatId: 'chat_003',
+            title: 'HP LaserJet Printer',
+            initiatorId: 4,
+            receiverId: 2,
+            initiatorName: 'Michael Chen',
+            receiverName: 'John Doe',
+            initiatorAvatar: '/profile-picture.svg',
+            receiverAvatar: '/profile-picture.svg',
+            dateCreated: new Date('2025-07-10T09:15:00Z')
+        },
+        {
+            chatId: 'chat_004',
+            title: 'Generator 5KVA',
+            initiatorId: 5,
+            receiverId: 2,
+            initiatorName: 'Sarah Williams',
+            receiverName: 'John Doe',
+            initiatorAvatar: '/profile-picture.svg',
+            receiverAvatar: '/profile-picture.svg',
+            dateCreated: new Date('2025-07-09T16:45:00Z')
+        }
+    ]
+};
+
+export const dummyNotifications: Notification = {
+    totalPages: 1,
+    totalElements: 3,
+    size: 10,
+    number: 0,
+    content: [
+        {
+            id: 1,
+            type: 'bid',
+            title: 'New bid received',
+            message: 'Someone placed a bid on your iPhone 13 Pro Max',
+            resourceLink: '/my-items/1',
+            read: false,
+            dateCreated: new Date('2025-07-12T10:30:00Z')
+        },
+        {
+            id: 2,
+            type: 'sale',
+            title: 'Item sold',
+            message: 'Your Samsung Smart TV has been sold!',
+            resourceLink: '/my-items/2',
+            read: true,
+            dateCreated: new Date('2025-07-11T14:20:00Z')
+        },
+        {
+            id: 3,
+            type: 'message',
+            title: 'New message',
+            message: 'You have a new message about HP LaserJet Printer',
+            resourceLink: '/messages/chat_003',
+            read: false,
+            dateCreated: new Date('2025-07-10T09:15:00Z')
+        }
+    ]
+};
+
+export const dummyProfile: Profile = {
+    id: 1,
+    title: 'Mr.',
+    firstName: 'John',
+    middleName: '',
+    lastName: 'Doe',
+    email: 'john.doe@example.com',
+    phoneNumber: '+2348012345678',
+    avatar: '/profile-picture.svg',
+    avgRating: 4.5,
+    reviewCount: 12
+};

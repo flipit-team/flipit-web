@@ -1,8 +1,8 @@
 'use client';
 import Image from 'next/image';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
-import React, {useEffect} from 'react';
-import {useAppContext} from '~/contexts/AppContext';
+import React from 'react';
+// import {useAppContext} from '~/contexts/AppContext';
 
 interface Props {
     defaultCategories: {
@@ -17,11 +17,12 @@ const Categories = (props: Props) => {
     const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
-    const {setDefaultCategories} = useAppContext();
+    // const {setDefaultCategories} = useAppContext();
 
-    useEffect(() => {
-        setDefaultCategories(defaultCategories);
-    }, [defaultCategories]);
+    // Remove this useEffect to prevent infinite loops
+    // useEffect(() => {
+    //     setDefaultCategories(defaultCategories);
+    // }, [defaultCategories, setDefaultCategories]);
 
     const pushParam = (name: string) => {
         const params = new URLSearchParams(searchParams.toString());

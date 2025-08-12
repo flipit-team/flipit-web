@@ -1,7 +1,7 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, {useState} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {useAppContext} from '~/contexts/AppContext';
 import {Chat} from '~/utils/interface';
 import dynamic from 'next/dynamic';
@@ -10,13 +10,42 @@ import NoData from '../common/no-data/NoData';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {useChatMessages, useUserMessages} from '~/hooks/useChatMessages';
 import {Loader} from 'lucide-react';
+import {dummyChats} from '~/utils/dummy';
 const LoaderMain = dynamic(() => import('../common/loader/Loader'), {ssr: false});
 
 interface Props {
     chatData: {buyer: Chat[]; seller: Chat[]};
 }
 const MainChats = (props: Props) => {
-    const {chatData} = props;
+    const {chatData: serverChatData} = props;
+    const {debugMode} = useAppContext();
+    const [apiChatData, setApiChatData] = useState(serverChatData);
+    const hasInit = useRef(false);
+    
+    // Fetch chat data from API when not in debug mode - only run once
+    useEffect(() => {
+        if (hasInit.current) return; // Prevent multiple calls
+        
+        const fetchChatData = async () => {
+            if (debugMode || serverChatData.buyer.length > 0 || serverChatData.seller.length > 0) return;
+            
+            try {
+                const res = await fetch('/api/chats/get-user-chats');
+                if (res.ok) {
+                    const data = await res.json();
+                    setApiChatData(data);
+                }
+            } catch (error) {
+                console.error('Error fetching chat data:', error);
+            }
+        };
+        
+        hasInit.current = true;
+        fetchChatData();
+    }, [debugMode]);
+    
+    // Use dummy data in debug mode, otherwise use API data
+    const chatData = debugMode ? dummyChats : apiChatData;
     const searchParams = useSearchParams();
     const router = useRouter();
     const [input, setInput] = useState('');

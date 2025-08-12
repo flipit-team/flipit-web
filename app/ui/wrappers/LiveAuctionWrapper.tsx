@@ -1,11 +1,13 @@
 'use client';
 import Image from 'next/image';
-import React, {useState} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import NoData from '../common/no-data/NoData';
 import {Item} from '~/utils/interface';
 import Categories from '../homepage/categories';
 import GridItems from '../common/grid-items/GridItems';
 import SearchBar from '../homepage/search-bar';
+import {useAppContext} from '~/contexts/AppContext';
+import {dummyItems} from '~/utils/dummy';
 
 interface Props {
     items: Item[];
@@ -16,7 +18,51 @@ interface Props {
 }
 
 const LiveAuctionWrapper = (props: Props) => {
-    const {items, defaultCategories} = props;
+    const {items: serverItems, defaultCategories: serverCategories} = props;
+    const {debugMode} = useAppContext();
+    const [apiItems, setApiItems] = useState<Item[]>(serverItems);
+    const [apiCategories, setApiCategories] = useState(serverCategories);
+    const hasInit = useRef(false);
+    
+    // Fetch data from API when not in debug mode - only run once
+    useEffect(() => {
+        if (hasInit.current) return; // Prevent multiple calls
+        
+        const fetchData = async () => {
+            if (debugMode || serverItems.length > 0) return; // Skip if debug mode or already have server data
+            
+            try {
+                // Fetch items
+                const itemsRes = await fetch('/api/items/get-items?page=0&size=10');
+                if (itemsRes.ok) {
+                    const itemsData = await itemsRes.json();
+                    setApiItems(itemsData);
+                }
+                
+                // Fetch categories
+                const categoriesRes = await fetch('/api/items/get-categories');
+                if (categoriesRes.ok) {
+                    const categoriesData = await categoriesRes.json();
+                    setApiCategories(categoriesData);
+                }
+            } catch (error) {
+                console.error('Error fetching auction data:', error);
+            }
+        };
+        
+        hasInit.current = true;
+        fetchData();
+    }, [debugMode]);
+    
+    // Use dummy data in debug mode, otherwise use API data
+    const items = debugMode ? dummyItems : apiItems;
+    const defaultCategories = debugMode ? [
+        {name: 'Electronics', description: 'Devices like phones, laptops, gadgets, etc.'},
+        {name: 'Mobile Phones', description: 'Smartphones and related accessories'},
+        {name: 'Clothing', description: 'Fashion items and apparel'},
+        {name: 'Home & Garden', description: 'Home improvement and garden items'},
+        {name: 'Sports', description: 'Sports equipment and accessories'}
+    ] : apiCategories;
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [selectedSort, setSelectedSort] = useState('A-Z');
 

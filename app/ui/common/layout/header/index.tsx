@@ -1,12 +1,11 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import {usePathname, useRouter, useSearchParams} from 'next/navigation';
+import {usePathname, useRouter} from 'next/navigation';
 import React, {useState, useEffect, Suspense} from 'react';
 import {useAppContext} from '~/contexts/AppContext';
-import LogoutButton from '../../auth/Logout';
 import Notifications from '../../modals/Notifications';
-import {ShoppingBagIcon} from 'lucide-react';
+import {ShoppingBag, Megaphone, BarChart3, Settings, LogOut} from 'lucide-react';
 import ProfileDropdown from './ProfileDropdown';
 
 interface Props {
@@ -25,11 +24,7 @@ function HeaderContent(props: Props) {
     const [hovered, setHovered] = useState(false);
     const router = useRouter();
     const pathname = usePathname();
-    const {defaultCategories, notifications, profile, user: clientUser} = useAppContext();
-    const searchParams = useSearchParams();
-
-    // Debug mode: set to false to use real authentication
-    const DEBUG_MODE = false;
+    const {notifications, profile, user: clientUser, debugMode, toggleDebugMode} = useAppContext();
 
     // Dummy user data for testing
     const dummyUser = {
@@ -38,18 +33,41 @@ function HeaderContent(props: Props) {
         userName: 'John Doe'
     };
 
-    // Prioritize client-side user state over server-side user prop
-    const user = DEBUG_MODE ? dummyUser : clientUser || serverUser;
+    // Use debug mode from context to determine which user data to use
+    const user = debugMode ? dummyUser : clientUser || serverUser;
 
     useEffect(() => {
         setIsClient(true);
     }, []);
 
-    const pushParam = (name: string) => {
+    // Main sidebar menu items
+    const mainMenuItems = [
+        {
+            href: '/my-items',
+            label: 'My Items',
+            icon: ShoppingBag,
+        },
+        {
+            href: '/my-adverts',
+            label: 'My Adverts',
+            icon: Megaphone,
+        },
+        {
+            href: '/performance',
+            label: 'Performance',
+            icon: BarChart3,
+        },
+        {
+            href: '/settings',
+            label: 'Settings',
+            icon: Settings,
+        }
+    ];
+
+    const handleLogout = () => {
+        // TODO: Implement logout functionality
         setShowFlyout(false);
-        const params = new URLSearchParams(searchParams?.toString() || '');
-        params.set('categories', name);
-        router.push(`/home?${params.toString()}`);
+        console.log('Logout clicked');
     };
 
     if (!isClient || pathname === '/') return null;
@@ -105,6 +123,22 @@ function HeaderContent(props: Props) {
                 </div>
                 {user ? (
                     <div className='flex items-center ml-auto'>
+                        {/* Debug Mode Toggle - Only visible on desktop */}
+                        <div className='relative group xs:hidden mr-[27px]'>
+                            <button
+                                onClick={toggleDebugMode}
+                                className={`h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
+                                    debugMode 
+                                        ? 'bg-red-500 text-white' 
+                                        : 'bg-gray-200 text-gray-600'
+                                }`}
+                                title={`Debug mode: ${debugMode ? 'ON' : 'OFF'}`}
+                            >
+                                D
+                            </button>
+                        </div>
+                        
+                        {/* FAQ Icon */}
                         <div className='relative group'>
                             <Link href={'/faq'}>
                                 <Image
@@ -112,21 +146,25 @@ function HeaderContent(props: Props) {
                                     height={32}
                                     width={32}
                                     alt='help'
-                                    className='h-7 w-7 mr-[27px] xs:h-6 xs:w-6'
+                                    className='h-7 w-7 mr-[27px] xs:h-6 xs:w-6 xs:mr-[16px]'
                                 />
                             </Link>
                         </div>
-                        <div className='relative group'>
+                        
+                        {/* Saved Items - Hidden on mobile */}
+                        <div className='relative group xs:hidden'>
                             <Link href={'/saved-items'}>
                                 <Image
                                     src={pathname === '/saved-items' ? '/save-yellow.svg' : '/save.svg'}
                                     height={32}
                                     width={32}
                                     alt='saved items'
-                                    className='h-7 w-7 mr-[27px] xs:h-6 xs:w-6'
+                                    className='h-7 w-7 mr-[27px]'
                                 />
                             </Link>
                         </div>
+                        
+                        {/* Notifications Icon */}
                         <div className='relative group'>
                             <Link href={'/notifications'}>
                                 <Image
@@ -134,30 +172,35 @@ function HeaderContent(props: Props) {
                                     height={32}
                                     width={32}
                                     alt='notifications'
-                                    className='h-6 w-6 mr-[27px] xs:h-6 xs:w-6'
+                                    className='h-6 w-6 mr-[27px] xs:h-6 xs:w-6 xs:mr-[16px]'
                                 />
                             </Link>
-                            <div className='absolute right-0 mt-2 xs:hidden bg-white shadow-md rounded px-4 py-2 text-sm z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto'>
-                                <Notifications setHovered={setHovered} notifications={notifications?.content} pointer />
-                            </div>
+                            {!hovered && (
+                                <div className='absolute right-0 mt-2 xs:hidden bg-white shadow-md rounded px-4 py-2 text-sm z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto'>
+                                    <Notifications setHovered={setHovered} notifications={notifications?.content} pointer />
+                                </div>
+                            )}
                         </div>
+                        
+                        {/* Profile Icon */}
                         <div className='relative group'>
-                            {/* Profile Icon */}
                             <div className='flex items-center gap-2 cursor-pointer p-2 rounded-full transition'>
                                 <Image
                                     src={profile?.avatar ? profile.avatar : '/profile-picture.svg'}
                                     height={32}
                                     width={32}
-                                    alt='bell'
+                                    alt='profile'
                                     className='h-7 w-7 xs:h-[30px] xs:w-[30px] rounded-full'
                                 />
-                                <div className='typo-body_ls capitalize'>{user.userName ?? 'John Doe'}</div>
+                                {/* Username - Hidden on mobile */}
+                                <div className='typo-body_ls capitalize xs:hidden'>{user.userName ?? 'John Doe'}</div>
+                                {/* Dropdown Arrow - Hidden on mobile */}
                                 <Image
                                     src={'/arrow-down.svg'}
                                     height={32}
                                     width={32}
-                                    alt='bell'
-                                    className='h-4 w-4 xs:h-4 xs:w-4 rounded-full'
+                                    alt='dropdown'
+                                    className='h-4 w-4 rounded-full xs:hidden'
                                 />
                             </div>
 
@@ -165,6 +208,7 @@ function HeaderContent(props: Props) {
                             {user && <ProfileDropdown setShowFlyout={setShowFlyout} />}
                         </div>
 
+                        {/* Post Item Button - Hidden on mobile */}
                         <Link
                             href={user ? '/post-an-item/entry' : '/'}
                             className='flex items-center justify-center bg-secondary xs:hidden typo-body_ms h-[45px] w-[145px] text-white rounded-lg ml-[43px]'
@@ -196,33 +240,64 @@ function HeaderContent(props: Props) {
                     </div>
                 )}
             </div>
+            
+            {/* Mobile Hamburger Menu - Slides in from right */}
             <div
-                className={`hidden xs:block fixed h-[100vh] w-full top-0 bg-[#000000b3] px-4 left-[0px] z-[1000] transition-transform transform duration-300 origin-top ${
-                    showFlyout ? 'scale-y-100' : 'scale-y-0'
+                className={`hidden xs:block fixed w-full bg-white shadow-lg z-[50] transition-transform transform duration-300 ${
+                    showFlyout ? 'translate-x-0' : 'translate-x-full'
                 }`}
+                style={{
+                    top: '56px', // Height of mobile header
+                    bottom: '80px' // Space for mobile nav (estimated height)
+                }}
             >
-                <div className={`bg-white flex flex-col rounded-lg p-6 w-full mt-[50px] shadow-md`}>
-                    <div className='mb-10 w-full flex items-center'>
-                        <p className='block mx-auto w-max text-[#333333] typo-heading_ss'>Select Category</p>
+                <div className='w-full h-full p-6 flex flex-col'>
+                    <div className='mb-6 w-full flex items-center justify-between'>
+                        <p className='text-[#333333] typo-heading_ss'>Menu</p>
                         <Image
                             src={'/cancel.svg'}
                             height={13}
                             width={13}
-                            alt='bell'
-                            className='h-[13px] w-[13px]'
+                            alt='close'
+                            className='h-[13px] w-[13px] cursor-pointer'
                             onClick={() => setShowFlyout(false)}
                         />
                     </div>
-                    <div className={`overflow-auto custom-scrollbar`}>
-                        {defaultCategories?.map((item, index) => {
-                            if (index < 8)
-                                return (
-                                    <p onClick={() => pushParam(item.name)} key={index} className='h-[58px]'>
-                                        {item.name}
-                                    </p>
-                                );
+                    <div className='flex-1 overflow-auto custom-scrollbar space-y-2'>
+                        {/* Main Menu Items */}
+                        {mainMenuItems.map((item) => {
+                            const Icon = item.icon;
+                            const isActive = pathname === item.href;
+                            
+                            return (
+                                <Link
+                                    key={item.href}
+                                    href={item.href}
+                                    onClick={() => setShowFlyout(false)}
+                                    className={`
+                                        flex items-center gap-3 h-[50px] px-4 rounded-md transition-colors duration-200 w-full
+                                        ${isActive 
+                                            ? 'bg-primary bg-opacity-10 text-primary' 
+                                            : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                                        }
+                                    `}
+                                >
+                                    <Icon className='w-5 h-5' />
+                                    <span className='font-medium'>{item.label}</span>
+                                </Link>
+                            );
                         })}
-                        {user && <LogoutButton setShowFlyout={setShowFlyout} />}
+                        
+                        {/* Logout Button */}
+                        {user && (
+                            <button
+                                onClick={handleLogout}
+                                className='w-full flex items-center gap-3 h-[50px] px-4 rounded-md text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-200'
+                            >
+                                <LogOut className='w-5 h-5' />
+                                <span className='font-medium'>Logout</span>
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>

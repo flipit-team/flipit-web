@@ -18,7 +18,8 @@ const InputBox = (props: Props) => {
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [phone, setPhone] = useState('');
 
-    const isPassword = name === 'password' || name === 'confirm-password';
+    const isPassword =
+        name === 'password' || name === 'confirm-password' || name === 'new-password' || name === 'current-password';
     const isFullname = name === 'fullname';
 
     const togglePasswordVisibility = () => {
