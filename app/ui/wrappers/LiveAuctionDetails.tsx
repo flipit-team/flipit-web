@@ -76,18 +76,7 @@ const LiveAuctionDetails = (props: Props) => {
         <div className='grid-sizes grid grid-cols-[712px_1fr] xs:grid-cols-1 gap-6 h-full mt-10 xs:mb-6'>
             <div className='p-6 xs:p-0 shadow-[0px_4px_10px_rgba(0,0,0,0.2)]'>
                 <ImageGallery
-                    mainImage={{
-                        src: '/camera-large.png',
-                        alt: 'picture',
-                        width: 516,
-                        height: 400
-                    }}
-                    thumbnails={[
-                        {src: '/camera-large.png', alt: 'picture', width: 172, height: 117},
-                        {src: '/camera-large.png', alt: 'picture', width: 172, height: 117},
-                        {src: '/camera-large.png', alt: 'picture', width: 172, height: 117}
-                    ]}
-                    thumbnailPosition='left'
+                    images={['/camera-large.png', '/camera-large.png', '/camera-large.png']}
                     overlayElements={
                         <>
                             <div className='w-[76px] h-[26px] typo-body_sb text-white bg-primary absolute top-7 left-3 flex items-center justify-center rounded'>

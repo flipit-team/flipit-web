@@ -3,6 +3,7 @@ import {redirect} from 'next/navigation';
 import NoData from '~/ui/common/no-data/NoData';
 import CurrentBids from '~/ui/wrappers/CurrentBids';
 import {Bid} from '~/utils/interface';
+import { API_BASE_URL } from '~/lib/config';
 
 const page = async () => {
     try {
@@ -12,24 +13,38 @@ const page = async () => {
 
         console.log('Current-bids page - userId:', userId);
         console.log('Current-bids page - token exists:', !!token);
+        console.log('Current-bids page - all cookies:', Object.fromEntries(cookieStore.getAll().map(c => [c.name, c.value])));
 
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/bids/get-user-bids?userId=${userId}`, {
+        // Check if user is authenticated
+        if (!userId || !token) {
+            console.log('Current-bids page - User not authenticated, redirecting to login');
+            redirect('/signin');
+        }
+
+        console.log('Current-bids page - Making direct backend API call with userId:', userId);
+        
+        const apiUrl = `${API_BASE_URL}/offer/user/${userId}/offers`;
+        console.log('Current-bids page - Backend API URL:', apiUrl);
+        
+        const res = await fetch(apiUrl, {
             headers: {
                 'Content-Type': 'application/json',
-                'Cookie': `token=${token}; userId=${userId}`
+                'Authorization': `Bearer ${token}`
             },
             cache: 'no-store'
         });
 
         console.log('Current-bids page - API response status:', res.status);
 
-        const data: Bid[] = await res.json();
-
         if (!res.ok) {
-            console.error('Current-bids page - API error:', data);
-            return <NoData text='Failed to fetch bids' />;
+            const errorData = await res.json();
+            console.error('Current-bids page - API error:', errorData);
+            return <NoData text={`Error loading bids: ${errorData.error || 'Failed to fetch bids'}`} />;
         }
-        return <CurrentBids bids={data} />;
+
+        const data: Bid[] = await res.json();
+        console.log('Current-bids page - Fetched bids:', data.length);
+        return <CurrentBids bids={data} fallbackToApi={false} />;
     } catch (error) {
         console.error('Current-bids page - Error:', error);
         redirect('/error-page');

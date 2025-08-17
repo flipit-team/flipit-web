@@ -143,17 +143,15 @@ export interface Notification {
     totalPages: number;
     totalElements: number;
     size: number;
-    content: [
-        {
-            id: number;
-            type: string;
-            title: string;
-            message: string;
-            resourceLink: string;
-            read: boolean;
-            dateCreated: Date;
-        }
-    ];
+    content: {
+        id: number;
+        type: string;
+        title: string;
+        message: string;
+        resourceLink: string;
+        read: boolean;
+        dateCreated: Date;
+    }[];
     number: number;
     sort: {
         empty: boolean;

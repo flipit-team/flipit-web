@@ -40,6 +40,18 @@ function HeaderContent(props: Props) {
         setIsClient(true);
     }, []);
 
+    // Log header user state for debugging
+    useEffect(() => {
+        console.log('🎯 Header user state:', {
+            debugMode,
+            serverUser: !!serverUser,
+            clientUser: !!clientUser,
+            finalUser: !!user,
+            clientUserDetails: clientUser,
+            serverUserDetails: serverUser
+        });
+    }, [debugMode, serverUser, clientUser, user]);
+
     // Main sidebar menu items
     const mainMenuItems = [
         {

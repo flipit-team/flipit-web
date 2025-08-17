@@ -4,17 +4,20 @@ import InputBox from '../input-box';
 import AuthButton from '../buttons/AuthButton';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {useAppContext} from '~/contexts/AppContext';
+import useAuth from '~/hooks/useAuth';
+import { AuthService } from '~/services/auth.service';
 import Image from 'next/image';
 
 const Form = () => {
     const {setUser, user} = useAppContext();
+    const { login, signup, loading: authLoading, error: authError } = useAuth();
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
     const [firstname, setFirstname] = useState('');
     const [lastname, setLastname] = useState('');
-
+    const [username, setUsername] = useState('');
+    const [dateOfBirth, setDateOfBirth] = useState('');
     const [password, setPassword] = useState('');
-
     const [phone, setPhone] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -27,8 +30,22 @@ const Form = () => {
         setPhone('');
     }, [isLogin]);
 
-    const loginWithGoogle = () => {
-        window.location.href = '/api/auth/google-login';
+    const loginWithGoogle = async () => {
+        try {
+            const { data, error } = await AuthService.getGoogleLoginUrl();
+            if (error) {
+                setErrorMessage(error.message);
+                return;
+            }
+            if (data?.url) {
+                window.location.href = data.url;
+            } else {
+                window.location.href = '/api/auth/google-login';
+            }
+        } catch (error) {
+            setErrorMessage('Failed to initiate Google login');
+            window.location.href = '/api/auth/google-login';
+        }
     };
 
     const pushParam = (param: string) => {
@@ -43,10 +60,10 @@ const Form = () => {
     const formInputs = isLogin
         ? [
               {
-                  label: 'Email address',
-                  placeholder: 'Enter email address',
-                  type: 'email',
-                  name: 'email'
+                  label: 'Email/Username',
+                  placeholder: 'Enter email or username',
+                  type: 'text',
+                  name: 'username'
               },
               {
                   label: 'Password',
@@ -57,10 +74,22 @@ const Form = () => {
           ]
         : [
               {
-                  label: 'Full name',
-                  placeholder: 'Enter firstname and lastname',
+                  label: 'Username',
+                  placeholder: 'Enter username',
                   type: 'text',
-                  name: 'fullname'
+                  name: 'username'
+              },
+              {
+                  label: 'First name',
+                  placeholder: 'Enter first name',
+                  type: 'text',
+                  name: 'firstname'
+              },
+              {
+                  label: 'Last name',
+                  placeholder: 'Enter last name',
+                  type: 'text',
+                  name: 'lastname'
               },
               {
                   label: 'Email address',
@@ -69,101 +98,115 @@ const Form = () => {
                   name: 'email'
               },
               {
+                  label: 'Phone number',
+                  placeholder: '08012345678',
+                  type: 'tel',
+                  name: 'phone'
+              },
+              {
+                  label: 'Date of Birth',
+                  placeholder: 'YYYY-MM-DD',
+                  type: 'date',
+                  name: 'dateOfBirth'
+              },
+              {
                   label: 'Password',
                   placeholder: 'Enter password',
                   type: 'password',
                   name: 'password'
-              },
-              {
-                  label: 'Phone number',
-                  placeholder: '08012345678',
-                  type: 'number',
-                  name: 'phone'
               }
           ];
 
     const handleInput = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
         setErrorMessage('');
-        if (type === 'email') {
-            setEmail(e.target.value);
-        }
-        if (type === 'password') {
-            setPassword(e.target.value.toString());
-        }
-        if (type === 'firstname') {
-            setFirstname(e.target.value);
-        }
-        if (type === 'lastname') {
-            setLastname(e.target.value);
-        }
-        if (type === 'phone') {
-            setPhone(e.target.value);
+        const value = e.target.value;
+        
+        switch (type) {
+            case 'email':
+                setEmail(value);
+                break;
+            case 'username':
+                setUsername(value);
+                break;
+            case 'password':
+                setPassword(value);
+                break;
+            case 'firstname':
+                setFirstname(value);
+                break;
+            case 'lastname':
+                setLastname(value);
+                break;
+            case 'phone':
+                setPhone(value);
+                break;
+            case 'dateOfBirth':
+                setDateOfBirth(value);
+                break;
         }
     };
 
     const handleValue = (input: {label: string; placeholder: string; type: string; name: string}) => {
-        if (input.name === 'email') {
-            return email;
-        }
-        if (input.name === 'password') {
-            return password;
-        }
-        if (input.name === 'firstname') {
-            return firstname;
-        }
-        if (input.name === 'lastname') {
-            return lastname;
-        }
-        if (input.name === 'phone') {
-            return phone;
+        switch (input.name) {
+            case 'email':
+                return email;
+            case 'username':
+                return username;
+            case 'password':
+                return password;
+            case 'firstname':
+                return firstname;
+            case 'lastname':
+                return lastname;
+            case 'phone':
+                return phone;
+            case 'dateOfBirth':
+                return dateOfBirth;
+            default:
+                return '';
         }
     };
     const handleAuth = async () => {
         setIsLoading(true);
         setErrorMessage('');
 
-        const formData = isLogin
-            ? {
-                  username: email,
-                  password: password
-              }
-            : {
-                  firstName: firstname,
-                  lastName: lastname,
-                  email: email,
-                  phoneNumber: `+234${phone}`,
-                  password: password
-              };
-
         try {
-            const res = await fetch(isLogin ? '/api/auth/login' : '/api/auth/register', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(formData)
-            });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                throw new Error(data.apierror?.message ?? 'Login failed');
-            }
-            console.log(data);
-
-            setIsLoading(false);
-            setUser({
-                token: data?.message?.token ?? '',
-                userId: data?.message?.user?.id,
-                userName: data?.message?.user?.firstName ?? ''
-            });
             if (isLogin) {
-                window.location.href = '/home';
+                // For debugging - temporarily use debug endpoint
+                console.log('🔍 Attempting login with:', { username: username || email, password: '[REDACTED]' });
+                
+                const result = await login({
+                    username: username || email,
+                    password: password
+                });
+
+                console.log('🎯 Login result:', result);
+
+                if (result.success) {
+                    router.push('/home');
+                } else {
+                    setErrorMessage(result.error || 'Login failed');
+                }
             } else {
-                window.location.href = '/home?modal=check-inbox';
+                const result = await signup({
+                    username: username,
+                    firstName: firstname,
+                    lastName: lastname,
+                    email: email,
+                    phone: phone.startsWith('+') ? phone : `+234${phone}`,
+                    password: password,
+                    dateOfBirth: dateOfBirth
+                });
+
+                if (result.success) {
+                    router.push('/home?modal=check-inbox');
+                } else {
+                    setErrorMessage(result.error || 'Signup failed');
+                }
             }
-            router.refresh();
-        } catch (err: any) {
-            // display err.message in your UI
-            setErrorMessage(err.message);
+        } catch (error) {
+            setErrorMessage(error instanceof Error ? error.message : 'An error occurred');
+        } finally {
             setIsLoading(false);
         }
     };
@@ -182,12 +225,21 @@ const Form = () => {
     const specialCharValid = /[^A-Za-z0-9]/.test(password);
     const isStrong = lengthValid && letterValid && numberValid && specialCharValid;
 
-    const btnActive = isLogin ? !!email && !!password : !!email && isStrong && !!firstname && !!lastname && !!phone;
+    const btnActive = isLogin 
+        ? !!(username || email) && !!password 
+        : !!username && !!email && !!firstname && !!lastname && !!phone && !!dateOfBirth && isStrong;
 
     return (
         <div className='flex items-center h-full xs:pb-0'>
             <div className='w-full'>
-                {errorMessage && <div className='mb-4 text-red-600 typo-body_lr capitalize'>{errorMessage}</div>}
+                {errorMessage && (
+                    <div className='mb-4 p-3 bg-red-50 border border-red-200 rounded-lg'>
+                        <div className='flex items-center gap-2'>
+                            <div className='w-4 h-4 rounded-full bg-red-500 flex-shrink-0'></div>
+                            <p className='text-red-700 typo-body_lr'>{errorMessage}</p>
+                        </div>
+                    </div>
+                )}
 
                 <h1 className='typo-heading_lb text-primary mb-2 xs:mb-4  xs:text-center'>
                     {isLogin ? 'Sign In' : 'Create an Account'}

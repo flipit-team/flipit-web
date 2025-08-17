@@ -23,7 +23,7 @@ interface Props {
     item: Item;
 }
 
-const Home = (props: Props) => {
+const ItemDetail = (props: Props) => {
     const {item} = props;
     const [error, setError] = useState<string | null>(null);
     const [viewPhone, setViewPhone] = useState(false);
@@ -79,18 +79,7 @@ const Home = (props: Props) => {
             <div className='grid-sizes grid grid-cols-[712px_1fr] xs:grid-cols-1 gap-6 h-full mt-10 xs:mb-6'>
                 <div className='p-6 xs:p-0 shadow-[0px_4px_10px_rgba(0,0,0,0.2)]'>
                     <ImageGallery
-                        mainImage={{
-                            src: '/camera-large.png',
-                            alt: 'picture',
-                            width: 712,
-                            height: 443
-                        }}
-                        thumbnails={[
-                            { src: '/camera-large.png', alt: 'picture', width: 222, height: 150 },
-                            { src: '/camera-large.png', alt: 'picture', width: 222, height: 150 },
-                            { src: '/camera-large.png', alt: 'picture', width: 222, height: 150 }
-                        ]}
-                        thumbnailPosition="bottom"
+                        images={item?.imageUrls || []}
                         overlayElements={
                             <>
                                 <div className='w-[76px] h-[26px] typo-body_sr text-white bg-primary absolute top-7 left-3 flex items-center justify-center rounded'>
@@ -240,7 +229,7 @@ const Home = (props: Props) => {
                     <div className='flex items-center gap-4 mt-6 justify-self-center'>
                         <div className='typo-body_lm'>4 Feedback</div>
                         <Link
-                            href={'/feedback'}
+                            href={`/feedback?sellerId=${item?.seller.id}&itemId=${item?.id}`}
                             className='border border-border_gray h-[30px] w-[93px] flex items-center justify-center typo-body_mr text-text_four rounded-lg cursor-pointer'
                         >
                             View all
@@ -271,4 +260,4 @@ const Home = (props: Props) => {
     );
 };
 
-export default Home;
+export default ItemDetail;

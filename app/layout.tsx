@@ -7,6 +7,7 @@ import ErrorBoundary from '~/error-boundary';
 import {AppProvider} from './contexts/AppContext';
 import BottomNavBar from './ui/common/layout/bottom-nav-bar';
 import Overlay from './ui/common/modals/Overlay';
+import { checkAuthServerSide } from '~/lib/server-api';
 const poppins = Poppins({
     display: 'swap',
     variable: '--font-poppins',
@@ -28,8 +29,13 @@ export default async function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    // No server-side user fetching - let client-side AppContext handle authentication
-    const user = null;
+    // Get server-side authentication status
+    const authStatus = await checkAuthServerSide();
+    const user = authStatus.isAuthenticated && authStatus.user ? {
+        token: 'managed-by-cookies',
+        userId: authStatus.user.id?.toString(),
+        userName: authStatus.user.firstName || authStatus.user.username || authStatus.user.email || ''
+    } : null;
 
     return (
         <html lang='en'>
@@ -40,7 +46,7 @@ export default async function RootLayout({
                 <link rel='icon' href='/favicon-16x16.png' sizes='16x16' type='image/png' />
                 <link rel='manifest' href='/site.webmanifest' /> */}
             </head>
-            <AppProvider>
+            <AppProvider initialUser={user}>
                 <body
                     className={`relative ${inter.variable} ${poppins.variable} antialiased flex flex-col min-h-[100vh]`}
                     suppressHydrationWarning={true}

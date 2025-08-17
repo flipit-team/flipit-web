@@ -18,21 +18,36 @@ export async function POST(req: Request) {
     }
 
     const res = NextResponse.json({message: apiData}, {status: 200});
-    res.cookies.set('token', apiData.jwt, {
+    
+    // Handle different response formats: either token/user or jwt/user
+    const token = apiData.token || apiData.jwt;
+    const user = apiData.user;
+    
+    if (!token) {
+        console.error('No token found in API response:', apiData);
+        return NextResponse.json({apierror: {message: 'No token received from server'}}, {status: 500});
+    }
+    
+    if (!user || !user.id) {
+        console.error('No user or user.id found in API response:', apiData);
+        return NextResponse.json({apierror: {message: 'No user data received from server'}}, {status: 500});
+    }
+    
+    res.cookies.set('token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         path: '/',
         maxAge: 60 * 60 * 24 * 7 // 1 week
     });
 
-    // Set userId cookie (assuming `userId` is available in `apiData`)
-    res.cookies.set('userId', apiData.user.id, {
+    res.cookies.set('userId', user.id.toString(), {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         path: '/',
         maxAge: 60 * 60 * 24 * 7 // 1 week
     });
-    res.cookies.set('userName', apiData.user.firstName, {
+    
+    res.cookies.set('userName', user.firstName || user.username || '', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         path: '/',

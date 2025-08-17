@@ -76,19 +76,59 @@ const MakeAnOffer = (props: Props) => {
         setError(null);
         setSuccess(false);
 
+        // Validation
+        if (selected === 'with-cash' && (!amount || Number(amount) <= 0)) {
+            setError('Please enter a valid amount');
+            setLoading(false);
+            return;
+        }
+
+        if (selected === 'with-an-item' && !selectedOption) {
+            setError('Please select an item to offer');
+            setLoading(false);
+            return;
+        }
+
+        if (!item?.id) {
+            setError('Item information is missing');
+            setLoading(false);
+            return;
+        }
+
         const payload =
             selected === 'with-cash'
                 ? {
-                      auctionItemId: item?.id,
+                      itemId: item?.id,
+                      userId: user?.userId,
                       withCash: true,
                       cashAmount: Number(amount)
                   }
                 : {
-                      auctionItemId: item?.id,
+                      itemId: item?.id,
+                      userId: user?.userId,
                       withCash: false,
                       offeredItemId: selectedOption?.id
                   };
-        console.log(payload);
+        
+        console.log('📤 Sending offer payload:', payload);
+        console.log('🔍 Debug values:');
+        console.log('  - item?.id:', item?.id);
+        console.log('  - user?.userId:', user?.userId);
+        console.log('  - selectedOption?.id:', selectedOption?.id);
+        console.log('  - selected:', selected);
+        
+        // Additional validation for null IDs
+        if (!item?.id) {
+            setError('Item ID is missing');
+            setLoading(false);
+            return;
+        }
+        
+        if (selected === 'with-an-item' && !selectedOption?.id) {
+            setError('Selected item ID is missing');
+            setLoading(false);
+            return;
+        }
 
         try {
             const res = await fetch('/api/bids/create', {
@@ -102,15 +142,32 @@ const MakeAnOffer = (props: Props) => {
             const data = await res.json();
 
             if (!res.ok) {
-                const parsedDetails = JSON.parse(data.details);
-                const debugMessage = parsedDetails.apierror?.debugMessage;
-                setError(debugMessage);
-
-                console.error('Bid failed:', debugMessage || 'Unknown error');
+                console.error('❌ Offer creation failed:', data);
+                
+                let errorMessage = 'Failed to create offer';
+                
+                // Try to extract error message from different response formats
+                if (data.details) {
+                    try {
+                        const parsedDetails = JSON.parse(data.details);
+                        errorMessage = parsedDetails.apierror?.debugMessage || parsedDetails.apierror?.message || errorMessage;
+                    } catch (e) {
+                        errorMessage = data.details;
+                    }
+                } else if (data.error) {
+                    errorMessage = data.error;
+                } else if (data.message) {
+                    errorMessage = data.message;
+                }
+                
+                setError(errorMessage);
             } else {
-                console.log('Bid successful:', data);
+                console.log('✅ Offer created successfully:', data);
                 setSuccess(true);
-                router.replace('/current-bids');
+                setTimeout(() => {
+                    onClose();
+                    router.replace('/current-bids');
+                }, 1500);
             }
         } catch (err: any) {
             setError(err.message);
@@ -145,6 +202,7 @@ const MakeAnOffer = (props: Props) => {
                     </div>
                     <div className='flex flex-col  mb-4 xs:px-4'>
                         {error && <div className='mb-4 text-center text-red-500'>{error}</div>}
+                        {success && <div className='mb-4 text-center text-green-500'>Offer submitted successfully! Redirecting...</div>}
                         <div className='mb-4'>
                             <p className='typo-heading_ms xs:typo-body_ls capitalize'>{item?.title}</p>
                             <p className='typo-heading_ms xs:typo-body_ls text-primary'>
@@ -153,11 +211,11 @@ const MakeAnOffer = (props: Props) => {
                         </div>
                         <div className='grid grid-cols-[443px_1fr] xs:flex xs:flex-col gap-[44px] xs:gap-[22px] '>
                             <Image
-                                src={'/camera-large.png'}
+                                src={item?.imageUrls?.[0] || '/camera-large.png'}
                                 height={439}
                                 width={443}
                                 alt='picture'
-                                className='h-[439px] w-[443px] xs:h-[327px] xs:w-full'
+                                className='h-[439px] w-[443px] xs:h-[327px] xs:w-full object-cover'
                             />
                             <div className='flex flex-col gap-6'>
                                 <p className='typo-heading_ss xs:typo-body_ls'>How do you want to bid?</p>
@@ -298,18 +356,18 @@ const MakeAnOffer = (props: Props) => {
                                                                 onClick={() => {
                                                                     setSelectedOption({
                                                                         id: option.id,
-                                                                        img: '/camera.png',
+                                                                        img: option.imageUrls?.[0] || '/camera.png',
                                                                         title: option.title
                                                                     });
                                                                     setIsOpen(false);
                                                                 }}
                                                             >
                                                                 <Image
-                                                                    src={'/camera.png'}
+                                                                    src={option.imageUrls?.[0] || '/camera.png'}
                                                                     alt={option.title}
                                                                     width={54}
                                                                     height={54}
-                                                                    className='h-[54px] w-[54px] xs:h-[32px] xs:w-[32px]'
+                                                                    className='h-[54px] w-[54px] xs:h-[32px] xs:w-[32px] object-cover rounded'
                                                                 />
                                                                 <span className='xs:typo-body_mr'>{option.title}</span>
                                                             </li>

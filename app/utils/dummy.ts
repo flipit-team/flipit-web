@@ -373,7 +373,28 @@ export const dummyNotifications: Notification = {
             read: false,
             dateCreated: new Date('2025-07-10T09:15:00Z')
         }
-    ]
+    ],
+    sort: {
+        empty: false,
+        sorted: true,
+        unsorted: false
+    },
+    numberOfElements: 3,
+    pageable: {
+        offset: 0,
+        sort: {
+            empty: false,
+            sorted: true,
+            unsorted: false
+        },
+        pageNumber: 0,
+        pageSize: 10,
+        paged: true,
+        unpaged: false
+    },
+    last: true,
+    first: true,
+    empty: false
 };
 
 export const dummyProfile: Profile = {
@@ -386,5 +407,16 @@ export const dummyProfile: Profile = {
     phoneNumber: '+2348012345678',
     avatar: '/profile-picture.svg',
     avgRating: 4.5,
-    reviewCount: 12
+    reviewCount: 12,
+    status: 'active',
+    mostRecentReview: {
+        rating: 5,
+        message: 'Great seller, highly recommended!',
+        userId: 1,
+        postedById: 2,
+        createdDate: new Date('2025-07-01T10:00:00Z')
+    },
+    phoneNumberVerified: true,
+    dateVerified: new Date('2025-07-01T10:00:00Z'),
+    dateCreated: new Date('2025-07-01T10:00:00Z')
 };
