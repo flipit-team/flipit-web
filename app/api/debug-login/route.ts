@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    console.log('🔍 Debug Login Request Body:', body);
 
     // Mock successful login response that matches your API format
     const mockResponse = {
@@ -28,7 +27,6 @@ export async function POST(req: Request) {
       }
     };
 
-    console.log('🎯 Mock Response:', mockResponse);
 
     const res = NextResponse.json({ message: mockResponse }, { status: 200 });
     
@@ -58,7 +56,6 @@ export async function POST(req: Request) {
 
     return res;
   } catch (error) {
-    console.error('Debug login error:', error);
     return NextResponse.json({ error: 'Debug login failed' }, { status: 500 });
   }
 }

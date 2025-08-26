@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { Item } from '~/utils/interface';
 import GridItems from '../common/grid-items/GridItems';
 import { timeAgo, formatToNaira } from '~/utils/helpers';
+import StarRating from '../common/star-rating/StarRating';
 
 interface Props {
     items: Item[];
@@ -81,18 +82,10 @@ const UserProfile = (props: Props) => {
                         
                         {/* Rating */}
                         <div className="flex items-center gap-2 mb-3">
-                            <div className="flex">
-                                {Array.from({ length: 5 }).map((_, i) => (
-                                    <Image
-                                        key={i}
-                                        src={i < Math.floor((user as any).avgRating || (user as any).avg_rating || 0) ? '/full-star.svg' : '/empty-star.svg'}
-                                        height={20}
-                                        width={20}
-                                        alt="star"
-                                        className="h-[20px] w-[20px]"
-                                    />
-                                ))}
-                            </div>
+                            <StarRating 
+                                rating={(user as any).avgRating || (user as any).avg_rating || 0}
+                                size={20}
+                            />
                             <span className="typo-body_mr text-text_four">
                                 {((user as any).avgRating || (user as any).avg_rating || 0).toFixed(1)} ({(user as any).reviewCount || 0} reviews)
                             </span>

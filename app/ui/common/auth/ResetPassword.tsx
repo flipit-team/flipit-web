@@ -20,14 +20,12 @@ const ResetPassword = () => {
 
         setIsLoading(true);
 
-        console.log(email);
 
         try {
             const res = await fetch(`/api/auth/recovery?email=${email}`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'}
             });
-            console.log(res, 88);
 
             // if (!res.ok) {
             //     // const message = handleApiError(data);
@@ -45,7 +43,6 @@ const ResetPassword = () => {
             }, 0);
             setIsLoading(false);
         } catch (err: any) {
-            console.log(err.message);
 
             setErrorMessage(err.message);
             setIsLoading(false);

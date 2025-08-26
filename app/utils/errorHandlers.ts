@@ -141,11 +141,6 @@ export function reportError(error: Error | ApiClientError, context?: Record<stri
   
   // In development, log to console
   if (process.env.NODE_ENV === 'development') {
-    console.group('🚨 Error Report');
-    console.error('Error:', error);
-    console.log('Context:', context);
-    console.log('Severity:', errorInfo.severity);
-    console.groupEnd();
   }
   
   // TODO: In production, send to error reporting service

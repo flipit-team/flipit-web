@@ -9,9 +9,6 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     
-    console.log('📤 Creating offer with payload:', body);
-    console.log('🔗 API endpoint:', `${API_BASE_PATH}/offer`);
-    console.log('🔑 Token present:', !!token);
 
     try {
         const res = await fetch(`${API_BASE_PATH}/offer`, {
@@ -23,8 +20,6 @@ export async function POST(req: NextRequest) {
             body: JSON.stringify(body)
         });
         
-        console.log('📥 Response status:', res.status);
-        console.log('📥 Response headers:', Object.fromEntries(res.headers.entries()));
 
         if (!res.ok) {
             const errorBody = await res.text();
@@ -34,7 +29,6 @@ export async function POST(req: NextRequest) {
         const data = await res.json();
         return NextResponse.json(data);
     } catch (error) {
-        console.error('Error creating item:', error);
         return NextResponse.json({error: 'Internal server error'}, {status: 500});
     }
 }

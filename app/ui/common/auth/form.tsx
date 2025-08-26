@@ -7,10 +7,12 @@ import {useAppContext} from '~/contexts/AppContext';
 import useAuth from '~/hooks/useAuth';
 import { AuthService } from '~/services/auth.service';
 import Image from 'next/image';
+import { formatErrorForDisplay } from '~/utils/error-messages';
+import ErrorDisplay from '../error-display/ErrorDisplay';
+import PhoneInput from '../phone-input/PhoneInput';
 
 const Form = () => {
-    const {setUser, user} = useAppContext();
-    const { login, signup, loading: authLoading, error: authError } = useAuth();
+    const { login, signup } = useAuth();
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
     const [firstname, setFirstname] = useState('');
@@ -20,6 +22,8 @@ const Form = () => {
     const [password, setPassword] = useState('');
     const [phone, setPhone] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [errorTitle, setErrorTitle] = useState('');
+    const [errorAction, setErrorAction] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -28,6 +32,10 @@ const Form = () => {
         setEmail('');
         setPassword('');
         setPhone('');
+        setUsername(''); // Clear username when switching modes
+        setFirstname('');
+        setLastname('');
+        setDateOfBirth('');
     }, [isLogin]);
 
     const loginWithGoogle = async () => {
@@ -74,12 +82,6 @@ const Form = () => {
           ]
         : [
               {
-                  label: 'Username',
-                  placeholder: 'Enter username',
-                  type: 'text',
-                  name: 'username'
-              },
-              {
                   label: 'First name',
                   placeholder: 'Enter first name',
                   type: 'text',
@@ -119,6 +121,8 @@ const Form = () => {
 
     const handleInput = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
         setErrorMessage('');
+        setErrorTitle('');
+        setErrorAction('');
         const value = e.target.value;
         
         switch (type) {
@@ -169,31 +173,42 @@ const Form = () => {
     const handleAuth = async () => {
         setIsLoading(true);
         setErrorMessage('');
+        setErrorTitle('');
+        setErrorAction('');
 
         try {
             if (isLogin) {
-                // For debugging - temporarily use debug endpoint
-                console.log('🔍 Attempting login with:', { username: username || email, password: '[REDACTED]' });
-                
                 const result = await login({
                     username: username || email,
                     password: password
                 });
 
-                console.log('🎯 Login result:', result);
-
                 if (result.success) {
-                    router.push('/home');
+                    // Redirect to intended page or home
+                    const redirectTo = searchParams.get('redirectTo') || '/home';
+                    router.push(redirectTo);
                 } else {
-                    setErrorMessage(result.error || 'Login failed');
+                    const errorDetails = formatErrorForDisplay(result.error || 'Login failed');
+                    setErrorTitle(errorDetails.title);
+                    setErrorMessage(errorDetails.message);
+                    setErrorAction(errorDetails.action || '');
                 }
             } else {
+                // Additional validation for signup
+                if (!phone?.trim() || phone.length < 14) { // +234XXXXXXXXXX = 14 chars minimum
+                    const errorDetails = formatErrorForDisplay('Phone number is required');
+                    setErrorTitle(errorDetails.title);
+                    setErrorMessage(errorDetails.message);
+                    setErrorAction(errorDetails.action || '');
+                    return;
+                }
+
                 const result = await signup({
-                    username: username,
+                    username: email, // Use email as username for signup
                     firstName: firstname,
                     lastName: lastname,
                     email: email,
-                    phone: phone.startsWith('+') ? phone : `+234${phone}`,
+                    phone: phone, // PhoneInput already provides formatted phone with +234
                     password: password,
                     dateOfBirth: dateOfBirth
                 });
@@ -201,11 +216,17 @@ const Form = () => {
                 if (result.success) {
                     router.push('/home?modal=check-inbox');
                 } else {
-                    setErrorMessage(result.error || 'Signup failed');
+                    const errorDetails = formatErrorForDisplay(result.error || 'Signup failed');
+                    setErrorTitle(errorDetails.title);
+                    setErrorMessage(errorDetails.message);
+                    setErrorAction(errorDetails.action || '');
                 }
             }
         } catch (error) {
-            setErrorMessage(error instanceof Error ? error.message : 'An error occurred');
+            const errorDetails = formatErrorForDisplay(error);
+            setErrorTitle(errorDetails.title);
+            setErrorMessage(errorDetails.message);
+            setErrorAction(errorDetails.action || '');
         } finally {
             setIsLoading(false);
         }
@@ -227,18 +248,21 @@ const Form = () => {
 
     const btnActive = isLogin 
         ? !!(username || email) && !!password 
-        : !!username && !!email && !!firstname && !!lastname && !!phone && !!dateOfBirth && isStrong;
+        : !!email && !!firstname && !!lastname && !!phone && !!dateOfBirth && isStrong;
+    
 
     return (
         <div className='flex items-center h-full xs:pb-0'>
             <div className='w-full'>
                 {errorMessage && (
-                    <div className='mb-4 p-3 bg-red-50 border border-red-200 rounded-lg'>
-                        <div className='flex items-center gap-2'>
-                            <div className='w-4 h-4 rounded-full bg-red-500 flex-shrink-0'></div>
-                            <p className='text-red-700 typo-body_lr'>{errorMessage}</p>
-                        </div>
-                    </div>
+                    <ErrorDisplay 
+                        error={{
+                            title: errorTitle,
+                            message: errorMessage,
+                            action: errorAction
+                        }} 
+                        className="mb-4"
+                    />
                 )}
 
                 <h1 className='typo-heading_lb text-primary mb-2 xs:mb-4  xs:text-center'>
@@ -290,6 +314,20 @@ const Form = () => {
                                 </div>
                             );
                         }
+                        // Special handling for phone input
+                        if (item.name === 'phone') {
+                            return (
+                                <PhoneInput
+                                    key={i}
+                                    label={item.label}
+                                    name={item.name}
+                                    value={phone}
+                                    setValue={handleInput}
+                                    placeholder="080 123 4567"
+                                />
+                            );
+                        }
+                        
                         return (
                             <InputBox
                                 value={handleValue(item)}
@@ -316,7 +354,11 @@ const Form = () => {
                         <AuthButton
                             bg={btnActive}
                             title={isLogin ? 'Sign In' : 'Sign Up'}
-                            onClick={() => handleAuth()}
+                            onClick={() => {
+                                if (btnActive) {
+                                    handleAuth();
+                                }
+                            }}
                             isLoading={isLoading}
                         />
                     </div>

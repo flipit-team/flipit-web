@@ -16,7 +16,6 @@ const DeleteConfirmation = ({ onClose, onConfirm }: DeleteConfirmationProps) => 
             onClose();
         } else {
             // Show visual feedback instead of alert
-            console.log('Incorrect confirmation text:', confirmText);
             // You could add visual feedback here like red border on input
             return;
         }

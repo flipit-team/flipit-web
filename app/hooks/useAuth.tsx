@@ -25,10 +25,31 @@ export function useAuth() {
     try {
       setAuthState(prev => ({ ...prev, loading: true, error: null }));
       
+      // Check if we have a token in cookies first
+      let hasToken = false;
+      let tokenValue = '';
+      
+      if (typeof window !== 'undefined') {
+        const cookies = document.cookie.split(';');
+        
+        for (const cookie of cookies) {
+          const [name, value] = cookie.trim().split('=');
+          
+          if (name === 'token' && value && value !== '') {
+            hasToken = true;
+            tokenValue = value;
+            break;
+          }
+        }
+      }
+      
+      if (!hasToken) {
+        // Don't skip - HttpOnly cookies will be sent automatically with API requests
+      }
+      
       const { data, error } = await AuthService.me();
       
       if (error) {
-        console.error('Auth check error:', error);
         setAuthState({
           isAuthenticated: false,
           user: null,
@@ -40,11 +61,9 @@ export function useAuth() {
       }
 
       if (data && data.isAuthenticated && data.user) {
-        console.log('Auth check success:', data);
         
         // Ensure user.id exists before trying to access it
         if (!data.user.id) {
-          console.error('User data missing id:', data.user);
           setAuthState({
             isAuthenticated: false,
             user: null,
@@ -67,7 +86,6 @@ export function useAuth() {
           userName: data.user.firstName || data.user.username || data.user.email || '',
         });
       } else {
-        console.log('Auth check - not authenticated or missing data:', data);
         setAuthState({
           isAuthenticated: false,
           user: null,
@@ -77,7 +95,6 @@ export function useAuth() {
         setUser(null);
       }
     } catch (error) {
-      console.error('Auth check exception:', error);
       setAuthState({
         isAuthenticated: false,
         user: null,
@@ -89,20 +106,18 @@ export function useAuth() {
   }, [setUser]);
 
   useEffect(() => {
-    checkAuth();
+    // Skip client-side auth check - we're using server-side auth with AppContext
+    // checkAuth();
   }, [checkAuth]);
 
   const login = useCallback(async (credentials: { username: string; password: string }) => {
     try {
       setAuthState(prev => ({ ...prev, loading: true, error: null }));
       
-      console.log('🔍 Login attempt:', { username: credentials.username });
       const { data, error } = await AuthService.login(credentials);
       
-      console.log('🎯 AuthService response:', { data, error });
       
       if (error) {
-        console.error('❌ Login error:', error);
         setAuthState(prev => ({
           ...prev,
           loading: false,
@@ -114,16 +129,12 @@ export function useAuth() {
       if (data) {
         // Handle response format: data might be wrapped in 'message' property
         const responseData = data.message || data;
-        console.log('📦 Response data:', responseData);
         
         const user = responseData.user;
         const token = responseData.token || responseData.jwt;
         
-        console.log('👤 User data:', user);
-        console.log('🔑 Token present:', !!token);
         
         if (!user || !user.id) {
-          console.error('❌ Invalid user data:', user);
           setAuthState(prev => ({
             ...prev,
             loading: false,
@@ -132,7 +143,6 @@ export function useAuth() {
           return { success: false, error: 'Invalid user data received' };
         }
         
-        console.log('✅ Login successful, setting auth state');
         setAuthState({
           isAuthenticated: true,
           user: user,
@@ -147,10 +157,8 @@ export function useAuth() {
         return { success: true, user: user };
       }
 
-      console.error('❌ No data in response');
       return { success: false, error: 'Login failed - no data received' };
     } catch (error) {
-      console.error('❌ Login exception:', error);
       const errorMessage = error instanceof Error ? error.message : 'Login failed';
       setAuthState(prev => ({
         ...prev,
@@ -165,7 +173,6 @@ export function useAuth() {
     try {
       await AuthService.logout();
     } catch (error) {
-      console.error('Logout error:', error);
     } finally {
       setAuthState({
         isAuthenticated: false,

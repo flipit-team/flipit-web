@@ -28,7 +28,6 @@ const MobileChat = () => {
 
         try {
             const data = await sendMessage(chatId ?? '', input);
-            console.log('✅ Message sent:', data);
             setInput('');
         } catch (err: any) {
             setError(err.message);

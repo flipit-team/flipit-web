@@ -60,10 +60,24 @@ export const AppProvider = ({children, initialUser}: AppProviderProps) => {
         }
     }, []);
 
-    // Client-side auth validation on mount
+    // Client-side auth validation on mount - ONLY run once and only if token exists
     useEffect(() => {
         const validateAuth = async () => {
             if (typeof window === 'undefined') return; // Server-side skip
+            
+            // Check if we have a token in cookies first
+            const hasToken = document.cookie.includes('token=') && 
+                            document.cookie.split(';').some(cookie => {
+                              const [name, value] = cookie.trim().split('=');
+                              return name === 'token' && value && value !== '';
+                            });
+                            
+            if (!hasToken) {
+                // Don't clear user data - trust server-side validation instead
+                // HttpOnly cookies mean we can't see them in JavaScript, but they're still valid
+                setIsInitialized(true);
+                return;
+            }
             
             try {
                 const response = await fetch('/api/auth/validate', { 
@@ -79,25 +93,24 @@ export const AppProvider = ({children, initialUser}: AppProviderProps) => {
                             userId: userData.user.id?.toString(),
                             userName: userData.user.firstName || userData.user.username || userData.user.email || ''
                         };
-                        console.log('🔄 Client-side auth validation successful:', validatedUser);
                         setUser(validatedUser);
                     } else {
-                        console.log('🔄 Client-side auth validation failed: user not authenticated');
                         setUser(null);
+                        
+                        // Don't redirect automatically on initial load
+                        // Let middleware and ProtectedRoute components handle redirects
                     }
                 } else {
-                    console.log('🔄 Client-side auth validation failed: response not ok');
                     setUser(null);
                 }
             } catch (error) {
-                console.log('🔄 Client-side auth validation error:', error);
                 // Keep existing user state on error (might be network issue)
             } finally {
                 setIsInitialized(true);
             }
         };
 
-        // Only validate if we don't have initial user or if user state seems inconsistent
+        // Only validate once when component mounts
         if (!isInitialized) {
             validateAuth();
         }
@@ -105,7 +118,6 @@ export const AppProvider = ({children, initialUser}: AppProviderProps) => {
 
     // Log user state changes for debugging
     useEffect(() => {
-        console.log('🏪 AppContext user state changed:', user ? 'USER SET' : 'NO USER', user);
     }, [user]);
 
     const toggleDebugMode = () => {

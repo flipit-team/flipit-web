@@ -96,6 +96,7 @@ export interface ResetPasswordRequest {
 export interface ChangePasswordRequest {
   currentPassword: string;
   newPassword: string;
+  confirmPassword: string;
 }
 
 // User Types
@@ -125,8 +126,26 @@ export interface UserDTO {
 export interface UpdateProfileRequest {
   firstName: string;
   lastName: string;
-  phone: string;
+  phoneNumber: string;
   bio?: string;
+  avatar?: string;
+}
+
+// User Verification Types
+export interface PhoneVerificationRequest {
+  phoneNumber: string;
+  verificationCode: string;
+}
+
+export interface ProfileVerificationRequest {
+  documentType: string;
+  documentImages: string[];
+  additionalInfo?: string;
+}
+
+export interface UserStatusUpdate {
+  status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED' | 'PENDING_VERIFICATION';
+  reason?: string;
 }
 
 // Item Types
@@ -169,6 +188,7 @@ export interface UpdateItemRequest {
   condition: string;
   brand: string;
   itemCategories: string[];
+  published: boolean;
 }
 
 export interface CategoryDTO {
@@ -206,6 +226,13 @@ export interface CreateOfferRequest {
 }
 
 // Auction Types
+export interface AuctionBiddingDTO {
+  auctionId: number;
+  bidder: UserDTO;
+  amount: number;
+  bidTime: string;
+}
+
 export interface AuctionDTO {
   id: number;
   startDate: string;
@@ -218,6 +245,8 @@ export interface AuctionDTO {
   item: ItemDTO;
   winner?: UserDTO;
   dateCreated: string;
+  biddingsCount?: number;
+  biddings?: AuctionBiddingDTO[];
 }
 
 export interface CreateAuctionRequest {
@@ -263,8 +292,17 @@ export interface BidDTO {
 
 export interface CreateBidRequest {
   auctionId: number;
-  bidAmount: number;
+  bidderId: number;
+  amount: number;
 }
+
+// Additional Bidding Types for enhanced functionality
+export interface BidHistoryDTO extends BidDTO {
+  isWinning?: boolean;
+  isHighest?: boolean;
+}
+
+export type BidStatus = 'ACTIVE' | 'OUTBID' | 'WINNING' | 'WON' | 'LOST';
 
 // Review Types
 export interface ReviewDTO {
@@ -302,13 +340,15 @@ export interface MessageDTO {
 }
 
 export interface CreateChatRequest {
-  recipientId: number;
+  receiverId: number;
   itemId?: number;
+  title?: string;
 }
 
 export interface SendMessageRequest {
   chatId: string;
-  message: string;
+  content: string;
+  itemId?: string;
 }
 
 // Notification Types

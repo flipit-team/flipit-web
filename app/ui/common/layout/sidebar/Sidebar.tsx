@@ -39,7 +39,6 @@ const Sidebar = ({ username = 'User' }: SidebarProps) => {
 
     const handleLogout = () => {
         // TODO: Implement logout functionality
-        console.log('Logout clicked');
     };
 
     return (

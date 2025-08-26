@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers';
-import { ItemDTO, CategoryDTO, ItemsQueryParams, PaginatedResponse } from '~/types/api';
+import { ItemDTO, CategoryDTO, ItemsQueryParams, PaginatedResponse, AuctionDTO } from '~/types/api';
 
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
   ? 'https://api.flipit.ng' 
@@ -15,14 +15,11 @@ export async function getItemsServerSide(params: ItemsQueryParams = {}): Promise
     
     const apiUrl = `${API_BASE_URL}/api/v1/items?page=${page}&size=${size}&search=${encodeURIComponent(query)}`;
     
-    console.log('🏠 Server-side getItems - calling backend directly:', apiUrl);
-    console.log('🏠 Server-side getItems - params:', params);
     
     // Get token from cookies for authentication
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
     
-    console.log('🏠 Server-side getItems - token present:', !!token);
     
     const response = await fetch(apiUrl, {
       headers: {
@@ -32,11 +29,9 @@ export async function getItemsServerSide(params: ItemsQueryParams = {}): Promise
       cache: 'no-store',
     });
 
-    console.log('🏠 Server-side getItems - response status:', response.status);
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('🏠 Server-side getItems - error:', errorText);
       return { 
         data: null, 
         error: `API error: ${response.status} ${response.statusText}` 
@@ -44,11 +39,9 @@ export async function getItemsServerSide(params: ItemsQueryParams = {}): Promise
     }
 
     const data = await response.json();
-    console.log('🏠 Server-side getItems - success:', data);
     
     // The API might return items directly as an array or in a paginated wrapper
     if (Array.isArray(data)) {
-      console.log('🏠 Server-side getItems - items count (direct array):', data.length);
       // Transform to paginated format for consistency
       const paginatedData = {
         content: data,
@@ -72,12 +65,10 @@ export async function getItemsServerSide(params: ItemsQueryParams = {}): Promise
       };
       return { data: paginatedData, error: null };
     } else {
-      console.log('🏠 Server-side getItems - items count (paginated):', data.content?.length);
     }
     
     return { data, error: null };
   } catch (error) {
-    console.error('🏠 Server-side getItems - exception:', error);
     return { 
       data: null, 
       error: error instanceof Error ? error.message : 'Unknown error occurred'
@@ -90,7 +81,6 @@ export async function getCategoriesServerSide(): Promise<{ data: CategoryDTO[] |
     // Call backend API directly from server-side
     const apiUrl = `${API_BASE_URL}/api/v1/items/categories`;
     
-    console.log('🏷️ Server-side getCategories - calling backend directly:', apiUrl);
     
     const response = await fetch(apiUrl, {
       headers: {
@@ -100,11 +90,9 @@ export async function getCategoriesServerSide(): Promise<{ data: CategoryDTO[] |
       cache: 'no-store',
     });
 
-    console.log('🏷️ Server-side getCategories - response status:', response.status);
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('🏷️ Server-side getCategories - error:', errorText);
       return { 
         data: null, 
         error: `API error: ${response.status} ${response.statusText}` 
@@ -112,12 +100,9 @@ export async function getCategoriesServerSide(): Promise<{ data: CategoryDTO[] |
     }
 
     const data = await response.json();
-    console.log('🏷️ Server-side getCategories - success:', data);
-    console.log('🏷️ Server-side getCategories - categories count:', data.length);
     
     return { data, error: null };
   } catch (error) {
-    console.error('🏷️ Server-side getCategories - exception:', error);
     return { 
       data: null, 
       error: error instanceof Error ? error.message : 'Unknown error occurred'
@@ -130,13 +115,11 @@ export async function getSingleItemServerSide(itemId: string): Promise<{ data: I
     // Call backend API directly to get single item
     const apiUrl = `${API_BASE_URL}/api/v1/items/${itemId}`;
     
-    console.log('🔍 Server-side getSingleItem - calling backend directly:', apiUrl);
     
     // Get token from cookies for authentication
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
     
-    console.log('🔍 Server-side getSingleItem - token present:', !!token);
     
     const response = await fetch(apiUrl, {
       headers: {
@@ -146,11 +129,9 @@ export async function getSingleItemServerSide(itemId: string): Promise<{ data: I
       cache: 'no-store',
     });
 
-    console.log('🔍 Server-side getSingleItem - response status:', response.status);
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('🔍 Server-side getSingleItem - error:', errorText);
       return { 
         data: null, 
         error: `API error: ${response.status} ${response.statusText}` 
@@ -158,12 +139,9 @@ export async function getSingleItemServerSide(itemId: string): Promise<{ data: I
     }
 
     const data = await response.json();
-    console.log('🔍 Server-side getSingleItem - success:', data);
-    console.log('🔍 Server-side getSingleItem - item title:', data.title);
     
     return { data, error: null };
   } catch (error) {
-    console.error('🔍 Server-side getSingleItem - exception:', error);
     return { 
       data: null, 
       error: error instanceof Error ? error.message : 'Unknown error occurred'
@@ -176,13 +154,11 @@ export async function getUserItemsServerSide(userId: string): Promise<{ data: It
     // Call backend API directly to get user's items
     const apiUrl = `${API_BASE_URL}/api/v1/items/user/${userId}`;
     
-    console.log('👤 Server-side getUserItems - calling backend directly:', apiUrl);
     
     // Get token from cookies for authentication
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
     
-    console.log('👤 Server-side getUserItems - token present:', !!token);
     
     const response = await fetch(apiUrl, {
       headers: {
@@ -192,11 +168,9 @@ export async function getUserItemsServerSide(userId: string): Promise<{ data: It
       cache: 'no-store',
     });
 
-    console.log('👤 Server-side getUserItems - response status:', response.status);
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('👤 Server-side getUserItems - error:', errorText);
       return { 
         data: null, 
         error: `API error: ${response.status} ${response.statusText}` 
@@ -204,12 +178,9 @@ export async function getUserItemsServerSide(userId: string): Promise<{ data: It
     }
 
     const data = await response.json();
-    console.log('👤 Server-side getUserItems - success:', data);
-    console.log('👤 Server-side getUserItems - items count:', Array.isArray(data) ? data.length : 'not array');
     
     return { data: Array.isArray(data) ? data : [], error: null };
   } catch (error) {
-    console.error('👤 Server-side getUserItems - exception:', error);
     return { 
       data: null, 
       error: error instanceof Error ? error.message : 'Unknown error occurred'
@@ -217,42 +188,42 @@ export async function getUserItemsServerSide(userId: string): Promise<{ data: It
   }
 }
 
-export async function checkAuthServerSide(): Promise<{ isAuthenticated: boolean; user: any | null }> {
+export async function checkAuthServerSide(): Promise<{ isAuthenticated: boolean; user: any | null; clearCookies?: boolean }> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
     const userId = cookieStore.get('userId')?.value;
     const userName = cookieStore.get('userName')?.value;
     
-    console.log('🔍 Server auth check: Cookie values:', {
-      hasToken: !!token,
-      hasUserId: !!userId,
-      hasUserName: !!userName,
-      tokenLength: token?.length || 0
-    });
-    
     if (!token) {
-      console.log('🔍 Server auth check: No token found');
       return { isAuthenticated: false, user: null };
     }
 
-    console.log('🔍 Server auth check: Token found, skipping backend verification for now...');
 
-    // Temporarily skip backend verification to test cookie persistence
-    // TODO: Re-enable backend verification once we confirm cookies work
-    /*
-    const verifyResponse = await fetch(`${API_BASE_URL}/api/v1/checkJwt`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-      next: { revalidate: 0 },
-    });
+    // Verify token with backend by making a simple authenticated request
+    try {
+      const verifyResponse = await fetch(`${API_BASE_URL}/api/v1/user/profile`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        cache: 'no-store'
+      });
 
-    if (!verifyResponse.ok) {
-      console.log('🔍 Server auth check: Token verification failed', verifyResponse.status);
-      return { isAuthenticated: false, user: null };
+
+      if (!verifyResponse.ok) {
+        
+        // Clear invalid cookies
+        return { isAuthenticated: false, user: null, clearCookies: true };
+      }
+
+      // If successful, get actual user data from the response
+      const verifiedUserData = await verifyResponse.json();
+      
+      return { isAuthenticated: true, user: verifiedUserData };
+    } catch (verifyError) {
+      // On network errors, fall back to cookie data but mark as potentially stale
     }
-    */
 
     // Return user data from cookies for now
     const userData = {
@@ -265,10 +236,124 @@ export async function checkAuthServerSide(): Promise<{ isAuthenticated: boolean;
       dateCreated: new Date().toISOString()
     };
 
-    console.log('🔍 Server auth check: User authenticated from cookies', userData.username || userData.firstName || userData.email);
     return { isAuthenticated: true, user: userData };
   } catch (error) {
-    console.error('🔍 Server auth check: Error', error);
     return { isAuthenticated: false, user: null };
+  }
+}
+
+// Auction-related server-side functions
+export async function getAuctionsServerSide(page = 0, size = 15): Promise<{ data: AuctionDTO[] | null; error: string | null }> {
+  try {
+    const apiUrl = `${API_BASE_URL}/api/v1/auction?page=${page}&size=${size}`;
+    
+    
+    // Get token from cookies for authentication
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token')?.value;
+    
+    
+    const response = await fetch(apiUrl, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` })
+      },
+      cache: 'no-store',
+    });
+
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      return { 
+        data: null, 
+        error: `API error: ${response.status} ${response.statusText}` 
+      };
+    }
+
+    const data = await response.json();
+    
+    return { data: Array.isArray(data) ? data : [], error: null };
+  } catch (error) {
+    return { 
+      data: null, 
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
+  }
+}
+
+export async function getActiveAuctionsServerSide(page = 0, size = 15): Promise<{ data: AuctionDTO[] | null; error: string | null }> {
+  try {
+    const apiUrl = `${API_BASE_URL}/api/v1/auction?page=${page}&size=${size}`;
+    
+    
+    // Get token from cookies for authentication
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token')?.value;
+    
+    
+    const response = await fetch(apiUrl, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` })
+      },
+      cache: 'no-store',
+    });
+
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      return { 
+        data: null, 
+        error: `API error: ${response.status} ${response.statusText}` 
+      };
+    }
+
+    const data = await response.json();
+    
+    return { data: Array.isArray(data) ? data : [], error: null };
+  } catch (error) {
+    return { 
+      data: null, 
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
+  }
+}
+
+export async function getSingleAuctionServerSide(auctionId: string): Promise<{ data: AuctionDTO | null; error: string | null }> {
+  try {
+    // Use the Next.js API route instead of calling backend directly to avoid serialization issues
+    const apiUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/v1/auction/${auctionId}`;
+    
+    
+    // Get token from cookies for authentication
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token')?.value;
+    
+    
+    const response = await fetch(apiUrl, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Cookie: `token=${token}` })
+      },
+      cache: 'no-store',
+    });
+
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      return { 
+        data: null, 
+        error: `API error: ${response.status} ${response.statusText}` 
+      };
+    }
+
+    const data = await response.json();
+    
+    return { data, error: null };
+  } catch (error) {
+    return { 
+      data: null, 
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
   }
 }

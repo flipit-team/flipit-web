@@ -22,7 +22,6 @@ const VerificationContent = () => {
 
     const handleComplete = () => {
         // Handle completion
-        console.log('Verification completed!');
         // You might want to redirect or show success message
     };
 

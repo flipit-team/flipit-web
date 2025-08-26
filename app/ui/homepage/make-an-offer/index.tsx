@@ -60,7 +60,6 @@ const MakeAnOffer = (props: Props) => {
 
                 const data = await res.json();
                 setMyItems(data);
-                console.log(data);
             } catch (err: any) {
                 setError(err.message || 'Something went wrong');
             } finally {
@@ -110,12 +109,6 @@ const MakeAnOffer = (props: Props) => {
                       offeredItemId: selectedOption?.id
                   };
         
-        console.log('📤 Sending offer payload:', payload);
-        console.log('🔍 Debug values:');
-        console.log('  - item?.id:', item?.id);
-        console.log('  - user?.userId:', user?.userId);
-        console.log('  - selectedOption?.id:', selectedOption?.id);
-        console.log('  - selected:', selected);
         
         // Additional validation for null IDs
         if (!item?.id) {
@@ -142,7 +135,6 @@ const MakeAnOffer = (props: Props) => {
             const data = await res.json();
 
             if (!res.ok) {
-                console.error('❌ Offer creation failed:', data);
                 
                 let errorMessage = 'Failed to create offer';
                 
@@ -162,7 +154,6 @@ const MakeAnOffer = (props: Props) => {
                 
                 setError(errorMessage);
             } else {
-                console.log('✅ Offer created successfully:', data);
                 setSuccess(true);
                 setTimeout(() => {
                     onClose();

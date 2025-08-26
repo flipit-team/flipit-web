@@ -22,7 +22,8 @@ export function ProtectedRoute({
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && requireAuth && !isAuthenticated) {
+    // Only redirect if we actually need auth and definitely not authenticated
+    if (!loading && requireAuth && isAuthenticated === false) {
       router.push(redirectTo);
     }
   }, [isAuthenticated, loading, requireAuth, redirectTo, router]);

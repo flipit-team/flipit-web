@@ -45,12 +45,12 @@ export function formatTimeTo12Hour(date: Date | string): string {
 }
 
 export async function sendMessage(chatId: string, message: string) {
-    const res = await fetch('/api/chats/send-chat', {
+    const res = await fetch('/api/v1/chats/message', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({chatId, message})
+        body: JSON.stringify({chatId, content: message})
     });
 
     if (!res.ok) {
@@ -88,8 +88,7 @@ export function handleApiError(response: ErrorResponse) {
     try {
         const parsedDetails: {apierror: ApiError} = JSON.parse(response.details);
         return parsedDetails.apierror.message;
-    } catch (err) {
-        console.error('Failed to parse error details', err);
+    } catch {
         return 'An unexpected error occurred.';
     }
 }

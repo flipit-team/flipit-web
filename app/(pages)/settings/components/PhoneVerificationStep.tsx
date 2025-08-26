@@ -54,7 +54,6 @@ const PhoneVerificationStep = ({ onComplete, onBack }: PhoneVerificationStepProp
 
     const handleResendCode = () => {
         // Implement resend logic
-        console.log('Resending code...');
     };
 
     const isCodeComplete = code.every(digit => digit !== '');

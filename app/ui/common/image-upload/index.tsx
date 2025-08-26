@@ -2,16 +2,19 @@
 import {Loader} from 'lucide-react';
 import Image from 'next/image';
 import React, {useEffect, useState} from 'react';
+import {useToast} from '~/contexts/ToastContext';
 
 interface Props {
     setUrls: React.Dispatch<React.SetStateAction<string[]>>;
     uploading?: boolean;
     setUploading: React.Dispatch<React.SetStateAction<boolean>>;
+    initialUrls?: string[];
 }
 const ImageUpload = (props: Props) => {
-    const {uploading, setUploading, setUrls} = props;
+    const {uploading, setUploading, setUrls, initialUrls = []} = props;
     const [file, setFile] = useState<File | null>(null);
-    const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+    const [previewUrls, setPreviewUrls] = useState<string[]>(initialUrls);
+    const {showError} = useToast();
 
     useEffect(() => {
         if (!file) return;
@@ -38,6 +41,11 @@ const ImageUpload = (props: Props) => {
                 body: formData
             });
 
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(`Upload failed with status: ${res.status} - ${errorText}`);
+            }
+
             // Prevent parsing if there's no body or wrong content type
             const contentType = res.headers.get('content-type');
             let data;
@@ -47,13 +55,14 @@ const ImageUpload = (props: Props) => {
             } else {
                 data = await res.text();
             }
-            setUrls((prev) => {
-                const newData = [...prev, data.key];
-                return newData;
-            });
+
+            if (data && data.key) {
+                setUrls((prev) => [...prev, data.key]);
+            } else {
+                showError('Upload failed - no file key returned');
+            }
         } catch (error) {
-            console.error('Upload failed', error);
-            alert('Upload failed');
+            showError(error);
         } finally {
             setUploading(false);
         }
@@ -72,13 +81,14 @@ const ImageUpload = (props: Props) => {
                             <input
                                 type='file'
                                 accept='image/*'
-                                multiple
                                 className='hidden'
                                 onChange={(e) => {
                                     const selected = e.target.files?.[0];
                                     if (selected) {
                                         setFile(selected);
                                     }
+                                    // Reset the input so the same file can be selected again
+                                    e.target.value = '';
                                 }}
                             />
                             +

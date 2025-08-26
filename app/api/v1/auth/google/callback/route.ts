@@ -34,7 +34,6 @@ export async function GET(req: NextRequest) {
 
         return response;
     } catch (err) {
-        console.error('Callback processing failed:', err);
         return NextResponse.redirect('/login?error=unexpected');
     }
 }

@@ -12,6 +12,7 @@ import ItemCard from '../item-card/ItemCard';
 interface Props {
     items: Item[];
     forEdit?: boolean;
+    forLiveAuction?: boolean;
 }
 
 const GridSwiper = (props: Props) => {
@@ -61,13 +62,14 @@ const GridSwiper = (props: Props) => {
                         <ItemCard
                             item={item}
                             forEdit={props.forEdit}
+                            forLiveAuction={props.forLiveAuction}
                             className='h-full w-full'
                             showSaveButton={false}
                             showPromotedBadge={false}
                             showVerifiedBadge={false}
-                            showAuctionBadge={true}
+                            showAuctionBadge={props.forLiveAuction}
                             auctionBidCount={12}
-                            customFooter={<Countdown />}
+                            customFooter={props.forLiveAuction ? undefined : <Countdown />}
                         />
                     </SwiperSlide>
                 ))}

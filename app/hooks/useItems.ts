@@ -98,8 +98,10 @@ export function useCategories() {
 
   const fetchCategories = useCallback(async () => {
     const result = await execute(() => ItemsService.getCategories());
+    
     if (result.success && result.data) {
       setCategories(result.data);
+    } else {
     }
     return result;
   }, [execute]);

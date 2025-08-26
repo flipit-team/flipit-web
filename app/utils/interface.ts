@@ -3,30 +3,69 @@ export interface Item {
     title: string;
     description: string;
     imageUrls: string[];
-    flipForImgUrls: string[];
+    flipForImgUrls?: string[];
     acceptCash: boolean;
     cashAmount: number;
     condition: string | null;
     published: boolean;
+    sold?: boolean;
     location: string;
-    dateCreated: Date;
+    brand?: string;
+    dateCreated: Date | string;
     seller: {
-        id: string;
-        title: string;
+        id: string | number;
+        title?: string;
         firstName: string;
-        middleName: string;
+        middleName?: string;
         lastName: string;
         email: string;
         phoneNumber: string;
-        avatar: string;
-        avg_rating: number;
-        status: string;
-        phoneNumberVerified: boolean;
-        dateVerified: Date;
+        avatar?: string;
+        profileImageUrl?: string;
+        avg_rating?: number;
+        avgRating?: number;
+        status?: string;
+        phoneNumberVerified?: boolean;
+        dateVerified?: Date | string;
+        dateCreated?: string;
+        reviewCount?: number;
     };
     itemCategories: {
+        id?: number;
         name: string;
         description: string;
+    }[];
+    // Auction-specific fields (optional)
+    isAuction?: boolean;
+    auctionId?: number;
+    startingBid?: number;
+    currentBid?: number;
+    bidIncrement?: number;
+    reservePrice?: number;
+    startDate?: string;
+    endDate?: string;
+    auctionStatus?: string;
+    biddingsCount?: number;
+    biddings?: {
+        auctionId: number;
+        bidder: {
+            id: number;
+            title?: string;
+            firstName: string;
+            middleName?: string;
+            lastName: string;
+            email: string;
+            phoneNumber: string;
+            avatar?: string;
+            avgRating?: number;
+            reviewCount?: number;
+            status?: string;
+            phoneNumberVerified?: boolean;
+            dateVerified?: string;
+            dateCreated?: string;
+        };
+        amount: number;
+        bidTime: string;
     }[];
 }
 

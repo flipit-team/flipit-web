@@ -6,7 +6,9 @@ import {useAppContext} from '~/contexts/AppContext';
 import {Chat} from '~/utils/interface';
 import dynamic from 'next/dynamic';
 import {formatTimeTo12Hour, sendMessage} from '~/utils/helpers';
+import { ChatService } from '~/services/chat.service';
 import NoData from '../common/no-data/NoData';
+import DeleteConfirmationModal from '../common/delete-confirmation-modal/DeleteConfirmationModal';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {useChatMessages, useUserMessages} from '~/hooks/useChatMessages';
 import {Loader} from 'lucide-react';
@@ -30,13 +32,12 @@ const MainChats = (props: Props) => {
             if (debugMode || serverChatData.buyer.length > 0 || serverChatData.seller.length > 0) return;
             
             try {
-                const res = await fetch('/api/chats/get-user-chats');
+                const res = await fetch('/api/v1/chats');
                 if (res.ok) {
                     const data = await res.json();
                     setApiChatData(data);
                 }
             } catch (error) {
-                console.error('Error fetching chat data:', error);
             }
         };
         
@@ -51,6 +52,9 @@ const MainChats = (props: Props) => {
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [chatToDelete, setChatToDelete] = useState<Chat | null>(null);
     const {user} = useAppContext();
     const chatId = searchParams.get('chatId');
     const [activeTab, setActiveTab] = useState<'seller' | 'buyer'>('buyer');
@@ -63,7 +67,7 @@ const MainChats = (props: Props) => {
         router.push(`/messages?${params.toString()}`);
     };
 
-    const {messages, isLoading, error: chatError} = useChatMessages(chatId);
+    const {messages, isLoading, error: chatError, mutate: mutateMessages} = useChatMessages(chatId);
     const {
         messages: userMessages,
         isLoading: userMessagesLoading,
@@ -78,13 +82,56 @@ const MainChats = (props: Props) => {
 
         try {
             const data = await sendMessage(activeChat?.chatId ?? '', input);
-            console.log('✅ Message sent:', data);
             setInput('');
+            
+            // Immediately refresh messages after sending
+            mutateMessages();
         } catch (err: any) {
-            setError(err.message);
+            setError(err.message || 'Failed to send message');
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleDeleteClick = (chat: Chat, event: React.MouseEvent) => {
+        event.stopPropagation(); // Prevent chat selection when clicking delete
+        setChatToDelete(chat);
+        setShowDeleteModal(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!chatToDelete) return;
+
+        setDeleteLoading(chatToDelete.chatId);
+
+        try {
+            await ChatService.deleteChat(chatToDelete.chatId);
+            
+            // Remove from local state
+            setApiChatData(prev => ({
+                buyer: prev.buyer.filter(chat => chat.chatId !== chatToDelete.chatId),
+                seller: prev.seller.filter(chat => chat.chatId !== chatToDelete.chatId)
+            }));
+            
+            // Clear active chat if it was deleted
+            if (activeChat?.chatId === chatToDelete.chatId) {
+                setActiveChat(null);
+                router.push('/messages');
+            }
+            
+            // Close modal
+            setShowDeleteModal(false);
+            setChatToDelete(null);
+        } catch (err: any) {
+            setError('Failed to delete chat. Please try again.');
+        } finally {
+            setDeleteLoading(null);
+        }
+    };
+
+    const handleCancelDelete = () => {
+        setShowDeleteModal(false);
+        setChatToDelete(null);
     };
 
     if (userMessagesLoading)
@@ -137,12 +184,27 @@ const MainChats = (props: Props) => {
                                     alt='picture'
                                     className='h-[50px] w-[50px] mr-4'
                                 />
-                                <div>
+                                <div className='flex-1'>
                                     <p className='text-primary typo-body_lm capitalize'>{chat.initiatorName}</p>
                                     <p className='typo-body_mr w-[203px] line-clamp-2'>{chat.title}</p>
                                 </div>
-                                <p className='typo-body_sr xs:hidden'></p>
-                                {formatTimeTo12Hour(chat.dateCreated)}
+                                <div className='flex flex-col items-end gap-2'>
+                                    <p className='typo-body_sr'>{formatTimeTo12Hour(chat.dateCreated)}</p>
+                                    <button
+                                        onClick={(e) => handleDeleteClick(chat, e)}
+                                        disabled={deleteLoading === chat.chatId}
+                                        className='text-red-500 hover:text-red-700 text-sm p-1 rounded hover:bg-red-50 transition-colors disabled:opacity-50'
+                                        title='Delete chat'
+                                    >
+                                        {deleteLoading === chat.chatId ? (
+                                            <Loader className='h-4 w-4' />
+                                        ) : (
+                                            <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16' />
+                                            </svg>
+                                        )}
+                                    </button>
+                                </div>
                             </div>
                         );
                     })}
@@ -223,37 +285,55 @@ const MainChats = (props: Props) => {
                         })}
                     </div>
                     {activeChat && (
-                        <div className='h-[96px] border-t border-border_gray flex items-center px-[40px]'>
-                            <Image
-                                src={'/microphone.svg'}
-                                height={24}
-                                width={24}
-                                alt='mic'
-                                className='h-[24px] w-[24px] mr-2'
-                            />
-                            <input
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
-                                type='text'
-                                className='h-full w-full typo-body_lr focus:ring-transparent outline-none'
-                                placeholder='Type in your message here'
-                            />
-                            {loading ? (
-                                <Loader height={35} width={35} />
-                            ) : (
-                                <Image
-                                    onClick={handleSend}
-                                    src={'/send.svg'}
-                                    height={39}
-                                    width={87}
-                                    alt='mic'
-                                    className='h-[39px] w-[87px]'
-                                />
+                        <div className='border-t border-border_gray'>
+                            {error && (
+                                <div className='px-[40px] py-2 bg-red-50 border-b border-red-200'>
+                                    <p className='text-red-700 text-sm'>{error}</p>
+                                </div>
                             )}
+                            <div className='h-[96px] flex items-center px-[40px]'>
+                                <Image
+                                    src={'/microphone.svg'}
+                                    height={24}
+                                    width={24}
+                                    alt='mic'
+                                    className='h-[24px] w-[24px] mr-2'
+                                />
+                                <input
+                                    value={input}
+                                    onChange={(e) => setInput(e.target.value)}
+                                    onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                                    type='text'
+                                    disabled={loading}
+                                    className='h-full w-full typo-body_lr focus:ring-transparent outline-none disabled:opacity-50'
+                                    placeholder='Type in your message here'
+                                />
+                                {loading ? (
+                                    <Loader height={35} width={35} />
+                                ) : (
+                                    <Image
+                                        onClick={handleSend}
+                                        src={'/send.svg'}
+                                        height={39}
+                                        width={87}
+                                        alt='send'
+                                        className='h-[39px] w-[87px] cursor-pointer'
+                                    />
+                                )}
+                            </div>
                         </div>
                     )}
                 </div>
             </div>
+            
+            <DeleteConfirmationModal
+                isOpen={showDeleteModal}
+                title="Delete Chat"
+                message={`Are you sure you want to delete this chat with ${chatToDelete?.initiatorName}? This action cannot be undone.`}
+                onConfirm={handleConfirmDelete}
+                onCancel={handleCancelDelete}
+                isDeleting={deleteLoading === chatToDelete?.chatId}
+            />
         </div>
     );
 };

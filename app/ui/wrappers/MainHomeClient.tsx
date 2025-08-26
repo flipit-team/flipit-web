@@ -9,6 +9,7 @@ import MainHomeServer from './MainHomeServer';
 
 interface Props {
     items: Item[];
+    auctionItems: Item[];
     defaultCategories: {
         name: string;
         description: string | null;
@@ -19,7 +20,7 @@ interface Props {
     };
 }
 
-const MainHomeClient: React.FC<Props> = ({ items: serverItems, defaultCategories: serverCategories, authStatus }) => {
+const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, defaultCategories: serverCategories, authStatus }: Props) => {
     const { debugMode } = useAppContext();
     
     // Fetch client-side data
@@ -29,9 +30,7 @@ const MainHomeClient: React.FC<Props> = ({ items: serverItems, defaultCategories
     // Log authentication status for debugging
     React.useEffect(() => {
         if (authStatus) {
-            console.log('🔐 Client-side auth status:', authStatus.isAuthenticated ? 'LOGGED IN' : 'NOT LOGGED IN');
             if (authStatus.user) {
-                console.log('👤 Client-side user:', authStatus.user.firstName || authStatus.user.username || authStatus.user.email);
             }
         }
     }, [authStatus]);
@@ -70,15 +69,10 @@ const MainHomeClient: React.FC<Props> = ({ items: serverItems, defaultCategories
     }));
 
     // Log data sources for debugging
-    console.log('🔍 MainHomeClient data source selection:');
-    console.log('  - Debug mode:', debugMode);
-    console.log('  - Server items count:', serverItems.length);
-    console.log('  - Client API items count:', transformedApiItems.length);
-    console.log('  - Server categories count:', serverCategories.length);
-    console.log('  - Client API categories count:', apiCategories.length);
 
     // Use dummy data in debug mode, otherwise prioritize server data, then client-side API data
     const items = debugMode ? dummyItems : (serverItems.length > 0 ? serverItems : transformedApiItems);
+    const auctionItems = debugMode ? dummyItems.slice(0, 5) : serverAuctionItems; // Use first 5 dummy items or server auction items
     const defaultCategories = debugMode ? [
         {name: 'Electronics', description: 'Devices like phones, laptops, gadgets, etc.'},
         {name: 'Mobile Phones', description: 'Smartphones and related accessories'},
@@ -87,14 +81,11 @@ const MainHomeClient: React.FC<Props> = ({ items: serverItems, defaultCategories
         {name: 'Sports', description: 'Sports equipment and accessories'}
     ] : (serverCategories.length > 0 ? serverCategories : apiCategories.map(cat => ({ name: cat.name, description: cat.description })));
 
-    console.log('🎯 MainHomeClient final selection:');
-    console.log('  - Items count:', items.length);
-    console.log('  - Categories count:', defaultCategories.length);
-    console.log('  - Using source:', debugMode ? 'dummy' : (serverItems.length > 0 ? 'server' : 'client'));
 
     return (
         <MainHomeServer 
             items={items} 
+            auctionItems={auctionItems}
             defaultCategories={defaultCategories}
         />
     );

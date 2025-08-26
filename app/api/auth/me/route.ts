@@ -6,10 +6,7 @@ export async function GET(req: NextRequest) {
     const userId = req.cookies.get('userId')?.value;
     const userName = req.cookies.get('userName')?.value;
 
-    console.log('Auth check - cookies:', { token: !!token, userId, userName });
-
     if (!token) {
-        console.log('No token found, user not authenticated');
         return NextResponse.json({isAuthenticated: false});
     }
 
@@ -23,7 +20,6 @@ export async function GET(req: NextRequest) {
         });
 
         if (!verifyResponse.ok) {
-            console.log('Token verification failed');
             return NextResponse.json({isAuthenticated: false});
         }
 
@@ -40,7 +36,6 @@ export async function GET(req: NextRequest) {
                 userProfile = await profileResponse.json();
             }
         } catch (profileError) {
-            console.warn('Failed to fetch user profile:', profileError);
         }
 
         // Return user data - use profile data if available, otherwise use cookie data
@@ -60,7 +55,6 @@ export async function GET(req: NextRequest) {
         });
         
     } catch (error) {
-        console.error('Error verifying JWT:', error);
         return NextResponse.json({isAuthenticated: false});
     }
 }

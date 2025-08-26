@@ -33,7 +33,9 @@ export default function SettingsPage() {
                     
                     {/* Settings Layout */}
                     <div className='flex flex-col md:flex-row md:gap-6 w-full'>
-                        <SettingsSidebar />
+                        <Suspense fallback={<div>Loading...</div>}>
+                            <SettingsSidebar />
+                        </Suspense>
                         
                         <div className='flex-1 w-full'>
                             <Suspense fallback={<LoadingContent />}>

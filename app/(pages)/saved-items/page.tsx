@@ -81,8 +81,6 @@ const page = async () => {
         const userId = cookieStore.get('userId')?.value;
         const token = cookieStore.get('token')?.value;
 
-        console.log('Saved-items page - userId:', userId);
-        console.log('Saved-items page - token exists:', !!token);
         
         // For now, using dummy data. Replace with actual saved items API call
         const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/items/get-saved-items?userId=${userId}`, {
@@ -92,11 +90,9 @@ const page = async () => {
             },
             cache: 'no-store'
         }).catch((error) => {
-            console.error('Saved-items page - Fetch error:', error);
             return null;
         });
 
-        console.log('Saved-items page - API response status:', res?.status);
 
         // Fallback to dummy data if API fails
         let data: Item[] = data2;
@@ -104,7 +100,6 @@ const page = async () => {
             try {
                 data = await res.json();
             } catch (error) {
-                console.error('Saved-items page - JSON parse error:', error);
                 data = data2;
             }
         }
@@ -116,7 +111,6 @@ const page = async () => {
             </div>
         );
     } catch (error) {
-        console.error('Saved-items page - Error:', error);
         redirect('/error-page');
     }
 };

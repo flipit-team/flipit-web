@@ -15,19 +15,20 @@ const fetcher = async (url: string) => {
 };
 
 export function useChatMessages(chatId?: string | null) {
-    const {data, error, isLoading} = useSWR(chatId ? `/api/chats/get-chat?chatId=${chatId}` : null, fetcher, {
-        refreshInterval: 5000 // ⏱ Poll every 5 seconds
+    const {data, error, isLoading, mutate} = useSWR(chatId ? `/api/v1/chats/${chatId}/messages` : null, fetcher, {
+        refreshInterval: 3000 // ⏱ Poll every 3 seconds for faster updates
     });
 
     return {
         messages: data as Message[],
         isLoading,
-        error
+        error,
+        mutate
     };
 }
 
 export function useUserMessages(userId?: string | null) {
-    const {data, error, isLoading} = useSWR(userId ? `/api/chats/get-user-chats?userId=${userId}` : null, fetcher, {
+    const {data, error, isLoading} = useSWR(userId ? `/api/v1/chats` : null, fetcher, {
         refreshInterval: 5000 // ⏱ Poll every 5 seconds
     });
 

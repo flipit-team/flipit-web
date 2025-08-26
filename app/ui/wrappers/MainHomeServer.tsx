@@ -10,13 +10,14 @@ import SortDropdown from '../common/sort-dropdown/SortDropdown';
 
 interface Props {
     items: Item[];
+    auctionItems: Item[];
     defaultCategories: {
         name: string;
         description: string | null;
     }[];
 }
 
-const MainHomeServer: React.FC<Props> = ({ items, defaultCategories }) => {
+const MainHomeServer = ({ items, auctionItems, defaultCategories }: Props) => {
     const sortOptions = [
         {value: 'alphabetical', label: 'A-Z'},
         {value: 'popularity', label: 'Popular'},
@@ -25,10 +26,8 @@ const MainHomeServer: React.FC<Props> = ({ items, defaultCategories }) => {
 
     const handleSortSelect = (option: {value: string; label: string}) => {
         // TODO: Implement sorting logic
-        console.log('Sort selected:', option);
     };
 
-    console.log(items);
 
     return (
         <div className='flex flex-col relative'>
@@ -50,25 +49,34 @@ const MainHomeServer: React.FC<Props> = ({ items, defaultCategories }) => {
                     <div className='hidden mt-5 mb-5 xs:flex items-center justify-center bg-[#005f732b] text-[#333333] typo-body_ls w-max px-[10px] rounded-lg h-[36px]'>
                         Categories
                     </div>
-                    <div className='py-9 xs:py-0 xs:mb-4 flex items-center justify-between overflow-hidden'>
-                        <div className='typo-heading_ms'>Live Auction</div>
-                        <div className='flex items-center typo-body_mm text-text_four border border-border_gray rounded-md h-[31px] px-4'>
-                            View all
-                        </div>
-                    </div>
-                    <div className=''>
-                        <GridSwiper items={items} />
-                    </div>
-                    <div className='py-9 xs:py-0 xs:mb-4 flex items-center justify-between'>
-                        <div className='typo-heading_ms'>Listed Items</div>
-                        <SortDropdown 
-                            options={sortOptions}
-                            defaultSelection="A-Z"
-                            onSelectionChange={handleSortSelect}
-                        />
-                    </div>
-
-                    {items.length ? <GridItems items={items} /> : <NoData />}
+                    {auctionItems.length > 0 && (
+                        <>
+                            <div className='py-9 xs:py-0 xs:mb-4 flex items-center justify-between overflow-hidden'>
+                                <div className='typo-heading_ms'>Live Auction</div>
+                                <div className='flex items-center typo-body_mm text-text_four border border-border_gray rounded-md h-[31px] px-4'>
+                                    View all
+                                </div>
+                            </div>
+                            <div className=''>
+                                <GridSwiper items={auctionItems} forLiveAuction />
+                            </div>
+                        </>
+                    )}
+                    {items.length > 0 ? (
+                        <>
+                            <div className='py-9 xs:py-0 xs:mb-4 flex items-center justify-between'>
+                                <div className='typo-heading_ms'>Listed Items</div>
+                                <SortDropdown 
+                                    options={sortOptions}
+                                    defaultSelection="A-Z"
+                                    onSelectionChange={handleSortSelect}
+                                />
+                            </div>
+                            <GridItems items={items} />
+                        </>
+                    ) : (
+                        <NoData />
+                    )}
                 </div>
             </div>
         </div>

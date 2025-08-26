@@ -9,12 +9,10 @@ export async function GET() {
     timestamp: new Date().toISOString()
   };
 
-  console.log('Connection test info:', connectionInfo);
 
   // Test connection to the backend
   try {
     const testUrl = `${API_BASE_PATH}/items/categories`;
-    console.log('Testing connection to:', testUrl);
     
     const response = await fetch(testUrl, {
       method: 'GET',

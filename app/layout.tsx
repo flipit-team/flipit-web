@@ -5,6 +5,7 @@ import Footer from '~/ui/common/layout/footer';
 import React, {Suspense} from 'react';
 import ErrorBoundary from '~/error-boundary';
 import {AppProvider} from './contexts/AppContext';
+import {ToastProvider} from './contexts/ToastContext';
 import BottomNavBar from './ui/common/layout/bottom-nav-bar';
 import Overlay from './ui/common/modals/Overlay';
 import { checkAuthServerSide } from '~/lib/server-api';
@@ -29,8 +30,8 @@ export default async function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    // Get server-side authentication status
     const authStatus = await checkAuthServerSide();
+    
     const user = authStatus.isAuthenticated && authStatus.user ? {
         token: 'managed-by-cookies',
         userId: authStatus.user.id?.toString(),
@@ -46,29 +47,31 @@ export default async function RootLayout({
                 <link rel='icon' href='/favicon-16x16.png' sizes='16x16' type='image/png' />
                 <link rel='manifest' href='/site.webmanifest' /> */}
             </head>
-            <AppProvider initialUser={user}>
-                <body
-                    className={`relative ${inter.variable} ${poppins.variable} antialiased flex flex-col min-h-[100vh]`}
-                    suppressHydrationWarning={true}
-                >
-                    <main className='flex flex-col flex-1 xs:pb-[100px]'>
-                        <Suspense fallback={<p>Loading...</p>}>
-                            <Header user={user} />
-                        </Suspense>
-                        <Suspense fallback={<p>Loading...</p>}>
-                            <Overlay />
-                        </Suspense>
+            <body
+                className={`relative ${inter.variable} ${poppins.variable} antialiased flex flex-col min-h-[100vh]`}
+                suppressHydrationWarning={true}
+            >
+                <AppProvider initialUser={user}>
+                    <ToastProvider>
+                        <main className='flex flex-col flex-1 xs:pb-[100px]'>
+                            <Suspense fallback={<p>Loading...</p>}>
+                                <Header user={user} />
+                            </Suspense>
+                            <Suspense fallback={<p>Loading...</p>}>
+                                <Overlay />
+                            </Suspense>
 
-                        <ErrorBoundary>{children}</ErrorBoundary>
-                    </main>
-                    <Footer />
-                    <div className='xs:flex hidden relative'>
-                        <Suspense fallback={<p>Loading...</p>}>
-                            <BottomNavBar />
-                        </Suspense>
-                    </div>
-                </body>
-            </AppProvider>
+                            <ErrorBoundary>{children}</ErrorBoundary>
+                        </main>
+                        <Footer />
+                        <div className='xs:flex hidden relative'>
+                            <Suspense fallback={<p>Loading...</p>}>
+                                <BottomNavBar />
+                            </Suspense>
+                        </div>
+                    </ToastProvider>
+                </AppProvider>
+            </body>
         </html>
     );
 }

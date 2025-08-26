@@ -87,11 +87,12 @@ const ConfirmBid = (props: Props) => {
                         {/* Item Image */}
                         <div className='flex justify-center mb-6'>
                             <Image
-                                src={'/camera-large.png'}
+                                src={item?.imageUrls?.[0] || '/camera-large.png'}
                                 height={99}
                                 width={128}
                                 alt='item'
-                                className='h-[99px] w-[128px] rounded-lg'
+                                className='h-[99px] w-[128px] rounded-lg object-cover'
+                                unoptimized
                             />
                         </div>
 
@@ -140,7 +141,9 @@ const ConfirmBid = (props: Props) => {
                             <div className='flex-1'>
                                 <RegularButton
                                     text='Place Bid'
-                                    action={onConfirm}
+                                    action={() => {
+                                        onConfirm();
+                                    }}
                                     isLoading={isLoading}
                                     disabled={isLoading}
                                 />

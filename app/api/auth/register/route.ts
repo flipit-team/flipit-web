@@ -11,11 +11,10 @@ export async function POST(req: Request) {
         password: body.password,
         firstName: body.firstName,
         lastName: body.lastName,
-        phoneNumber: body.phone, // Map phone to phoneNumber
+        phoneNumber: body.phoneNumber || body.phone, // Handle both phoneNumber and phone
         dateOfBirth: body.dateOfBirth
     };
 
-    console.log('Signup request:', { ...backendBody, password: '[REDACTED]' });
 
     const response = await fetch(`${API_BASE_PATH}/user/signup`, {
         method: 'POST',
@@ -36,12 +35,10 @@ export async function POST(req: Request) {
     const user = data.user;
     
     if (!token) {
-        console.error('No token found in API response:', data);
         return NextResponse.json({apierror: {message: 'No token received from server'}}, {status: 500});
     }
     
     if (!user || !user.id) {
-        console.error('No user or user.id found in API response:', data);
         return NextResponse.json({apierror: {message: 'No user data received from server'}}, {status: 500});
     }
     

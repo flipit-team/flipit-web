@@ -23,7 +23,6 @@ export class ApiErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('API Error Boundary caught an error:', error, errorInfo);
   }
 
   render() {

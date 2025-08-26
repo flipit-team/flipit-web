@@ -1,5 +1,5 @@
 'use client';
-import React, {Suspense, useState} from 'react';
+import React, {Suspense, useState, useEffect} from 'react';
 import InputBox from '../common/input-box';
 import RadioButtons from '../common/radio-buttons';
 import ImageUpload from '../common/image-upload';
@@ -9,24 +9,95 @@ import {useRouter} from 'next/navigation';
 import {useAppContext} from '~/contexts/AppContext';
 import { useCategories } from '~/hooks/useItems';
 import { ItemsService } from '~/services/items.service';
-import { CreateItemRequest } from '~/types/api';
+import { AuctionsService } from '~/services/auctions.service';
+import { CreateItemRequest, CreateAuctionRequest, ItemDTO, UpdateItemRequest } from '~/types/api';
+import { formatErrorForDisplay } from '~/utils/error-messages';
+import ErrorDisplay from '../common/error-display/ErrorDisplay';
 
 interface FormProps {
     formType: 'listing' | 'auction';
+    existingItem?: ItemDTO;
+    isEditing?: boolean;
 }
 
-const Form: React.FC<FormProps> = ({formType}) => {
+const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) => {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [title, setTitle] = useState('');
-    const [categories, setCategories] = useState('');
-    const [price, setPrice] = useState(0);
-    const [condition, setCondition] = useState('');
-    const [cash, setCash] = useState('');
-    const [description, setDescription] = useState('');
+    const [errorTitle, setErrorTitle] = useState<string>('');
+    const [errorAction, setErrorAction] = useState<string>('');
+    
+    // Initialize state with existing item data if editing (only used for initial render)
+    const getInitialValue = (field: string, defaultValue: any) => {
+        if (isEditing && existingItem) {
+            switch (field) {
+                case 'title': return existingItem.title || '';
+                case 'description': return existingItem.description || '';
+                case 'price': return existingItem.cashAmount || 0;
+                case 'condition': 
+                    const conditionMapping: { [key: string]: string } = {
+                        'NEW': 'brand-new',
+                        'FAIRLY_USED': 'fairly-used',
+                        'USED': 'fairly-used'
+                    };
+                    return conditionMapping[existingItem.condition || ''] || existingItem.condition || '';
+                case 'location': return existingItem.location || '';
+                case 'brand': return existingItem.brand || '';
+                case 'cash': return existingItem.acceptCash ? 'yes' : 'no';
+                case 'categories': 
+                    return existingItem.itemCategories && existingItem.itemCategories.length > 0 
+                        ? existingItem.itemCategories[0].name 
+                        : '';
+                default: return defaultValue;
+            }
+        }
+        return defaultValue;
+    };
+    
+    const [title, setTitle] = useState(() => getInitialValue('title', ''));
+    const [categories, setCategories] = useState(() => getInitialValue('categories', ''));
+    const [price, setPrice] = useState(() => getInitialValue('price', 0));
+    const [condition, setCondition] = useState(() => getInitialValue('condition', ''));
+    const [cash, setCash] = useState(() => getInitialValue('cash', ''));
+    const [description, setDescription] = useState(() => getInitialValue('description', ''));
+    const [location, setLocation] = useState(() => getInitialValue('location', ''));
+    const [brand, setBrand] = useState(() => getInitialValue('brand', ''));
+    const [urls, setUrls] = useState<string[]>(() => 
+        isEditing && existingItem ? (existingItem.imageUrls || []) : []
+    );
+    
+    // Update form state when existingItem changes (for async data loading)
+    useEffect(() => {
+        if (isEditing && existingItem) {
+            setTitle(existingItem.title || '');
+            setDescription(existingItem.description || '');
+            setPrice(existingItem.cashAmount || 0);
+            setLocation(existingItem.location || '');
+            setBrand(existingItem.brand || '');
+            setCash(existingItem.acceptCash ? 'yes' : 'no');
+            
+            // Handle condition mapping
+            const conditionMapping: { [key: string]: string } = {
+                'NEW': 'brand-new',
+                'FAIRLY_USED': 'fairly-used',
+                'USED': 'fairly-used'
+            };
+            const mappedCondition = conditionMapping[existingItem.condition || ''] || existingItem.condition || '';
+            setCondition(mappedCondition);
+            
+            // Handle categories
+            if (existingItem.itemCategories && existingItem.itemCategories.length > 0) {
+                setCategories(existingItem.itemCategories[0].name);
+            }
+            
+            // Handle URLs
+            setUrls(existingItem.imageUrls || []);
+        }
+    }, [isEditing, existingItem]);
+    
     const [startingBid, setStartingBid] = useState(0);
     const [bidIncrement, setBidIncrement] = useState(0);
+    const [auctionStartDate, setAuctionStartDate] = useState('');
     const [auctionDuration, setAuctionDuration] = useState('');
 
     const auctionDurationOptions = [
@@ -36,18 +107,19 @@ const Form: React.FC<FormProps> = ({formType}) => {
         {name: '14', description: '14 days'}
     ];
     const [reservePrice, setReservePrice] = useState(0);
-    const [location, setLocation] = useState('');
-    const [brand, setBrand] = useState('');
-    const {user, defaultCategories} = useAppContext();
-    const { categories: apiCategories, loading: categoriesLoading } = useCategories();
-    const [urls, setUrls] = useState<string[]>([]);
+    const {defaultCategories} = useAppContext();
+    const { categories: apiCategories } = useCategories();
     const [uploading, setUploading] = useState(false);
 
     // Use API categories if available, fallback to context categories, then empty array
     const availableCategories = apiCategories.length > 0 ? apiCategories : defaultCategories;
 
+
+
     const handleInput = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
         setError('');
+        setErrorTitle('');
+        setErrorAction('');
         if (type === 'title') {
             setTitle(e.target.value);
         }
@@ -62,6 +134,9 @@ const Form: React.FC<FormProps> = ({formType}) => {
         }
         if (type === 'bid-increment') {
             setBidIncrement(Number(e.target.value));
+        }
+        if (type === 'auction-start-date') {
+            setAuctionStartDate(e.target.value);
         }
         if (type === 'reserve-price') {
             setReservePrice(Number(e.target.value));
@@ -111,53 +186,199 @@ const Form: React.FC<FormProps> = ({formType}) => {
                 return;
             }
 
-            // Handle regular item creation
-            const itemData: CreateItemRequest = {
-                title: title.trim(),
-                description: description.trim(),
-                imageKeys: urls,
-                acceptCash: cash === 'yes',
-                cashAmount: cash === 'yes' ? price : 0,
-                location: location.trim(),
-                condition: condition === 'brand-new' ? 'NEW' : 'FAIRLY_USED',
-                brand: brand.trim() || 'Unknown', // Default brand if not provided
-                itemCategories: categories ? [categories] : [] // Single category for now
-            };
+            if (isEditing && existingItem) {
+                // Handle item update
+                const updateData: UpdateItemRequest = {
+                    title: title.trim(),
+                    description: description.trim(),
+                    imageKeys: urls.filter(url => url != null && url !== ''),
+                    acceptCash: cash === 'yes',
+                    cashAmount: cash === 'yes' ? price : 0,
+                    location: location.trim(),
+                    condition: condition === 'brand-new' ? 'NEW' : 'FAIRLY_USED',
+                    brand: brand.trim() || 'Unknown',
+                    itemCategories: categories ? [categories] : [],
+                    published: true // Ensure item remains published after update
+                };
 
-            console.log('🚀 Creating item with payload:', itemData);
-            console.log('🔍 Validation passed - all required fields present');
+                try {
+                    const result = await ItemsService.updateItem(existingItem.id, updateData);
+                    
+                    if (result.error) {
+                        const errorDetails = formatErrorForDisplay(result.error);
+                        setErrorTitle(errorDetails.title);
+                        setError(errorDetails.message);
+                        setErrorAction(errorDetails.action || '');
+                        return;
+                    }
+                    if (result.data) {
+                        // Redirect to my-items page after successful update
+                        window.location.href = '/my-items';
+                    } else {
+                        const errorDetails = formatErrorForDisplay('Item update response was empty');
+                        setErrorTitle(errorDetails.title);
+                        setError(errorDetails.message);
+                        setErrorAction(errorDetails.action || '');
+                    }
+                } catch (err: any) {
+                    const errorDetails = formatErrorForDisplay(err);
+                    setErrorTitle(errorDetails.title);
+                    setError(errorDetails.message);
+                    setErrorAction(errorDetails.action || '');
+                } finally {
+                    setLoading(false);
+                }
+            } else {
+                // Handle regular item creation
+                const itemData: CreateItemRequest = {
+                    title: title.trim(),
+                    description: description.trim(),
+                    imageKeys: urls.filter(url => url != null && url !== ''), // Filter out null/empty URLs
+                    acceptCash: cash === 'yes',
+                    cashAmount: cash === 'yes' ? price : 0,
+                    location: location.trim(),
+                    condition: condition === 'brand-new' ? 'NEW' : 'FAIRLY_USED',
+                    brand: brand.trim() || 'Unknown', // Default brand if not provided
+                    itemCategories: categories ? [categories] : [] // Single category for now
+                };
 
-            try {
-                const result = await ItemsService.createItem(itemData);
+
+                try {
+                    const result = await ItemsService.createItem(itemData);
                 
-                console.log('📦 ItemsService.createItem response:', result);
                 
                 if (result.error) {
-                    console.error('❌ Item creation failed:', result.error);
-                    setError(result.error.message || 'Failed to create item');
+                    const errorDetails = formatErrorForDisplay(result.error);
+                    setErrorTitle(errorDetails.title);
+                    setError(errorDetails.message);
+                    setErrorAction(errorDetails.action || '');
                     return;
                 }
 
                 if (result.data) {
-                    console.log('✅ Item created successfully:', result.data);
-                    console.log('📍 Item ID:', result.data.id);
-                    console.log('📝 Item title:', result.data.title);
                     
                     // Force a complete page reload to ensure fresh data
                     window.location.href = '/home';
                 } else {
-                    console.error('⚠️ No data in success response:', result);
-                    setError('Item creation response was empty');
+                    const errorDetails = formatErrorForDisplay('Item creation response was empty');
+                    setErrorTitle(errorDetails.title);
+                    setError(errorDetails.message);
+                    setErrorAction(errorDetails.action || '');
                 }
             } catch (err: any) {
-                setError(err.message || 'Failed to create item');
+                const errorDetails = formatErrorForDisplay(err);
+                setErrorTitle(errorDetails.title);
+                setError(errorDetails.message);
+                setErrorAction(errorDetails.action || '');
             } finally {
                 setLoading(false);
             }
+            }
         } else {
-            // Auction creation - TODO: implement auction service
-            setError('Auction creation not yet implemented');
-            setLoading(false);
+            // Auction creation validation
+            if (!title.trim()) {
+                setError('Title is required');
+                setLoading(false);
+                return;
+            }
+            if (!description.trim()) {
+                setError('Description is required');
+                setLoading(false);
+                return;
+            }
+            if (!location.trim()) {
+                setError('Location is required');
+                setLoading(false);
+                return;
+            }
+            if (!condition) {
+                setError('Please select item condition');
+                setLoading(false);
+                return;
+            }
+            if (startingBid <= 0) {
+                setError('Please set a valid starting bid');
+                setLoading(false);
+                return;
+            }
+            if (bidIncrement <= 0) {
+                setError('Please set a valid bid increment');
+                setLoading(false);
+                return;
+            }
+            if (!auctionStartDate) {
+                setError('Please select auction start date');
+                setLoading(false);
+                return;
+            }
+            if (!auctionDuration) {
+                setError('Please select auction duration');
+                setLoading(false);
+                return;
+            }
+
+            // Validate start date is not in the past
+            const selectedStartDate = new Date(auctionStartDate);
+            const now = new Date();
+            if (selectedStartDate <= now) {
+                setError('Auction start date must be in the future');
+                setLoading(false);
+                return;
+            }
+
+            // Calculate end date based on start date + duration
+            const startDate = new Date(auctionStartDate);
+            const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + parseInt(auctionDuration));
+
+            const auctionData: CreateAuctionRequest = {
+                title: title.trim(),
+                description: description.trim(),
+                imageKeys: urls.filter(url => url != null && url !== ''), // Filter out null/empty URLs
+                location: location.trim(),
+                condition: condition === 'brand-new' ? 'NEW' : 'FAIRLY_USED',
+                brand: brand.trim() || 'Unknown',
+                itemCategories: categories ? [categories] : [],
+                startingBid: startingBid,
+                bidIncrement: bidIncrement,
+                reservePrice: reservePrice > 0 ? reservePrice : startingBid, // Use starting bid as minimum reserve price
+                startDate: startDate.toISOString(),
+                endDate: endDate.toISOString(),
+                itemId: 0 // Will be created by the backend
+            };
+
+
+            try {
+                console.log('Creating auction with data:', auctionData);
+                const result = await AuctionsService.createAuction(auctionData);
+                console.log('Auction creation result:', result);
+                
+                if (result.error) {
+                    const errorDetails = formatErrorForDisplay(result.error);
+                    setErrorTitle(errorDetails.title);
+                    setError(errorDetails.message);
+                    setErrorAction(errorDetails.action || '');
+                    return;
+                }
+
+                if (result.data) {
+                    
+                    // Force a complete page reload to ensure fresh data
+                    window.location.href = '/live-auction';
+                } else {
+                    const errorDetails = formatErrorForDisplay('Auction creation response was empty');
+                    setErrorTitle(errorDetails.title);
+                    setError(errorDetails.message);
+                    setErrorAction(errorDetails.action || '');
+                }
+            } catch (err: any) {
+                const errorDetails = formatErrorForDisplay(err);
+                setErrorTitle(errorDetails.title);
+                setError(errorDetails.message);
+                setErrorAction(errorDetails.action || '');
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
@@ -168,17 +389,22 @@ const Form: React.FC<FormProps> = ({formType}) => {
             </h1>
 
             {error && (
-                <div className='p-4 bg-red-50 border border-red-200 rounded-lg text-red-800'>
-                    {error}
-                </div>
+                <ErrorDisplay 
+                    error={{
+                        title: errorTitle,
+                        message: error,
+                        action: errorAction
+                    }}
+                />
             )}
 
-            <InputBox label='Title' name='title' placeholder='Enter item title' type='text' setValue={handleInput} />
+            <InputBox label='Title' name='title' placeholder='Enter item title' type='text' value={title} setValue={handleInput} />
             <InputBox
                 label='Description'
                 name='description'
                 placeholder='Enter item description'
                 type='text'
+                value={description}
                 setValue={handleInput}
             />
 
@@ -193,13 +419,14 @@ const Form: React.FC<FormProps> = ({formType}) => {
                 name='brand'
                 placeholder='Enter item brand'
                 type='text'
+                value={brand}
                 setValue={handleInput}
             />
 
             <div className='typo-body_mr'>
                 <p>Add photo</p>
                 <p className='mb-3 text-text_four'>Upload at least 3 photos</p>
-                <ImageUpload setUrls={setUrls} setUploading={setUploading} uploading={uploading} />
+                <ImageUpload setUrls={setUrls} setUploading={setUploading} uploading={uploading} initialUrls={urls} />
             </div>
 
             {formType === 'auction' ? (
@@ -209,6 +436,7 @@ const Form: React.FC<FormProps> = ({formType}) => {
                         name='starting-bid'
                         placeholder='Set starting bid'
                         type='number'
+                        value={startingBid.toString()}
                         setValue={handleInput}
                     />
                     <InputBox
@@ -216,7 +444,17 @@ const Form: React.FC<FormProps> = ({formType}) => {
                         name='bid-increment'
                         placeholder='Set bid increment'
                         type='number'
+                        value={bidIncrement.toString()}
                         setValue={handleInput}
+                    />
+
+                    <InputBox
+                        label='Auction Start Date'
+                        name='auction-start-date'
+                        placeholder='Select auction start date'
+                        type='datetime-local'
+                        setValue={handleInput}
+                        value={auctionStartDate}
                     />
 
                     <div>
@@ -233,6 +471,7 @@ const Form: React.FC<FormProps> = ({formType}) => {
                         name='reserve-price'
                         placeholder='Set reserve price'
                         type='number'
+                        value={reservePrice.toString()}
                         setValue={handleInput}
                     />
                 </>
@@ -243,6 +482,7 @@ const Form: React.FC<FormProps> = ({formType}) => {
                         name='price'
                         placeholder='Set item price'
                         type='number'
+                        value={price.toString()}
                         setValue={handleInput}
                     />
                     <RadioButtons
@@ -262,6 +502,7 @@ const Form: React.FC<FormProps> = ({formType}) => {
                 name='location'
                 placeholder='Set item location'
                 type='text'
+                value={location}
                 setValue={handleInput}
             />
 
@@ -285,7 +526,7 @@ const Form: React.FC<FormProps> = ({formType}) => {
                         disabled={false}
                     />
                     <RegularButton
-                        text={formType === 'auction' ? 'Post Auction' : 'Post Item'}
+                        text={isEditing ? 'Update Item' : (formType === 'auction' ? 'Post Auction' : 'Post Item')}
                         action={handleSubmit}
                         isLoading={loading}
                         disabled={uploading}

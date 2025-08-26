@@ -8,7 +8,6 @@ export async function POST(req: NextRequest) {
     const file = incomingFormData.get('file');
 
     if (!file || !(file instanceof Blob)) {
-        console.error('No file uploaded or invalid file');
         return NextResponse.json({error: 'No file uploaded or invalid file'}, {status: 400});
     }
 
@@ -22,6 +21,7 @@ export async function POST(req: NextRequest) {
     const form = new FormData();
     form.append('file', file); // append Blob directly, no Buffer needed
 
+    
     const res = await fetch(`${API_BASE_PATH}/files/upload`, {
         method: 'POST',
         body: form,
@@ -34,10 +34,14 @@ export async function POST(req: NextRequest) {
 
     const responseText = await res.text();
 
+    if (!res.ok) {
+        return NextResponse.json({error: `Upload failed: ${responseText}`}, {status: res.status});
+    }
+
     try {
         const jsonData = JSON.parse(responseText);
         return NextResponse.json(jsonData);
     } catch {
-        return NextResponse.json({raw: responseText});
+        return NextResponse.json({error: 'Invalid response format', raw: responseText}, {status: 500});
     }
 }

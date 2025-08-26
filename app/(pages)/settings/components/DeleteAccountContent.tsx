@@ -26,18 +26,15 @@ const DeleteAccountContent = () => {
             // Set the confirmation callback
             setDeleteConfirmCallback(() => () => {
                 // Handle actual account deletion logic here
-                console.log('Account deleted with reason:', selectedReason);
                 // Add API call to delete account
                 // Redirect to logout or confirmation page
             });
             
             // Open confirmation modal
-            console.log('Opening delete confirmation modal...');
             router.push('/settings?section=delete-account&modal=delete-confirmation');
         } else {
             // Show visual feedback instead of alert
             setShowReasonError(true);
-            console.log('No reason selected, showing error');
             return;
         }
     };

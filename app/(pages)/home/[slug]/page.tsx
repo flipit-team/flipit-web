@@ -47,34 +47,24 @@ const page = async ({ params }: Props) => {
     try {
         const { slug } = await params;
         
-        console.log('🔍 Item detail page - item ID:', slug);
         
         // Get item from server-side using direct backend call
         const { data: itemData, error } = await getSingleItemServerSide(slug);
         
         if (error) {
-            console.error('🔍 Error fetching item:', error);
             redirect('/error-page');
         }
         
         if (!itemData) {
-            console.log('🔍 Item not found:', slug);
             redirect('/error-page');
         }
         
         // Transform item to legacy format for Home component
         const transformedItem = transformItem(itemData);
         
-        console.log('🔍 Item detail loaded:', {
-            itemId: slug,
-            title: transformedItem.title,
-            seller: `${transformedItem.seller.firstName} ${transformedItem.seller.lastName}`
-        });
-        
         return <ItemDetail item={transformedItem} />;
         
     } catch (error) {
-        console.error('🔍 Item detail page error:', error);
         redirect('/error-page');
     }
 };

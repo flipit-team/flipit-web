@@ -14,12 +14,10 @@ export async function GET() {
         const text = await res.text();
 
         // optional: log to verify
-        console.log('Received Google URL:', text);
 
         // send it back as a JSON payload
         return NextResponse.json({url: text});
     } catch (error) {
-        console.error('Google login proxy error:', error);
         return NextResponse.json({error: 'Proxy error: ' + String(error)}, {status: 500});
     }
 }

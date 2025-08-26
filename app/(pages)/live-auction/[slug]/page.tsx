@@ -1,34 +1,79 @@
 import {redirect} from 'next/navigation';
 import LiveAuctionDetails from '~/ui/wrappers/LiveAuctionDetails';
 import {Item} from '~/utils/interface';
+import { getSingleAuctionServerSide } from '~/lib/server-api';
+import { AuctionDTO } from '~/types/api';
+import { Suspense } from 'react';
 
 type Props = {
     params: Promise<{slug: string}>;
 };
 
+// Helper function to transform AuctionDTO to Item interface
+function transformAuctionToItem(auction: AuctionDTO): Item {
+    return {
+        id: auction.item.id,
+        title: auction.item.title,
+        description: auction.item.description,
+        imageUrls: auction.item.imageUrls,
+        acceptCash: true, // Auctions typically accept cash
+        cashAmount: auction.currentBid || auction.startingBid,
+        published: true,
+        sold: auction.status === 'ENDED',
+        location: auction.item.location,
+        condition: auction.item.condition,
+        brand: auction.item.brand,
+        dateCreated: auction.item.dateCreated,
+        seller: {
+            ...auction.item.seller,
+            id: auction.item.seller.id.toString(),
+            avgRating: auction.item.seller.avgRating || 0,
+            avg_rating: auction.item.seller.avgRating || 0,
+            avatar: auction.item.seller.avatar || auction.item.seller.profileImageUrl || '',
+            status: auction.item.seller.status || 'Active'
+        },
+        itemCategories: auction.item.itemCategories,
+        // Auction-specific fields
+        isAuction: true,
+        auctionId: auction.id,
+        startingBid: auction.startingBid,
+        currentBid: auction.currentBid,
+        bidIncrement: auction.bidIncrement,
+        reservePrice: auction.reservePrice,
+        startDate: auction.startDate,
+        endDate: auction.endDate,
+        auctionStatus: auction.status,
+        biddingsCount: auction.biddingsCount || 0,
+        biddings: auction.biddings || []
+    };
+}
+
 const page = async ({params}: Props) => {
     try {
         const {slug} = await params;
 
-        console.log('Live-auction item page - slug:', slug);
 
-        // Using the same API endpoint for now, you mentioned you'll change it later
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/items/get-item?id=${slug}`, {
-            cache: 'no-store'
-        });
+        // Fetch auction data from server
+        const result = await getSingleAuctionServerSide(slug);
 
-        console.log('Live-auction item page - API response status:', res.status);
-
-        const data: Item = await res.json();
-
-        if (!res.ok) {
-            console.error('Live-auction item page - API error:', data);
+        if (result.error) {
             redirect('/error-page');
         }
 
-        return <LiveAuctionDetails item={data} />;
+        if (!result.data) {
+            redirect('/error-page');
+        }
+
+        // Transform auction to item format
+        const item = transformAuctionToItem(result.data);
+
+
+        return (
+            <Suspense fallback={<div>Loading...</div>}>
+                <LiveAuctionDetails item={item} />
+            </Suspense>
+        );
     } catch (error) {
-        console.error('Live-auction item page - Error:', error);
         redirect('/error-page');
     }
 };

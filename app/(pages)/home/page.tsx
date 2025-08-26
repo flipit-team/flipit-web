@@ -1,12 +1,43 @@
 import MainHome from '~/ui/wrappers/MainHome';
 import { Item } from '~/utils/interface';
-import { getItemsServerSide, getCategoriesServerSide, checkAuthServerSide } from '~/lib/server-api';
-import { ItemDTO } from '~/types/api';
+import { getItemsServerSide, getCategoriesServerSide, checkAuthServerSide, getActiveAuctionsServerSide } from '~/lib/server-api';
+import { ItemDTO, AuctionDTO } from '~/types/api';
 
 interface SearchParams {
     q?: string;
     size?: string;
     page?: string;
+}
+
+// Transform AuctionDTO to Item for compatibility with GridSwiper
+function transformAuctionToItem(auction: AuctionDTO): Item {
+    return {
+        id: auction.item.id,
+        title: auction.item.title,
+        description: auction.item.description,
+        imageUrls: auction.item.imageUrls,
+        flipForImgUrls: [], // This field doesn't exist in new API
+        acceptCash: true, // Auctions typically accept cash
+        cashAmount: auction.currentBid || auction.startingBid,
+        condition: auction.item.condition,
+        published: true,
+        sold: auction.status === 'ENDED',
+        location: auction.item.location,
+        dateCreated: new Date(auction.item.dateCreated),
+        seller: auction.item.seller,
+        itemCategories: auction.item.itemCategories,
+        // Auction-specific fields
+        isAuction: true,
+        auctionId: auction.id,
+        startingBid: auction.startingBid,
+        currentBid: auction.currentBid,
+        bidIncrement: auction.bidIncrement,
+        reservePrice: auction.reservePrice,
+        endDate: auction.endDate,
+        auctionStatus: auction.status,
+        biddingsCount: auction.biddingsCount || 0,
+        biddings: auction.biddings || []
+    };
 }
 
 // Transform ItemDTO to Item for compatibility with existing components
@@ -50,9 +81,7 @@ function transformItems(items: ItemDTO[]): Item[] {
 export default async function Page({searchParams}: {searchParams?: Promise<SearchParams>}) {
     // Check authentication status and log for debugging
     const authStatus = await checkAuthServerSide();
-    console.log('🔐 Home page auth status:', authStatus.isAuthenticated ? 'LOGGED IN' : 'NOT LOGGED IN');
     if (authStatus.user) {
-        console.log('👤 Current user:', authStatus.user.firstName || authStatus.user.username || authStatus.user.email);
     }
 
     // Get search parameters
@@ -61,25 +90,30 @@ export default async function Page({searchParams}: {searchParams?: Promise<Searc
     const size = resolvedSearchParams?.size ? parseInt(resolvedSearchParams.size) : 15;
     const query = resolvedSearchParams?.q;
 
-    // Fetch items and categories server-side using updated functions
-    const { data: itemsData, error: itemsError } = await getItemsServerSide({ page, size, search: query });
-    const { data: categoriesData, error: categoriesError } = await getCategoriesServerSide();
+    // Fetch items, auctions, and categories server-side using updated functions
+    const [
+        { data: itemsData, error: itemsError },
+        { data: categoriesData, error: categoriesError },
+        { data: auctionsData, error: auctionsError }
+    ] = await Promise.all([
+        getItemsServerSide({ page, size, search: query }),
+        getCategoriesServerSide(),
+        getActiveAuctionsServerSide(0, 10) // Get first 10 active auctions for swiper
+    ]);
     
     // Transform server data
     const items: Item[] = itemsData?.content ? transformItems(itemsData.content) : [];
     const categories: {name: string; description: string | null}[] = categoriesData ? 
         categoriesData.map(cat => ({ name: cat.name, description: cat.description })) : [];
+    const auctionItems: Item[] = auctionsData ? auctionsData.map(transformAuctionToItem) : [];
     
-    console.log('🏠 Server-side data fetching complete');
-    console.log('🏠 Items loaded:', items.length);
-    console.log('🏠 Categories loaded:', categories.length);
     
     if (itemsError) {
-        console.error('🏠 Items fetch error:', itemsError);
     }
     if (categoriesError) {
-        console.error('🏠 Categories fetch error:', categoriesError);
+    }
+    if (auctionsError) {
     }
 
-    return <MainHome items={items} defaultCategories={categories} authStatus={authStatus} />;
+    return <MainHome items={items} auctionItems={auctionItems} defaultCategories={categories} authStatus={authStatus} />;
 }

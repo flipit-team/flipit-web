@@ -26,16 +26,25 @@ export class AuthService {
 
   // Signup
   static async signup(userData: SignupRequest) {
+    // Transform frontend request to backend format
+    const backendData = {
+      ...userData,
+      phoneNumber: userData.phone,
+      phone: undefined // Remove phone, use phoneNumber
+    };
+    
+    
     return handleApiCall(() =>
-      apiClient.post<SignupResponse>('/auth/register', userData)
+      apiClient.post<SignupResponse>('/auth/register', backendData)
     );
   }
 
   // Get current user profile
   static async me() {
-    return handleApiCall(() =>
-      apiClient.get<{ user: UserDTO; isAuthenticated: boolean }>('/auth/me', { requireAuth: true })
+    const result = await handleApiCall(() =>
+      apiClient.get<{ user: UserDTO; isAuthenticated: boolean }>('/auth/me')
     );
+    return result;
   }
 
   // Logout

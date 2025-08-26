@@ -3,7 +3,6 @@ import {cookies} from 'next/headers';
 import { API_BASE_PATH } from '~/lib/config';
 
 export async function GET(req: NextRequest) {
-    console.log('✅ /api/items/get-items HIT');
 
     const page = req.nextUrl.searchParams.get('page') ?? '0';
     const size = req.nextUrl.searchParams.get('size') ?? '10';
@@ -23,7 +22,6 @@ export async function GET(req: NextRequest) {
             },
             cache: 'no-store'
         });
-        console.log(apiRes, 999);
 
         const apiData = await apiRes.json();
 
@@ -36,7 +34,6 @@ export async function GET(req: NextRequest) {
 
         return NextResponse.json(apiData);
     } catch (error) {
-        console.error('❌ Error fetching items:', error);
         return NextResponse.json({error: 'Internal server error'}, {status: 500});
     }
 }

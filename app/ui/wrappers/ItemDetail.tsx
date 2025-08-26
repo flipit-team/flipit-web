@@ -4,6 +4,8 @@ import React, {useEffect, useState} from 'react';
 import SellersInfo from '../homepage/sellers-info';
 import RegularButton from '../common/buttons/RegularButton';
 import {createMessage, formatToNaira, timeAgo} from '~/utils/helpers';
+import { ChatService } from '~/services/chat.service';
+import { formatErrorForDisplay } from '~/utils/error-messages';
 import UsedBadge from '../common/badges/UsedBadge';
 import {Item} from '~/utils/interface';
 import PopupSheet from '../common/popup-sheet/PopupSheet';
@@ -16,7 +18,9 @@ import CallbackRequest from '../homepage/callback-request';
 import Link from 'next/link';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import {useAppContext} from '~/contexts/AppContext';
+import StarRating from '../common/star-rating/StarRating';
 import SendMessage from '../homepage/send-message';
+import MessageSent from '../homepage/message-sent';
 import ImageGallery from '../common/image-gallery/ImageGallery';
 
 interface Props {
@@ -31,6 +35,9 @@ const ItemDetail = (props: Props) => {
     const [inputActive, setInputActive] = useState(false);
     const [createLoading, setCreateLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [messageLoading, setMessageLoading] = useState(false);
+    const [messageError, setMessageError] = useState<string>('');
+    const [messageSent, setMessageSent] = useState(false);
     const router = useRouter();
     const pathname = usePathname();
 
@@ -51,6 +58,10 @@ const ItemDetail = (props: Props) => {
         params.delete('q');
         setShowPopup(false);
 
+        // Reset message states when closing modal
+        setMessageError('');
+        setMessageSent(false);
+
         const queryString = params.toString();
         router.push(queryString ? `${pathname}?${queryString}` : pathname);
         router.refresh();
@@ -63,14 +74,46 @@ const ItemDetail = (props: Props) => {
         setError(null);
 
         try {
-            const data = await createMessage(item?.seller.id ?? '', input, item?.id.toString() ?? '');
-            console.log('✅ Message sent:', data);
+            const data = await createMessage(item?.seller.id.toString() ?? '', input, item?.id.toString() ?? '');
             setInput('');
             setSuccess(true);
         } catch (err: any) {
             setError(err.message);
         } finally {
             setCreateLoading(false);
+        }
+    };
+
+    const handleSendMessage = async (message: string) => {
+        if (!message.trim() || !item?.seller?.id || !item?.id) return;
+
+        setMessageLoading(true);
+        setMessageError('');
+
+        try {
+
+            // Create chat with initial message in title field
+            const chatResponse = await ChatService.createChat({
+                receiverId: parseInt(item.seller.id.toString()),
+                itemId: parseInt(item.id.toString()),
+                title: message
+            });
+
+            if (chatResponse.error) {
+                throw new Error(chatResponse.error.message || 'Failed to create chat');
+            }
+
+            setMessageSent(true);
+            
+            // Switch to success modal
+            const params = new URLSearchParams(searchParams.toString());
+            params.set('q', 'message-sent');
+            router.replace(`${pathname}?${params.toString()}`);
+        } catch (err: any) {
+            const errorDetails = formatErrorForDisplay(err.message || err);
+            setMessageError(errorDetails.message);
+        } finally {
+            setMessageLoading(false);
         }
     };
 
@@ -194,18 +237,10 @@ const ItemDetail = (props: Props) => {
                                 {item?.seller.dateVerified ? 'Verified profile' : 'Unverified profile'}
                             </div>
                             <div className='flex my-1'>
-                                {Array.from('11111').map((item, i) => {
-                                    return (
-                                        <Image
-                                            key={i}
-                                            src={'/full-star.svg'}
-                                            height={20}
-                                            width={20}
-                                            alt='picture'
-                                            className='h-[20px] w-[20px] rounded-full'
-                                        />
-                                    );
-                                })}
+                                <StarRating 
+                                    rating={item?.seller.avgRating || item?.seller.avg_rating || 0}
+                                    size={20}
+                                />
                             </div>
                             <p className='typo-body_sr text-text_four'>Responds within minutes</p>
                             <p className='typo-body_sr text-text_four'>Joined Flipit in 2024</p>
@@ -238,7 +273,23 @@ const ItemDetail = (props: Props) => {
                 </div>
             </div>
             <PopupSheet>
-                <ProfilePopup seller={item?.seller} onClose={() => removeParam()} onSubmit={() => removeParam()} />
+                <ProfilePopup 
+                    seller={item?.seller ? {
+                        title: item.seller.title || '',
+                        firstName: item.seller.firstName,
+                        middleName: item.seller.middleName || '',
+                        lastName: item.seller.lastName,
+                        email: item.seller.email,
+                        phoneNumber: item.seller.phoneNumber,
+                        avatar: item.seller.avatar || item.seller.profileImageUrl || '',
+                        avg_rating: item.seller.avg_rating || item.seller.avgRating || 0,
+                        status: item.seller.status || 'Active',
+                        phoneNumberVerified: item.seller.phoneNumberVerified || false,
+                        dateVerified: new Date(item.seller.dateVerified || item.seller.dateCreated || new Date())
+                    } : undefined} 
+                    onClose={() => removeParam()} 
+                    onSubmit={() => removeParam()} 
+                />
                 <MakeAnOffer item={item} onClose={() => removeParam()} onSubmit={() => removeParam()} />
                 <ReportModalContent
                     title='Report Canon EOS RP Camera +Small Rig'
@@ -253,7 +304,13 @@ const ItemDetail = (props: Props) => {
                 <SendMessage
                     title='Send message to seller'
                     onClose={() => removeParam()}
-                    onSubmit={() => removeParam()}
+                    onSubmit={handleSendMessage}
+                    loading={messageLoading}
+                    error={messageError}
+                />
+                <MessageSent
+                    title='Message Sent'
+                    onClose={() => removeParam()}
                 />
             </PopupSheet>
         </>

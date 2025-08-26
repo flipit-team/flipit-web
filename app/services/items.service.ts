@@ -10,60 +10,60 @@ import {
 } from '~/types/api';
 
 export class ItemsService {
-  // Get items with filtering and pagination
+  // Get items with filtering and pagination - UPDATED to direct backend
   static async getItems(params?: ItemsQueryParams) {
     const queryString = params ? buildQueryString(params) : '';
     return handleApiCall(() =>
-      apiClient.get<PaginatedResponse<ItemDTO>>(`/items/get-items${queryString}`)
+      apiClient.get<PaginatedResponse<ItemDTO>>(`/items${queryString}`)
     );
   }
 
-  // Get item by ID
+  // Get item by ID - UPDATED to direct backend
   static async getItemById(itemId: number) {
     return handleApiCall(() =>
-      apiClient.get<ItemDTO>(`/items/get-item?id=${itemId}`)
+      apiClient.get<ItemDTO>(`/items/${itemId}`)
     );
   }
 
-  // Create new item
+  // Create new item - UPDATED to direct backend
   static async createItem(itemData: CreateItemRequest) {
     return handleApiCall(() =>
-      apiClient.post<ItemDTO>('/items/create', itemData, { requireAuth: true })
+      apiClient.post<ItemDTO>('/items', itemData, { requireAuth: true })
     );
   }
 
-  // Update item
+  // Update item - CORRECT
   static async updateItem(itemId: number, itemData: UpdateItemRequest) {
     return handleApiCall(() =>
       apiClient.put<ItemDTO>(`/items/${itemId}`, itemData, { requireAuth: true })
     );
   }
 
-  // Delete item
+  // Delete item - CORRECT
   static async deleteItem(itemId: number) {
     return handleApiCall(() =>
       apiClient.delete<{ message: string }>(`/items/${itemId}`, { requireAuth: true })
     );
   }
 
-  // Get categories
+  // Get categories - Use new direct API route
   static async getCategories() {
     return handleApiCall(() =>
-      apiClient.get<CategoryDTO[]>('/items/get-categories')
+      apiClient.get<CategoryDTO[]>('/items/categories')
     );
   }
 
-  // Get item conditions
+  // Get item conditions - CORRECT
   static async getItemConditions() {
     return handleApiCall(() =>
       apiClient.get<ItemCondition[]>('/items/itemConditions')
     );
   }
 
-  // Get user's items
+  // Get user's items - UPDATED to direct backend
   static async getUserItems(userId: number) {
     return handleApiCall(() =>
-      apiClient.get<ItemDTO[]>(`/items/get-user-items?userId=${userId}`, { requireAuth: true })
+      apiClient.get<ItemDTO[]>(`/items/user/${userId}`, { requireAuth: true })
     );
   }
 

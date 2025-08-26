@@ -223,7 +223,6 @@ export async function handleApiCall<T>(
     const data = await apiCall();
     return { data, error: null };
   } catch (error) {
-    console.error('API call failed:', error);
     return { 
       data: null, 
       error: error instanceof Error ? error : new Error('Unknown error occurred')

@@ -26,15 +26,15 @@ function HeaderContent(props: Props) {
     const pathname = usePathname();
     const {notifications, profile, user: clientUser, debugMode, toggleDebugMode} = useAppContext();
 
-    // Dummy user data for testing
-    const dummyUser = {
+    // Dummy user data for testing (only when debug mode is enabled)
+    const dummyUser = debugMode ? {
         token: 'dummy-token-123',
         userId: '1',
         userName: 'John Doe'
-    };
+    } : null;
 
     // Use debug mode from context to determine which user data to use
-    const user = debugMode ? dummyUser : clientUser || serverUser;
+    const user = dummyUser || clientUser || serverUser;
 
     useEffect(() => {
         setIsClient(true);
@@ -42,14 +42,7 @@ function HeaderContent(props: Props) {
 
     // Log header user state for debugging
     useEffect(() => {
-        console.log('🎯 Header user state:', {
-            debugMode,
-            serverUser: !!serverUser,
-            clientUser: !!clientUser,
-            finalUser: !!user,
-            clientUserDetails: clientUser,
-            serverUserDetails: serverUser
-        });
+        // Debug logging removed
     }, [debugMode, serverUser, clientUser, user]);
 
     // Main sidebar menu items
@@ -76,10 +69,27 @@ function HeaderContent(props: Props) {
         }
     ];
 
-    const handleLogout = () => {
-        // TODO: Implement logout functionality
+    const handleLogout = async () => {
         setShowFlyout(false);
-        console.log('Logout clicked');
+        
+        try {
+            // Call logout API to clear cookies
+            const response = await fetch('/api/auth/logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
+            
+            if (response.ok) {
+                // Redirect to login page
+                window.location.href = '/';
+            } else {
+                // Still redirect even if logout API fails
+                window.location.href = '/';
+            }
+        } catch (error) {
+            // Still redirect even if there's an error
+            window.location.href = '/';
+        }
     };
 
     if (!isClient || pathname === '/') return null;

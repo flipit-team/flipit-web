@@ -3,6 +3,7 @@ import Image from 'next/image';
 import {useSearchParams} from 'next/navigation';
 import React, {useState} from 'react';
 import {useAppContext} from '~/contexts/AppContext';
+import StarRating from '../../common/star-rating/StarRating';
 
 interface Props {
     seller:
@@ -15,6 +16,7 @@ interface Props {
               phoneNumber: string;
               avatar: string;
               avg_rating: number;
+              avgRating?: number;
               status: string;
               phoneNumberVerified: boolean;
               dateVerified: Date;
@@ -67,18 +69,10 @@ const ProfilePopup = (props: Props) => {
                                 {seller?.dateVerified ? 'Verified profile' : 'Unverified profile'}
                             </div>
                             <div className='flex my-1'>
-                                {Array.from('11111').map((item, i) => {
-                                    return (
-                                        <Image
-                                            key={i}
-                                            src={'/full-star.svg'}
-                                            height={20}
-                                            width={20}
-                                            alt='picture'
-                                            className='h-[20px] w-[20px]'
-                                        />
-                                    );
-                                })}
+                                <StarRating 
+                                    rating={seller?.avgRating || seller?.avg_rating || 0}
+                                    size={20}
+                                />
                             </div>
                             <p className='typo-body_mr text-text_four'>Responds within minutes</p>
                             <p className='typo-body_mr text-text_four mb-5'>Joined Flipit in 2024</p>
@@ -96,18 +90,10 @@ const ProfilePopup = (props: Props) => {
                         </div>
                         <div className='flex flex-col gap-3'>
                             <div className='flex my-1'>
-                                {Array.from('11111').map((item, i) => {
-                                    return (
-                                        <Image
-                                            key={i}
-                                            src={'/full-star.svg'}
-                                            height={20}
-                                            width={20}
-                                            alt='picture'
-                                            className='h-[20px] w-[20px]'
-                                        />
-                                    );
-                                })}
+                                <StarRating 
+                                    rating={seller?.avgRating || seller?.avg_rating || 0}
+                                    size={20}
+                                />
                             </div>
                             <p className='typo-body_mm'>Good Product</p>
                             <p className='typo-body_sr text-[#666666]'>More than what I expected</p>

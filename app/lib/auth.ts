@@ -35,7 +35,6 @@ export async function getUserFromServer() {
 
         return {token, userId, userName};
     } catch (err) {
-        console.error('Auth check failed:', err);
         return null;
     }
 }

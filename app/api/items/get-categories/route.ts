@@ -16,14 +16,15 @@ export async function GET(req: NextRequest) {
             cache: 'no-store'
         });
 
+
         if (!res.ok) {
-            return NextResponse.json({error: 'Failed to fetch items'}, {status: res.status});
+            const errorText = await res.text();
+            return NextResponse.json({error: 'Failed to fetch categories'}, {status: res.status});
         }
 
         const data = await res.json();
         return NextResponse.json(data);
     } catch (error) {
-        console.error('Error fetching items:', error);
         return NextResponse.json({error: 'Internal server error'}, {status: 500});
     }
 }

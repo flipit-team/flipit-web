@@ -1,11 +1,17 @@
 'use client';
 import Image from 'next/image';
 import {useRouter} from 'next/navigation';
+import {useState} from 'react';
 import Button from '~/ui/common/button';
 import {MyItem} from '../types';
+import {ItemsService} from '~/services/items.service';
+import {useToast} from '~/contexts/ToastContext';
+import DeleteConfirmationModal from '~/ui/common/delete-confirmation-modal/DeleteConfirmationModal';
 
 interface ItemCardProps {
     item: MyItem;
+    onItemDeleted?: (itemId: number) => void;
+    onItemUpdated?: (itemId: number) => void;
 }
 
 const formatAmount = (amount: number): string => {
@@ -16,11 +22,66 @@ const formatAmount = (amount: number): string => {
     }).format(amount);
 };
 
-export default function ItemCard({item}: ItemCardProps) {
+export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardProps) {
     const router = useRouter();
+    const {showSuccess, showError} = useToast();
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [isMarkingSold, setIsMarkingSold] = useState(false);
 
     const handleEditItem = () => {
         router.push(`/edit-item/${item.id}`);
+    };
+
+    const handleMarkAsSold = async () => {
+        // TODO: Implement when API becomes available
+        setIsMarkingSold(true);
+        
+        try {
+            // Placeholder - will be replaced with actual API call
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            showSuccess('Item marked as sold successfully!');
+            onItemUpdated?.(item.id);
+        } catch (error) {
+            showError('Failed to mark item as sold. Please try again.');
+        } finally {
+            setIsMarkingSold(false);
+        }
+    };
+
+    const handleDeleteItem = () => {
+        console.log('Delete button clicked for item:', item.id);
+        setShowDeleteModal(true);
+        console.log('showDeleteModal set to true');
+    };
+
+    const handleConfirmDelete = async () => {
+        setIsDeleting(true);
+        console.log('Starting delete process for item:', item.id);
+        
+        try {
+            const result = await ItemsService.deleteItem(item.id);
+            console.log('Delete result:', result);
+            
+            if (result.data) {
+                console.log('Delete successful');
+                showSuccess('Item deleted successfully!');
+                onItemDeleted?.(item.id);
+            } else {
+                console.log('Delete failed with error:', result.error);
+                showError(result.error || 'Failed to delete item');
+            }
+        } catch (error) {
+            console.error('Delete exception:', error);
+            showError('An error occurred while deleting the item');
+        } finally {
+            setIsDeleting(false);
+            setShowDeleteModal(false);
+        }
+    };
+
+    const handleCancelDelete = () => {
+        setShowDeleteModal(false);
     };
 
     return (
@@ -40,14 +101,34 @@ export default function ItemCard({item}: ItemCardProps) {
                     <Button variant='outline' size='sm' onClick={handleEditItem}>
                         Edit Item
                     </Button>
-                    <Button variant='outline' size='sm'>
-                        Mark as Sold
+                    <Button 
+                        variant='outline' 
+                        size='sm' 
+                        onClick={handleMarkAsSold}
+                        disabled={isMarkingSold}
+                    >
+                        {isMarkingSold ? 'Marking...' : 'Mark as Sold'}
                     </Button>
-                    <Button variant='danger' size='sm'>
+                    <Button 
+                        variant='danger' 
+                        size='sm' 
+                        onClick={handleDeleteItem}
+                        disabled={isDeleting}
+                    >
                         Delete Item
                     </Button>
                 </div>
             </div>
+
+            <DeleteConfirmationModal
+                isOpen={showDeleteModal}
+                title="Delete Item"
+                message={`Are you sure you want to delete "${item.title}"? This action cannot be undone.`}
+                onConfirm={handleConfirmDelete}
+                onCancel={handleCancelDelete}
+                isDeleting={isDeleting}
+            />
+            {/* Debug: showDeleteModal is {showDeleteModal ? 'true' : 'false'} */}
         </div>
     );
 }

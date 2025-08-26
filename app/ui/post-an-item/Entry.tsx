@@ -31,14 +31,13 @@ const SellOptionCard: React.FC<SellOptionCardProps> = ({icon, title, description
 const PostItemPage: React.FC = () => {
     const router = useRouter();
     const handleAuctionContinue = () => {
-        // Handle navigation to auction item flow
-        console.log('Navigate to auction flow');
+        // Navigate to auction form
+        router.push('/post-an-item/form?type=auction');
     };
 
     const handleListedContinue = () => {
         // Handle navigation to listed item flow
         router.push('/post-an-item/form');
-        console.log('Navigate to listed item flow');
     };
 
     const HammerIcon = () => (

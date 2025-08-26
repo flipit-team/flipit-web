@@ -118,7 +118,6 @@ const Profile = () => {
             phoneNumber: `${profile?.phoneNumber}`,
             profileImgKey: imgUrl
         };
-        console.log(formData);
 
         try {
             const res = await fetch(`/api/profile/update-user`, {
@@ -137,7 +136,6 @@ const Profile = () => {
             setTimeout(() => {
                 pushParam('success');
             }, 0);
-            console.log(data);
             setIsLoading(false);
         } catch (err: any) {
             setErrorMessage(err.message);
@@ -161,7 +159,6 @@ const Profile = () => {
             newPassword: password,
             confirmPassword: confirmPassword
         };
-        console.log(formData);
 
         try {
             const res = await fetch(`/api/profile/update-password`, {
@@ -171,17 +168,14 @@ const Profile = () => {
             });
 
             const data = await res.json();
-            console.log(data);
 
             if (!res.ok) {
                 const message = handleApiError(data);
                 setErrorMessage(message);
             }
             setSuccessMessage('Password changed successfully');
-            console.log(data);
             setPasswordLoading(false);
         } catch (err: any) {
-            console.log(err.message);
 
             setErrorMessage(err.message);
             setPasswordLoading(false);

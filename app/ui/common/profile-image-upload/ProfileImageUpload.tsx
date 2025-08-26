@@ -1,6 +1,7 @@
 import {Loader} from 'lucide-react';
 import Image from 'next/image';
 import React, {useEffect, useRef, useState} from 'react';
+import {useToast} from '~/contexts/ToastContext';
 
 const ProfileImageUpload = ({
     setImgUrl,
@@ -13,6 +14,7 @@ const ProfileImageUpload = ({
     const [uploading, setUploading] = useState(false);
     const [file, setFile] = useState<File | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    const {showError} = useToast();
 
     useEffect(() => {
         if (!file) return;
@@ -52,8 +54,7 @@ const ProfileImageUpload = ({
             }
             setImgUrl(data.key);
         } catch (error) {
-            console.error('Upload failed', error);
-            alert('Upload failed');
+            showError(error);
         } finally {
             setUploading(false);
         }
@@ -81,7 +82,6 @@ const ProfileImageUpload = ({
                         type='file'
                         accept='image/*'
                         multiple
-                        onClick={() => console.log(9999)}
                         className='hidden'
                         onChange={(e) => {
                             const selected = e.target.files?.[0];

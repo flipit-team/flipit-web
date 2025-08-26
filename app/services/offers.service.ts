@@ -5,35 +5,35 @@ export class OffersService {
   // Create offer
   static async createOffer(offerData: CreateOfferRequest) {
     return handleApiCall(() =>
-      apiClient.post<OfferDTO>('/offer', offerData, { requireAuth: true })
+      apiClient.post<OfferDTO>('/v1/offer', offerData, { requireAuth: true })
     );
   }
 
   // Get offer by ID
   static async getOfferById(offerId: number) {
     return handleApiCall(() =>
-      apiClient.get<OfferDTO>(`/offer/${offerId}`, { requireAuth: true })
+      apiClient.get<OfferDTO>(`/v1/offer/${offerId}`, { requireAuth: true })
     );
   }
 
   // Get offers for an item
   static async getOffersForItem(itemId: number) {
     return handleApiCall(() =>
-      apiClient.get<OfferDTO[]>(`/offer/items/${itemId}/offers`, { requireAuth: true })
+      apiClient.get<OfferDTO[]>(`/v1/offer/items/${itemId}/offers`, { requireAuth: true })
     );
   }
 
   // Get user's offers
   static async getUserOffers(userId: number) {
     return handleApiCall(() =>
-      apiClient.get<OfferDTO[]>(`/offer/user/${userId}/offers`, { requireAuth: true })
+      apiClient.get<OfferDTO[]>(`/v1/offer/user/${userId}/offers`, { requireAuth: true })
     );
   }
 
   // Delete offer
   static async deleteOffer(offerId: number) {
     return handleApiCall(() =>
-      apiClient.delete<{ message: string }>(`/offer/${offerId}`, { requireAuth: true })
+      apiClient.delete<{ message: string }>(`/v1/offer/${offerId}`, { requireAuth: true })
     );
   }
 

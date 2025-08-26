@@ -5,7 +5,7 @@ export class ChatService {
   // Get user's chats
   static async getUserChats() {
     return handleApiCall(() =>
-      apiClient.get<ChatDTO[]>('/chats/get-user-chats', { requireAuth: true })
+      apiClient.get<ChatDTO[]>('/v1/chats', { requireAuth: true })
     );
   }
 
@@ -16,24 +16,24 @@ export class ChatService {
     );
   }
 
-  // Get chat messages
+  // Get chat messages for a specific chat
   static async getChatMessages(chatId: string) {
     return handleApiCall(() =>
-      apiClient.get<MessageDTO[]>(`/chats/get-chat?chatId=${chatId}`, { requireAuth: true })
+      apiClient.get<MessageDTO[]>(`/v1/chats/${chatId}/messages`, { requireAuth: true })
     );
   }
 
-  // Send message
+  // Send message in chat conversation
   static async sendMessage(messageData: SendMessageRequest) {
     return handleApiCall(() =>
-      apiClient.post<MessageDTO>('/chats/send-chat', messageData, { requireAuth: true })
+      apiClient.post<MessageDTO>('/v1/chats/message', messageData, { requireAuth: true })
     );
   }
 
   // Delete chat
   static async deleteChat(chatId: string) {
     return handleApiCall(() =>
-      apiClient.delete<{ message: string }>(`/chats/${chatId}`, { requireAuth: true })
+      apiClient.delete<{ message: string }>(`/v1/chats/${chatId}`, { requireAuth: true })
     );
   }
 

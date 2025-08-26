@@ -85,7 +85,6 @@ export async function withApiMiddleware(
 
       return response;
     } catch (error) {
-      console.error('API Middleware error:', error);
       
       return NextResponse.json(
         { 

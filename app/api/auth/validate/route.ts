@@ -3,17 +3,22 @@ import { checkAuthServerSide } from '~/lib/server-api';
 
 export async function GET(req: NextRequest) {
     try {
-        console.log('🔍 Auth validation endpoint called');
         const authStatus = await checkAuthServerSide();
         
-        console.log('🔍 Auth validation result:', {
-            isAuthenticated: authStatus.isAuthenticated,
-            hasUser: !!authStatus.user
-        });
+        // If token is invalid, clear the cookies
+        if ((authStatus as any).clearCookies) {
+            const response = NextResponse.json({ isAuthenticated: false, user: null });
+            
+            // Clear authentication cookies
+            response.cookies.set('token', '', { expires: new Date(0), path: '/' });
+            response.cookies.set('userId', '', { expires: new Date(0), path: '/' });
+            response.cookies.set('userName', '', { expires: new Date(0), path: '/' });
+            
+            return response;
+        }
         
         return NextResponse.json(authStatus);
     } catch (error) {
-        console.error('🔍 Auth validation error:', error);
         return NextResponse.json(
             { isAuthenticated: false, user: null }, 
             { status: 500 }

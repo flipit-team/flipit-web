@@ -4,17 +4,18 @@ import React, {useState} from 'react';
 interface SendMessageProps {
     title: string;
     onClose: () => void;
-    onSubmit: (name: string, phoneNumber: string) => void;
+    onSubmit: (message: string) => void;
+    loading?: boolean;
+    error?: string;
 }
 
-const SendMessage: React.FC<SendMessageProps> = ({title, onClose, onSubmit}) => {
+const SendMessage = ({title, onClose, onSubmit, loading = false, error = ''}: SendMessageProps) => {
     const searchParams = useSearchParams();
     const query = searchParams.get('q');
-    const [name, setName] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
+    const [message, setMessage] = useState('');
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(name, phoneNumber);
+        onSubmit(message);
     };
     if (query === 'send-message')
         return (
@@ -32,24 +33,32 @@ const SendMessage: React.FC<SendMessageProps> = ({title, onClose, onSubmit}) => 
                 </div>
 
                 <div className='mb-4'>
-                    <label className='block mb-2 typo-body_sr' htmlFor='name'>
+                    <label className='block mb-2 typo-body_sr' htmlFor='message'>
                         Your message
                     </label>
                     <textarea
-                        id='name'
+                        id='message'
                         className='w-full h-[137px] border border-gray-300 rounded px-4 py-3 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary resize-none align-top'
-                        placeholder='Enter your name'
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        placeholder='Type your message to the seller...'
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
                         required
+                        disabled={loading}
                     />
                 </div>
 
+                {error && (
+                    <div className='mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-700 text-sm'>
+                        {error}
+                    </div>
+                )}
+
                 <button
                     type='submit'
-                    className='w-full bg-primary text-white py-3 rounded font-semibold text-lg hover:bg-primary-dark transition'
+                    disabled={loading || !message.trim()}
+                    className='w-full bg-primary text-white py-3 rounded font-semibold text-lg hover:bg-primary-dark transition disabled:opacity-50 disabled:cursor-not-allowed'
                 >
-                    Send to Seller
+                    {loading ? 'Sending...' : 'Send to Seller'}
                 </button>
             </form>
         );

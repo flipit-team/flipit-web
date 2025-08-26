@@ -9,7 +9,6 @@ export async function POST(req: NextRequest) {
         method: 'POST',
         headers: {'Content-Type': 'application/json'}
     });
-    console.log(response, 98889);
 
     const data = await response.text();
 

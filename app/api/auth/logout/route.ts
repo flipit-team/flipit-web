@@ -17,6 +17,12 @@ export async function POST() {
         path: '/',
         maxAge: 0 // this deletes the cookie
     });
+    res.cookies.set('userName', '', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        path: '/',
+        maxAge: 0 // this deletes the cookie
+    });
 
     return res;
 }
