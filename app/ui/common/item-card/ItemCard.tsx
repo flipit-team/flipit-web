@@ -92,7 +92,7 @@ const ItemCard: React.FC<ItemCardProps> = memo(({
                     <div className='flex justify-between'>
                         {/* Current bid section - positioned like original cash amount */}
                         <div className=''>
-                            <p className='text-[12px] text-[#999999] mt-1'>Current bid</p>
+                            <p className='typo-body-sm-regular text-text_four mt-1'>Current bid</p>
                             <p className='typo-body_lm xs:typo-body_mm xs:mb-1'>
                                 {formatToNaira(item.currentBid || item.startingBid || item.cashAmount)}
                             </p>
@@ -106,7 +106,7 @@ const ItemCard: React.FC<ItemCardProps> = memo(({
                                     startTime={item.startDate}
                                 />
                             ) : (
-                                <span className='flex items-center px-2 h-[26px] w-max xs:h-[18px] typo-body_sr bg-[#D4E4E7] text-primary capitalize'>
+                                <span className='flex items-center px-2 h-[26px] w-max xs:h-[18px] typo-body_sr bg-surface-light text-primary capitalize'>
                                     Live auction
                                 </span>
                             )}
@@ -118,7 +118,7 @@ const ItemCard: React.FC<ItemCardProps> = memo(({
                         {/* Regular item display */}
                         <p className='typo-body_lm xs:typo-body_mm xs:mb-1'>{formatToNaira(item.cashAmount)}</p>
                         <div className='flex xs:flex-col justify-between items-center xs:items-start rounded'>
-                            <p className='typo-body_sr xs:text-[11px] xs:mb-1 capitalize'>
+                            <p className='typo-body_sr xs:typo-caption xs:mb-1 capitalize'>
                                 {item.acceptCash ? 'cash' : 'item'} offers
                             </p>
                             {customFooter || <UsedBadge text={item.condition} />}

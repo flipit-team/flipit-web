@@ -37,8 +37,8 @@ const MobileChat = () => {
     };
 
     return (
-        <div className='shadow-[0px_4px_10px_rgba(0,0,0,0.2)] xs:shadow-transparent h-full flex flex-col flex-1'>
-            <div className='flex items-center justify-center typo-heading_sm xs:typo-body_lm text-primary bg-[rgba(0,95,115,0.2)] h-[42px]'>
+        <div className='shadow-lg xs:shadow-transparent h-full flex flex-col flex-1'>
+            <div className='flex items-center justify-center typo-heading_sm xs:typo-body_lm text-primary bg-surface-primary-20 h-[42px]'>
                 iPhone 12 promax
             </div>
 
@@ -47,11 +47,11 @@ const MobileChat = () => {
                     return (
                         <div key={i} className={`w-[90%] ${item.sentBy === Number(user?.userId) ? 'mr-auto' : 'ml-auto'}`}>
                             <div
-                                className={`${item.sentBy === Number(user?.userId) ? 'bg-[#f8f8f7]' : 'bg-[rgba(0,95,115,0.1)]'} p-3 rounded-lg`}
+                                className={`${item.sentBy === Number(user?.userId) ? 'bg-background-tertiary' : 'bg-surface-primary-10'} p-3 rounded-lg`}
                             >
                                 {item.message}
                             </div>
-                            <p className={`text-[#87928A] typo-body_mr  ${item.sentBy === Number(user?.userId) ? '' : 'text-right'}`}>
+                            <p className={`text-text-accent typo-body_mr  ${item.sentBy === Number(user?.userId) ? '' : 'text-right'}`}>
                                 {formatTimeTo12Hour(item.dateCreated)}
                             </p>
                         </div>

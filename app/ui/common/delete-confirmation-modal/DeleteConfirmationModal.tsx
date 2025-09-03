@@ -25,8 +25,8 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
         <div className='fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50'>
             <div className='bg-white rounded-lg p-6 w-full max-w-md mx-4 shadow-lg'>
                 <div className='mb-4'>
-                    <h3 className='text-lg font-semibold text-gray-900 mb-2'>{title}</h3>
-                    <p className='text-gray-600 text-sm'>{message}</p>
+                    <h3 className='typo-heading-md-semibold text-gray-900 mb-2'>{title}</h3>
+                    <p className='text-gray-600 typo-body-md-regular'>{message}</p>
                 </div>
                 
                 <div className='flex gap-3 justify-end'>

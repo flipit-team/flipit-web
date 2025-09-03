@@ -29,7 +29,7 @@ export default function SettingsPage() {
             {/* Main Content Area */}
             <div className='flex-1 p-4 md:p-6 lg:p-8 overflow-x-hidden'>
                 <div className='max-w-6xl mx-auto'>
-                    <h1 className='text-2xl md:text-3xl font-bold text-gray-900 mb-4 md:mb-6'>Settings</h1>
+                    <h1 className='typo-heading-lg-bold md:typo-display-lg text-gray-900 mb-4 md:mb-6'>Settings</h1>
                     
                     {/* Settings Layout */}
                     <div className='flex flex-col md:flex-row md:gap-6 w-full'>

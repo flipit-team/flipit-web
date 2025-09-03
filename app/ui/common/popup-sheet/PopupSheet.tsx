@@ -11,7 +11,7 @@ const PopupSheet = (props: Props) => {
     const {showPopup} = useAppContext();
     return (
         <div
-            className={`fixed h-[100vh] w-full top-0 bg-[#000000b3] flex flex-col items-center justify-center left-[0px] z-[1000] transition-transform transform duration-300 origin-top ${
+            className={`fixed h-[100vh] w-full top-0 bg-background-overlay flex flex-col items-center justify-center left-[0px] z-[1000] transition-transform transform duration-300 origin-top ${
                 showPopup ? 'scale-y-100' : 'scale-y-0'
             }`}
         >

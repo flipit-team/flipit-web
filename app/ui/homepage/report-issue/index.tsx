@@ -93,7 +93,7 @@ const ReportModalContent: React.FC<ReportModalContentProps> = ({title, onClose, 
 
                 <button
                     type='submit'
-                    className='w-full bg-primary text-white py-3 rounded font-semibold text-lg hover:bg-primary-dark transition'
+                    className='w-full bg-primary text-white py-3 rounded typo-heading-md-semibold hover:bg-primary-dark transition'
                 >
                     Submit report
                 </button>

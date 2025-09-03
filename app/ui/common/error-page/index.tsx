@@ -17,7 +17,7 @@ const Index = () => {
                 />
                 <div className=''>
                     <p className='typo-heading_lb xs:typo-heading_mb xs:text-center'>Server Error</p>
-                    <p className='lg:typo-body_lr md:typo-body_mr xs:typo-body_sr text-[#B6B9C8] pt-2 xs:text-center pb-2'>
+                    <p className='lg:typo-body_lr md:typo-body_mr xs:typo-body_sr text-text-disabled pt-2 xs:text-center pb-2'>
                         Something went technically wrong.
                     </p>
                 </div>

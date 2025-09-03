@@ -17,7 +17,7 @@ const Notifications = () => {
     return (
         <div className='mx-[120px] xs:mx-0 my-6 xs:my-0'>
             <h1 className='typo-heading_ms my-6 xs:mx-4'>Notifications</h1>
-            <div className='shadow-[0px_4px_10px_rgba(0,0,0,0.2)] xs:shadow-transparent flex flex-col gap-6'>
+            <div className='shadow-lg xs:shadow-transparent flex flex-col gap-6'>
                 {notifications?.content.map((item, i) => {
                     return (
                         <div key={i} className='flex items-center border-b border-border_gray w-full p-6'>

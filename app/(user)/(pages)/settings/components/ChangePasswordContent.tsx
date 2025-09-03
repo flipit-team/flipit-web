@@ -78,7 +78,7 @@ const ChangePasswordContent = () => {
                                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M5 13l4 4L19 7'></path>
                             </svg>
                         </div>
-                        <h3 className='text-lg font-semibold text-gray-900 mb-2'>Password Changed Successfully!</h3>
+                        <h3 className='typo-heading-md-semibold text-gray-900 mb-2'>Password Changed Successfully!</h3>
                         <p className='text-gray-600 mb-4'>Your password has been updated successfully.</p>
                         <button
                             onClick={() => setShowSuccessModal(false)}
@@ -90,7 +90,7 @@ const ChangePasswordContent = () => {
                 </div>
             )}
             
-            <h2 className='text-lg md:text-xl font-medium text-gray-900 mb-4'>Change Password</h2>
+            <h2 className='typo-heading-md-medium md:typo-heading-md-medium text-gray-900 mb-4'>Change Password</h2>
             <div className='h-px bg-border_gray mb-6 md:mb-8 w-full'></div>
 
             <div className='space-y-6'>

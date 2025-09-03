@@ -126,19 +126,19 @@ function HeaderContent(props: Props) {
                 <div className='flex xs:hidden gap-[42px] typo-body_ls ml-[70px]'>
                     <Link
                         href={'/live-auction'}
-                        className={pathname === '/live-auction' ? 'text-[#FFC300]' : 'text-white'}
+                        className={pathname === '/live-auction' ? 'text-secondary' : 'text-white'}
                     >
                         Live Auction
                     </Link>
                     <Link
                         href={'/messages'}
-                        className={pathname.startsWith('/messages') ? 'text-[#FFC300]' : 'text-white'}
+                        className={pathname.startsWith('/messages') ? 'text-secondary' : 'text-white'}
                     >
                         Messages
                     </Link>
                     <Link
                         href={'/current-bids'}
-                        className={pathname === '/current-bids' ? 'text-[#FFC300]' : 'text-white'}
+                        className={pathname === '/current-bids' ? 'text-secondary' : 'text-white'}
                     >
                         Current Bids
                     </Link>
@@ -275,7 +275,7 @@ function HeaderContent(props: Props) {
             >
                 <div className='w-full h-full p-6 flex flex-col'>
                     <div className='mb-6 w-full flex items-center justify-between'>
-                        <p className='text-[#333333] typo-heading_ss'>Menu</p>
+                        <p className='text-text_one typo-heading_ss'>Menu</p>
                         <Image
                             src={'/cancel.svg'}
                             height={13}

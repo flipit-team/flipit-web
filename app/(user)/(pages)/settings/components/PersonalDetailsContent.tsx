@@ -182,7 +182,7 @@ const PersonalDetailsContent = () => {
     if (loading) {
         return (
             <div>
-                <h2 className='text-lg md:text-xl font-medium text-gray-900 mb-4'>Personal Details</h2>
+                <h2 className='typo-heading-md-medium md:typo-heading-md-medium text-gray-900 mb-4'>Personal Details</h2>
                 <div className='h-px bg-border_gray mb-6 md:mb-8 w-full'></div>
                 <div className='flex items-center justify-center h-64'>
                     <Loading size='lg' text='Loading profile data...' />
@@ -193,7 +193,7 @@ const PersonalDetailsContent = () => {
 
     return (
         <div>
-            <h2 className='text-lg md:text-xl font-medium text-gray-900 mb-4'>Personal Details</h2>
+            <h2 className='typo-heading-md-medium md:typo-heading-md-medium text-gray-900 mb-4'>Personal Details</h2>
             <div className='h-px bg-border_gray mb-6 md:mb-8 w-full'></div>
 
             <div className='flex flex-col lg:flex-row gap-8 lg:gap-16'>
@@ -247,7 +247,7 @@ const PersonalDetailsContent = () => {
 
                 {/* Right side - Profile Image */}
                 <div className='flex flex-col items-center'>
-                    <div className='relative w-[180px] h-[180px] lg:w-[224px] lg:h-[224px] bg-[#f4f4f9] rounded-full flex items-center justify-center overflow-hidden mb-4'>
+                    <div className='relative w-[180px] h-[180px] lg:w-[224px] lg:h-[224px] bg-background-secondary rounded-full flex items-center justify-center overflow-hidden mb-4'>
                         {profileImage ? (
                             <Image src={profileImage} alt='Profile' fill className='object-cover' />
                         ) : (
@@ -257,7 +257,7 @@ const PersonalDetailsContent = () => {
 
                     <div className='flex justify-center'>
                         <label htmlFor='profile-image-upload' className={`cursor-pointer ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
-                            <div className='bg-transparent border border-primary text-primary hover:bg-primary hover:text-white transition-colors duration-200 h-[31px] px-[40px] py-[16px] text-[14px] flex items-center justify-center rounded-[8px] font-semibold'>
+                            <div className='bg-transparent border border-primary text-primary hover:bg-primary hover:text-white transition-colors duration-200 h-[31px] px-[40px] py-[16px] typo-button-sm flex items-center justify-center rounded-[8px]'>
                                 {uploading ? 'Uploading...' : 'Select Image'}
                             </div>
                             <input

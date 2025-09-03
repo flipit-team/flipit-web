@@ -46,7 +46,7 @@ export function withAuth<P extends object>(
       return (
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <h2 className="text-xl font-semibold text-red-600 mb-2">Authentication Error</h2>
+            <h2 className="typo-heading-md-semibold text-red-600 mb-2">Authentication Error</h2>
             <p className="text-gray-600">{error}</p>
             <button
               onClick={() => router.push(redirectTo)}

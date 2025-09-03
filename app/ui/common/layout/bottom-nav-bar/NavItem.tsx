@@ -14,7 +14,7 @@ const NavItem = ({href, icon, label, activeTab}: Props) => {
             <span
                 className={clsx({
                     'typo-body_ss text-primary': activeTab,
-                    'text-[#7e919a] typo-body_sr': !activeTab
+                    'text-tab-default typo-body_sr': !activeTab
                 })}
             >
                 {label}

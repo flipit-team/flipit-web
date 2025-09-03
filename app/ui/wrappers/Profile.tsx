@@ -184,7 +184,7 @@ const Profile = () => {
 
     return (
         <div className='flex items-center justify-center flex-col'>
-            <div className='flex flex-col justify-center w-[984px] xs:w-full mt-[92px] xs:mt-6 shadow-[0px_4px_10px_rgba(0,0,0,0.2)] xs:shadow-transparent rounded-lg p-6'>
+            <div className='flex flex-col justify-center w-[984px] xs:w-full mt-[92px] xs:mt-6 shadow-lg xs:shadow-transparent rounded-lg p-6'>
                 <div className='typo-heading_sm pb-4 mb-6 border-b border-border_gray xs:hidden'>My Profile</div>
                 <div className='flex items-center gap-6 xs:flex-col'>
                     <form className='typo-body_mr text-text_one flex flex-col gap-[26px] w-[512px] xs:w-full xs:order-2'>
@@ -209,7 +209,7 @@ const Profile = () => {
                     <ProfileImageUpload setImgUrl={setImgUrl} currentAvatar={profile?.avatar} />
                 </div>
             </div>
-            <div className='flex justify-center w-[984px] xs:w-full mt-6 shadow-[0px_4px_10px_rgba(0,0,0,0.2)] xs:shadow-transparent rounded-lg p-6 flex-col'>
+            <div className='flex justify-center w-[984px] xs:w-full mt-6 shadow-lg xs:shadow-transparent rounded-lg p-6 flex-col'>
                 <div className='typo-heading_sm pb-4 mb-6 border-b border-border_gray xs:border-none'>
                     Change Password
                 </div>

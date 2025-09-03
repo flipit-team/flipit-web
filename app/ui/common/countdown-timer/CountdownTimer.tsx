@@ -88,8 +88,7 @@ const CountdownTimer = ({endTime, startTime, className = '', variant = 'auction-
 
     return (
         <div
-            className={`bg-[#E47208] bg-opacity-18 px-4 flex items-center justify-center rounded-lg ${className}`}
-            style={{backgroundColor: 'rgba(228, 114, 8, 0.18)'}}
+            className={`bg-surface-warning-18 px-4 flex items-center justify-center rounded-lg ${className}`}
         >
             <p className='typo-body_lm text-text_one'>
                 {getDisplayText()}

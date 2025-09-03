@@ -26,7 +26,7 @@ const ToggleSwitch = ({ id, checked, onChange, disabled = false }: ToggleSwitchP
             className={`
                 relative inline-flex h-[14px] w-[24px] shrink-0 cursor-pointer rounded-full border-2 border-transparent 
                 transition-colors duration-200 ease-in-out focus:outline-none
-                ${checked ? 'bg-[#04A204]' : 'bg-gray-200'}
+                ${checked ? 'bg-success' : 'bg-gray-200'}
                 ${disabled ? 'cursor-not-allowed opacity-50' : ''}
             `}
         >

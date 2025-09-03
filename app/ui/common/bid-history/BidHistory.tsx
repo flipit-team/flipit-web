@@ -25,8 +25,7 @@ const BidHistory = ({bids, totalBids, bidderCount, itemId, className = ''}: BidH
     return (
         <div className={`${className}`}>
             <div
-                className='px-4 py-3 rounded-lg border border-primary mb-4'
-                style={{backgroundColor: 'rgba(0, 95, 115, 0.06)'}}
+                className='px-4 py-3 rounded-lg border border-primary mb-4 bg-surface-primary'
             >
                 <p className='typo-body_mr text-center text-text_one'>{bidderCount} people have bid on this item</p>
             </div>

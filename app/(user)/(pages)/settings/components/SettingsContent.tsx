@@ -27,7 +27,7 @@ const SettingsContent = () => {
             default:
                 return (
                     <div>
-                        <h2 className='text-lg md:text-xl font-medium text-gray-900 mb-4'>Verification</h2>
+                        <h2 className='typo-heading-md-medium md:typo-heading-md-medium text-gray-900 mb-4'>Verification</h2>
                         <div className='h-px bg-border_gray mb-6 md:mb-8 w-full'></div>
                         <VerificationContent />
                     </div>

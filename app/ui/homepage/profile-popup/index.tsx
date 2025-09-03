@@ -65,7 +65,7 @@ const ProfilePopup = (props: Props) => {
                         />
                         <div className='w-full ml-[36px] xs:ml-0 xs:flex xs:flex-col xs:items-center mt-4'>
                             <div className='typo-body_lm'>{seller?.firstName + ' ' + seller?.lastName}</div>
-                            <div className='h-[23px] w-max px-[2px] bg-[#005f7329] text-primary  flex items-center justify-center rounded typo-body_mr'>
+                            <div className='h-[23px] w-max px-[2px] bg-surface-primary-16 text-primary  flex items-center justify-center rounded typo-body_mr'>
                                 {seller?.dateVerified ? 'Verified profile' : 'Unverified profile'}
                             </div>
                             <div className='flex my-1'>
@@ -78,7 +78,7 @@ const ProfilePopup = (props: Props) => {
                             <p className='typo-body_mr text-text_four mb-5'>Joined Flipit in 2024</p>
                             <div
                                 onClick={() => setViewPhone(!viewPhone)}
-                                className={`w-full flex items-center justify-center h-[51px] bg-[#005f7329] rounded-lg text-primary typo-body_ls`}
+                                className={`w-full flex items-center justify-center h-[51px] bg-surface-primary-16 rounded-lg text-primary typo-body_ls`}
                             >
                                 {viewPhone ? seller?.phoneNumber : 'Contact via Phone'}
                             </div>{' '}
@@ -86,7 +86,7 @@ const ProfilePopup = (props: Props) => {
                     </div>
                     <div className='mt-[20px] flex flex-col gap-4 xs:px-4'>
                         <div className='typo-body_lm flex '>
-                            Verified reviews <p className='text-[#d7b0b0]'>(2)</p>
+                            Verified reviews <p className='text-text-pink'>(2)</p>
                         </div>
                         <div className='flex flex-col gap-3'>
                             <div className='flex my-1'>
@@ -96,8 +96,8 @@ const ProfilePopup = (props: Props) => {
                                 />
                             </div>
                             <p className='typo-body_mm'>Good Product</p>
-                            <p className='typo-body_sr text-[#666666]'>More than what I expected</p>
-                            <p className='typo-body_sr text-[#666666]'>by Collins</p>
+                            <p className='typo-body_sr text-text_three'>More than what I expected</p>
+                            <p className='typo-body_sr text-text_three'>by Collins</p>
                         </div>
                     </div>
                 </div>

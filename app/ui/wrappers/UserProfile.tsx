@@ -47,7 +47,7 @@ const UserProfile = (props: Props) => {
     return (
         <div className="max-w-7xl mx-auto px-6 py-8">
             {/* User Profile Header */}
-            <div className="bg-white rounded-lg shadow-[0px_4px_10px_rgba(0,0,0,0.2)] p-6 mb-8">
+            <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
                 <div className="flex items-start gap-6 xs:flex-col">
                     {/* Profile Image */}
                     <div className="flex-shrink-0">
@@ -70,7 +70,7 @@ const UserProfile = (props: Props) => {
                         <div className="flex items-center gap-3 mb-4">
                             <div className={`h-[26px] px-3 flex items-center justify-center rounded typo-body_sr ${
                                 user.phoneNumberVerified 
-                                    ? 'bg-[#005f7329] text-primary' 
+                                    ? 'bg-surface-primary-16 text-primary' 
                                     : 'bg-gray-100 text-text_four'
                             }`}>
                                 {user.phoneNumberVerified ? 'Verified profile' : 'Unverified profile'}
@@ -115,7 +115,7 @@ const UserProfile = (props: Props) => {
             </div>
             
             {/* Items Section */}
-            <div className="bg-white rounded-lg shadow-[0px_4px_10px_rgba(0,0,0,0.2)] p-6">
+            <div className="bg-white rounded-lg shadow-lg p-6">
                 <div className="flex items-center justify-between mb-6">
                     <h2 className="typo-heading_sm text-text_one">
                         {user.firstName}&apos;s Items ({items.length})

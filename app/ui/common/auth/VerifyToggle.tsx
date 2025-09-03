@@ -12,13 +12,13 @@ const VerifyToggle = (props: Props) => {
             <div className='flex items-center gap-[14px] typo-body_sm mb-[44px]'>
                 <div
                     onClick={() => setIsVerify(true)}
-                    className={`w-[220px] border-b-4 pb-1 ${isVerify ? 'text-primary border-primary' : 'text-text_four border-[#f4f4f9]'}`}
+                    className={`w-[220px] border-b-4 pb-1 ${isVerify ? 'text-primary border-primary' : 'text-text_four border-border-light'}`}
                 >
                     1.Verify your Profile
                 </div>
                 <div
                     onClick={() => setIsVerify(false)}
-                    className={`w-[220px] border-b-4 pb-1 ${!isVerify ? 'text-primary  border-primary' : 'text-text_four border-[#f4f4f9]'}`}
+                    className={`w-[220px] border-b-4 pb-1 ${!isVerify ? 'text-primary  border-primary' : 'text-text_four border-border-light'}`}
                 >
                     2.Confirm your Phone number
                 </div>

@@ -31,8 +31,8 @@ const PerformanceTiles = () => {
                     className='bg-white w-[256px] h-[101px] rounded-[8px] border border-border_gray shadow-md px-6 flex items-center justify-between'
                 >
                     <div className='flex flex-col justify-center'>
-                        <h3 className='text-gray-600 text-sm font-normal mb-2'>{tile.title}</h3>
-                        <p className='text-2xl font-semibold text-gray-900'>{tile.amount}</p>
+                        <h3 className='text-gray-600 typo-body-md-regular mb-2'>{tile.title}</h3>
+                        <p className='typo-heading-lg-semibold text-gray-900'>{tile.amount}</p>
                     </div>
 
                     <div className='flex-shrink-0'>

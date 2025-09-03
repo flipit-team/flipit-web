@@ -100,7 +100,7 @@ const FAQPage = () => {
                 {faqData.map((section, sectionIndex) => (
                     <div key={section.title} className={sectionIndex > 0 ? 'mt-8' : ''}>
                         <div className='px-6 py-4 border-b border-gray-100'>
-                            <h2 className='text-lg font-semibold text-gray-800'>{section.title}</h2>
+                            <h2 className='typo-heading-md-semibold text-gray-800'>{section.title}</h2>
                         </div>
 
                         <div className='divide-y divide-gray-100'>
@@ -113,7 +113,7 @@ const FAQPage = () => {
                                             onClick={() => toggleItem(item.id)}
                                             className='w-full flex items-center justify-between text-left focus:outline-none rounded-lg p-2 -m-2 transition-colors hover:bg-gray-50'
                                         >
-                                            <span className='text-gray-700 font-medium text-sm'>{item.question}</span>
+                                            <span className='text-gray-700 typo-body-md-medium'>{item.question}</span>
                                             {isOpen ? (
                                                 <ChevronUp className='w-5 h-5 text-gray-400 flex-shrink-0 ml-4' />
                                             ) : (
@@ -123,7 +123,7 @@ const FAQPage = () => {
 
                                         {isOpen && (
                                             <div className='mt-3 pl-2'>
-                                                <p className='text-gray-600 text-sm leading-relaxed'>{item.answer}</p>
+                                                <p className='text-gray-600 typo-body-md-regular leading-relaxed'>{item.answer}</p>
                                             </div>
                                         )}
                                     </div>

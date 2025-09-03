@@ -47,7 +47,7 @@ const ProfileVerificationStep = ({ onNext }: ProfileVerificationStepProps) => {
         <div className='space-y-6'>
             {/* Profile Photo Upload */}
             <div className='flex items-center gap-4'>
-                <label className='relative w-[92px] h-[92px] bg-[#f4f4f9] rounded-full flex items-center justify-center cursor-pointer overflow-hidden'>
+                <label className='relative w-[92px] h-[92px] bg-background-secondary rounded-full flex items-center justify-center cursor-pointer overflow-hidden'>
                     <input
                         type='file'
                         accept='image/*'
@@ -104,7 +104,7 @@ const ProfileVerificationStep = ({ onNext }: ProfileVerificationStepProps) => {
             {/* Document Upload */}
             <div>
                 <p className='mb-2 font-medium text-gray-900'>Upload Government issued document</p>
-                <label className='flex items-center justify-center rounded-md bg-[#f4f4f9] h-[64px] border border-dashed border-primary cursor-pointer hover:bg-gray-100 transition-colors'>
+                <label className='flex items-center justify-center rounded-md bg-background-secondary h-[64px] border border-dashed border-primary cursor-pointer hover:bg-gray-100 transition-colors'>
                     <input
                         type='file'
                         accept='image/*'
@@ -119,8 +119,8 @@ const ProfileVerificationStep = ({ onNext }: ProfileVerificationStepProps) => {
                     <div className='h-[68px] flex items-center border border-border_gray px-4 mt-4 rounded-md bg-white'>
                         <File className='text-primary h-9 w-9' />
                         <div className='ml-3 flex-1'>
-                            <p className='text-sm font-medium text-gray-900'>{fileInfo.name}</p>
-                            <p className='text-xs text-gray-500'>{fileInfo.size}</p>
+                            <p className='typo-body-md-medium text-gray-900'>{fileInfo.name}</p>
+                            <p className='typo-caption text-gray-500'>{fileInfo.size}</p>
                         </div>
                         <button
                             onClick={() => {

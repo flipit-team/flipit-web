@@ -37,7 +37,7 @@ const PerformanceChart = () => {
                         {yAxisLabels.map((label, index) => (
                             <span 
                                 key={index} 
-                                className='text-[11px] font-normal text-[#333333] text-right'
+                                className='typo-caption text-text_one text-right'
                             >
                                 {label}
                             </span>
@@ -66,7 +66,7 @@ const PerformanceChart = () => {
                             {chartData.map((dataPoint, index) => (
                                 <span 
                                     key={index}
-                                    className='text-[11px] font-normal text-[#333333] transform rotate-45'
+                                    className='typo-caption text-text_one transform rotate-45'
                                 >
                                     {dataPoint.date}
                                 </span>

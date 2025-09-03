@@ -84,7 +84,7 @@ const VerifyProfile = ({forVerify}: {forVerify: boolean}) => {
             {isVerify ? (
                 <>
                     <div className='flex items-center gap-4 py-10'>
-                        <label className='relative w-[92px] h-[92px] bg-[#f4f4f9] rounded-full flex items-center justify-center cursor-pointer overflow-hidden'>
+                        <label className='relative w-[92px] h-[92px] bg-background-secondary rounded-full flex items-center justify-center cursor-pointer overflow-hidden'>
                             <input
                                 type='file'
                                 accept='image/*'
@@ -126,7 +126,7 @@ const VerifyProfile = ({forVerify}: {forVerify: boolean}) => {
                     />
                     <div className='my-6'>
                         <p className='mb-2'>Upload Government issued document</p>
-                        <label className='flex items-center justify-center rounded-md bg-[#f4f4f9] h-[64px] border border-dashed border-primary'>
+                        <label className='flex items-center justify-center rounded-md bg-background-secondary h-[64px] border border-dashed border-primary'>
                             <input
                                 type='file'
                                 accept='image/*'
@@ -141,7 +141,7 @@ const VerifyProfile = ({forVerify}: {forVerify: boolean}) => {
                                 <File className='text-primary h-9 w-9' />
                                 <div className='ml-2'>
                                     <p className='typo-body_ss'>{fileInfo?.name}</p>
-                                    <p className='typo-body_sr text-[#6d6d6d]'>{fileInfo.size}</p>
+                                    <p className='typo-body_sr text-text-gray'>{fileInfo.size}</p>
                                 </div>
                                 <Image
                                     src={'/cancel-circle.svg'}

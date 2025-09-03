@@ -51,7 +51,7 @@ const MessageSent = ({title, onClose}: MessageSentProps) => {
                 <button
                     type='button'
                     onClick={onClose}
-                    className='w-full bg-primary text-white py-3 rounded font-semibold text-lg hover:bg-primary-dark transition'
+                    className='w-full bg-primary text-white py-3 rounded typo-heading-md-semibold hover:bg-primary-dark transition'
                 >
                     Done
                 </button>

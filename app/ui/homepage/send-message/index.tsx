@@ -56,7 +56,7 @@ const SendMessage = ({title, onClose, onSubmit, loading = false, error = ''}: Se
                 <button
                     type='submit'
                     disabled={loading || !message.trim()}
-                    className='w-full bg-primary text-white py-3 rounded font-semibold text-lg hover:bg-primary-dark transition disabled:opacity-50 disabled:cursor-not-allowed'
+                    className='w-full bg-primary text-white py-3 rounded typo-heading-md-semibold hover:bg-primary-dark transition disabled:opacity-50 disabled:cursor-not-allowed'
                 >
                     {loading ? 'Sending...' : 'Send to Seller'}
                 </button>

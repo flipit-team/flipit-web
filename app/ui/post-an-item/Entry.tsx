@@ -13,7 +13,7 @@ interface SellOptionCardProps {
 
 const SellOptionCard: React.FC<SellOptionCardProps> = ({icon, title, description, onContinue}) => {
     return (
-        <div className='bg-[#005f730d] rounded-lg p-8 flex flex-col items-center text-center'>
+        <div className='bg-surface-primary rounded-lg p-8 flex flex-col items-center text-center'>
             <div className='mb-6 text-primary'>{icon}</div>
             <h3 className='typo-heading_ss mb-4'>{title}</h3>
             <p className='typo-body_lr text-text_three mb-8 max-w-xs'>{description}</p>
@@ -55,7 +55,7 @@ const PostItemPage: React.FC = () => {
                 <GoBack />
 
                 {/* Main content with shadow */}
-                <div className='shadow-[0px_4px_10px_rgba(0,0,0,0.2)] w-[866px] mx-auto mt-10 rounded-lg p-8'>
+                <div className='shadow-lg w-[866px] mx-auto mt-10 rounded-lg p-8'>
                     {/* Title section */}
                     <div className='text-center mb-12'>
                         <h1 className='typo-heading_ms mb-3'>Post an Item</h1>

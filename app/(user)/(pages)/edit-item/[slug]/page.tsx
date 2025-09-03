@@ -53,7 +53,7 @@ const EditItemPage = () => {
     if (loading) {
         return (
             <div className='w-full h-full'>
-                <div className='flex flex-col items-center mt-[35px] xs:mt-0 py-6 mx-auto h-max w-[648px] xs:w-full lg:shadow-[0px_4px_10px_rgba(0,0,0,0.2)] px-[30px]'>
+                <div className='flex flex-col items-center mt-[35px] xs:mt-0 py-6 mx-auto h-max w-[648px] xs:w-full lg:shadow-lg px-[30px]'>
                     <div className='flex items-center justify-center h-64'>
                         <Loading size='lg' text='Loading item details...' />
                     </div>
@@ -65,7 +65,7 @@ const EditItemPage = () => {
     if (error || !item) {
         return (
             <div className='w-full h-full'>
-                <div className='flex flex-col items-center mt-[35px] xs:mt-0 py-6 mx-auto h-max w-[648px] xs:w-full lg:shadow-[0px_4px_10px_rgba(0,0,0,0.2)] px-[30px]'>
+                <div className='flex flex-col items-center mt-[35px] xs:mt-0 py-6 mx-auto h-max w-[648px] xs:w-full lg:shadow-lg px-[30px]'>
                     <h1 className='typo-heading_ms xs:hidden mb-4'>Edit Item</h1>
                     <ErrorDisplay 
                         error={error || 'Item not found'} 
@@ -79,7 +79,7 @@ const EditItemPage = () => {
     try {
         return (
             <div className='w-full h-full'>
-                <div className='flex flex-col items-center mt-[35px] xs:mt-0 py-6 mx-auto h-max w-[648px] xs:w-full lg:shadow-[0px_4px_10px_rgba(0,0,0,0.2)] px-[30px]'>
+                <div className='flex flex-col items-center mt-[35px] xs:mt-0 py-6 mx-auto h-max w-[648px] xs:w-full lg:shadow-lg px-[30px]'>
                     <h1 className='typo-heading_ms xs:hidden'>Edit Item</h1>
                     <Form 
                         formType="listing" 

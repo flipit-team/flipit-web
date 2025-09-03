@@ -152,7 +152,7 @@ const MainChats = (props: Props) => {
         <div className='mx-[120px] xs:mx-0 my-6 xs:my-0'>
             <h1 className='typo-heading_ms my-6 xs:hidden'>My Messages</h1>
             <div className='grid grid-cols-[424px_1fr] xs:grid-cols-1 gap-6'>
-                <div className='shadow-[0px_4px_10px_rgba(0,0,0,0.2)] xs:shadow-transparent xs:hidden'>
+                <div className='shadow-lg xs:shadow-transparent xs:hidden'>
                     <div className='px-6 flex items-center gap-[34px] typo-body_lm'>
                         <div
                             className={` py-6 ${activeTab === 'seller' ? ' border-b border-primary text-primary' : 'text-text_four'}`}
@@ -175,7 +175,7 @@ const MainChats = (props: Props) => {
                                     pushParam(chat.chatId);
                                     setActiveChat(chat);
                                 }}
-                                className={`h-[130px] ${chat.chatId === activeChat?.chatId ? 'bg-[rgba(0,95,115,0.1)]' : ''} flex p-6 border-b border-[#EEEEE9]`}
+                                className={`h-[130px] ${chat.chatId === activeChat?.chatId ? 'bg-surface-primary-10' : ''} flex p-6 border-b border-border-secondary`}
                             >
                                 <Image
                                     src={chat.initiatorAvatar ?? '/profile-picture.svg'}
@@ -209,7 +209,7 @@ const MainChats = (props: Props) => {
                         );
                     })}
                 </div>
-                <div className='shadow-[0px_4px_10px_rgba(0,0,0,0.2)] xs:shadow-transparent hidden xs:block'>
+                <div className='shadow-lg xs:shadow-transparent hidden xs:block'>
                     <div className='px-6 flex items-center gap-[34px] typo-body_lm'>
                         <div
                             className={`text-primary py-6 ${activeTab === 'seller' ? ' border-b border-primary' : ''}`}
@@ -229,7 +229,7 @@ const MainChats = (props: Props) => {
                             <Link
                                 key={i}
                                 href={`/messages/${chat.chatId}`}
-                                className={`h-[130px] ${chat.chatId === activeChat?.chatId ? 'bg-[rgba(0,95,115,0.1)]' : ''} flex p-6 border-b border-[#EEEEE9]`}
+                                className={`h-[130px] ${chat.chatId === activeChat?.chatId ? 'bg-surface-primary-10' : ''} flex p-6 border-b border-border-secondary`}
                             >
                                 <Image
                                     src={chat.initiatorAvatar ?? '/profile-picture.svg'}
@@ -248,7 +248,7 @@ const MainChats = (props: Props) => {
                         );
                     })}
                 </div>
-                <div className='shadow-[0px_4px_10px_rgba(0,0,0,0.2)] xs:shadow-transparent xs:hidden'>
+                <div className='shadow-lg xs:shadow-transparent xs:hidden'>
                     {activeChat && (
                         <div className='flex items-center p-6'>
                             <Image
@@ -262,7 +262,7 @@ const MainChats = (props: Props) => {
                         </div>
                     )}
                     {activeChat && (
-                        <div className='flex items-center justify-center typo-heading_sm text-primary bg-[rgba(0,95,115,0.2)] h-[42px]'>
+                        <div className='flex items-center justify-center typo-heading_sm text-primary bg-surface-primary-20 h-[42px]'>
                             {activeChat?.title}
                         </div>
                     )}
@@ -271,12 +271,12 @@ const MainChats = (props: Props) => {
                             return (
                                 <div key={i} className={`w-2/4 ${item.sentBy === Number(user?.userId) ? 'ml-auto' : 'mr-auto'}`}>
                                     <div
-                                        className={`${item.sentBy === Number(user?.userId) ? 'bg-[rgba(0,95,115,0.1)]' : 'bg-[#f8f8f7]'} p-3 rounded-lg`}
+                                        className={`${item.sentBy === Number(user?.userId) ? 'bg-surface-primary-10' : 'bg-background-tertiary'} p-3 rounded-lg`}
                                     >
                                         {item.message}
                                     </div>
                                     <p
-                                        className={`text-[#87928A] typo-body_mr ${item.sentBy === Number(user?.userId) ? '' : 'text-right'}`}
+                                        className={`text-text-accent typo-body_mr ${item.sentBy === Number(user?.userId) ? '' : 'text-right'}`}
                                     >
                                         {formatTimeTo12Hour(item.dateCreated)}
                                     </p>

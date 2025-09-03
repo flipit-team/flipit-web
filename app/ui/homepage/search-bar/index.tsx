@@ -33,7 +33,7 @@ const SearchBar = () => {
                 placeholder='Search...'
                 className='w-full h-[49px] pl-6 pr-4 py-2 typo-body_mr text-text-primary bg-odds-buttons-bg-primary-color border border-none outline-none rounded-md focus:outline-none  focus:ring-transparent focus:border-none'
             />
-            <div className='h-[49px] w-[49px] absolute top-[0px] right-0 bg-[#e0f0f0] rounded-r-md flex items-center justify-center'>
+            <div className='h-[49px] w-[49px] absolute top-[0px] right-0 bg-background-tinted rounded-r-md flex items-center justify-center'>
                 <Image className='h-6 w-6 cursor-pointer' src={'/search.svg'} alt='search' height={24} width={24} />
             </div>
         </div>

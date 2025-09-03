@@ -34,7 +34,7 @@ export class ApiErrorBoundary extends Component<Props, State> {
       return (
         <div className="flex items-center justify-center min-h-[200px] p-4">
           <div className="text-center">
-            <h2 className="text-xl font-semibold text-red-600 mb-2">Something went wrong</h2>
+            <h2 className="typo-heading-md-semibold text-red-600 mb-2">Something went wrong</h2>
             <p className="text-gray-600 mb-4">
               {this.state.error?.message || 'An unexpected error occurred'}
             </p>

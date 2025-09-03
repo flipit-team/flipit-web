@@ -41,12 +41,12 @@ const DeleteAccountContent = () => {
 
     return (
         <div>
-            <h2 className='text-lg md:text-xl font-medium text-gray-900 mb-4'>Delete Account</h2>
+            <h2 className='typo-heading-md-medium md:typo-heading-md-medium text-gray-900 mb-4'>Delete Account</h2>
             <div className='h-px bg-border_gray mb-6 md:mb-8 w-full'></div>
 
             <div className='space-y-6 max-w-2xl'>
                 {/* Warning Text */}
-                <p className='text-base text-gray-700 leading-relaxed'>
+                <p className='typo-body-lg-regular text-gray-700 leading-relaxed'>
                     Account deactivation means to delete your account and you will not be able to log in to your profile
                     anymore and all your account history will be deleted without the possibility to restore.
                 </p>
@@ -63,7 +63,7 @@ const DeleteAccountContent = () => {
                         options={deleteReasons}
                     />
                     {showReasonError && (
-                        <p className='text-red-600 text-sm mt-2'>Please select a reason for deleting your account</p>
+                        <p className='text-red-600 typo-body-md-regular mt-2'>Please select a reason for deleting your account</p>
                     )}
                 </div>
 

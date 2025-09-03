@@ -92,9 +92,9 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
 
             <div className='flex-1 ml-[22px] flex flex-col justify-between'>
                 <div>
-                    <h3 className='text-gray-700 text-[16px] font-normal mb-2'>{item.title}</h3>
-                    <div className='text-[#333333] text-[20px] font-medium mb-1'>{formatAmount(item.amount)}</div>
-                    <div className='text-gray-700 text-[14px] font-normal'>Views: {item.views}</div>
+                    <h3 className='text-gray-700 typo-body-lg-regular mb-2'>{item.title}</h3>
+                    <div className='text-text_one typo-heading-md-medium mb-1'>{formatAmount(item.amount)}</div>
+                    <div className='text-gray-700 typo-body-md-regular'>Views: {item.views}</div>
                 </div>
 
                 <div className='flex gap-3 mt-[21px]'>

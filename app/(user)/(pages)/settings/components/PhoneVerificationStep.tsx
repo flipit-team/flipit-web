@@ -81,7 +81,7 @@ const PhoneVerificationStep = ({ onComplete, onBack }: PhoneVerificationStepProp
                         onKeyDown={(e) => handleKeyDown(index, e)}
                         maxLength={1}
                         className={`
-                            w-14 h-14 text-center text-xl font-semibold border-2 rounded-lg 
+                            w-14 h-14 text-center typo-heading-md-semibold border-2 rounded-lg 
                             focus:ring-2 focus:ring-primary focus:border-primary outline-none
                             transition-colors duration-200
                             ${digit ? 'border-primary bg-primary/5' : 'border-gray-300'}

@@ -37,7 +37,7 @@ export function ErrorDisplay({
           />
         </div>
         
-        <h3 className="text-lg font-semibold text-red-600 mb-2 typo-heading_ss">
+        <h3 className="typo-heading-md-semibold text-red-600 mb-2">
           {title}
         </h3>
         

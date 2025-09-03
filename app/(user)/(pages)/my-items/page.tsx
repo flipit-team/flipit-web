@@ -111,7 +111,7 @@ export default function MyItemsPage() {
                 <div className='max-w-6xl mx-auto'>
                     <GoBack />
 
-                    <div className='py-6 md:py-9 xs:pt-6 xs:py-0 xs:mb-4 text-2xl md:text-3xl font-bold text-gray-900'>My Items</div>
+                    <div className='py-6 md:py-9 xs:pt-6 xs:py-0 xs:mb-4 typo-heading-lg-bold md:typo-display-lg text-gray-900'>My Items</div>
 
                     <ItemsContainer 
                         initialItems={items} 

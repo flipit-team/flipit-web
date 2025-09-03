@@ -11,8 +11,7 @@ const SafetyTips = () => {
     params.set('q', 'report-issue');
     return (
         <div
-            className='border border-dashed border-[#e47208] p-4 rounded-md space-y-4 mx-auto'
-            style={{backgroundColor: 'rgba(228, 114, 8, 0.06)'}}
+            className='border border-dashed border-warning p-4 rounded-md space-y-4 mx-auto bg-surface-primary'
         >
             <h2 className='typo-body_lm text-base text-center'>Safety Tips</h2>
             <ul className='typo-body_mr list-disc list-inside space-y-1'>
@@ -22,11 +21,11 @@ const SafetyTips = () => {
                 <li>Trust your instincts—if something feels off, walk away.</li>
             </ul>
 
-            <hr className='border-t border-dashed border-[#e47208]' />
+            <hr className='border-t border-dashed border-warning' />
 
             <Link
                 href={`?${params.toString()}`}
-                className='block text-[#e47208] font-medium cursor-pointer hover:underline text-center'
+                className='block text-warning font-medium cursor-pointer hover:underline text-center'
                 onClick={() => setShowPopup(true)}
             >
                 Report Abuse

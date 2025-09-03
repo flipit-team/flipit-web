@@ -31,7 +31,7 @@ const RegularButton = ({isLight, text, slug, usePopup, isLoading, disabled, acti
         return (
             <div
                 onClick={disabled ? () => {} : action}
-                className={`w-full flex items-center justify-center h-[51px] ${isLight ? 'bg-[#005f7329]' : 'bg-primary'} rounded-lg ${isLight ? 'text-primary' : 'text-white'} typo-body_ls ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+                className={`w-full flex items-center justify-center h-[51px] ${isLight ? 'bg-surface-primary-16' : 'bg-primary'} rounded-lg ${isLight ? 'text-primary' : 'text-white'} typo-body_ls ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
             >
                 {text}
             </div>
@@ -42,7 +42,7 @@ const RegularButton = ({isLight, text, slug, usePopup, isLoading, disabled, acti
         <Link
             href={`?${params.toString()}`}
             onClick={usePopup ? () => setShowPopup(true) : () => {}}
-            className={`w-full flex items-center justify-center h-[51px] ${isLight ? 'bg-[#005f7329]' : 'bg-primary'} rounded-lg ${isLight ? 'text-primary' : 'text-white'} typo-body_ls cursor-pointer`}
+            className={`w-full flex items-center justify-center h-[51px] ${isLight ? 'bg-surface-primary-16' : 'bg-primary'} rounded-lg ${isLight ? 'text-primary' : 'text-white'} typo-body_ls cursor-pointer`}
         >
             {text}
         </Link>

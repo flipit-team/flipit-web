@@ -120,7 +120,7 @@ const ItemDetail = (props: Props) => {
     return (
         <>
             <div className='grid-sizes grid grid-cols-[712px_1fr] xs:grid-cols-1 gap-6 h-full mt-10 xs:mb-6'>
-                <div className='p-6 xs:p-0 shadow-[0px_4px_10px_rgba(0,0,0,0.2)]'>
+                <div className='p-6 xs:p-0 shadow-lg'>
                     <ImageGallery
                         images={item?.imageUrls || []}
                         overlayElements={
@@ -207,7 +207,7 @@ const ItemDetail = (props: Props) => {
                         </table>
                     </div>
                 </div>
-                <div className='p-6 xs:p-0 shadow-[0px_4px_10px_rgba(0,0,0,0.2)]'>
+                <div className='p-6 xs:p-0 shadow-lg'>
                     <UsedBadge text={item?.condition} />
                     <div className='typo-heading_ms xs:typo-heading_ss text-text_one mt-[10px] capitalize'>
                         {item?.title}
@@ -233,7 +233,7 @@ const ItemDetail = (props: Props) => {
                         />
                         <div className='w-full ml-2'>
                             <div className='typo-body_lm'>{item?.seller.firstName + ' ' + item?.seller.lastName}</div>
-                            <div className='h-[23px] w-max px-[2px] bg-[#005f7329] text-primary  flex items-center justify-center rounded typo-body_sr'>
+                            <div className='h-[23px] w-max px-[2px] bg-surface-primary-16 text-primary  flex items-center justify-center rounded typo-body_sr'>
                                 {item?.seller.dateVerified ? 'Verified profile' : 'Unverified profile'}
                             </div>
                             <div className='flex my-1'>
@@ -249,7 +249,7 @@ const ItemDetail = (props: Props) => {
                     <div className='flex gap-6 mb-6'>
                         <div
                             onClick={() => pushParam('send-message')}
-                            className={`w-[232px] border border-primary flex items-center justify-center h-[51px] bg-[#005f7329] rounded-lg text-primary typo-body_ls cursor-pointer`}
+                            className={`w-[232px] border border-primary flex items-center justify-center h-[51px] bg-surface-primary-16 rounded-lg text-primary typo-body_ls cursor-pointer`}
                         >
                             {'Send Message'}
                         </div>

@@ -96,7 +96,7 @@ const SettingsSidebar = () => {
                                     className='flex flex-col items-center min-w-max py-3 px-6 transition-colors duration-200 relative'
                                 >
                                     <span className={`
-                                        font-medium text-sm whitespace-nowrap transition-colors duration-200
+                                        typo-body-md-medium whitespace-nowrap transition-colors duration-200
                                         ${isActive ? 'text-primary' : 'text-gray-700'}
                                     `}>
                                         {item.label}

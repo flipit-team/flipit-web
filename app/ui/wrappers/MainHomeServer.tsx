@@ -31,7 +31,7 @@ const MainHomeServer = ({ items, auctionItems, defaultCategories }: Props) => {
 
     return (
         <div className='flex flex-col relative'>
-            <div className='xs:px-4 h-[206px] xs:h-[184px] bg-[#005f73f5] flex flex-col gap-7 xs:gap-6 py-11 xs:pt-[36px] xs:pb-[29px]'>
+            <div className='xs:px-4 h-[206px] xs:h-[184px] bg-surface-primary-95 flex flex-col gap-7 xs:gap-6 py-11 xs:pt-[36px] xs:pb-[29px]'>
                 <div className='flex items-center gap-4 mx-auto text-white'>
                     <p className='typo-body_lr'>Items near me</p>
                     <div className='border border-border_gray h-[37px] px-4 flex items-center rounded-md'>
@@ -46,7 +46,7 @@ const MainHomeServer = ({ items, auctionItems, defaultCategories }: Props) => {
                 <Categories defaultCategories={defaultCategories} />
 
                 <div className='w-full max-w-full overflow-x-hidden pr-[60px]'>
-                    <div className='hidden mt-5 mb-5 xs:flex items-center justify-center bg-[#005f732b] text-[#333333] typo-body_ls w-max px-[10px] rounded-lg h-[36px]'>
+                    <div className='hidden mt-5 mb-5 xs:flex items-center justify-center bg-surface-primary-16 text-text_one typo-body_ls w-max px-[10px] rounded-lg h-[36px]'>
                         Categories
                     </div>
                     {auctionItems.length > 0 && (

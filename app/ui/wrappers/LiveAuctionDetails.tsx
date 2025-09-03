@@ -166,7 +166,7 @@ const LiveAuctionDetails = (props: Props) => {
 
     return (
         <div className='grid-sizes grid grid-cols-[712px_1fr] xs:grid-cols-1 gap-6 h-full mt-10 xs:mb-6'>
-            <div className='p-6 xs:p-0 shadow-[0px_4px_10px_rgba(0,0,0,0.2)]'>
+            <div className='p-6 xs:p-0 shadow-lg'>
                 <ImageGallery
                     images={item?.imageUrls || ['/camera-large.png']}
                     overlayElements={
@@ -239,7 +239,7 @@ const LiveAuctionDetails = (props: Props) => {
                 </div>
             </div>
 
-            <div className='p-6 xs:p-0 shadow-[0px_4px_10px_rgba(0,0,0,0.2)]'>
+            <div className='p-6 xs:p-0 shadow-lg'>
                 <CountdownTimer 
                     endTime={endTime} 
                     startTime={startTime || undefined} 

@@ -31,10 +31,10 @@ const Categories = (props: Props) => {
     };
     return (
         <div
-            className={`w-full flex flex-col ${forLiveAuction ? 'pt-0' : 'pt-7'}  shadow-[0px_4px_10px_rgba(0,0,0,0.2)] xs:hidden`}
+            className={`w-full flex flex-col ${forLiveAuction ? 'pt-0' : 'pt-7'}  shadow-lg xs:hidden`}
         >
             <div
-                className={`h-[58px] flex items-center justify-center gap-2 ${forLiveAuction ? 'bg-[#005f73f5] mb-4' : 'bg-[#005f7314]'}`}
+                className={`h-[58px] flex items-center justify-center gap-2 ${forLiveAuction ? 'bg-surface-primary-95 mb-4' : 'bg-surface-primary'}`}
             >
                 {forLiveAuction ? (
                     <p className='typo-heading_ms text-white'>Live Auction</p>

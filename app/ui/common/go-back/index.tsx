@@ -10,7 +10,7 @@ const GoBack = () => {
             className='flex items-center gap-2 text-primary mb-8 transition-colors duration-200'
         >
             <ChevronLeft className='w-5 h-5' />
-            <span className='text-sm font-medium'>Go back</span>
+            <span className='typo-body-md-medium'>Go back</span>
         </button>
     );
 };

@@ -53,12 +53,12 @@ const VerificationContent = () => {
             <VerificationSteps currentStep={currentStep} totalSteps={totalSteps} />
 
             {/* Step Title */}
-            <h1 className='text-[32px] font-bold text-primary mb-2'>
+            <h1 className='typo-heading-xl-bold text-primary mb-2'>
                 {getStepTitle()}
             </h1>
 
             {/* Step Subtitle */}
-            <p className='text-[16px] font-normal text-[#333333] mb-8'>
+            <p className='typo-body-lg-regular text-text_one mb-8'>
                 {getStepSubtitle()}
             </p>
 

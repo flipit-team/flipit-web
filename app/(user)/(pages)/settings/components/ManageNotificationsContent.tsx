@@ -60,13 +60,13 @@ const ManageNotificationsContent = () => {
 
     return (
         <div>
-            <h2 className='text-lg md:text-xl font-medium text-gray-900 mb-4'>Manage Notifications</h2>
+            <h2 className='typo-heading-md-medium md:typo-heading-md-medium text-gray-900 mb-4'>Manage Notifications</h2>
             <div className='h-px bg-border_gray mb-6 md:mb-8 w-full'></div>
             
             <div className='space-y-6'>
                 {/* Pause All */}
                 <div className='flex items-center justify-between'>
-                    <span className='text-base font-medium text-gray-900'>Pause all</span>
+                    <span className='typo-body-lg-medium text-gray-900'>Pause all</span>
                     <ToggleSwitch
                         id='pause-all'
                         checked={notifications.pauseAll}
@@ -78,7 +78,7 @@ const ManageNotificationsContent = () => {
                 <div className='space-y-4'>
                     {/* Email Notifications Title with toggle */}
                     <div className='flex items-center justify-between'>
-                        <span className='text-base font-medium text-gray-900'>Email notifications</span>
+                        <span className='typo-body-lg-medium text-gray-900'>Email notifications</span>
                         <ToggleSwitch
                             id='email-notifications'
                             checked={notifications.emailNotifications}
@@ -90,7 +90,7 @@ const ManageNotificationsContent = () => {
                     <div className='space-y-3 ml-4'>
                         {/* Feedback emails */}
                         <div className='flex items-center justify-between'>
-                            <span className='text-base text-gray-900'>Feedback emails</span>
+                            <span className='typo-body-lg-regular text-gray-900'>Feedback emails</span>
                             <ToggleSwitch
                                 id='feedback-emails'
                                 checked={notifications.feedbackEmails}
@@ -100,7 +100,7 @@ const ManageNotificationsContent = () => {
 
                         {/* Reminder emails */}
                         <div className='flex items-center justify-between'>
-                            <span className='text-base text-gray-900'>Reminder emails</span>
+                            <span className='typo-body-lg-regular text-gray-900'>Reminder emails</span>
                             <ToggleSwitch
                                 id='reminder-emails'
                                 checked={notifications.reminderEmails}
@@ -110,7 +110,7 @@ const ManageNotificationsContent = () => {
 
                         {/* Newsletter emails */}
                         <div className='flex items-center justify-between'>
-                            <span className='text-base text-gray-900'>Newsletter emails</span>
+                            <span className='typo-body-lg-regular text-gray-900'>Newsletter emails</span>
                             <ToggleSwitch
                                 id='newsletter-emails'
                                 checked={notifications.newsletterEmails}
@@ -124,7 +124,7 @@ const ManageNotificationsContent = () => {
                 <div className='space-y-4'>
                     {/* SMS Notifications Title with toggle */}
                     <div className='flex items-center justify-between'>
-                        <span className='text-base font-medium text-gray-900'>SMS notifications</span>
+                        <span className='typo-body-lg-medium text-gray-900'>SMS notifications</span>
                         <ToggleSwitch
                             id='sms-notifications'
                             checked={notifications.smsNotifications}
@@ -136,7 +136,7 @@ const ManageNotificationsContent = () => {
                     <div className='space-y-3 ml-4'>
                         {/* Flipit web notifications */}
                         <div className='flex items-center justify-between'>
-                            <span className='text-base text-gray-900'>Flipit web notifications</span>
+                            <span className='typo-body-lg-regular text-gray-900'>Flipit web notifications</span>
                             <ToggleSwitch
                                 id='flipit-web-notifications'
                                 checked={notifications.flipitWebNotifications}

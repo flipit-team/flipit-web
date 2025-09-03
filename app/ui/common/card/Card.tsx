@@ -19,8 +19,8 @@ const paddingClasses = {
 const shadowClasses = {
   none: '',
   sm: 'shadow-sm',
-  md: 'shadow-[0px_4px_10px_rgba(0,0,0,0.1)]',
-  lg: 'shadow-[0px_4px_10px_rgba(0,0,0,0.2)]'
+  md: 'shadow-md',
+  lg: 'shadow-lg'
 };
 
 const roundedClasses = {

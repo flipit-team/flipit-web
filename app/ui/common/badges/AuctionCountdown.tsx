@@ -74,7 +74,7 @@ const AuctionCountdown = ({endTime, startTime, className = ''}: AuctionCountdown
             const isUrgent = timeLeft.totalHours <= 24;
             return isUrgent 
                 ? 'bg-red-100 text-red-600'
-                : 'bg-[#D4E4E7] text-primary';
+                : 'bg-surface-light text-primary';
         }
     };
     

@@ -50,7 +50,7 @@ const LiveAuctionWrapper = (props: Props) => {
 
     return (
         <div className='flex flex-col relative'>
-            <div className='xs:px-4 h-[103px] xs:h-[184px] bg-[#005f73f5] flex xs:gap-6  xs:pt-[36px] xs:pb-[29px]'>
+            <div className='xs:px-4 h-[103px] xs:h-[184px] bg-surface-primary-95 flex xs:gap-6  xs:pt-[36px] xs:pb-[29px]'>
                 <div className='flex items-center mx-auto text-white'>
                     <SearchBar />
                 </div>

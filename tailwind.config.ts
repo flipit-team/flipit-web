@@ -9,14 +9,76 @@ const config: Config = {
     theme: {
         extend: {
             colors: {
+                // Brand colors
                 primary: '#005F73',
                 secondary: '#FFC300',
+                
+                // Legacy text colors (kept for backward compatibility)
                 text_one: '#333333',
                 text_two: '#4D4D4D',
                 text_three: '#666666',
                 text_four: '#999999',
                 white: '#ffffff',
                 border_gray: '#e6e6e6',
+                
+                // New semantic text colors
+                text: {
+                    primary: '#333333',
+                    secondary: '#4D4D4D',
+                    tertiary: '#666666',
+                    muted: '#999999',
+                    disabled: '#B6B9C8',
+                    accent: '#87928A',
+                    pink: '#d7b0b0',
+                    gray: '#6d6d6d',
+                },
+                
+                // Status colors
+                success: '#04A204',
+                warning: '#e47208',
+                error: '#e40808',
+                info: '#007aff',
+                
+                // Background colors
+                background: {
+                    primary: '#ffffff',
+                    secondary: '#f4f4f9',
+                    tertiary: '#f8f8f7',
+                    overlay: 'rgba(0, 0, 0, 0.7)',
+                    tinted: '#e0f0f0',
+                },
+                
+                // Surface colors for components
+                surface: {
+                    primary: 'rgba(0, 95, 115, 0.05)',
+                    'primary-10': 'rgba(0, 95, 115, 0.1)',
+                    'primary-16': 'rgba(0, 95, 115, 0.16)',
+                    'primary-20': 'rgba(0, 95, 115, 0.2)',
+                    'primary-95': 'rgba(0, 95, 115, 0.95)',
+                    warning: 'rgba(228, 114, 8, 0.06)',
+                    'warning-18': 'rgba(228, 114, 8, 0.18)',
+                    error: 'rgba(228, 8, 8, 0.18)',
+                    secondary: 'rgba(228, 180, 8, 0.06)',
+                    light: '#D4E4E7',
+                    cream: '#FAE6D3',
+                },
+                
+                // Border colors
+                border: {
+                    primary: '#e6e6e6',
+                    secondary: '#EEEEE9',
+                    light: '#f4f4f9',
+                    muted: '#999999',
+                },
+                
+                // Tab colors
+                tab: {
+                    default: '#7e919a',
+                    active: '#005F73',
+                    background: 'var(--neutral-50)',
+                },
+                
+                // Legacy tab-bar (kept for backward compatibility)
                 'tab-bar': {
                     'bg-primary-color': 'var(--neutral-50)',
                     default: '#7e919a',
@@ -24,6 +86,261 @@ const config: Config = {
                 }
             },
             typography: {
+                // New semantic typography names
+                'display-xl': {
+                    css: {
+                        fontSize: '48px',
+                        lineHeight: '120%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 700,
+                        fontStyle: 'normal'
+                    }
+                },
+                'display-lg': {
+                    css: {
+                        fontSize: '40px',
+                        lineHeight: '120%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 700,
+                        fontStyle: 'normal'
+                    }
+                },
+                'heading-xl-bold': {
+                    css: {
+                        fontSize: '32px',
+                        lineHeight: '120%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 700,
+                        fontStyle: 'normal'
+                    }
+                },
+                'heading-xl-semibold': {
+                    css: {
+                        fontSize: '32px',
+                        lineHeight: '120%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 600,
+                        fontStyle: 'normal'
+                    }
+                },
+                'heading-lg-bold': {
+                    css: {
+                        fontSize: '24px',
+                        lineHeight: '120%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 700,
+                        fontStyle: 'normal'
+                    }
+                },
+                'heading-lg-semibold': {
+                    css: {
+                        fontSize: '24px',
+                        lineHeight: '120%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 600,
+                        fontStyle: 'normal'
+                    }
+                },
+                'heading-lg-medium': {
+                    css: {
+                        fontSize: '24px',
+                        lineHeight: '120%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 500,
+                        fontStyle: 'normal'
+                    }
+                },
+                'heading-lg-regular': {
+                    css: {
+                        fontSize: '24px',
+                        lineHeight: '120%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 400,
+                        fontStyle: 'normal'
+                    }
+                },
+                'heading-md-bold': {
+                    css: {
+                        fontSize: '20px',
+                        lineHeight: '140%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 700,
+                        fontStyle: 'normal'
+                    }
+                },
+                'heading-md-semibold': {
+                    css: {
+                        fontSize: '20px',
+                        lineHeight: '140%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 600,
+                        fontStyle: 'normal'
+                    }
+                },
+                'heading-md-medium': {
+                    css: {
+                        fontSize: '20px',
+                        lineHeight: '140%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 500,
+                        fontStyle: 'normal'
+                    }
+                },
+                'heading-md-regular': {
+                    css: {
+                        fontSize: '20px',
+                        lineHeight: '140%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 400,
+                        fontStyle: 'normal'
+                    }
+                },
+                'body-lg-bold': {
+                    css: {
+                        fontSize: '16px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 700,
+                        fontStyle: 'normal'
+                    }
+                },
+                'body-lg-semibold': {
+                    css: {
+                        fontSize: '16px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 600,
+                        fontStyle: 'normal'
+                    }
+                },
+                'body-lg-medium': {
+                    css: {
+                        fontSize: '16px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 500,
+                        fontStyle: 'normal'
+                    }
+                },
+                'body-lg-regular': {
+                    css: {
+                        fontSize: '16px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 400,
+                        fontStyle: 'normal'
+                    }
+                },
+                'body-md-bold': {
+                    css: {
+                        fontSize: '14px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 700,
+                        fontStyle: 'normal'
+                    }
+                },
+                'body-md-semibold': {
+                    css: {
+                        fontSize: '14px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 600,
+                        fontStyle: 'normal'
+                    }
+                },
+                'body-md-medium': {
+                    css: {
+                        fontSize: '14px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 500,
+                        fontStyle: 'normal'
+                    }
+                },
+                'body-md-regular': {
+                    css: {
+                        fontSize: '14px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 400,
+                        fontStyle: 'normal'
+                    }
+                },
+                'body-sm-bold': {
+                    css: {
+                        fontSize: '12px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 700,
+                        fontStyle: 'normal'
+                    }
+                },
+                'body-sm-semibold': {
+                    css: {
+                        fontSize: '12px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 600,
+                        fontStyle: 'normal'
+                    }
+                },
+                'body-sm-medium': {
+                    css: {
+                        fontSize: '12px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 500,
+                        fontStyle: 'normal'
+                    }
+                },
+                'body-sm-regular': {
+                    css: {
+                        fontSize: '12px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 400,
+                        fontStyle: 'normal'
+                    }
+                },
+                'caption': {
+                    css: {
+                        fontSize: '11px',
+                        lineHeight: '140%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 400,
+                        fontStyle: 'normal'
+                    }
+                },
+                'button-lg': {
+                    css: {
+                        fontSize: '16px',
+                        lineHeight: '100%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 600,
+                        fontStyle: 'normal'
+                    }
+                },
+                'button-md': {
+                    css: {
+                        fontSize: '15px',
+                        lineHeight: '100%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 600,
+                        fontStyle: 'normal'
+                    }
+                },
+                'button-sm': {
+                    css: {
+                        fontSize: '14px',
+                        lineHeight: '100%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 600,
+                        fontStyle: 'normal'
+                    }
+                },
+                
+                // Legacy typography classes (kept for backward compatibility)
                 heading_lb: {
                     css: {
                         fontSize: '32px',
