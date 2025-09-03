@@ -2,6 +2,7 @@ import React, {Suspense} from 'react';
 import ErrorBoundary from '~/error-boundary';
 import {AppProvider} from '../contexts/AppContext';
 import {ToastProvider} from '../contexts/ToastContext';
+import { LikesProvider } from '../hooks/useLikes';
 import Header from '~/ui/common/layout/header';
 import Footer from '~/ui/common/layout/footer';
 import BottomNavBar from '../ui/common/layout/bottom-nav-bar';
@@ -24,22 +25,24 @@ export default async function UserLayout({
     return (
         <AppProvider initialUser={user}>
             <ToastProvider>
-                <main className='flex flex-col flex-1 xs:pb-[100px]'>
-                    <Suspense fallback={<p>Loading...</p>}>
-                        <Header user={user} />
-                    </Suspense>
-                    <Suspense fallback={<p>Loading...</p>}>
-                        <Overlay />
-                    </Suspense>
+                <LikesProvider>
+                    <main className='flex flex-col flex-1 xs:pb-[100px]'>
+                        <Suspense fallback={<p>Loading...</p>}>
+                            <Header user={user} />
+                        </Suspense>
+                        <Suspense fallback={<p>Loading...</p>}>
+                            <Overlay />
+                        </Suspense>
 
-                    <ErrorBoundary>{children}</ErrorBoundary>
-                </main>
-                <Footer />
-                <div className='xs:flex hidden relative'>
-                    <Suspense fallback={<p>Loading...</p>}>
-                        <BottomNavBar />
-                    </Suspense>
-                </div>
+                        <ErrorBoundary>{children}</ErrorBoundary>
+                    </main>
+                    <Footer />
+                    <div className='xs:flex hidden relative'>
+                        <Suspense fallback={<p>Loading...</p>}>
+                            <BottomNavBar />
+                        </Suspense>
+                    </div>
+                </LikesProvider>
             </ToastProvider>
         </AppProvider>
     );

@@ -1,10 +1,12 @@
 import Image from 'next/image';
-import React, { memo, useMemo } from 'react';
+import React, { memo, useMemo, useCallback, useState } from 'react';
 import Link from 'next/link';
 import {formatToNaira} from '~/utils/helpers';
 import UsedBadge from '../badges/UsedBadge';
 import AuctionCountdown from '../badges/AuctionCountdown';
 import {Item} from '~/utils/interface';
+import { useItemLike } from '~/hooks/useLikes';
+import RemoveItemConfirmation from '../modals/RemoveItemConfirmation';
 
 interface ItemCardProps {
     item: Item;
@@ -36,6 +38,12 @@ const ItemCard: React.FC<ItemCardProps> = memo(({
     customFooter
 }: ItemCardProps) => {
     const url = useMemo(() => item.imageUrls?.[0] || '/camera.png', [item.imageUrls]);
+    
+    // Like functionality
+    const { isLiked, toggleLike, loading } = useItemLike(item.id);
+    
+    // Modal state for unlike confirmation
+    const [showUnlikeModal, setShowUnlikeModal] = useState(false);
 
     const href = useMemo(() => {
         if (forEdit) return `/edit-item/${item.id}`;
@@ -43,23 +51,61 @@ const ItemCard: React.FC<ItemCardProps> = memo(({
         return `/home/${item.id}`;
     }, [forEdit, forLiveAuction, item.id, item.auctionId]);
 
-    return (
-        <Link href={href} className={className}>
-            <div className='relative h-[302px] w-full'>
-                <Image className={imageClassName} src={url} alt='item image' height={302} width={349} unoptimized />
+    const handleLikeClick = useCallback(async (e: React.MouseEvent) => {
+        e.preventDefault(); // Prevent navigation
+        e.stopPropagation(); // Stop event bubbling
+        
+        if (!loading) {
+            if (isLiked) {
+                // If item is liked, show confirmation modal instead of immediately unliking
+                setShowUnlikeModal(true);
+            } else {
+                // If item is not liked, like it directly
+                try {
+                    await toggleLike();
+                } catch (error) {
+                    console.error('Failed to like item:', error);
+                }
+            }
+        }
+    }, [isLiked, toggleLike, loading]);
 
-                {/* Save button */}
-                {showSaveButton && (
-                    <div className='absolute bottom-3 right-3'>
-                        <Image
-                            className='h-[46px] w-[43px] cursor-pointer'
-                            src={'/save-item.svg'}
-                            alt='save item'
-                            height={46}
-                            width={43}
-                        />
-                    </div>
-                )}
+    const handleConfirmUnlike = useCallback(async () => {
+        setShowUnlikeModal(false);
+        try {
+            await toggleLike();
+        } catch (error) {
+            console.error('Failed to unlike item:', error);
+        }
+    }, [toggleLike]);
+
+    return (
+        <>
+            <Link href={href} className={className}>
+                <div className='relative h-[302px] w-full'>
+                    <Image className={imageClassName} src={url} alt='item image' height={302} width={349} unoptimized />
+
+                    {/* Save/Like button */}
+                    {showSaveButton && (
+                        <div className='absolute bottom-3 right-3'>
+                            <button
+                                onClick={handleLikeClick}
+                                disabled={loading}
+                                className={`h-[46px] w-[43px] cursor-pointer transition-opacity duration-200 ${
+                                    loading ? 'opacity-50' : 'hover:opacity-80'
+                                }`}
+                                title={isLiked ? 'Remove from saved items' : 'Save item'}
+                            >
+                                <Image
+                                    src={isLiked ? '/liked.svg' : '/save-item.svg'}
+                                    alt={isLiked ? 'liked item' : 'save item'}
+                                    height={46}
+                                    width={43}
+                                    className="w-full h-full"
+                                />
+                            </button>
+                        </div>
+                    )}
 
                 {/* Promoted badge */}
                 {showPromotedBadge && (
@@ -126,7 +172,17 @@ const ItemCard: React.FC<ItemCardProps> = memo(({
                     </>
                 )}
             </div>
-        </Link>
+            </Link>
+            
+            {/* Unlike confirmation modal - Outside Link to prevent navigation */}
+            <RemoveItemConfirmation
+                item={item}
+                isOpen={showUnlikeModal}
+                onClose={() => setShowUnlikeModal(false)}
+                onConfirm={handleConfirmUnlike}
+                isRemoving={loading}
+            />
+        </>
     );
 });
 

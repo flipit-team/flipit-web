@@ -1,11 +1,11 @@
 'use client';
 import Image from 'next/image';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import SellersInfo from '../homepage/sellers-info';
 import RegularButton from '../common/buttons/RegularButton';
 import {createMessage, formatToNaira, timeAgo} from '~/utils/helpers';
-import { ChatService } from '~/services/chat.service';
-import { formatErrorForDisplay } from '~/utils/error-messages';
+import {ChatService} from '~/services/chat.service';
+import {formatErrorForDisplay} from '~/utils/error-messages';
 import UsedBadge from '../common/badges/UsedBadge';
 import {Item} from '~/utils/interface';
 import PopupSheet from '../common/popup-sheet/PopupSheet';
@@ -22,6 +22,8 @@ import StarRating from '../common/star-rating/StarRating';
 import SendMessage from '../homepage/send-message';
 import MessageSent from '../homepage/message-sent';
 import ImageGallery from '../common/image-gallery/ImageGallery';
+import {useItemLike} from '~/hooks/useLikes';
+import RemoveItemConfirmation from '../common/modals/RemoveItemConfirmation';
 
 interface Props {
     item: Item;
@@ -38,10 +40,14 @@ const ItemDetail = (props: Props) => {
     const [messageLoading, setMessageLoading] = useState(false);
     const [messageError, setMessageError] = useState<string>('');
     const [messageSent, setMessageSent] = useState(false);
+    const [showUnlikeModal, setShowUnlikeModal] = useState(false);
     const router = useRouter();
     const pathname = usePathname();
 
     const {setShowPopup} = useAppContext();
+
+    // Like functionality
+    const {isLiked, toggleLike, loading: likeLoading} = useItemLike(item.id);
     const searchParams = useSearchParams();
     const params = new URLSearchParams(searchParams.toString());
     params.set('q', 'callback-request');
@@ -91,7 +97,6 @@ const ItemDetail = (props: Props) => {
         setMessageError('');
 
         try {
-
             // Create chat with initial message in title field
             const chatResponse = await ChatService.createChat({
                 receiverId: parseInt(item.seller.id.toString()),
@@ -104,7 +109,7 @@ const ItemDetail = (props: Props) => {
             }
 
             setMessageSent(true);
-            
+
             // Switch to success modal
             const params = new URLSearchParams(searchParams.toString());
             params.set('q', 'message-sent');
@@ -117,6 +122,37 @@ const ItemDetail = (props: Props) => {
         }
     };
 
+    const handleLikeClick = useCallback(
+        async (e: React.MouseEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (!likeLoading) {
+                if (isLiked) {
+                    // If item is liked, show confirmation modal instead of immediately unliking
+                    setShowUnlikeModal(true);
+                } else {
+                    // If item is not liked, like it directly
+                    try {
+                        await toggleLike();
+                    } catch (error) {
+                        console.error('Failed to like item:', error);
+                    }
+                }
+            }
+        },
+        [isLiked, toggleLike, likeLoading]
+    );
+
+    const handleConfirmUnlike = useCallback(async () => {
+        setShowUnlikeModal(false);
+        try {
+            await toggleLike();
+        } catch (error) {
+            console.error('Failed to unlike item:', error);
+        }
+    }, [toggleLike]);
+
     return (
         <>
             <div className='grid-sizes grid grid-cols-[712px_1fr] xs:grid-cols-1 gap-6 h-full mt-10 xs:mb-6'>
@@ -128,14 +164,23 @@ const ItemDetail = (props: Props) => {
                                 <div className='w-[76px] h-[26px] typo-body_sr text-white bg-primary absolute top-7 left-3 flex items-center justify-center rounded'>
                                     Promoted
                                 </div>
-                                <div className='absolute top-4 right-3'>
-                                    <Image
-                                        className='h-[46px] w-[43px] cursor-pointer'
-                                        src={'/save-item.svg'}
-                                        alt='search'
-                                        height={46}
-                                        width={43}
-                                    />
+                                <div className='absolute bottom-4 right-3'>
+                                    <button
+                                        onClick={handleLikeClick}
+                                        disabled={likeLoading}
+                                        className={`h-[46px] w-[43px] cursor-pointer transition-opacity duration-200 ${
+                                            likeLoading ? 'opacity-50' : 'hover:opacity-80'
+                                        }`}
+                                        title={isLiked ? 'Remove from saved items' : 'Save item'}
+                                    >
+                                        <Image
+                                            src={isLiked ? '/liked.svg' : '/save-item.svg'}
+                                            alt={isLiked ? 'liked item' : 'save item'}
+                                            height={46}
+                                            width={43}
+                                            className='w-full h-full'
+                                        />
+                                    </button>
                                 </div>
                             </>
                         }
@@ -237,10 +282,7 @@ const ItemDetail = (props: Props) => {
                                 {item?.seller.dateVerified ? 'Verified profile' : 'Unverified profile'}
                             </div>
                             <div className='flex my-1'>
-                                <StarRating 
-                                    rating={item?.seller.avgRating || item?.seller.avg_rating || 0}
-                                    size={20}
-                                />
+                                <StarRating rating={item?.seller.avgRating || item?.seller.avg_rating || 0} size={20} />
                             </div>
                             <p className='typo-body_sr text-text_four'>Responds within minutes</p>
                             <p className='typo-body_sr text-text_four'>Joined Flipit in 2024</p>
@@ -273,22 +315,28 @@ const ItemDetail = (props: Props) => {
                 </div>
             </div>
             <PopupSheet>
-                <ProfilePopup 
-                    seller={item?.seller ? {
-                        title: item.seller.title || '',
-                        firstName: item.seller.firstName,
-                        middleName: item.seller.middleName || '',
-                        lastName: item.seller.lastName,
-                        email: item.seller.email,
-                        phoneNumber: item.seller.phoneNumber,
-                        avatar: item.seller.avatar || item.seller.profileImageUrl || '',
-                        avg_rating: item.seller.avg_rating || item.seller.avgRating || 0,
-                        status: item.seller.status || 'Active',
-                        phoneNumberVerified: item.seller.phoneNumberVerified || false,
-                        dateVerified: new Date(item.seller.dateVerified || item.seller.dateCreated || new Date())
-                    } : undefined} 
-                    onClose={() => removeParam()} 
-                    onSubmit={() => removeParam()} 
+                <ProfilePopup
+                    seller={
+                        item?.seller
+                            ? {
+                                  title: item.seller.title || '',
+                                  firstName: item.seller.firstName,
+                                  middleName: item.seller.middleName || '',
+                                  lastName: item.seller.lastName,
+                                  email: item.seller.email,
+                                  phoneNumber: item.seller.phoneNumber,
+                                  avatar: item.seller.avatar || item.seller.profileImageUrl || '',
+                                  avg_rating: item.seller.avg_rating || item.seller.avgRating || 0,
+                                  status: item.seller.status || 'Active',
+                                  phoneNumberVerified: item.seller.phoneNumberVerified || false,
+                                  dateVerified: new Date(
+                                      item.seller.dateVerified || item.seller.dateCreated || new Date()
+                                  )
+                              }
+                            : undefined
+                    }
+                    onClose={() => removeParam()}
+                    onSubmit={() => removeParam()}
                 />
                 <MakeAnOffer item={item} onClose={() => removeParam()} onSubmit={() => removeParam()} />
                 <ReportModalContent
@@ -308,11 +356,17 @@ const ItemDetail = (props: Props) => {
                     loading={messageLoading}
                     error={messageError}
                 />
-                <MessageSent
-                    title='Message Sent'
-                    onClose={() => removeParam()}
-                />
+                <MessageSent title='Message Sent' onClose={() => removeParam()} />
             </PopupSheet>
+
+            {/* Unlike confirmation modal */}
+            <RemoveItemConfirmation
+                item={item}
+                isOpen={showUnlikeModal}
+                onClose={() => setShowUnlikeModal(false)}
+                onConfirm={handleConfirmUnlike}
+                isRemoving={likeLoading}
+            />
         </>
     );
 };

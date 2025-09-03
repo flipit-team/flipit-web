@@ -5,6 +5,7 @@ import { useAppContext } from '~/contexts/AppContext';
 import { dummyItems } from '~/utils/dummy';
 import { Item } from '~/utils/interface';
 import { useItems, useCategories } from '~/hooks/useItems';
+import { useInfiniteScroll } from '~/hooks/useInfiniteScroll';
 import MainHomeServer from './MainHomeServer';
 
 interface Props {
@@ -23,9 +24,16 @@ interface Props {
 const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, defaultCategories: serverCategories, authStatus }: Props) => {
     const { debugMode } = useAppContext();
     
-    // Fetch client-side data
-    const { items: apiItems, loading: itemsLoading } = useItems({ page: 0, size: 15 });
+    // Fetch client-side data with infinite scroll support
+    const { items: apiItems, loading: itemsLoading, hasMore, loadMore } = useItems({ page: 0, size: 15 });
     const { categories: apiCategories, loading: categoriesLoading } = useCategories();
+    
+    // Set up infinite scroll
+    const { loadMoreRef } = useInfiniteScroll({
+        hasMore,
+        loading: itemsLoading,
+        onLoadMore: loadMore
+    });
 
     // Log authentication status for debugging
     React.useEffect(() => {
@@ -87,6 +95,9 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
             items={items} 
             auctionItems={auctionItems}
             defaultCategories={defaultCategories}
+            loadMoreRef={loadMoreRef}
+            loading={itemsLoading}
+            hasMore={hasMore}
         />
     );
 };

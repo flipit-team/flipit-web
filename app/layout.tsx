@@ -40,7 +40,7 @@ export default async function RootLayout({
                 <link rel='manifest' href='/site.webmanifest' /> */}
             </head>
             <body
-                className={`relative ${inter.variable} ${poppins.variable} antialiased flex flex-col min-h-[100vh]`}
+                className={`relative ${inter.variable} ${poppins.variable} antialiased flex flex-col min-h-[100vh] no-scrollbar`}
                 suppressHydrationWarning={true}
             >
                 {children}

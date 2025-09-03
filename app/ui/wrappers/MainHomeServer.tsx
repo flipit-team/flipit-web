@@ -15,9 +15,12 @@ interface Props {
         name: string;
         description: string | null;
     }[];
+    loadMoreRef?: React.RefObject<HTMLDivElement>;
+    loading?: boolean;
+    hasMore?: boolean;
 }
 
-const MainHomeServer = ({ items, auctionItems, defaultCategories }: Props) => {
+const MainHomeServer = ({ items, auctionItems, defaultCategories, loadMoreRef, loading, hasMore }: Props) => {
     const sortOptions = [
         {value: 'alphabetical', label: 'A-Z'},
         {value: 'popularity', label: 'Popular'},
@@ -30,7 +33,7 @@ const MainHomeServer = ({ items, auctionItems, defaultCategories }: Props) => {
 
 
     return (
-        <div className='flex flex-col relative'>
+        <div className='flex flex-col relative no-scrollbar'>
             <div className='xs:px-4 h-[206px] xs:h-[184px] bg-surface-primary-95 flex flex-col gap-7 xs:gap-6 py-11 xs:pt-[36px] xs:pb-[29px]'>
                 <div className='flex items-center gap-4 mx-auto text-white'>
                     <p className='typo-body_lr'>Items near me</p>
@@ -45,7 +48,7 @@ const MainHomeServer = ({ items, auctionItems, defaultCategories }: Props) => {
             <div className='grid grid-cols-[260px_1fr] xs:grid-cols-1 gap-6 overflow-hidden max-w-full'>
                 <Categories defaultCategories={defaultCategories} />
 
-                <div className='w-full max-w-full overflow-x-hidden pr-[60px]'>
+                <div className='w-full max-w-full overflow-x-hidden pr-[60px] no-scrollbar'>
                     <div className='hidden mt-5 mb-5 xs:flex items-center justify-center bg-surface-primary-16 text-text_one typo-body_ls w-max px-[10px] rounded-lg h-[36px]'>
                         Categories
                     </div>
@@ -73,6 +76,19 @@ const MainHomeServer = ({ items, auctionItems, defaultCategories }: Props) => {
                                 />
                             </div>
                             <GridItems items={items} />
+                            
+                            {/* Infinite scroll loading indicator */}
+                            <div ref={loadMoreRef} className="flex justify-center items-center py-8">
+                                {loading && hasMore && (
+                                    <div className="flex items-center gap-2 text-text-secondary">
+                                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                                        <span className="typo-body-md-regular">Loading more items...</span>
+                                    </div>
+                                )}
+                                {!hasMore && items.length > 0 && (
+                                    <p className="typo-body-sm-regular text-text-tertiary">No more items to load</p>
+                                )}
+                            </div>
                         </>
                     ) : (
                         <NoData />

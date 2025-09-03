@@ -9,6 +9,7 @@ export { ReviewsService } from './reviews.service';
 export { ChatService } from './chat.service';
 export { NotificationsService } from './notifications.service';
 export { FilesService } from './files.service';
+export { LikesService } from './likes.service';
 
 // Re-export API client utilities
 export { apiClient, handleApiCall, buildQueryString, ApiClientError } from '~/lib/api-client';

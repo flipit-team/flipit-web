@@ -100,14 +100,14 @@ export default function MyItemsPage() {
     }
 
     return (
-        <div className='flex min-h-screen bg-gray-50'>
+        <div className='flex min-h-screen bg-gray-50 no-scrollbar'>
             {/* Desktop Sidebar - hidden on mobile/tablet */}
             <div className='hidden lg:block'>
                 <Sidebar username={(authenticatedUser as any)?.userName || (authenticatedUser as any)?.firstName || "User"} />
             </div>
             
             {/* Main Content Area */}
-            <div className='flex-1 p-4 md:p-6 lg:p-8 overflow-x-hidden'>
+            <div className='flex-1 p-4 md:p-6 lg:p-8 overflow-x-hidden no-scrollbar'>
                 <div className='max-w-6xl mx-auto'>
                     <GoBack />
 
