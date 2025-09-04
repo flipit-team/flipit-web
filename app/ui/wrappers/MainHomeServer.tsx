@@ -7,6 +7,7 @@ import GridItems from '../common/grid-items/GridItems';
 import SearchBar from '../homepage/search-bar';
 import GridSwiper from '../common/grid-items/GridSwiper';
 import SortDropdown from '../common/sort-dropdown/SortDropdown';
+import LocationFilter from '../common/location-filter/LocationFilter';
 
 interface Props {
     items: Item[];
@@ -18,9 +19,10 @@ interface Props {
     loadMoreRef?: React.RefObject<HTMLDivElement>;
     loading?: boolean;
     hasMore?: boolean;
+    onLocationFilter?: (stateCode: string, lgaCode?: string) => void;
 }
 
-const MainHomeServer = ({ items, auctionItems, defaultCategories, loadMoreRef, loading, hasMore }: Props) => {
+const MainHomeServer = ({ items, auctionItems, defaultCategories, loadMoreRef, loading, hasMore, onLocationFilter }: Props) => {
     const sortOptions = [
         {value: 'alphabetical', label: 'A-Z'},
         {value: 'popularity', label: 'Popular'},
@@ -37,11 +39,15 @@ const MainHomeServer = ({ items, auctionItems, defaultCategories, loadMoreRef, l
             <div className='xs:px-4 h-[206px] xs:h-[184px] bg-surface-primary-95 flex flex-col gap-7 xs:gap-6 py-11 xs:pt-[36px] xs:pb-[29px]'>
                 <div className='flex items-center gap-4 mx-auto text-white'>
                     <p className='typo-body_lr'>Items near me</p>
-                    <div className='border border-border_gray h-[37px] px-4 flex items-center rounded-md'>
-                        <Image src={'/location.svg'} height={24} width={24} alt='bell' className='h-6 w-6 mr-2' />
-                        <p className='typo-body_mr'>Ogude,Lagos</p>
-                        <Image src={'/arrow-down.svg'} height={16} width={16} alt='bell' className='h-4 w-4 ml-2' />
-                    </div>
+                    {onLocationFilter ? (
+                        <LocationFilter onLocationChange={onLocationFilter} />
+                    ) : (
+                        <div className='border border-border_gray h-[37px] px-4 flex items-center rounded-md'>
+                            <Image src={'/location.svg'} height={24} width={24} alt='location' className='h-6 w-6 mr-2' />
+                            <p className='typo-body_mr'>All Nigeria</p>
+                            <Image src={'/arrow-down.svg'} height={16} width={16} alt='dropdown' className='h-4 w-4 ml-2' />
+                        </div>
+                    )}
                 </div>
                 <SearchBar />
             </div>

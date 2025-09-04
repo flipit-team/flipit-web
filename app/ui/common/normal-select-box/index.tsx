@@ -8,10 +8,11 @@ interface Props {
     selectedOption: string;
     options: {name: string; description: string | null}[];
     title?: string;
+    required?: boolean;
 }
 
 const NormalSelectBox = (props: Props) => {
-    const {selectedOption, options, setSelectedOption, title} = props;
+    const {selectedOption, options, setSelectedOption, title, required} = props;
     const searchParams = useSearchParams();
     const query = searchParams.get('q');
 
@@ -19,7 +20,7 @@ const NormalSelectBox = (props: Props) => {
     return (
         <div className='relative w-full xs:flex-none mx-auto outline-none border-none'>
             <label htmlFor='category' className='typo-body_lr block mb-2'>
-                {title || 'Category'}
+                {title || 'Category'}{required && <span className="text-error ml-1">*</span>}
             </label>
 
             <div className='relative w-full h-[49px]'>

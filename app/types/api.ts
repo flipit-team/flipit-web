@@ -202,6 +202,8 @@ export interface ItemsQueryParams {
   size?: number;
   search?: string;
   categories?: string[];
+  stateCode?: string;
+  lgaCode?: string;
 }
 
 // Offer Types

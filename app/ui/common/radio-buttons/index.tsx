@@ -10,16 +10,17 @@ interface Props {
     nameTwo?: string;
     nameThree?: string;
     col?: boolean;
+    required?: boolean;
     setSelected: React.Dispatch<React.SetStateAction<string>>;
     selected: string;
 }
 
 const RadioButtons = (props: Props) => {
-    const {title, titleOne, titleTwo, titleThree, nameThree, nameOne, nameTwo, col, selected, setSelected} = props;
+    const {title, titleOne, titleTwo, titleThree, nameThree, nameOne, nameTwo, col, required, selected, setSelected} = props;
 
     return (
         <div>
-            <p className='typo-body_mr mb-[18px]'>{title}</p>
+            <p className='typo-body_mr mb-[18px]'>{title}{required && <span className="text-error ml-1">*</span>}</p>
             <div className={`flex ${col ? 'flex-col space-y-4' : 'flex-row space-x-6'}`}>
                 {/* Radio Button 1 */}
                 {nameOne && (

@@ -9,11 +9,12 @@ interface Props {
     name: string;
     value?: string;
     disabled?: boolean;
+    required?: boolean;
     setValue?: (e: React.ChangeEvent<HTMLInputElement>, type: string) => void;
 }
 
 const InputBox = (props: Props) => {
-    const {label, placeholder, type, name, value, disabled, setValue} = props;
+    const {label, placeholder, type, name, value, disabled, required, setValue} = props;
 
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [phone, setPhone] = useState('');
@@ -35,7 +36,7 @@ const InputBox = (props: Props) => {
             <div className='w-full flex items-center gap-2'>
                 <div className='w-full'>
                     <label htmlFor={name} className='block mb-2 typo-body_mr'>
-                        First name
+                        First name{required && <span className="text-error ml-1">*</span>}
                     </label>
                     <input
                         value={value}
@@ -50,7 +51,7 @@ const InputBox = (props: Props) => {
                 </div>
                 <div className='w-full'>
                     <label htmlFor={name} className='block mb-2 typo-body_mr'>
-                        Last name
+                        Last name{required && <span className="text-error ml-1">*</span>}
                     </label>
 
                     <input
@@ -71,7 +72,7 @@ const InputBox = (props: Props) => {
         return (
             <div className='w-full'>
                 <label htmlFor={name} className='block mb-2 typo-body_mr'>
-                    {label}
+                    {label}{required && <span className="text-error ml-1">*</span>}
                 </label>
                 <div className='relative'>
                     <input
@@ -98,7 +99,7 @@ const InputBox = (props: Props) => {
     return (
         <div className='w-full'>
             <label htmlFor={name} className='block mb-2 typo-body_mr'>
-                {label}
+                {label}{required && <span className="text-error ml-1">*</span>}
             </label>
             <input
                 value={value}

@@ -6,6 +6,8 @@ import ImageUpload from '../common/image-upload';
 import RegularButton from '../common/buttons/RegularButton';
 import NormalSelectBox from '../common/normal-select-box';
 import AuctionDurationSelector from '../common/auction-duration-selector/AuctionDurationSelector';
+import AuctionStartSelector from '../common/auction-start-selector/AuctionStartSelector';
+import LocationSelector from '../common/location-selector/LocationSelector';
 import {useRouter} from 'next/navigation';
 import {useAppContext} from '~/contexts/AppContext';
 import { useCategories } from '~/hooks/useItems';
@@ -98,12 +100,28 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
     
     const [startingBid, setStartingBid] = useState(0);
     const [bidIncrement, setBidIncrement] = useState(0);
-    const [auctionStartDate, setAuctionStartDate] = useState('');
+    const [auctionStartDate, setAuctionStartDate] = useState(() => {
+        // Default to 1 hour from now
+        const defaultStart = new Date(Date.now() + 60 * 60 * 1000);
+        return defaultStart.toISOString();
+    });
     const [auctionDurationHours, setAuctionDurationHours] = useState(24); // Default 24 hours (1 day)
     const [reservePrice, setReservePrice] = useState(0);
+    const [locationCodes, setLocationCodes] = useState<{ stateCode: string; lgaCode?: string } | null>(null);
     const {defaultCategories} = useAppContext();
     const { categories: apiCategories } = useCategories();
     const [uploading, setUploading] = useState(false);
+
+    // Check if all required fields are valid
+    const isFormValid = () => {
+        const commonFields = title.trim() && description.trim() && location.trim() && condition && urls.length >= 3;
+        
+        if (formType === 'listing') {
+            return commonFields && cash && (cash === 'no' || price > 0);
+        } else {
+            return commonFields && startingBid > 0 && bidIncrement > 0 && auctionStartDate && auctionDurationHours > 0;
+        }
+    };
 
     // Use API categories if available, fallback to context categories, then empty array
     const availableCategories = apiCategories.length > 0 ? apiCategories : defaultCategories;
@@ -141,6 +159,14 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
         if (type === 'brand') {
             setBrand(e.target.value);
         }
+    };
+
+    const handleLocationChange = (formattedLocation: string, codes: { stateCode: string; lgaCode?: string }) => {
+        setLocation(formattedLocation);
+        setLocationCodes(codes);
+        setError('');
+        setErrorTitle('');
+        setErrorAction('');
     };
 
     const handleSubmit = async () => {
@@ -392,7 +418,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 />
             )}
 
-            <InputBox label='Title' name='title' placeholder='Enter item title' type='text' value={title} setValue={handleInput} />
+            <InputBox label='Title' name='title' placeholder='Enter item title' type='text' value={title} setValue={handleInput} required />
             <InputBox
                 label='Description'
                 name='description'
@@ -400,12 +426,14 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 type='text'
                 value={description}
                 setValue={handleInput}
+                required
             />
 
             <NormalSelectBox
                 selectedOption={categories}
                 setSelectedOption={setCategories}
                 options={availableCategories}
+                required
             />
 
             <InputBox
@@ -418,7 +446,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
             />
 
             <div className='typo-body_mr'>
-                <p>Add photo</p>
+                <p>Add photo <span className="text-error ml-1">*</span></p>
                 <p className='mb-3 text-text_four'>Upload at least 3 photos</p>
                 <ImageUpload setUrls={setUrls} setUploading={setUploading} uploading={uploading} initialUrls={urls} />
             </div>
@@ -432,6 +460,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                         type='number'
                         value={startingBid.toString()}
                         setValue={handleInput}
+                        required
                     />
                     <InputBox
                         label='Bid Increment'
@@ -440,21 +469,21 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                         type='number'
                         value={bidIncrement.toString()}
                         setValue={handleInput}
+                        required
                     />
 
-                    <InputBox
+                    <AuctionStartSelector
                         label='Auction Start Date'
-                        name='auction-start-date'
-                        placeholder='Select auction start date'
-                        type='datetime-local'
-                        setValue={handleInput}
                         value={auctionStartDate}
+                        onChange={setAuctionStartDate}
+                        required
                     />
 
                     <AuctionDurationSelector
                         label='Auction Duration'
                         value={auctionDurationHours}
                         onChange={setAuctionDurationHours}
+                        required
                     />
 
                     <InputBox
@@ -475,6 +504,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                         type='number'
                         value={price.toString()}
                         setValue={handleInput}
+                        required
                     />
                     <RadioButtons
                         nameOne='yes'
@@ -484,17 +514,17 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                         titleTwo='No'
                         selected={cash}
                         setSelected={setCash}
+                        required
                     />
                 </>
             )}
 
-            <InputBox
+            <LocationSelector
                 label='Location'
-                name='location'
-                placeholder='Set item location'
-                type='text'
                 value={location}
-                setValue={handleInput}
+                onChange={handleLocationChange}
+                placeholder='Select your location'
+                required={true}
             />
 
             <RadioButtons
@@ -505,6 +535,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 titleTwo='Fairly used'
                 selected={condition}
                 setSelected={setCondition}
+                required
             />
 
             <div className='flex gap-4'>
@@ -520,7 +551,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                         text={isEditing ? 'Update Item' : (formType === 'auction' ? 'Post Auction' : 'Post Item')}
                         action={handleSubmit}
                         isLoading={loading}
-                        disabled={uploading}
+                        disabled={uploading || !isFormValid()}
                     />
                 </Suspense>
             </div>

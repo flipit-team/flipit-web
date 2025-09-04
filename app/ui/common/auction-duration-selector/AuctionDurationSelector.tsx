@@ -7,13 +7,15 @@ interface AuctionDurationSelectorProps {
   value: number; // Duration in hours
   onChange: (hours: number) => void;
   error?: string;
+  required?: boolean;
 }
 
 const AuctionDurationSelector: React.FC<AuctionDurationSelectorProps> = ({
   label = 'Auction Duration',
   value,
   onChange,
-  error
+  error,
+  required = false
 }) => {
   const [unit, setUnit] = useState<'hours' | 'days'>('hours');
   const [amount, setAmount] = useState<number>(1);
@@ -71,7 +73,7 @@ const AuctionDurationSelector: React.FC<AuctionDurationSelectorProps> = ({
   return (
     <div className="w-full">
       <label className="typo-body_mr text-text_one block mb-2">
-        {label}
+        {label}{required && <span className="text-error ml-1">*</span>}
       </label>
       
       {/* Duration Input */}

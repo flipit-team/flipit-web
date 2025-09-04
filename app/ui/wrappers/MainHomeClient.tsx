@@ -23,9 +23,10 @@ interface Props {
 
 const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, defaultCategories: serverCategories, authStatus }: Props) => {
     const { debugMode } = useAppContext();
+    const [locationFilter, setLocationFilter] = useState<{ stateCode: string; lgaCode?: string } | null>(null);
     
     // Fetch client-side data with infinite scroll support
-    const { items: apiItems, loading: itemsLoading, hasMore, loadMore } = useItems({ page: 0, size: 15 });
+    const { items: apiItems, loading: itemsLoading, hasMore, loadMore, updateParams } = useItems({ page: 0, size: 15 });
     const { categories: apiCategories, loading: categoriesLoading } = useCategories();
     
     // Set up infinite scroll
@@ -78,6 +79,24 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
 
     // Log data sources for debugging
 
+    // Handle location filter changes
+    const handleLocationFilter = (stateCode: string, lgaCode?: string) => {
+        const newFilter = stateCode ? { stateCode, lgaCode } : null;
+        setLocationFilter(newFilter);
+        
+        // Update API params with location filter
+        if (updateParams) {
+            const params: any = {};
+            if (stateCode) {
+                params.stateCode = stateCode;
+                if (lgaCode) {
+                    params.lgaCode = lgaCode;
+                }
+            }
+            updateParams(params);
+        }
+    };
+
     // Use dummy data in debug mode, otherwise prioritize server data, then client-side API data
     const items = debugMode ? dummyItems : (serverItems.length > 0 ? serverItems : transformedApiItems);
     const auctionItems = debugMode ? dummyItems.slice(0, 5) : serverAuctionItems; // Use first 5 dummy items or server auction items
@@ -98,6 +117,7 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
             loadMoreRef={loadMoreRef}
             loading={itemsLoading}
             hasMore={hasMore}
+            onLocationFilter={handleLocationFilter}
         />
     );
 };
