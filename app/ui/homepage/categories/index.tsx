@@ -52,7 +52,7 @@ const Categories = (props: Props) => {
                 )}
             </div>
             <p className='h-[58px] pl-[60px] typo-heading_ss'>Categories</p>
-            {defaultCategories.map((item, i) => {
+            {defaultCategories && Array.isArray(defaultCategories) ? defaultCategories.map((item, i) => {
                 return (
                     <p
                         onClick={() => pushParam(item.name)}
@@ -62,7 +62,7 @@ const Categories = (props: Props) => {
                         {item.name}
                     </p>
                 );
-            })}
+            }) : null}
         </div>
     );
 };

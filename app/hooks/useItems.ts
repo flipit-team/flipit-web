@@ -20,8 +20,8 @@ export function useItems(initialParams?: ItemsQueryParams) {
     
     const result = await execute(() => ItemsService.getItems(finalParams));
     
-    if (result.success && result.data) {
-      const newItems = result.data.content;
+    if (result.success && result.data && result.data.content) {
+      const newItems = Array.isArray(result.data.content) ? result.data.content : [];
       const isLast = result.data.last;
       
       setItems(prev => append ? [...(prev || []), ...newItems] : newItems);

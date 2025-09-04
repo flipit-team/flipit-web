@@ -40,7 +40,7 @@ export function LikesProvider({ children }: { children: React.ReactNode }) {
     }
     
     const result = await execute(() => LikesService.getLikedItems());
-    if (result.success && result.data) {
+    if (result.success && result.data && Array.isArray(result.data)) {
       const itemIds = new Set<number>(result.data.map((item: ItemDTO) => item.id));
       setLikedItemIds(itemIds);
     }
@@ -142,7 +142,7 @@ export function useLikedItems() {
     }
     
     const result = await execute(() => LikesService.getLikedItems());
-    if (result.success && result.data) {
+    if (result.success && result.data && Array.isArray(result.data)) {
       setItems(result.data);
     }
     return result;

@@ -13,7 +13,7 @@ const GridItems = (props: Props) => {
     const {items, forEdit, forLiveAuction} = props;
     return (
         <div className='grid grid-cols-3 xs:grid-cols-2 gap-6 xs:gap-4'>
-            {items ? (
+            {items && Array.isArray(items) && items.length > 0 ? (
                 items.map((item, i) => (
                     <ItemCard
                         key={i}
