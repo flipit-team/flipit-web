@@ -124,7 +124,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
     };
 
     // Use API categories if available, fallback to context categories, then empty array
-    const availableCategories = apiCategories.length > 0 ? apiCategories : defaultCategories;
+    const availableCategories = (apiCategories && apiCategories.length > 0) ? apiCategories : (defaultCategories || []);
 
 
 

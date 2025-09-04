@@ -98,15 +98,16 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
     };
 
     // Use dummy data in debug mode, otherwise prioritize server data, then client-side API data
-    const items = debugMode ? dummyItems : (serverItems.length > 0 ? serverItems : transformedApiItems);
-    const auctionItems = debugMode ? dummyItems.slice(0, 5) : serverAuctionItems; // Use first 5 dummy items or server auction items
+    const items = debugMode ? dummyItems : (serverItems && serverItems.length > 0 ? serverItems : (transformedApiItems || []));
+    const auctionItems = debugMode ? dummyItems.slice(0, 5) : (serverAuctionItems || []); // Use first 5 dummy items or server auction items
     const defaultCategories = debugMode ? [
         {name: 'Electronics', description: 'Devices like phones, laptops, gadgets, etc.'},
         {name: 'Mobile Phones', description: 'Smartphones and related accessories'},
         {name: 'Clothing', description: 'Fashion items and apparel'},
         {name: 'Home & Garden', description: 'Home improvement and garden items'},
         {name: 'Sports', description: 'Sports equipment and accessories'}
-    ] : (serverCategories.length > 0 ? serverCategories : apiCategories.map(cat => ({ name: cat.name, description: cat.description })));
+    ] : (serverCategories && serverCategories.length > 0 ? serverCategories : 
+         (apiCategories && Array.isArray(apiCategories) ? apiCategories.map(cat => ({ name: cat.name, description: cat.description })) : []));
 
 
     return (
