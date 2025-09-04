@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback, useContext, createContext } from 'react';
 import { LikesService } from '~/services/likes.service';
 import { ItemDTO } from '~/types/api';
+import { useAppContext } from '~/contexts/AppContext';
 import useApi from './useApi';
 
 // Context for managing liked items globally
@@ -29,14 +30,21 @@ export function useLikesContext() {
 export function LikesProvider({ children }: { children: React.ReactNode }) {
   const [likedItemIds, setLikedItemIds] = useState<Set<number>>(new Set());
   const { execute } = useApi();
+  const { user } = useAppContext();
 
   const refreshLikedItems = useCallback(async () => {
+    // Only fetch liked items if user is authenticated
+    if (!user?.token) {
+      setLikedItemIds(new Set());
+      return;
+    }
+    
     const result = await execute(() => LikesService.getLikedItems());
     if (result.success && result.data) {
       const itemIds = new Set<number>(result.data.map((item: ItemDTO) => item.id));
       setLikedItemIds(itemIds);
     }
-  }, [execute]);
+  }, [execute, user?.token]);
 
   const isLiked = useCallback((itemId: number) => {
     return likedItemIds.has(itemId);
@@ -55,6 +63,11 @@ export function LikesProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const toggleLike = useCallback(async (itemId: number) => {
+    // Check if user is authenticated before making API call
+    if (!user?.token) {
+      throw new Error('User must be authenticated to like items');
+    }
+    
     const wasLiked = isLiked(itemId);
     
     try {
@@ -74,7 +87,7 @@ export function LikesProvider({ children }: { children: React.ReactNode }) {
       }
       throw error;
     }
-  }, [isLiked, addLikedItem, removeLikedItem, execute]);
+  }, [isLiked, addLikedItem, removeLikedItem, execute, user?.token]);
 
   // Load liked items on mount
   useEffect(() => {
@@ -120,23 +133,33 @@ export function useLikedItems() {
   const [items, setItems] = useState<ItemDTO[]>([]);
   const { loading, error, execute } = useApi();
   const { refreshLikedItems, removeLikedItem } = useLikesContext();
+  const { user } = useAppContext();
 
   const fetchLikedItems = useCallback(async () => {
+    if (!user?.token) {
+      setItems([]);
+      return { success: true, data: [] };
+    }
+    
     const result = await execute(() => LikesService.getLikedItems());
     if (result.success && result.data) {
       setItems(result.data);
     }
     return result;
-  }, [execute]);
+  }, [execute, user?.token]);
 
   const removeLikedItemFromList = useCallback(async (itemId: number) => {
+    if (!user?.token) {
+      throw new Error('User must be authenticated to unlike items');
+    }
+    
     const result = await execute(() => LikesService.unlikeItem(itemId));
     if (result.success) {
       setItems(prev => prev.filter(item => item.id !== itemId));
       removeLikedItem(itemId);
     }
     return result;
-  }, [execute, removeLikedItem]);
+  }, [execute, removeLikedItem, user?.token]);
 
   const refresh = useCallback(async () => {
     await refreshLikedItems();
@@ -160,9 +183,13 @@ export function useLikedItems() {
 // Utility hook for checking liked status of multiple items (for item lists)
 export function useBulkLikedStatus(itemIds: number[]) {
   const [likedStatus, setLikedStatus] = useState<Record<number, boolean>>({});
+  const { user } = useAppContext();
 
   const checkLikedStatus = useCallback(async () => {
-    if (!itemIds.length) return;
+    if (!itemIds.length || !user?.token) {
+      setLikedStatus({});
+      return;
+    }
     
     try {
       const result = await LikesService.checkLikedStatus(itemIds);
@@ -174,7 +201,7 @@ export function useBulkLikedStatus(itemIds: number[]) {
     } catch (error) {
       console.error('Failed to check liked status:', error);
     }
-  }, [itemIds]);
+  }, [itemIds, user?.token]);
 
   useEffect(() => {
     checkLikedStatus();
