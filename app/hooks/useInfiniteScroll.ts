@@ -27,7 +27,6 @@ export function useInfiniteScroll({
     
     // Debounce to prevent multiple rapid calls (minimum 1 second between loads)
     if (target.isIntersecting && hasMore && !loading && (now - lastLoadTime.current) > 1000) {
-      console.log('Infinite scroll triggered', { hasMore, loading, intersection: target.isIntersecting });
       lastLoadTime.current = now;
       onLoadMore();
     }

@@ -18,45 +18,29 @@ export function useItems(initialParams?: ItemsQueryParams) {
   const fetchItems = useCallback(async (searchParams?: ItemsQueryParams, append = false) => {
     const finalParams = searchParams || params;
     
-    console.log('fetchItems called', { finalParams, append });
-    
     const result = await execute(() => ItemsService.getItems(finalParams));
     
     if (result.success && result.data) {
       const newItems = result.data.content;
       const isLast = result.data.last;
       
-      console.log('fetchItems success', { 
-        newItemsCount: newItems.length, 
-        isLast, 
-        currentPage: finalParams.page,
-        totalElements: result.data.totalElements 
-      });
-      
       setItems(prev => append ? [...(prev || []), ...newItems] : newItems);
       setHasMore(!isLast);
       setTotalElements(result.data.totalElements);
       setCurrentPage(finalParams.page || 0);
       setInitialized(true);
-    } else {
-      console.log('fetchItems failed', result);
     }
     
     return result;
   }, [params, execute]);
 
   const loadMore = useCallback(async () => {
-    console.log('loadMore called', { hasMore, loading, initialized, currentPage });
-    
     if (!hasMore || loading || !initialized) {
-      console.log('loadMore blocked', { hasMore, loading, initialized });
       return;
     }
     
     const nextPage = currentPage + 1;
     const newParams = { ...params, page: nextPage };
-    
-    console.log('Loading page:', nextPage, 'with params:', newParams);
     
     return fetchItems(newParams, true);
   }, [hasMore, loading, initialized, currentPage, params, fetchItems]);

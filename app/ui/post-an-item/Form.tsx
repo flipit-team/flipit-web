@@ -5,6 +5,7 @@ import RadioButtons from '../common/radio-buttons';
 import ImageUpload from '../common/image-upload';
 import RegularButton from '../common/buttons/RegularButton';
 import NormalSelectBox from '../common/normal-select-box';
+import AuctionDurationSelector from '../common/auction-duration-selector/AuctionDurationSelector';
 import {useRouter} from 'next/navigation';
 import {useAppContext} from '~/contexts/AppContext';
 import { useCategories } from '~/hooks/useItems';
@@ -98,14 +99,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
     const [startingBid, setStartingBid] = useState(0);
     const [bidIncrement, setBidIncrement] = useState(0);
     const [auctionStartDate, setAuctionStartDate] = useState('');
-    const [auctionDuration, setAuctionDuration] = useState('');
-
-    const auctionDurationOptions = [
-        {name: '1', description: '1 day'},
-        {name: '3', description: '3 days'},
-        {name: '7', description: '7 days'},
-        {name: '14', description: '14 days'}
-    ];
+    const [auctionDurationHours, setAuctionDurationHours] = useState(24); // Default 24 hours (1 day)
     const [reservePrice, setReservePrice] = useState(0);
     const {defaultCategories} = useAppContext();
     const { categories: apiCategories } = useCategories();
@@ -311,8 +305,8 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 setLoading(false);
                 return;
             }
-            if (!auctionDuration) {
-                setError('Please select auction duration');
+            if (auctionDurationHours <= 0 || auctionDurationHours > 168) {
+                setError('Auction duration must be between 1 hour and 7 days (168 hours)');
                 setLoading(false);
                 return;
             }
@@ -326,10 +320,10 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 return;
             }
 
-            // Calculate end date based on start date + duration
+            // Calculate end date based on start date + duration in hours
             const startDate = new Date(auctionStartDate);
             const endDate = new Date(startDate);
-            endDate.setDate(startDate.getDate() + parseInt(auctionDuration));
+            endDate.setHours(startDate.getHours() + auctionDurationHours);
 
             const auctionData: CreateAuctionRequest = {
                 title: title.trim(),
@@ -457,14 +451,11 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                         value={auctionStartDate}
                     />
 
-                    <div>
-                        <NormalSelectBox
-                            title='Auction Duration'
-                            selectedOption={auctionDuration}
-                            setSelectedOption={setAuctionDuration}
-                            options={auctionDurationOptions}
-                        />
-                    </div>
+                    <AuctionDurationSelector
+                        label='Auction Duration'
+                        value={auctionDurationHours}
+                        onChange={setAuctionDurationHours}
+                    />
 
                     <InputBox
                         label='Reserve Price (Optional)'
