@@ -27,7 +27,7 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
     
     // Fetch client-side data with infinite scroll support
     const { items: apiItems, loading: itemsLoading, hasMore, loadMore, updateParams } = useItems({ page: 0, size: 15 });
-    const { categories: apiCategories, loading: categoriesLoading } = useCategories();
+    const { categories: apiCategories } = useCategories();
     
     // Set up infinite scroll
     const { loadMoreRef } = useInfiniteScroll({
@@ -45,11 +45,11 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
     }, [authStatus]);
 
     // Transform API items to legacy format
-    const transformedApiItems: Item[] = apiItems.map(item => ({
+    const transformedApiItems: Item[] = (apiItems && Array.isArray(apiItems)) ? apiItems.map(item => ({
         id: item.id,
         title: item.title,
         description: item.description,
-        imageUrls: item.imageUrls,
+        imageUrls: item.imageUrls || [],
         flipForImgUrls: [], // This field doesn't exist in new API
         acceptCash: item.acceptCash,
         cashAmount: item.cashAmount,
@@ -58,24 +58,24 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
         location: item.location,
         dateCreated: new Date(item.dateCreated),
         seller: {
-            id: item.seller.id.toString(),
+            id: item.seller?.id?.toString() || '',
             title: '', // This field doesn't exist in new API
-            firstName: item.seller.firstName,
+            firstName: item.seller?.firstName || '',
             middleName: '', // This field doesn't exist in new API
-            lastName: item.seller.lastName,
-            email: item.seller.email,
-            phoneNumber: item.seller.phoneNumber,
-            avatar: item.seller.profileImageUrl || '',
-            avg_rating: item.seller.avgRating || 0,
-            status: item.seller.status || 'active',
-            phoneNumberVerified: item.seller.phoneNumberVerified || false,
-            dateVerified: new Date(item.seller.dateVerified || item.seller.dateCreated),
+            lastName: item.seller?.lastName || '',
+            email: item.seller?.email || '',
+            phoneNumber: item.seller?.phoneNumber || '',
+            avatar: item.seller?.profileImageUrl || '',
+            avg_rating: item.seller?.avgRating || 0,
+            status: item.seller?.status || 'active',
+            phoneNumberVerified: item.seller?.phoneNumberVerified || false,
+            dateVerified: new Date(item.seller?.dateVerified || item.seller?.dateCreated || new Date()),
         },
-        itemCategories: item.itemCategories.map(cat => ({
-            name: cat.name,
-            description: cat.description,
-        })),
-    }));
+        itemCategories: (item.itemCategories && Array.isArray(item.itemCategories)) ? item.itemCategories.map(cat => ({
+            name: cat?.name || '',
+            description: cat?.description || '',
+        })) : [],
+    })) : [];
 
     // Log data sources for debugging
 
