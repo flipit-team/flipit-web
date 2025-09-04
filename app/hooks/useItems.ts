@@ -11,37 +11,60 @@ export function useItems(initialParams?: ItemsQueryParams) {
   const [hasMore, setHasMore] = useState(true);
   const [totalElements, setTotalElements] = useState(0);
   const [initialized, setInitialized] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
   
   const { loading, error, execute } = useApi();
 
   const fetchItems = useCallback(async (searchParams?: ItemsQueryParams, append = false) => {
     const finalParams = searchParams || params;
     
+    console.log('fetchItems called', { finalParams, append });
+    
     const result = await execute(() => ItemsService.getItems(finalParams));
     
     if (result.success && result.data) {
       const newItems = result.data.content;
+      const isLast = result.data.last;
+      
+      console.log('fetchItems success', { 
+        newItemsCount: newItems.length, 
+        isLast, 
+        currentPage: finalParams.page,
+        totalElements: result.data.totalElements 
+      });
+      
       setItems(prev => append ? [...(prev || []), ...newItems] : newItems);
-      setHasMore(!result.data.last);
+      setHasMore(!isLast);
       setTotalElements(result.data.totalElements);
+      setCurrentPage(finalParams.page || 0);
       setInitialized(true);
+    } else {
+      console.log('fetchItems failed', result);
     }
     
     return result;
   }, [params, execute]);
 
   const loadMore = useCallback(async () => {
-    if (!hasMore || loading || !initialized) return;
+    console.log('loadMore called', { hasMore, loading, initialized, currentPage });
     
-    const itemsLength = Array.isArray(items) ? items.length : 0;
-    const nextPage = Math.floor(itemsLength / (params.size || 15));
+    if (!hasMore || loading || !initialized) {
+      console.log('loadMore blocked', { hasMore, loading, initialized });
+      return;
+    }
+    
+    const nextPage = currentPage + 1;
     const newParams = { ...params, page: nextPage };
     
+    console.log('Loading page:', nextPage, 'with params:', newParams);
+    
     return fetchItems(newParams, true);
-  }, [hasMore, loading, initialized, items, params, fetchItems]);
+  }, [hasMore, loading, initialized, currentPage, params, fetchItems]);
 
   const refresh = useCallback(() => {
     setItems([]);
+    setCurrentPage(0);
+    setHasMore(true);
     return fetchItems({ ...params, page: 0 });
   }, [params, fetchItems]);
 
@@ -49,6 +72,8 @@ export function useItems(initialParams?: ItemsQueryParams) {
     const updatedParams = { ...params, ...newParams, page: 0 };
     setParams(updatedParams);
     setItems([]);
+    setCurrentPage(0);
+    setHasMore(true);
     return fetchItems(updatedParams);
   }, [params, fetchItems]);
 

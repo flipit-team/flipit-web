@@ -19,10 +19,16 @@ export function useInfiniteScroll({
 }: UseInfiniteScrollOptions) {
   const observerRef = useRef<IntersectionObserver>();
   const loadMoreRef = useRef<HTMLDivElement>(null);
+  const lastLoadTime = useRef<number>(0);
 
   const handleObserver = useCallback((entries: IntersectionObserverEntry[]) => {
     const target = entries[0];
-    if (target.isIntersecting && hasMore && !loading) {
+    const now = Date.now();
+    
+    // Debounce to prevent multiple rapid calls (minimum 1 second between loads)
+    if (target.isIntersecting && hasMore && !loading && (now - lastLoadTime.current) > 1000) {
+      console.log('Infinite scroll triggered', { hasMore, loading, intersection: target.isIntersecting });
+      lastLoadTime.current = now;
       onLoadMore();
     }
   }, [hasMore, loading, onLoadMore]);
