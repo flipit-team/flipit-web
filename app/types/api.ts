@@ -113,9 +113,10 @@ export interface UserDTO {
   avgRating?: number;
   reviewCount?: number;
   status?: string;
-  mostRecentReview?: any;
-  phoneNumberVerified?: boolean;
-  dateVerified?: string;
+  mostRecentReview?: ReviewDTO;  // Updated to use ReviewDTO
+  phoneNumberVerified: boolean;  // NEW: Enhanced seller verification (for verified profile)
+  idVerified?: boolean;          // NEW: ID document verification (for verified ID badge)
+  dateVerified: string;         // NEW: Verification date
   dateCreated: string;
   bio?: string;
   // Legacy compatibility fields
@@ -162,6 +163,8 @@ export interface ItemDTO {
   condition: string;
   brand: string;
   dateCreated: string;
+  promoted: boolean;        // NEW: Item promotion status
+  liked: boolean;          // NEW: Whether current user liked this item
   seller: UserDTO;
   itemCategories: CategoryDTO[];
 }
@@ -204,6 +207,9 @@ export interface ItemsQueryParams {
   categories?: string[];
   stateCode?: string;
   lgaCode?: string;
+  sort?: 'recent' | 'promoted' | 'price-low' | 'price-high';
+  location?: string;
+  category?: string;
 }
 
 // Offer Types

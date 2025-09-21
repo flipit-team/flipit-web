@@ -1,0 +1,148 @@
+'use client';
+
+import React, { useState } from 'react';
+import { useParams } from 'next/navigation';
+import CategoryWrapper from './components/CategoryWrapper';
+import { Item } from '~/utils/interface';
+import { useItems, useCategories } from '~/hooks/useItems';
+import { useAppContext } from '~/contexts/AppContext';
+import { dummyItems } from '~/utils/dummy';
+import Loading from '~/ui/common/loading/Loading';
+
+export default function CategoryPage() {
+    const params = useParams();
+    const { debugMode } = useAppContext();
+    const categoryName = params?.categoryName as string;
+
+    // Decode the category name from URL
+    const decodedCategoryName = decodeURIComponent(categoryName || '');
+
+    // Filter state
+    const [filters, setFilters] = useState({
+        category: decodedCategoryName,
+        subCategory: '',
+        location: '',
+        priceMin: '',
+        priceMax: '',
+        verifiedSellers: false,
+        discount: false,
+        sort: 'recent'
+    });
+
+    // Fetch items with filters
+    const { items: apiItems, loading, hasMore, loadMore, updateParams } = useItems({
+        page: 0,
+        size: 20,
+        categories: [decodedCategoryName],
+        sort: filters.sort as any,
+    });
+
+    // Fetch categories for filter dropdown
+    const { categories: apiCategories } = useCategories();
+
+    // Transform API items to legacy format
+    const transformedApiItems: Item[] = (apiItems && Array.isArray(apiItems)) ? apiItems.map(item => ({
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        imageUrls: item.imageUrls || [],
+        flipForImgUrls: [],
+        acceptCash: item.acceptCash,
+        cashAmount: item.cashAmount,
+        condition: item.condition,
+        published: item.published,
+        location: item.location,
+        dateCreated: new Date(item.dateCreated),
+        promoted: item.promoted || false,
+        liked: item.liked || false,
+        seller: {
+            id: item.seller?.id?.toString() || '',
+            title: '',
+            firstName: item.seller?.firstName || '',
+            middleName: '',
+            lastName: item.seller?.lastName || '',
+            email: item.seller?.email || '',
+            phoneNumber: item.seller?.phoneNumber || '',
+            avatar: item.seller?.profileImageUrl || '',
+            avg_rating: item.seller?.avgRating || 0,
+            status: item.seller?.status || 'active',
+            phoneNumberVerified: item.seller?.phoneNumberVerified || false,
+            idVerified: item.seller?.idVerified || false,
+            dateVerified: item.seller?.dateVerified || item.seller?.dateCreated || new Date().toISOString(),
+            reviewCount: item.seller?.reviewCount || 0,
+            mostRecentReview: (item.seller?.mostRecentReview || { rating: 0, message: '', userId: 0, postedById: 0, createdDate: new Date().toISOString() }) as any,
+        },
+        itemCategories: (item.itemCategories && Array.isArray(item.itemCategories)) ? item.itemCategories.map(cat => ({
+            name: cat?.name || '',
+            description: cat?.description || '',
+        })) : [],
+    })) : [];
+
+    // Use dummy data in debug mode
+    const items = debugMode ? dummyItems.filter(item =>
+        item.itemCategories.some((cat: any) => cat.name.toLowerCase().includes(decodedCategoryName.toLowerCase()))
+    ) : transformedApiItems;
+
+    const categories = debugMode ? [
+        { id: 1, name: 'Electronics', description: 'Electronic devices and gadgets' },
+        { id: 2, name: 'Mobile Phones', description: 'Smartphones and accessories' },
+        { id: 3, name: 'Clothing', description: 'Fashion and apparel' },
+        { id: 4, name: 'Home & Garden', description: 'Home improvement items' },
+        { id: 5, name: 'Sports', description: 'Sports equipment' }
+    ] : (apiCategories || []);
+
+    // Handle filter changes
+    const handleFilterChange = (newFilters: typeof filters) => {
+        setFilters(newFilters);
+
+        // Update API params
+        if (updateParams && !debugMode) {
+            const apiParams: any = {
+                page: 0,
+                categories: newFilters.category ? [newFilters.category] : undefined,
+                sort: newFilters.sort,
+            };
+
+            // Add location filters
+            if (newFilters.location) {
+                // Parse location if it contains state/LGA info
+                apiParams.location = newFilters.location;
+            }
+
+            // Add price range (API might need minPrice/maxPrice params)
+            if (newFilters.priceMin) {
+                apiParams.minPrice = parseFloat(newFilters.priceMin);
+            }
+            if (newFilters.priceMax) {
+                apiParams.maxPrice = parseFloat(newFilters.priceMax);
+            }
+
+            updateParams(apiParams);
+        }
+    };
+
+    if (!decodedCategoryName) {
+        return <div>Category not found</div>;
+    }
+
+    if (loading && !items.length) {
+        return (
+            <div className='flex justify-center items-center min-h-screen'>
+                <Loading size='lg' text={`Loading ${decodedCategoryName} items...`} />
+            </div>
+        );
+    }
+
+    return (
+        <CategoryWrapper
+            categoryName={decodedCategoryName}
+            items={items}
+            categories={categories}
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            loading={loading}
+            hasMore={hasMore}
+            onLoadMore={loadMore}
+        />
+    );
+}

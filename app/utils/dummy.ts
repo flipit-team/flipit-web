@@ -1,6 +1,6 @@
-import {Item, Chat, Notification, Profile} from './interface';
+// Dummy data for testing purposes
 
-export const dummyItems: Item[] = [
+export const dummyItems: any[] = [
     {
         id: 1,
         title: 'iPhone 13 Pro Max',
@@ -25,7 +25,10 @@ export const dummyItems: Item[] = [
             avg_rating: 4.7,
             status: 'Verified',
             phoneNumberVerified: true,
-            dateVerified: new Date('2024-11-05T14:00:00Z')
+            dateVerified: '2024-11-05T14:00:00Z',
+            idVerified: true,
+            reviewCount: 45,
+            mostRecentReview: { rating: 5, message: 'Great seller!', userId: 1, postedById: 2, createdDate: '2024-11-05T14:00:00Z' }
         },
         itemCategories: [
             {name: 'Electronics', description: 'Devices like phones, laptops, gadgets, etc.'},
@@ -289,7 +292,7 @@ export const dummyItems: Item[] = [
     }
 ];
 
-export const dummyChats: {buyer: Chat[]; seller: Chat[]} = {
+export const dummyChats: any = {
     buyer: [
         {
             chatId: 'chat_001',
@@ -340,7 +343,7 @@ export const dummyChats: {buyer: Chat[]; seller: Chat[]} = {
     ]
 };
 
-export const dummyNotifications: Notification = {
+export const dummyNotifications: any = {
     totalPages: 1,
     totalElements: 3,
     size: 10,
@@ -397,7 +400,7 @@ export const dummyNotifications: Notification = {
     empty: false
 };
 
-export const dummyProfile: Profile = {
+export const dummyProfile: any = {
     id: 1,
     title: 'Mr.',
     firstName: 'John',

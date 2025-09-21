@@ -24,9 +24,10 @@ interface Props {
 const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, defaultCategories: serverCategories, authStatus }: Props) => {
     const { debugMode } = useAppContext();
     const [locationFilter, setLocationFilter] = useState<{ stateCode: string; lgaCode?: string } | null>(null);
+    const [currentSort, setCurrentSort] = useState<string>('recent');
     
     // Fetch client-side data with infinite scroll support
-    const { items: apiItems, loading: itemsLoading, hasMore, loadMore, updateParams } = useItems({ page: 0, size: 15 });
+    const { items: apiItems, loading: itemsLoading, hasMore, loadMore, updateParams } = useItems({ page: 0, size: 15, sort: 'recent' });
     const { categories: apiCategories } = useCategories();
     
     // Set up infinite scroll
@@ -57,6 +58,8 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
         published: item.published,
         location: item.location,
         dateCreated: new Date(item.dateCreated),
+        promoted: item.promoted || false,
+        liked: item.liked || false,
         seller: {
             id: item.seller?.id?.toString() || '',
             title: '', // This field doesn't exist in new API
@@ -69,7 +72,10 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
             avg_rating: item.seller?.avgRating || 0,
             status: item.seller?.status || 'active',
             phoneNumberVerified: item.seller?.phoneNumberVerified || false,
-            dateVerified: new Date(item.seller?.dateVerified || item.seller?.dateCreated || new Date()),
+            dateVerified: item.seller?.dateVerified || item.seller?.dateCreated || new Date().toISOString(),
+            idVerified: item.seller?.idVerified || false,
+            reviewCount: item.seller?.reviewCount || 0,
+            mostRecentReview: (item.seller?.mostRecentReview || { rating: 0, message: '', userId: 0, postedById: 0, createdDate: new Date().toISOString() }) as any,
         },
         itemCategories: (item.itemCategories && Array.isArray(item.itemCategories)) ? item.itemCategories.map(cat => ({
             name: cat?.name || '',
@@ -83,14 +89,31 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
     const handleLocationFilter = (stateCode: string, lgaCode?: string) => {
         const newFilter = stateCode ? { stateCode, lgaCode } : null;
         setLocationFilter(newFilter);
-        
+
         // Update API params with location filter
         if (updateParams) {
-            const params: any = {};
+            const params: any = { sort: currentSort };
             if (stateCode) {
                 params.stateCode = stateCode;
                 if (lgaCode) {
                     params.lgaCode = lgaCode;
+                }
+            }
+            updateParams(params);
+        }
+    };
+
+    // Handle sort changes
+    const handleSortChange = (sortValue: string) => {
+        setCurrentSort(sortValue);
+
+        // Update API params with new sort
+        if (updateParams) {
+            const params: any = { sort: sortValue };
+            if (locationFilter) {
+                params.stateCode = locationFilter.stateCode;
+                if (locationFilter.lgaCode) {
+                    params.lgaCode = locationFilter.lgaCode;
                 }
             }
             updateParams(params);
@@ -111,14 +134,17 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
 
 
     return (
-        <MainHomeServer 
-            items={items} 
+        <MainHomeServer
+            items={items}
             auctionItems={auctionItems}
             defaultCategories={defaultCategories}
             loadMoreRef={loadMoreRef}
             loading={itemsLoading}
             hasMore={hasMore}
             onLocationFilter={handleLocationFilter}
+            currentLocationFilter={locationFilter}
+            onSortChange={handleSortChange}
+            currentSort={currentSort}
         />
     );
 };

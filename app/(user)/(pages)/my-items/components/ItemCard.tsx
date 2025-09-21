@@ -28,6 +28,7 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
     const [isDeleting, setIsDeleting] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [isMarkingSold, setIsMarkingSold] = useState(false);
+    const [isUpdatingAuction, setIsUpdatingAuction] = useState(false);
 
     const handleEditItem = () => {
         router.push(`/edit-item/${item.id}`);
@@ -84,6 +85,27 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
         setShowDeleteModal(false);
     };
 
+    const handleToggleAuction = async () => {
+        if (!item.isAuction) return;
+
+        setIsUpdatingAuction(true);
+
+        try {
+            // TODO: Replace with actual API call when auction endpoints are available
+            const action = item.auctionActive ? 'deactivate' : 'activate';
+
+            // Placeholder - will be replaced with actual API call
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            showSuccess(`Auction ${action}d successfully!`);
+            onItemUpdated?.(item.id);
+        } catch (error) {
+            showError(`Failed to ${item.auctionActive ? 'deactivate' : 'activate'} auction. Please try again.`);
+        } finally {
+            setIsUpdatingAuction(false);
+        }
+    };
+
     return (
         <div className='w-[833px] h-[179px] border border-border_gray rounded-md flex p-4'>
             <div className='w-[157px] h-full bg-gray-200 rounded-md overflow-hidden flex-shrink-0 relative'>
@@ -101,17 +123,34 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
                     <Button variant='outline' size='sm' onClick={handleEditItem}>
                         Edit Item
                     </Button>
-                    <Button 
-                        variant='outline' 
-                        size='sm' 
-                        onClick={handleMarkAsSold}
-                        disabled={isMarkingSold}
-                    >
-                        {isMarkingSold ? 'Marking...' : 'Mark as Sold'}
-                    </Button>
-                    <Button 
-                        variant='danger' 
-                        size='sm' 
+
+                    {/* Show auction controls for auction items */}
+                    {item.isAuction ? (
+                        <Button
+                            variant={item.auctionActive ? 'danger' : 'primary'}
+                            size='sm'
+                            onClick={handleToggleAuction}
+                            disabled={isUpdatingAuction}
+                        >
+                            {isUpdatingAuction
+                                ? (item.auctionActive ? 'Deactivating...' : 'Activating...')
+                                : (item.auctionActive ? 'Cancel Auction' : 'Activate Auction')
+                            }
+                        </Button>
+                    ) : (
+                        <Button
+                            variant='outline'
+                            size='sm'
+                            onClick={handleMarkAsSold}
+                            disabled={isMarkingSold}
+                        >
+                            {isMarkingSold ? 'Marking...' : 'Mark as Sold'}
+                        </Button>
+                    )}
+
+                    <Button
+                        variant='danger'
+                        size='sm'
                         onClick={handleDeleteItem}
                         disabled={isDeleting}
                     >

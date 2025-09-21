@@ -7,8 +7,23 @@ export async function GET(req: NextRequest) {
     const page = req.nextUrl.searchParams.get('page') ?? '0';
     const size = req.nextUrl.searchParams.get('size') ?? '10';
     const query = req.nextUrl.searchParams.get('q') ?? '';
+    const sort = req.nextUrl.searchParams.get('sort') ?? 'recent';
+    const location = req.nextUrl.searchParams.get('location') ?? '';
+    const category = req.nextUrl.searchParams.get('category') ?? '';
 
-    const apiUrl = `${API_BASE_PATH}/items?page=${page}&size=${size}&search=${encodeURIComponent(query)}`;
+    // Build query parameters
+    const params = new URLSearchParams({
+        page,
+        size,
+        search: query,
+        sort
+    });
+
+    // Add optional parameters if they exist
+    if (location) params.append('location', location);
+    if (category) params.append('category', category);
+
+    const apiUrl = `${API_BASE_PATH}/items?${params.toString()}`;
 
     // ✅ Get token from cookies
     const cookieStore = await cookies(); // ← must await!

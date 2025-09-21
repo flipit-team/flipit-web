@@ -14,13 +14,27 @@ import {useToast} from '~/contexts/ToastContext';
 
 // Transform ItemDTO to MyItem
 function transformItemToMyItem(item: ItemDTO): MyItem {
+    // Check if item is an auction based on auction-related fields
+    const isAuction = !!((item as any).auctionId || (item as any).startingBid || (item as any).currentBid || (item as any).startDate || (item as any).endDate);
+    const auctionActive = isAuction && item.published && !(item as any).auctionEnded;
+
+    // Determine item type
+    let type: 'auction' | 'listed' | 'deactivated';
+    if (isAuction) {
+        type = auctionActive ? 'auction' : 'deactivated';
+    } else {
+        type = item.published ? 'listed' : 'deactivated';
+    }
+
     return {
         id: item.id,
         title: item.title,
-        image: item.imageUrls?.[0] || '/camera.png',
+        image: item.imageUrls?.[0] || '/placeholder-product.png',
         amount: item.cashAmount,
         views: 0, // API doesn't provide views yet
-        type: item.published ? 'listed' : 'deactivated'
+        type,
+        isAuction,
+        auctionActive
     };
 }
 
@@ -58,7 +72,7 @@ export default function MyItemsPage() {
                 
                 // Categorize items
                 const categorizedItems: Record<TabType, MyItem[]> = {
-                    auction: transformedItems.filter(item => item.type === 'auction'), // TODO: Add auction detection logic
+                    auction: transformedItems.filter(item => item.type === 'auction'),
                     listed: transformedItems.filter(item => item.type === 'listed'),
                     deactivated: transformedItems.filter(item => item.type === 'deactivated')
                 };

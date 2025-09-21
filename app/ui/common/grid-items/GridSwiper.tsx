@@ -24,15 +24,15 @@ const GridSwiper = (props: Props) => {
             {/* Navigation buttons */}
             <button
                 ref={prevRef}
-                className='absolute z-10 left-0 top-1/2 -translate-y-1/2 bg-white rounded-full shadow p-2 hidden lg:flex'
+                className='absolute z-10 left-2 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg p-3 flex items-center justify-center hover:bg-white hover:scale-105 transition-all duration-200'
             >
-                <ChevronLeft size={20} />
+                <ChevronLeft size={20} className="text-gray-700" />
             </button>
             <button
                 ref={nextRef}
-                className='absolute z-10 right-0 top-1/2 -translate-y-1/2 bg-white rounded-full shadow p-2 hidden lg:flex'
+                className='absolute z-10 right-2 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg p-3 flex items-center justify-center hover:bg-white hover:scale-105 transition-all duration-200'
             >
-                <ChevronRight size={20} />
+                <ChevronRight size={20} className="text-gray-700" />
             </button>
 
             <Swiper
@@ -49,21 +49,31 @@ const GridSwiper = (props: Props) => {
                 }}
                 slidesPerView={'auto'}
                 spaceBetween={24}
-                className='grid-swiper xs:!pr-6 !overflow-visible lg:!overflow-hidden'
+                className='grid-swiper xs:!pr-0 !overflow-visible lg:!overflow-hidden'
                 slideToClickedSlide
                 mousewheel
                 updateOnWindowResize={false}
+                breakpoints={{
+                    320: {
+                        spaceBetween: 16,
+                    },
+                    768: {
+                        spaceBetween: 24,
+                    }
+                }}
             >
                 {props.items?.map((item, i) => (
                     <SwiperSlide
                         key={i}
-                        className='!h-[400px] w-[359px] max-w-[349px] xs:!h-[260px] border border-border_gray rounded-md !p-0'
+                        className='!h-[400px] w-[359px] max-w-[349px] xs:!h-[260px] xs:w-auto xs:max-w-none border border-border_gray rounded-md xs:border-none !p-0'
                     >
                         <ItemCard
                             item={item}
                             forEdit={props.forEdit}
                             forLiveAuction={props.forLiveAuction}
                             className='h-full w-full'
+                            imageClassName='h-[302px] w-full xs:h-[160px] cursor-pointer xs:object-cover'
+                            contentClassName={props.forLiveAuction ? 'p-4 xs:py-3 xs:px-0 h-[120px] xs:h-[100px] xs:flex xs:flex-col xs:justify-between xs:overflow-hidden' : 'p-4 xs:py-3 xs:px-0 h-[98px] xs:h-[100px] xs:flex xs:flex-col xs:justify-between xs:overflow-hidden'}
                             showSaveButton={false}
                             showPromotedBadge={false}
                             showVerifiedBadge={false}

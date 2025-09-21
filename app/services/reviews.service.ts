@@ -1,18 +1,24 @@
 import { apiClient, handleApiCall } from '~/lib/api-client';
-import { ReviewDTO, CreateReviewRequest } from '~/types/api';
+import { ReviewDTO } from '~/utils/interface';
+
+export interface CreateReviewRequest {
+  rating: number;
+  message: string;
+  userId: number;
+}
 
 export class ReviewsService {
   // Create review
   static async createReview(reviewData: CreateReviewRequest) {
     return handleApiCall(() =>
-      apiClient.post<ReviewDTO>('/reviews', reviewData, { requireAuth: true })
+      apiClient.post<ReviewDTO>('/v1/reviews', reviewData, { requireAuth: true })
     );
   }
 
   // Get reviews for a user
   static async getUserReviews(userId: number) {
     return handleApiCall(() =>
-      apiClient.get<ReviewDTO[]>(`/reviews/user/${userId}`)
+      apiClient.get<ReviewDTO[]>(`/v1/reviews/user/${userId}`)
     );
   }
 

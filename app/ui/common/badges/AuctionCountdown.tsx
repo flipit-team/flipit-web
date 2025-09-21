@@ -83,7 +83,7 @@ const AuctionCountdown = ({endTime, startTime, className = ''}: AuctionCountdown
         if (status === 'ended') {
             return 'Ended';
         }
-        
+
         if (status === 'not-started') {
             // Concise text for not-started auctions
             if (timeLeft.days > 0) {
@@ -96,7 +96,7 @@ const AuctionCountdown = ({endTime, startTime, className = ''}: AuctionCountdown
                 return 'Starting soon';
             }
         }
-        
+
         // For active auctions
         if (timeLeft.days > 0) {
             return `${timeLeft.days} day${timeLeft.days > 1 ? 's' : ''} left`;

@@ -1,6 +1,6 @@
 'use client';
 import Image from 'next/image';
-import {usePathname, useRouter, useSearchParams} from 'next/navigation';
+import {useRouter} from 'next/navigation';
 import React from 'react';
 // import {useAppContext} from '~/contexts/AppContext';
 
@@ -14,9 +14,7 @@ interface Props {
 
 const Categories = (props: Props) => {
     const {forLiveAuction, defaultCategories} = props;
-    const searchParams = useSearchParams();
     const router = useRouter();
-    const pathname = usePathname();
     // const {setDefaultCategories} = useAppContext();
 
     // Remove this useEffect to prevent infinite loops
@@ -24,10 +22,9 @@ const Categories = (props: Props) => {
     //     setDefaultCategories(defaultCategories);
     // }, [defaultCategories, setDefaultCategories]);
 
-    const pushParam = (name: string) => {
-        const params = new URLSearchParams(searchParams.toString());
-        params.set('categories', name);
-        router.push(`${pathname}?${params.toString()}`);
+    const navigateToCategory = (name: string) => {
+        // Navigate to the dedicated category page
+        router.push(`/category/${encodeURIComponent(name)}`);
     };
     return (
         <div
@@ -51,13 +48,13 @@ const Categories = (props: Props) => {
                     </>
                 )}
             </div>
-            <p className='h-[58px] pl-[60px] typo-heading_ss'>Categories</p>
+            <p className='pt-6 pb-4 pl-[60px] typo-heading_ss'>Categories</p>
             {defaultCategories && Array.isArray(defaultCategories) ? defaultCategories.map((item, i) => {
                 return (
                     <p
-                        onClick={() => pushParam(item.name)}
+                        onClick={() => navigateToCategory(item.name)}
                         key={i}
-                        className='h-[58px] pl-[60px] typo-body_mm capitalize cursor-pointer'
+                        className='h-[58px] pl-[60px] typo-body_mm capitalize cursor-pointer hover:bg-gray-50 flex items-center transition-colors'
                     >
                         {item.name}
                     </p>

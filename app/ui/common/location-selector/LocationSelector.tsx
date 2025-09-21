@@ -134,7 +134,7 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
               disabled={!selectedState}
               className="w-full h-[49px] px-4 border border-border_gray rounded-md shadow-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none typo-body_mr bg-white disabled:bg-surface-secondary disabled:text-text_four appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iOCIgdmlld0JveD0iMCAwIDEyIDgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0xIDFMNiA2TDExIDEiIHN0cm9rZT0iIzZCNzI4MCIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4K')] bg-no-repeat bg-[position:calc(100%-16px)_center] bg-[length:12px_8px]"
             >
-              <option value="">Select Local Government Area</option>
+              <option value="">Select LGA</option>
               {availableLGAs.map((lga) => (
                 <option key={lga.code} value={lga.code}>
                   {lga.name}
@@ -160,7 +160,12 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
       {/* Help Text */}
       <div className="mt-2 typo-body_sr text-text_four">
         {!selectedState && 'Please select your state first'}
-        {selectedState && !selectedLGA && 'Optionally select your local government area for more precise location'}
+        {selectedState && !selectedLGA && (
+          <>
+            <span className="xs:hidden">Optionally select your local government area for more precise location</span>
+            <span className="hidden xs:inline">Optionally select your LGA for more precise location</span>
+          </>
+        )}
         {selectedState && selectedLGA && 'Location selected successfully'}
       </div>
 

@@ -7,6 +7,8 @@ interface StarRatingProps {
     size?: number;
     showRating?: boolean;
     className?: string;
+    interactive?: boolean;
+    onRatingChange?: (rating: number) => void;
 }
 
 const StarRating: React.FC<StarRatingProps> = ({
@@ -14,11 +16,19 @@ const StarRating: React.FC<StarRatingProps> = ({
     maxStars = 5,
     size = 16,
     showRating = false,
-    className = ''
+    className = '',
+    interactive = false,
+    onRatingChange
 }) => {
     const stars = [];
     const normalizedRating = Math.max(0, Math.min(maxStars, rating || 0));
     
+    const handleStarClick = (starIndex: number) => {
+        if (interactive && onRatingChange) {
+            onRatingChange(starIndex + 1);
+        }
+    };
+
     for (let i = 0; i < maxStars; i++) {
         const isFilled = i < Math.floor(normalizedRating);
         stars.push(
@@ -29,6 +39,8 @@ const StarRating: React.FC<StarRatingProps> = ({
                 width={size}
                 alt={isFilled ? 'filled star' : 'empty star'}
                 style={{ height: size, width: size }}
+                className={interactive ? 'cursor-pointer hover:opacity-75 transition-opacity' : ''}
+                onClick={() => handleStarClick(i)}
             />
         );
     }

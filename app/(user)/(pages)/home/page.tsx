@@ -24,7 +24,9 @@ function transformAuctionToItem(auction: AuctionDTO): Item {
         sold: auction.status === 'ENDED',
         location: auction.item.location,
         dateCreated: new Date(auction.item.dateCreated),
-        seller: auction.item.seller,
+        promoted: false,
+        liked: false,
+        seller: auction.item.seller as any,
         itemCategories: auction.item.itemCategories,
         // Auction-specific fields
         isAuction: true,
@@ -57,6 +59,8 @@ function transformItems(items: ItemDTO[]): Item[] {
         published: item.published,
         location: item.location,
         dateCreated: new Date(item.dateCreated),
+        promoted: item.promoted || false,
+        liked: item.liked || false,
         seller: {
             id: item.seller.id.toString(),
             title: '', // This field doesn't exist in new API
@@ -69,7 +73,10 @@ function transformItems(items: ItemDTO[]): Item[] {
             avg_rating: item.seller.avgRating || 0,
             status: item.seller.status || 'active',
             phoneNumberVerified: item.seller.phoneNumberVerified || false,
-            dateVerified: new Date(item.seller.dateVerified || item.seller.dateCreated),
+            idVerified: item.seller.idVerified || false,
+            dateVerified: item.seller.dateVerified || item.seller.dateCreated || new Date().toISOString(),
+            reviewCount: item.seller.reviewCount || 0,
+            mostRecentReview: (item.seller.mostRecentReview || { rating: 0, message: '', userId: 0, postedById: 0, createdDate: new Date().toISOString() }) as any,
         },
         itemCategories: item.itemCategories.map(cat => ({
             name: cat.name,

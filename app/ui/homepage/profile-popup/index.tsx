@@ -20,6 +20,7 @@ interface Props {
               status: string;
               phoneNumberVerified: boolean;
               dateVerified: Date;
+              reviewCount?: number;
           }
         | undefined;
     onClose: () => void;
@@ -86,19 +87,25 @@ const ProfilePopup = (props: Props) => {
                     </div>
                     <div className='mt-[20px] flex flex-col gap-4 xs:px-4'>
                         <div className='typo-body_lm flex '>
-                            Verified reviews <p className='text-text-pink'>(2)</p>
+                            Verified reviews <p className='text-text-pink'>({seller?.reviewCount || 0})</p>
                         </div>
-                        <div className='flex flex-col gap-3'>
-                            <div className='flex my-1'>
-                                <StarRating 
-                                    rating={seller?.avgRating || seller?.avg_rating || 0}
-                                    size={20}
-                                />
+                        {seller?.reviewCount && seller.reviewCount > 0 ? (
+                            <div className='flex flex-col gap-3'>
+                                <div className='flex my-1'>
+                                    <StarRating
+                                        rating={seller?.avgRating || seller?.avg_rating || 0}
+                                        size={20}
+                                    />
+                                </div>
+                                <p className='typo-body_mm'>Recent Review</p>
+                                <p className='typo-body_sr text-text_three'>Average rating based on {seller.reviewCount} reviews</p>
+                                <p className='typo-body_sr text-text_three'>See all reviews below</p>
                             </div>
-                            <p className='typo-body_mm'>Good Product</p>
-                            <p className='typo-body_sr text-text_three'>More than what I expected</p>
-                            <p className='typo-body_sr text-text_three'>by Collins</p>
-                        </div>
+                        ) : (
+                            <div className='flex flex-col gap-3'>
+                                <p className='typo-body_sr text-text_three'>No reviews yet</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

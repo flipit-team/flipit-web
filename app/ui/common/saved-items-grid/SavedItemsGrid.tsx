@@ -49,7 +49,7 @@ const SavedItemsGrid: React.FC = () => {
           {items.map((item) => (
             <ItemCard
               key={item.id}
-              item={item}
+              item={item as any}
               showSaveButton={true}
               showPromotedBadge={true}
               showVerifiedBadge={true}

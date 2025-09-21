@@ -1,3 +1,12 @@
+// New ReviewDTO interface
+export interface ReviewDTO {
+    rating: number;        // 1-5 star rating
+    message: string;       // Review text
+    userId: number;        // User being reviewed
+    postedById: number;    // User who posted review
+    createdDate: string;   // ISO date
+}
+
 export interface Item {
     id: number;
     title: string;
@@ -12,6 +21,8 @@ export interface Item {
     location: string;
     brand?: string;
     dateCreated: Date | string;
+    promoted: boolean;        // NEW: Item promotion status
+    liked: boolean;          // NEW: Whether current user liked this item
     seller: {
         id: string | number;
         title?: string;
@@ -25,10 +36,12 @@ export interface Item {
         avg_rating?: number;
         avgRating?: number;
         status?: string;
-        phoneNumberVerified?: boolean;
-        dateVerified?: Date | string;
+        phoneNumberVerified: boolean;  // NEW: Enhanced seller verification (for verified profile)
+        idVerified?: boolean;         // NEW: ID document verification (for verified ID badge)
+        dateVerified: string;         // NEW: Verification date
         dateCreated?: string;
-        reviewCount?: number;
+        reviewCount: number;         // Enhanced review count
+        mostRecentReview: ReviewDTO; // Latest review
     };
     itemCategories: {
         id?: number;
@@ -240,14 +253,40 @@ export interface Profile {
     avgRating: number;
     reviewCount: number;
     status: string;
-    mostRecentReview: {
-        rating: number;
-        message: string;
-        userId: number;
-        postedById: number;
-        createdDate: Date;
-    };
+    mostRecentReview: ReviewDTO;
     phoneNumberVerified: boolean;
     dateVerified: Date;
     dateCreated: Date;
+}
+
+// Support System Interfaces
+export interface SupportCallbackRequest {
+    name: string;
+    email: string;
+    phoneNumber: string;
+    message: string;
+    preferredCallTime?: string;
+}
+
+export interface AbuseReportRequest {
+    reportType: 'USER' | 'ITEM' | 'OTHER';
+    targetId?: number;
+    reason: string;
+    description: string;
+}
+
+// Sorting options for items API
+export type ItemSortOption = 'recent' | 'promoted' | 'price-low' | 'price-high';
+
+// Like System Interfaces
+export interface LikedItemsResponse {
+    items: Item[];
+    totalCount: number;
+}
+
+// API Response wrapper
+export interface ApiResponse<T> {
+    data: T;
+    message?: string;
+    success: boolean;
 }

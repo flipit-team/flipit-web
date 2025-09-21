@@ -5,6 +5,8 @@ export interface MyItem {
     amount: number;
     views: number;
     type: 'auction' | 'listed' | 'deactivated';
+    isAuction?: boolean;
+    auctionActive?: boolean;
 }
 
 export type TabType = 'auction' | 'listed' | 'deactivated';

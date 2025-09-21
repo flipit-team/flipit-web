@@ -24,7 +24,7 @@ const ImageGallery = ({
     const [thumbnailStartIndex, setThumbnailStartIndex] = useState(0);
     
     // Fallback to placeholder if no images
-    const imageList = images.length > 0 ? images : ['/camera-large.png'];
+    const imageList = images.length > 0 ? images : ['/placeholder-product-large.png'];
     const currentImage = imageList[currentImageIndex];
     
     // Number of thumbnails to show at once
@@ -73,12 +73,16 @@ const ImageGallery = ({
                             height={443}
                             width={712}
                             alt="Main product image"
-                            className={`xs:w-full xs:h-[222px] cursor-pointer object-cover ${mainImageClassName}`}
-                            style={{ 
-                                height: '443px', 
-                                width: '712px' 
+                            className={`cursor-pointer object-cover ${mainImageClassName}`}
+                            style={{
+                                width: '712px !important',
+                                height: '443px !important',
+                                maxWidth: 'none !important',
+                                minWidth: '712px !important'
                             }}
                             onClick={openFullscreen}
+                            priority
+                            quality={75}
                         />
                         {overlayElements}
                     </div>
@@ -118,6 +122,8 @@ const ImageGallery = ({
                                                             isActive ? 'ring-2 ring-primary opacity-100' : 'opacity-70 hover:opacity-100'
                                                         } ${thumbnailClassName}`}
                                                         onClick={handleImageClick}
+                                                        sizes="222px"
+                                                        loading="lazy"
                                                     />
                                                 </div>
                                             );
@@ -190,6 +196,9 @@ const ImageGallery = ({
                             height={800}
                             alt={`Fullscreen image ${currentImageIndex + 1}`}
                             className="max-w-full max-h-full object-contain"
+                            sizes="100vw"
+                            placeholder="blur"
+                            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+Kic6LbJ7djdjvj28J7vD94nSRnr/Z/9k="
                         />
                         
                         {/* Image Counter */}

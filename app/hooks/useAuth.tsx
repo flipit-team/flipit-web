@@ -115,15 +115,15 @@ export function useAuth() {
       setAuthState(prev => ({ ...prev, loading: true, error: null }));
       
       const { data, error } = await AuthService.login(credentials);
-      
-      
+
+
       if (error) {
         setAuthState(prev => ({
           ...prev,
           loading: false,
           error: error.message,
         }));
-        return { success: false, error: error.message };
+        return { success: false, error };
       }
 
       if (data) {
@@ -198,14 +198,14 @@ export function useAuth() {
       setAuthState(prev => ({ ...prev, loading: true, error: null }));
       
       const { data, error } = await AuthService.signup(userData);
-      
+
       if (error) {
         setAuthState(prev => ({
           ...prev,
           loading: false,
           error: error.message,
         }));
-        return { success: false, error: error.message };
+        return { success: false, error };
       }
 
       if (data) {

@@ -1,4 +1,5 @@
 'use client';
+import React, {useMemo} from 'react';
 import NavItem from './NavItem';
 import {HomeIcon} from './tab-icons.tsx/HomeIcon';
 import {usePathname} from 'next/navigation';
@@ -7,7 +8,7 @@ import {PostItemIcon} from './tab-icons.tsx/PostItemIcon';
 import clsx from 'clsx';
 import {ProfileIcon} from './tab-icons.tsx/ProfileIcon';
 
-interface tabs {
+interface Tab {
     id: number;
     link: string;
     icon(isActive: boolean): React.ReactNode;
@@ -15,10 +16,10 @@ interface tabs {
     listForActiveLink: string[];
 }
 
-const BottomNavBar = () => {
-    const pathName = usePathname();
+const BottomNavBar: React.FC = () => {
+    const pathName: string = usePathname();
 
-    const tabs: tabs[] = [
+    const tabs: Tab[] = useMemo(() => [
         {
             id: 1,
             link: '/home',
@@ -28,12 +29,11 @@ const BottomNavBar = () => {
         },
         {
             id: 2,
-            link: `/post-an-item`,
+            link: '/post-an-item/entry',
             icon: (isActive: boolean) => <PostItemIcon isActive={isActive} />,
             label: 'Post Item',
             listForActiveLink: ['/post-an-item']
         },
-
         {
             id: 3,
             link: '/messages',
@@ -46,9 +46,9 @@ const BottomNavBar = () => {
             link: '/profile',
             icon: (isActive: boolean) => <ProfileIcon isActive={isActive} />,
             label: 'Profile',
-            listForActiveLink: ['/']
+            listForActiveLink: ['/profile']
         }
-    ];
+    ], []);
 
     return (
         <div

@@ -167,7 +167,7 @@ const MainChats = (props: Props) => {
                             Buying
                         </div>
                     </div>
-                    {displayedChat?.map((chat, i) => {
+                    {displayedChat?.map((chat: any, i: number) => {
                         return (
                             <div
                                 key={i}
@@ -224,7 +224,7 @@ const MainChats = (props: Props) => {
                             Buying
                         </div>
                     </div>
-                    {displayedChat?.map((chat, i) => {
+                    {displayedChat?.map((chat: any, i: number) => {
                         return (
                             <Link
                                 key={i}

@@ -50,6 +50,20 @@ export class AuctionsService {
       apiClient.get<AuctionDTO[]>(`/v1/auction/active?page=${page}&size=${size}`)
     );
   }
+
+  // Reactivate deactivated auction
+  static async reactivateAuction(auctionId: number) {
+    return handleApiCall(() =>
+      apiClient.put<{ message: string }>(`/v1/auction/${auctionId}/reactivate`, {}, { requireAuth: true })
+    );
+  }
+
+  // Deactivate active auction
+  static async deactivateAuction(auctionId: number) {
+    return handleApiCall(() =>
+      apiClient.put<{ message: string }>(`/v1/auction/${auctionId}/deactivate`, {}, { requireAuth: true })
+    );
+  }
 }
 
 export default AuctionsService;

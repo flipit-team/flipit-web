@@ -1,4 +1,4 @@
-import LiveAuctionWrapper from '~/ui/wrappers/LiveAuctionWrapper';
+import LiveAuctionClient from '~/ui/wrappers/LiveAuctionClient';
 import {Item} from '~/utils/interface';
 import { getActiveAuctionsServerSide, getCategoriesServerSide } from '~/lib/server-api';
 import { AuctionDTO } from '~/types/api';
@@ -26,7 +26,9 @@ function transformAuctionToItem(auction: AuctionDTO): Item {
         condition: auction.item.condition,
         brand: auction.item.brand,
         dateCreated: auction.item.dateCreated,
-        seller: auction.item.seller,
+        promoted: false,
+        liked: false,
+        seller: auction.item.seller as any,
         itemCategories: auction.item.itemCategories,
         // Auction-specific fields
         isAuction: true,
@@ -67,14 +69,14 @@ export default async function Page({searchParams}: {searchParams?: Promise<Searc
 
         return (
             <Suspense fallback={<div>Loading auctions...</div>}>
-                <LiveAuctionWrapper items={transformedItems} defaultCategories={categories} />
+                <LiveAuctionClient items={transformedItems} defaultCategories={categories} />
             </Suspense>
         );
     } catch (error) {
         // Fallback to empty data if there's an error
         return (
             <Suspense fallback={<div>Loading auctions...</div>}>
-                <LiveAuctionWrapper items={[]} defaultCategories={[]} />
+                <LiveAuctionClient items={[]} defaultCategories={[]} />
             </Suspense>
         );
     }

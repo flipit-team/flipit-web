@@ -12,7 +12,7 @@ interface Props {
 const GridItems = (props: Props) => {
     const {items, forEdit, forLiveAuction} = props;
     return (
-        <div className='grid grid-cols-3 xs:grid-cols-2 gap-6 xs:gap-4'>
+        <div className='grid grid-cols-3 xs:grid-cols-2 gap-6 xs:gap-4 w-full'>
             {items && Array.isArray(items) && items.length > 0 ? (
                 items.map((item, i) => (
                     <ItemCard
@@ -20,6 +20,11 @@ const GridItems = (props: Props) => {
                         item={item}
                         forEdit={forEdit}
                         forLiveAuction={forLiveAuction}
+                        contentClassName={
+                            forLiveAuction
+                                ? 'p-4 xs:py-3 xs:px-1 h-[120px] xs:h-[100px] xs:flex xs:flex-col xs:gap-2 xs:overflow-hidden'
+                                : 'p-4 xs:py-3 xs:px-0 h-[98px] xs:h-[100px] xs:flex xs:flex-col xs:overflow-hidden'
+                        }
                         showSaveButton={forLiveAuction ? false : true}
                         showPromotedBadge={forLiveAuction ? false : true}
                         showVerifiedBadge={forLiveAuction ? false : true}

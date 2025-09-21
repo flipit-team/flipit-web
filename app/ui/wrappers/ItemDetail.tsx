@@ -161,9 +161,11 @@ const ItemDetail = (props: Props) => {
                         images={item?.imageUrls || []}
                         overlayElements={
                             <>
-                                <div className='w-[76px] h-[26px] typo-body_sr text-white bg-primary absolute top-7 left-3 flex items-center justify-center rounded'>
-                                    Promoted
-                                </div>
+                                {item?.promoted && (
+                                    <div className='w-[76px] h-[26px] typo-body_sr text-white bg-primary absolute top-7 left-3 flex items-center justify-center rounded'>
+                                        Promoted
+                                    </div>
+                                )}
                                 <div className='absolute bottom-4 right-3'>
                                     <button
                                         onClick={handleLikeClick}
@@ -304,13 +306,15 @@ const ItemDetail = (props: Props) => {
                     </div>
                     <SafetyTips />
                     <div className='flex items-center gap-4 mt-6 justify-self-center'>
-                        <div className='typo-body_lm'>4 Feedback</div>
-                        <Link
-                            href={`/feedback?sellerId=${item?.seller.id}&itemId=${item?.id}`}
-                            className='border border-border_gray h-[30px] w-[93px] flex items-center justify-center typo-body_mr text-text_four rounded-lg cursor-pointer'
-                        >
-                            View all
-                        </Link>
+                        <div className='typo-body_lm'>{item?.seller.reviewCount || 0} Feedback</div>
+                        {(item?.seller.reviewCount || 0) > 0 && (
+                            <Link
+                                href={`/feedback?sellerId=${item?.seller.id}&itemId=${item?.id}`}
+                                className='border border-border_gray h-[30px] w-[93px] flex items-center justify-center typo-body_mr text-text_four rounded-lg cursor-pointer'
+                            >
+                                View all
+                            </Link>
+                        )}
                     </div>
                 </div>
             </div>
@@ -331,7 +335,8 @@ const ItemDetail = (props: Props) => {
                                   phoneNumberVerified: item.seller.phoneNumberVerified || false,
                                   dateVerified: new Date(
                                       item.seller.dateVerified || item.seller.dateCreated || new Date()
-                                  )
+                                  ),
+                                  reviewCount: item.seller.reviewCount || 0
                               }
                             : undefined
                     }

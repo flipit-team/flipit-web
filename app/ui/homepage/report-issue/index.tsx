@@ -1,25 +1,73 @@
-import {useSearchParams} from 'next/navigation';
+import {useSearchParams, useRouter} from 'next/navigation';
 import React, {useState} from 'react';
 import Image from 'next/image';
+import { SupportService } from '~/services/support.service';
+import { AbuseReportRequest } from '~/utils/interface';
+import { useAppContext } from '~/contexts/AppContext';
 
 interface ReportModalContentProps {
     title: string;
     onClose: () => void;
-    onSubmit: (reason: string, description: string) => void;
+    onSubmit?: (reason: string, description: string) => void;
+    targetId?: number;
+    reportType?: 'USER' | 'ITEM' | 'OTHER';
 }
 
 const reasons = ['Inappropriate content', 'Spam or scam', 'Incorrect information', 'Other'];
 
-const ReportModalContent: React.FC<ReportModalContentProps> = ({title, onClose, onSubmit}) => {
+const ReportModalContent: React.FC<ReportModalContentProps> = ({
+    title,
+    onClose,
+    onSubmit,
+    targetId,
+    reportType = 'OTHER'
+}) => {
     const [reason, setReason] = useState('');
     const [description, setDescription] = useState('');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const searchParams = useSearchParams();
     const query = searchParams.get('q');
+    const router = useRouter();
+    const { setModalMessage } = useAppContext();
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(reason, description);
+        setIsSubmitting(true);
+
+        try {
+            if (onSubmit) {
+                // Use custom submit handler if provided
+                onSubmit(reason, description);
+            } else {
+                // Use new API service
+                const reportData: AbuseReportRequest = {
+                    reportType,
+                    reason,
+                    description,
+                    ...(targetId && { targetId })
+                };
+
+                const result = await SupportService.reportAbuse(reportData);
+
+                if (result.data && !result.error) {
+                    setModalMessage('Your report has been submitted successfully! We will review it and take appropriate action.');
+                    onClose();
+                    router.push('?modal=success');
+                } else {
+                    setModalMessage('Failed to submit report. Please try again.');
+                    onClose();
+                    router.push('?modal=error');
+                }
+            }
+        } catch (error) {
+            console.error('Error submitting report:', error);
+            setModalMessage('Failed to submit report. Please try again.');
+            onClose();
+            router.push('?modal=error');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
     if (query === 'report-issue')
         return (
@@ -93,9 +141,10 @@ const ReportModalContent: React.FC<ReportModalContentProps> = ({title, onClose, 
 
                 <button
                     type='submit'
-                    className='w-full bg-primary text-white py-3 rounded typo-heading-md-semibold hover:bg-primary-dark transition'
+                    disabled={isSubmitting}
+                    className='w-full bg-primary text-white py-3 rounded typo-heading-md-semibold hover:bg-primary-dark transition disabled:opacity-50 disabled:cursor-not-allowed'
                 >
-                    Submit report
+                    {isSubmitting ? 'Submitting...' : 'Submit report'}
                 </button>
             </form>
         );

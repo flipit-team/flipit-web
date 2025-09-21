@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Sample Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover { background: #0056b3; }
+        .log {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            min-height: 200px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>📱 Create Sample Data</h1>
+    <p>Make sure you're logged into the application first, then click the buttons below:</p>
+
+    <button onclick="testAPI()">🔍 Test API Connection</button>
+    <button onclick="createListedItems()">Create Listed Items (3 items)</button>
+    <button onclick="createAuctionItems()">Create Auction Items (2 items)</button>
+    <button onclick="createAllData()">Create All Data</button>
+    <button onclick="clearLog()">Clear Log</button>
+
+    <div id="log" class="log">Ready to create sample data...\n</div>
+
+    <script>
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'success' ? 'success' : type === 'error' ? 'error' : '';
+            logDiv.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = 'Log cleared...\n';
+        }
+
+        const items = [
+            {
+                title: "iPhone 14 Pro Max 256GB",
+                description: "Excellent condition iPhone 14 Pro Max with 256GB storage. Comes with original box, charger, and protective case. Battery health 98%. No scratches or dents.",
+                imageKeys: ["phone1.jpg", "phone2.jpg", "phone3.jpg"],
+                acceptCash: true,
+                cashAmount: 450000,
+                location: "Ikeja, Lagos, Nigeria",
+                condition: "NEW",
+                brand: "Apple",
+                itemCategories: ["Electronics & Gadgets"]
+            },
+            {
+                title: "Samsung 55-inch 4K Smart TV",
+                description: "Barely used Samsung 55-inch 4K UHD Smart TV with HDR support. Perfect picture quality.",
+                imageKeys: ["tv1.jpg", "tv2.jpg", "tv3.jpg"],
+                acceptCash: true,
+                cashAmount: 320000,
+                location: "Victoria Island, Lagos, Nigeria",
+                condition: "FAIRLY_USED",
+                brand: "Samsung",
+                itemCategories: ["Electronics & Gadgets"]
+            },
+            {
+                title: "Nike Air Jordan 1 Chicago",
+                description: "Classic Nike Air Jordan 1 in Chicago colorway. Size 42. Excellent condition with original box.",
+                imageKeys: ["shoes1.jpg", "shoes2.jpg", "shoes3.jpg"],
+                acceptCash: true,
+                cashAmount: 85000,
+                location: "Abuja, FCT, Nigeria",
+                condition: "FAIRLY_USED",
+                brand: "Nike",
+                itemCategories: ["Fashion & Clothing"]
+            }
+        ];
+
+        const auctions = [
+            {
+                title: "Rolex Submariner Vintage",
+                description: "Authentic Rolex Submariner from 1998. Recently serviced with original papers.",
+                imageKeys: ["watch1.jpg", "watch2.jpg", "watch3.jpg"],
+                location: "Victoria Island, Lagos, Nigeria",
+                condition: "FAIRLY_USED",
+                brand: "Rolex",
+                itemCategories: ["Jewelry & Watches"],
+                startingBid: 1500000,
+                bidIncrement: 50000,
+                hours: 72
+            },
+            {
+                title: "Canon EOS R5 Camera",
+                description: "Professional Canon EOS R5 mirrorless camera. Excellent condition with low shutter count.",
+                imageKeys: ["camera1.jpg", "camera2.jpg", "camera3.jpg"],
+                location: "Abuja, FCT, Nigeria",
+                condition: "FAIRLY_USED",
+                brand: "Canon",
+                itemCategories: ["Electronics & Gadgets"],
+                startingBid: 600000,
+                bidIncrement: 25000,
+                hours: 48
+            }
+        ];
+
+        async function createListedItems() {
+            log('🛍️ Creating listed items...');
+
+            for (const item of items) {
+                try {
+                    const response = await fetch('/api/items', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(item)
+                    });
+
+                    if (response.ok) {
+                        log(`✅ Created: ${item.title}`, 'success');
+                    } else {
+                        const error = await response.json();
+                        log(`❌ Failed: ${item.title} - Status: ${response.status}`, 'error');
+                        log(`   Error details: ${JSON.stringify(error, null, 2)}`, 'error');
+                    }
+                } catch (error) {
+                    log(`❌ Error: ${item.title} - ${error.message}`, 'error');
+                }
+                await new Promise(r => setTimeout(r, 500));
+            }
+            log('📦 Listed items creation completed!');
+        }
+
+        async function createAuctionItems() {
+            log('🔨 Creating auction items...');
+
+            for (const auction of auctions) {
+                try {
+                    // Create item first
+                    const itemData = {
+                        title: auction.title,
+                        description: auction.description,
+                        imageKeys: auction.imageKeys,
+                        acceptCash: false,
+                        cashAmount: 0,
+                        location: auction.location,
+                        condition: auction.condition,
+                        brand: auction.brand,
+                        itemCategories: auction.itemCategories
+                    };
+
+                    const itemRes = await fetch('/api/items', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(itemData)
+                    });
+
+                    if (itemRes.ok) {
+                        const item = await itemRes.json();
+                        log(`✅ Created item: ${auction.title}`, 'success');
+                        log(`   Item ID: ${item.message?.id || item.id}`, 'info');
+
+                        await new Promise(r => setTimeout(r, 500));
+
+                        // Create auction
+                        const startDate = new Date(Date.now() + 60 * 60 * 1000);
+                        const endDate = new Date(startDate.getTime() + auction.hours * 60 * 60 * 1000);
+
+                        const auctionData = {
+                            startDate: startDate.toISOString(),
+                            endDate: endDate.toISOString(),
+                            reservePrice: auction.startingBid * 1.5,
+                            bidIncrement: auction.bidIncrement,
+                            startingBid: auction.startingBid,
+                            itemId: item.message?.id || item.id,
+                            title: auction.title,
+                            description: auction.description,
+                            imageKeys: auction.imageKeys,
+                            location: auction.location,
+                            condition: auction.condition,
+                            brand: auction.brand,
+                            itemCategories: auction.itemCategories
+                        };
+
+                        const auctionRes = await fetch('/api/v1/auction', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(auctionData)
+                        });
+
+                        if (auctionRes.ok) {
+                            log(`✅ Created auction: ${auction.title}`, 'success');
+                        } else {
+                            const error = await auctionRes.json();
+                            log(`❌ Failed auction: ${auction.title} - Status: ${auctionRes.status}`, 'error');
+                            log(`   Auction error: ${JSON.stringify(error, null, 2)}`, 'error');
+                        }
+                    } else {
+                        const error = await itemRes.json();
+                        log(`❌ Failed item: ${auction.title} - Status: ${itemRes.status}`, 'error');
+                        log(`   Item error: ${JSON.stringify(error, null, 2)}`, 'error');
+                    }
+                } catch (error) {
+                    log(`❌ Error with auction: ${auction.title} - ${error.message}`, 'error');
+                }
+                await new Promise(r => setTimeout(r, 1000));
+            }
+            log('🎯 Auction items creation completed!');
+        }
+
+        async function testAPI() {
+            log('🔍 Testing API endpoints...');
+
+            // Test authentication
+            try {
+                const authTest = await fetch('/api/auth/me');
+                log(`Auth test - Status: ${authTest.status}`, authTest.ok ? 'success' : 'error');
+                if (authTest.ok) {
+                    const user = await authTest.json();
+                    log(`   Logged in as: ${user.user?.firstName || user.user?.username || 'Unknown'}`, 'success');
+                } else {
+                    log('   Not authenticated - please login first!', 'error');
+                    return;
+                }
+            } catch (error) {
+                log(`Auth test failed: ${error.message}`, 'error');
+                return;
+            }
+
+            // Test items endpoint
+            try {
+                const itemsTest = await fetch('/api/items');
+                log(`Items endpoint - Status: ${itemsTest.status}`, itemsTest.ok ? 'success' : 'error');
+            } catch (error) {
+                log(`Items endpoint failed: ${error.message}`, 'error');
+            }
+
+            // Test categories
+            try {
+                const categoriesTest = await fetch('/api/items/categories');
+                log(`Categories endpoint - Status: ${categoriesTest.status}`, categoriesTest.ok ? 'success' : 'error');
+                if (categoriesTest.ok) {
+                    const categories = await categoriesTest.json();
+                    log(`   Available categories: ${categories.map(c => c.name).join(', ')}`, 'info');
+                }
+            } catch (error) {
+                log(`Categories endpoint failed: ${error.message}`, 'error');
+            }
+
+            log('🔍 API test completed!');
+        }
+
+        async function createAllData() {
+            log('🚀 Creating all sample data...');
+            await createListedItems();
+            await createAuctionItems();
+            log('🎉 All done! Refresh your home page and live auction page to see the data!', 'success');
+        }
+    </script>
+</body>
+</html>

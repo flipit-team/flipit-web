@@ -24,8 +24,10 @@ function transformAuctionToItem(auction: AuctionDTO): Item {
         condition: auction.item.condition,
         brand: auction.item.brand,
         dateCreated: auction.item.dateCreated,
+        promoted: false,
+        liked: false,
         seller: {
-            ...auction.item.seller,
+            ...auction.item.seller as any,
             id: auction.item.seller.id.toString(),
             avgRating: auction.item.seller.avgRating || 0,
             avg_rating: auction.item.seller.avgRating || 0,

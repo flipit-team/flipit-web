@@ -1,11 +1,14 @@
 'use client';
 import Image from 'next/image';
-import React, {useState} from 'react';
+import React from 'react';
 import NoData from '../common/no-data/NoData';
 import {Item} from '~/utils/interface';
 import Categories from '../homepage/categories';
 import GridItems from '../common/grid-items/GridItems';
 import SearchBar from '../homepage/search-bar';
+import SortDropdown from '../common/sort-dropdown/SortDropdown';
+import MobileControlsWrapper from './MobileControlsWrapper';
+import LocationFilter from '../common/location-filter/LocationFilter';
 import {useAppContext} from '~/contexts/AppContext';
 import {dummyItems} from '~/utils/dummy';
 
@@ -15,14 +18,15 @@ interface Props {
         name: string;
         description: string | null;
     }[];
+    onLocationFilter?: (stateCode: string, lgaCode?: string) => void;
+    onSortChange?: (sortValue: string) => void;
+    currentSort?: string;
 }
 
 const LiveAuctionWrapper = (props: Props) => {
-    const {items: serverItems, defaultCategories: serverCategories} = props;
+    const {items: serverItems, defaultCategories: serverCategories, onLocationFilter, onSortChange, currentSort = 'recent'} = props;
     const {debugMode} = useAppContext();
-    
-    // Debug logging to see what data we're getting
-    
+
     // Use server-side data or dummy data for debug mode only
     const items = debugMode ? dummyItems : serverItems;
     const defaultCategories = debugMode ? [
@@ -32,66 +36,55 @@ const LiveAuctionWrapper = (props: Props) => {
         {name: 'Home & Garden', description: 'Home improvement and garden items'},
         {name: 'Sports', description: 'Sports equipment and accessories'}
     ] : serverCategories;
-    
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [selectedSort, setSelectedSort] = useState('A-Z');
 
     const sortOptions = [
-        {value: 'alphabetical', label: 'A-Z'},
+        {value: 'recent', label: 'Recent'},
         {value: 'ending-soon', label: 'Ending Soon'},
-        {value: 'newest', label: 'Newest'},
-        {value: 'highest-bid', label: 'Highest Bid'}
+        {value: 'highest-bid', label: 'Highest Bid'},
+        {value: 'price-low', label: 'Price: Low to High'},
+        {value: 'price-high', label: 'Price: High to Low'}
     ];
 
     const handleSortSelect = (option: {value: string; label: string}) => {
-        setSelectedSort(option.label);
-        setIsDropdownOpen(false);
+        onSortChange?.(option.value);
     };
 
     return (
-        <div className='flex flex-col relative'>
-            <div className='xs:px-4 h-[103px] xs:h-[184px] bg-surface-primary-95 flex xs:gap-6  xs:pt-[36px] xs:pb-[29px]'>
-                <div className='flex items-center mx-auto text-white'>
-                    <SearchBar />
+        <div className='flex flex-col relative no-scrollbar'>
+            <div className='xs:px-4 h-[206px] xs:h-[184px] bg-surface-primary-95 flex flex-col gap-7 xs:gap-6 py-11 xs:pt-[36px] xs:pb-[29px]'>
+                <div className='flex items-center gap-4 mx-auto text-white xs:flex-col xs:gap-3'>
+                    <p className='typo-body_lr xs:typo-body_sr'>Auctions near me</p>
+                    {onLocationFilter ? (
+                        <LocationFilter onLocationChange={onLocationFilter} />
+                    ) : (
+                        <div className='border border-border_gray h-[37px] xs:h-[34px] px-4 xs:px-3 flex items-center rounded-md'>
+                            <Image src={'/location.svg'} height={24} width={24} alt='location' className='h-6 w-6 xs:h-5 xs:w-5 mr-2' />
+                            <p className='typo-body_mr xs:typo-body_sr'>All Nigeria</p>
+                            <Image src={'/arrow-down.svg'} height={16} width={16} alt='dropdown' className='h-4 w-4 xs:h-3 xs:w-3 ml-2' />
+                        </div>
+                    )}
                 </div>
+                <SearchBar />
             </div>
 
-            <div className='grid grid-cols-[260px_1fr] xs:grid-cols-1 gap-6 overflow-hidden max-w-full'>
+            <div className='grid grid-cols-[260px_1fr] xs:grid-cols-1 gap-6 xs:gap-0 overflow-hidden max-w-full'>
                 <Categories defaultCategories={defaultCategories} forLiveAuction />
 
-                <div className='w-full max-w-full overflow-x-hidden pr-[60px]'>
-                    <div className='py-3 xs:py-0 xs:mb-4 flex items-center justify-between'>
-                        <div className='typo-heading_ms'>Browse all items</div>
-                        <div className='flex items-center gap-2 relative'>
-                            <span className='typo-body_sr text-text_four'>Sort by</span>
-                            <div className='relative'>
-                                <button
-                                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                                    className='w-[166px] typo-body_ss h-[41px] text-text_four border border-border_gray rounded px-4 py-1 focus:outline-none focus:border-border_gray bg-white flex items-center justify-between min-w-[100px]'
-                                >
-                                    <span>{selectedSort}</span>
-                                    <Image
-                                        src='/arrow-down-gray.svg'
-                                        height={16}
-                                        width={16}
-                                        alt='dropdown'
-                                        className={`h-4 w-4 ml-2 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
-                                    />
-                                </button>
-                                {isDropdownOpen && (
-                                    <div className='absolute top-full left-0 right-0 mt-1 bg-white border border-border_gray rounded shadow-lg z-50'>
-                                        {sortOptions.map((option) => (
-                                            <button
-                                                key={option.value}
-                                                onClick={() => handleSortSelect(option)}
-                                                className='w-full px-4 py-2 text-left typo-body_ss text-text_four hover:bg-gray-50 first:rounded-t last:rounded-b'
-                                            >
-                                                {option.label}
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
+                <div className='w-full max-w-full overflow-x-hidden pr-[60px] xs:pr-4 xs:pl-4 no-scrollbar'>
+                    <MobileControlsWrapper
+                        defaultCategories={defaultCategories}
+                        onSortChange={onSortChange}
+                        currentSort={currentSort}
+                    />
+
+                    <div className='py-9 xs:py-4 xs:mb-4 flex items-center justify-between'>
+                        <div className='typo-heading_ms xs:typo-heading_sr'>Live Auctions</div>
+                        <div className='xs:hidden'>
+                            <SortDropdown
+                                options={sortOptions}
+                                defaultSelection={sortOptions.find(opt => opt.value === currentSort)?.label || "Recent"}
+                                onSelectionChange={handleSortSelect}
+                            />
                         </div>
                     </div>
 

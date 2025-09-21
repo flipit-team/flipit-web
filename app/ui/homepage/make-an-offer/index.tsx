@@ -202,7 +202,7 @@ const MakeAnOffer = (props: Props) => {
                         </div>
                         <div className='grid grid-cols-[443px_1fr] xs:flex xs:flex-col gap-[44px] xs:gap-[22px] '>
                             <Image
-                                src={item?.imageUrls?.[0] || '/camera-large.png'}
+                                src={item?.imageUrls?.[0] || '/placeholder-product-large.png'}
                                 height={439}
                                 width={443}
                                 alt='picture'

@@ -28,17 +28,62 @@
 }
 
 /*hide scrollbar*/
-body::-webkit-scrollbar:horizontal {
-    width: 0;
-    height: 0;
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    display: none;
+}
+
+html,
+body {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
 }
 
 .grid-swiper .swiper-slide {
-    width: fit-content;
+    width: 359px;
+    flex-shrink: 0;
+}
+
+@media (max-width: 767px) {
+    .grid-swiper .swiper-slide {
+        width: calc(50vw - 24px);
+    }
 }
 
 @media (max-width: 767px) {
     .grid-swiper .swiper {
         width: 335px;
     }
+}
+
+
+/* Location filter mobile modal animation */
+@keyframes slide-up {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.animate-slide-up {
+    animation: slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Text truncation utilities */
+.line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
 }

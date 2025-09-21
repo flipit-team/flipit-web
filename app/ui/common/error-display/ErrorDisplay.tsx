@@ -7,33 +7,23 @@ interface ErrorDisplayProps {
   showTechnical?: boolean;
 }
 
-export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({ 
-  error, 
-  className = '', 
-  showTechnical = process.env.NODE_ENV === 'development' 
+export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
+  error,
+  className = '',
+  showTechnical = false
 }) => {
   if (!error) return null;
 
   const errorDetails = formatErrorForDisplay(error);
 
   return (
-    <div className={`p-4 bg-red-50 border border-red-200 rounded-lg ${className}`}>
+    <div className={`p-3 bg-red-50 border border-red-200 rounded-lg ${className}`}>
       <div className='flex items-start gap-3'>
-        <div className='w-5 h-5 rounded-full bg-red-500 flex-shrink-0 mt-0.5'></div>
+        <div className='w-4 h-4 rounded-full bg-red-500 flex-shrink-0 mt-1'></div>
         <div className='flex-1'>
-          {errorDetails.title && (
-            <h4 className='text-red-800 typo-body_ls font-semibold mb-1'>
-              {errorDetails.title}
-            </h4>
-          )}
-          <p className='text-red-700 typo-body_lr mb-2'>
+          <p className='text-red-700 typo-body_lr'>
             {errorDetails.message}
           </p>
-          {errorDetails.action && (
-            <p className='text-red-600 typo-body_xs italic mb-2'>
-              {errorDetails.action}
-            </p>
-          )}
           {showTechnical && errorDetails.technical && (
             <details className='mt-2'>
               <summary className='cursor-pointer text-red-600 typo-body_xs font-mono'>

@@ -14,6 +14,16 @@ export const errorMessageMap: Record<string, UserFriendlyError> = {
     message: 'The email or password you entered is incorrect. Please check and try again.',
     action: 'Verify your credentials or reset your password if needed.'
   },
+  'Invalid credentials': {
+    title: 'Login Failed',
+    message: 'The email or password you entered is incorrect. Please check and try again.',
+    action: 'Verify your credentials or reset your password if needed.'
+  },
+  'Unauthorized': {
+    title: 'Login Failed',
+    message: 'The email or password you entered is incorrect. Please check and try again.',
+    action: 'Verify your credentials or reset your password if needed.'
+  },
   'No token received from server': {
     title: 'Login Issue',
     message: 'We encountered a problem signing you in. Please try again.',
@@ -224,20 +234,44 @@ export const errorMessageMap: Record<string, UserFriendlyError> = {
 
 // Function to get user-friendly error message
 export function getUserFriendlyError(error: any): UserFriendlyError {
+  // If error is already a formatted friendly error, return it directly
+  if (error?.error?.title && error?.error?.message) {
+    return error.error;
+  }
+
   // Handle different error formats
   let errorMessage = '';
   let errorStatus = '';
 
   if (typeof error === 'string') {
     errorMessage = error;
-  } else if (error?.message) {
-    errorMessage = error.message;
+  } else if (error?.message && typeof error.message === 'string' &&
+             error.message !== 'Request failed with status 401' &&
+             error.message !== 'Request failed with status 400' &&
+             error.message !== 'Request failed with status 403' &&
+             error.message !== 'Request failed with status 500') {
+    // If error.message is already a user-friendly message, use it directly
+    return {
+      title: 'Error',
+      message: error.message,
+      action: undefined
+    };
+  } else if (error?.data?.message) {
+    // ApiClientError has the API response data
+    errorMessage = error.data.message;
+    errorStatus = error.status;
+  } else if (error?.data?.debugMessage) {
+    // Handle debugMessage from API error
+    errorMessage = error.data.debugMessage;
+    errorStatus = error.status;
   } else if (error?.apierror?.message) {
     errorMessage = error.apierror.message;
     errorStatus = error.apierror.status;
   } else if (error?.apierror?.debugMessage) {
     errorMessage = error.apierror.debugMessage;
     errorStatus = error.apierror.status;
+  } else if (error?.message) {
+    errorMessage = error.message;
   } else if (error?.error?.message) {
     errorMessage = error.error.message;
   }
@@ -287,8 +321,19 @@ export function formatErrorForDisplay(error: any): {
   action?: string;
   technical?: string; // For debugging in development
 } {
+  // Debug logging in development to understand error structure
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Error received in formatErrorForDisplay:', {
+      error,
+      type: typeof error,
+      data: error?.data,
+      message: error?.message,
+      status: error?.status
+    });
+  }
+
   const friendlyError = getUserFriendlyError(error);
-  
+
   const result = {
     ...friendlyError,
     technical: undefined as string | undefined
@@ -298,6 +343,10 @@ export function formatErrorForDisplay(error: any): {
   if (process.env.NODE_ENV === 'development') {
     if (typeof error === 'string') {
       result.technical = error;
+    } else if (error?.data?.debugMessage) {
+      result.technical = error.data.debugMessage;
+    } else if (error?.data?.message) {
+      result.technical = error.data.message;
     } else if (error?.apierror?.debugMessage) {
       result.technical = error.apierror.debugMessage;
     } else if (error?.message) {

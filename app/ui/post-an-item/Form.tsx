@@ -114,8 +114,8 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
 
     // Check if all required fields are valid
     const isFormValid = () => {
-        const commonFields = title.trim() && description.trim() && location.trim() && condition && urls.length >= 3;
-        
+        const commonFields = title.trim() && description.trim() && location.trim() && condition && categories.trim() && urls.length >= 3;
+
         if (formType === 'listing') {
             return commonFields && cash && (cash === 'no' || price > 0);
         } else {
@@ -403,8 +403,8 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
     };
 
     return (
-        <form className='w-full flex flex-col gap-6'>
-            <h1 className='typo-heading_ms mx-auto xs:hidden'>
+        <form className='w-full flex flex-col gap-6 xs:gap-4'>
+            <h1 className='typo-heading_ms xs:typo-heading_sr mx-auto xs:text-center xs:block'>
                 {formType === 'auction' ? 'Post an Auction' : 'Post a listed Item'}
             </h1>
 
@@ -445,9 +445,9 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 setValue={handleInput}
             />
 
-            <div className='typo-body_mr'>
+            <div className='typo-body_mr xs:typo-body_sr'>
                 <p>Add photo <span className="text-error ml-1">*</span></p>
-                <p className='mb-3 text-text_four'>Upload at least 3 photos</p>
+                <p className='mb-3 xs:mb-2 text-text_four'>Upload at least 3 photos</p>
                 <ImageUpload setUrls={setUrls} setUploading={setUploading} uploading={uploading} initialUrls={urls} />
             </div>
 
