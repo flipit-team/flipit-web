@@ -40,7 +40,7 @@ const ItemCard: React.FC<ItemCardProps> = memo(
         customFooter,
         priority = false
     }: ItemCardProps) => {
-        const url = useMemo(() => item.imageUrls?.[0] || '/placeholder-product.png', [item.imageUrls]);
+        const url = useMemo(() => item.imageUrls?.[0] || 'https://images.pexels.com/photos/1303084/pexels-photo-1303084.jpeg', [item.imageUrls]);
 
         // Like functionality
         const {isLiked, toggleLike, loading} = useItemLike(item.id);
