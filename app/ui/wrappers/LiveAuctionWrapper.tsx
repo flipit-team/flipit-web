@@ -9,8 +9,6 @@ import SearchBar from '../homepage/search-bar';
 import SortDropdown from '../common/sort-dropdown/SortDropdown';
 import MobileControlsWrapper from './MobileControlsWrapper';
 import LocationFilter from '../common/location-filter/LocationFilter';
-import {useAppContext} from '~/contexts/AppContext';
-import {dummyItems} from '~/utils/dummy';
 
 interface Props {
     items: Item[];
@@ -25,17 +23,10 @@ interface Props {
 
 const LiveAuctionWrapper = (props: Props) => {
     const {items: serverItems, defaultCategories: serverCategories, onLocationFilter, onSortChange, currentSort = 'recent'} = props;
-    const {debugMode} = useAppContext();
 
-    // Use server-side data or dummy data for debug mode only
-    const items = debugMode ? dummyItems : serverItems;
-    const defaultCategories = debugMode ? [
-        {name: 'Electronics', description: 'Devices like phones, laptops, gadgets, etc.'},
-        {name: 'Mobile Phones', description: 'Smartphones and related accessories'},
-        {name: 'Clothing', description: 'Fashion items and apparel'},
-        {name: 'Home & Garden', description: 'Home improvement and garden items'},
-        {name: 'Sports', description: 'Sports equipment and accessories'}
-    ] : serverCategories;
+    // Use only real server-side data (no dummy data)
+    const items = serverItems;
+    const defaultCategories = serverCategories;
 
     const sortOptions = [
         {value: 'recent', label: 'Recent'},

@@ -1,8 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useAppContext } from '~/contexts/AppContext';
-import { dummyItems } from '~/utils/dummy';
 import { Item } from '~/utils/interface';
 import { useItems, useCategories } from '~/hooks/useItems';
 import { useInfiniteScroll } from '~/hooks/useInfiniteScroll';
@@ -22,7 +20,6 @@ interface Props {
 }
 
 const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, defaultCategories: serverCategories, authStatus }: Props) => {
-    const { debugMode } = useAppContext();
     const [locationFilter, setLocationFilter] = useState<{ stateCode: string; lgaCode?: string } | null>(null);
     const [currentSort, setCurrentSort] = useState<string>('recent');
     
@@ -120,17 +117,11 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
         }
     };
 
-    // Use dummy data in debug mode, otherwise prioritize server data, then client-side API data
-    const items = debugMode ? dummyItems : (serverItems && serverItems.length > 0 ? serverItems : (transformedApiItems || []));
-    const auctionItems = debugMode ? dummyItems.slice(0, 5) : (serverAuctionItems || []); // Use first 5 dummy items or server auction items
-    const defaultCategories = debugMode ? [
-        {name: 'Electronics', description: 'Devices like phones, laptops, gadgets, etc.'},
-        {name: 'Mobile Phones', description: 'Smartphones and related accessories'},
-        {name: 'Clothing', description: 'Fashion items and apparel'},
-        {name: 'Home & Garden', description: 'Home improvement and garden items'},
-        {name: 'Sports', description: 'Sports equipment and accessories'}
-    ] : (serverCategories && serverCategories.length > 0 ? serverCategories : 
-         (apiCategories && Array.isArray(apiCategories) ? apiCategories.map(cat => ({ name: cat.name, description: cat.description })) : []));
+    // Prioritize server data, then client-side API data (no dummy data)
+    const items = serverItems && serverItems.length > 0 ? serverItems : (transformedApiItems || []);
+    const auctionItems = serverAuctionItems || [];
+    const defaultCategories = serverCategories && serverCategories.length > 0 ? serverCategories :
+         (apiCategories && Array.isArray(apiCategories) ? apiCategories.map(cat => ({ name: cat.name, description: cat.description })) : []);
 
 
     return (

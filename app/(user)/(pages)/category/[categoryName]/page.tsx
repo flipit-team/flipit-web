@@ -5,13 +5,10 @@ import { useParams } from 'next/navigation';
 import CategoryWrapper from './components/CategoryWrapper';
 import { Item } from '~/utils/interface';
 import { useItems, useCategories } from '~/hooks/useItems';
-import { useAppContext } from '~/contexts/AppContext';
-import { dummyItems } from '~/utils/dummy';
 import Loading from '~/ui/common/loading/Loading';
 
 export default function CategoryPage() {
     const params = useParams();
-    const { debugMode } = useAppContext();
     const categoryName = params?.categoryName as string;
 
     // Decode the category name from URL
@@ -78,25 +75,16 @@ export default function CategoryPage() {
         })) : [],
     })) : [];
 
-    // Use dummy data in debug mode
-    const items = debugMode ? dummyItems.filter(item =>
-        item.itemCategories.some((cat: any) => cat.name.toLowerCase().includes(decodedCategoryName.toLowerCase()))
-    ) : transformedApiItems;
-
-    const categories = debugMode ? [
-        { id: 1, name: 'Electronics', description: 'Electronic devices and gadgets' },
-        { id: 2, name: 'Mobile Phones', description: 'Smartphones and accessories' },
-        { id: 3, name: 'Clothing', description: 'Fashion and apparel' },
-        { id: 4, name: 'Home & Garden', description: 'Home improvement items' },
-        { id: 5, name: 'Sports', description: 'Sports equipment' }
-    ] : (apiCategories || []);
+    // Use only real API data (no dummy data)
+    const items = transformedApiItems;
+    const categories = apiCategories || [];
 
     // Handle filter changes
     const handleFilterChange = (newFilters: typeof filters) => {
         setFilters(newFilters);
 
         // Update API params
-        if (updateParams && !debugMode) {
+        if (updateParams) {
             const apiParams: any = {
                 page: 0,
                 categories: newFilters.category ? [newFilters.category] : undefined,
