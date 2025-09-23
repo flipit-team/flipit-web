@@ -22,6 +22,8 @@ function HeaderContent(props: Props) {
     const [showFlyout, setShowFlyout] = useState(false);
     const [isClient, setIsClient] = useState(false);
     const [hovered, setHovered] = useState(false);
+    const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+    const [profileDropdownTimeout, setProfileDropdownTimeout] = useState<NodeJS.Timeout | null>(null);
     const router = useRouter();
     const pathname = usePathname();
     const {notifications, profile, user: clientUser, debugMode, toggleDebugMode} = useAppContext();
@@ -39,6 +41,31 @@ function HeaderContent(props: Props) {
     useEffect(() => {
         setIsClient(true);
     }, []);
+
+    // Profile dropdown handlers with delay to prevent accidental closures
+    const handleProfileMouseEnter = () => {
+        if (profileDropdownTimeout) {
+            clearTimeout(profileDropdownTimeout);
+            setProfileDropdownTimeout(null);
+        }
+        setShowProfileDropdown(true);
+    };
+
+    const handleProfileMouseLeave = () => {
+        const timeout = setTimeout(() => {
+            setShowProfileDropdown(false);
+        }, 300); // 300ms delay before closing
+        setProfileDropdownTimeout(timeout);
+    };
+
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (profileDropdownTimeout) {
+                clearTimeout(profileDropdownTimeout);
+            }
+        };
+    }, [profileDropdownTimeout]);
 
     // Log header user state for debugging
     useEffect(() => {
@@ -205,8 +232,12 @@ function HeaderContent(props: Props) {
                         </div>
                         
                         {/* Profile Icon */}
-                        <div className='relative group'>
-                            <div className='flex items-center gap-2 cursor-pointer p-2 rounded-full transition'>
+                        <div className='relative'>
+                            <div
+                                className='flex items-center gap-2 cursor-pointer p-2 rounded-full transition'
+                                onMouseEnter={handleProfileMouseEnter}
+                                onMouseLeave={handleProfileMouseLeave}
+                            >
                                 <Image
                                     src={profile?.avatar ? profile.avatar : '/profile-picture.svg'}
                                     height={32}
@@ -227,7 +258,14 @@ function HeaderContent(props: Props) {
                             </div>
 
                             {/* Profile Dropdown */}
-                            {user && <ProfileDropdown setShowFlyout={setShowFlyout} />}
+                            {user && (
+                                <ProfileDropdown
+                                    setShowFlyout={setShowFlyout}
+                                    isVisible={showProfileDropdown}
+                                    onMouseEnter={handleProfileMouseEnter}
+                                    onMouseLeave={handleProfileMouseLeave}
+                                />
+                            )}
                         </div>
 
                         {/* Post Item Button - Hidden on mobile */}

@@ -20,9 +20,11 @@ const MobileControlsWrapper: React.FC<Props> = ({ defaultCategories, onSortChang
 
     const sortOptions = [
         {value: 'recent', label: 'Recent'},
-        {value: 'promoted', label: 'Promoted'},
-        {value: 'price-low', label: 'Price: Low to High'},
-        {value: 'price-high', label: 'Price: High to Low'}
+        {value: 'popular', label: 'Popular'},
+        {value: 'a-z', label: 'A-Z (ascending)'},
+        {value: 'z-a', label: 'Z-A (descending)'},
+        {value: 'low-high', label: 'Price: Low to High'},
+        {value: 'high-low', label: 'Price: High to Low'}
     ];
 
     // Update selected category when URL params change

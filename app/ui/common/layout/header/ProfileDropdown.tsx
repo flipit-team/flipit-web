@@ -6,11 +6,20 @@ import LogoutButton from '../../auth/Logout';
 
 interface ProfileDropdownProps {
     setShowFlyout: React.Dispatch<React.SetStateAction<boolean>>;
+    isVisible: boolean;
+    onMouseEnter: () => void;
+    onMouseLeave: () => void;
 }
 
-const ProfileDropdown = ({setShowFlyout}: ProfileDropdownProps) => {
+const ProfileDropdown = ({setShowFlyout, isVisible, onMouseEnter, onMouseLeave}: ProfileDropdownProps) => {
+    if (!isVisible) return null;
+
     return (
-        <div className='absolute right-0 top-full mt-2 bg-white shadow-lg rounded-lg p-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto min-w-[200px]'>
+        <div
+            className='absolute right-0 top-full mt-2 bg-white shadow-lg rounded-lg p-4 z-50 min-w-[200px] transition-opacity duration-200'
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+        >
             {/* Arrow pointer */}
             <div className='absolute -top-2 right-6 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[8px] border-b-white'></div>
             
@@ -53,7 +62,7 @@ const ProfileDropdown = ({setShowFlyout}: ProfileDropdownProps) => {
                 
                 {/* Separator line */}
                 <div className='h-px bg-neutral-400'></div>
-                
+
                 <LogoutButton setShowFlyout={setShowFlyout} />
             </div>
         </div>

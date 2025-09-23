@@ -29,9 +29,11 @@ interface Props {
 const MainHomeServer = ({ items, auctionItems, defaultCategories, loadMoreRef, loading, hasMore, onLocationFilter, currentLocationFilter, onSortChange, currentSort = 'recent' }: Props) => {
     const sortOptions = [
         {value: 'recent', label: 'Recent'},
-        {value: 'promoted', label: 'Promoted'},
-        {value: 'price-low', label: 'Price: Low to High'},
-        {value: 'price-high', label: 'Price: High to Low'}
+        {value: 'popular', label: 'Popular'},
+        {value: 'a-z', label: 'A-Z (ascending)'},
+        {value: 'z-a', label: 'Z-A (descending)'},
+        {value: 'low-high', label: 'Price: Low to High'},
+        {value: 'high-low', label: 'Price: High to Low'}
     ];
 
     const handleSortSelect = (option: {value: string; label: string}) => {
