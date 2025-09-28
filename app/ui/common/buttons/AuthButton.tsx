@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
-import Loader from '../loader/Loader';
+import Loading from '../loading/Loading';
 
 interface Props {
     title: string;
@@ -16,7 +16,11 @@ interface Props {
 const AuthButton = (props: Props) => {
     const {bg, title, icon, border, link, isLoading, onClick} = props;
     if (isLoading) {
-        return <Loader color='green' />;
+        return (
+            <div className={`w-full h-[45px] ${bg ? 'bg-primary text-white' : 'text-text_four'} ${border ? 'border border-border_gray' : ''} flex items-center justify-center px-4 rounded-[43px] typo-body_ms cursor-default`}>
+                <Loading size="sm" variant="spinner" center={false} className={bg ? 'text-white' : 'text-gray-600'} />
+            </div>
+        );
     }
     if (link) {
         return (

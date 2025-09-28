@@ -2,20 +2,8 @@ import React, { Suspense } from 'react';
 import Sidebar from '~/ui/common/layout/sidebar';
 import SettingsSidebar from './components/SettingsSidebar';
 import SettingsContent from './components/SettingsContent';
+import Loading from '~/ui/common/loading/Loading';
 
-// Loading component for Suspense
-function LoadingContent() {
-    return (
-        <div className='flex-1 bg-white rounded-lg shadow p-4 md:p-6'>
-            <div className='animate-pulse space-y-4'>
-                <div className='h-6 md:h-8 bg-gray-200 rounded w-1/3'></div>
-                <div className='h-px bg-gray-200 w-full'></div>
-                <div className='h-4 bg-gray-200 rounded w-1/4'></div>
-                <div className='h-6 bg-gray-200 rounded w-1/2'></div>
-            </div>
-        </div>
-    );
-}
 
 
 export default function SettingsPage() {
@@ -33,12 +21,12 @@ export default function SettingsPage() {
                     
                     {/* Settings Layout */}
                     <div className='flex flex-col md:flex-row md:gap-6 w-full'>
-                        <Suspense fallback={<div>Loading...</div>}>
+                        <Suspense fallback={<Loading size="md" text="Loading..." />}>
                             <SettingsSidebar />
                         </Suspense>
                         
                         <div className='flex-1 w-full'>
-                            <Suspense fallback={<LoadingContent />}>
+                            <Suspense fallback={<Loading size="md" text="Loading..." />}>
                                 <SettingsContent />
                             </Suspense>
                         </div>

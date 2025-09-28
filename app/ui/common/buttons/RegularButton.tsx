@@ -3,7 +3,7 @@ import Link from 'next/link';
 import {useSearchParams} from 'next/navigation';
 import React from 'react';
 import {useAppContext} from '~/contexts/AppContext';
-import dynamic from 'next/dynamic';
+import Loading from '../loading/Loading';
 
 interface Props {
     isLight?: boolean;
@@ -15,8 +15,6 @@ interface Props {
     action?: () => void;
 }
 
-const Loader = dynamic(() => import('../loader/Loader'), {ssr: false});
-
 const RegularButton = ({isLight, text, slug, usePopup, isLoading, disabled, action}: Props) => {
     const {setShowPopup} = useAppContext();
     const searchParams = useSearchParams();
@@ -24,7 +22,11 @@ const RegularButton = ({isLight, text, slug, usePopup, isLoading, disabled, acti
     params.set('q', slug ?? '');
 
     if (isLoading) {
-        return <Loader color='green' />;
+        return (
+            <div className={`w-full flex items-center justify-center h-[51px] ${isLight ? 'bg-surface-primary-16' : 'bg-primary'} rounded-lg`}>
+                <Loading size="sm" variant="spinner" center={false} className={isLight ? 'text-primary' : 'text-white'} />
+            </div>
+        );
     }
 
     if (action) {

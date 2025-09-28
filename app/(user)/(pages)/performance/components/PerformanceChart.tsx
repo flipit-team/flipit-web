@@ -8,52 +8,49 @@ interface ChartDataPoint {
 const PerformanceChart = () => {
     // Mock data for the chart
     const chartData: ChartDataPoint[] = [
-        { date: 'Apr 30', value: 0.3 },
-        { date: 'May 1', value: 0.7 },
-        { date: 'May 2', value: 0.5 },
-        { date: 'May 3', value: 0.9 },
-        { date: 'May 4', value: 0.6 },
-        { date: 'May 5', value: 0.8 },
-        { date: 'May 6', value: 0.4 },
-        { date: 'May 7', value: 0.2 },
-        { date: 'May 8', value: 0.6 },
-        { date: 'May 9', value: 0.9 },
-        { date: 'May 10', value: 0.7 },
-        { date: 'May 11', value: 0.3 },
-        { date: 'May 12', value: 0.8 },
-        { date: 'May 13', value: 0.5 },
-        { date: 'May 14', value: 0.4 }
+        {date: 'Apr 30', value: 0.3},
+        {date: 'May 1', value: 0.7},
+        {date: 'May 2', value: 0.5},
+        {date: 'May 3', value: 0.9},
+        {date: 'May 4', value: 0.6},
+        {date: 'May 5', value: 0.8},
+        {date: 'May 6', value: 0.4},
+        {date: 'May 7', value: 0.2},
+        {date: 'May 8', value: 0.6},
+        {date: 'May 9', value: 0.9},
+        {date: 'May 10', value: 0.7},
+        {date: 'May 11', value: 0.3},
+        {date: 'May 12', value: 0.8},
+        {date: 'May 13', value: 0.5},
+        {date: 'May 14', value: 0.4}
     ];
 
     const yAxisLabels = ['1.0', '0.9', '0.8', '0.7', '0.6', '0.5', '0.4', '0.3', '0.2', '0.1'];
     const maxValue = 1.0;
 
     return (
-        <div className='bg-white rounded-lg border border-border_gray p-[18px] h-[593px]'>
+        <div className='bg-white rounded-lg border border-border_gray p-3 sm:p-[18px] h-[550px]'>
             <div className='relative h-full'>
-                <div className='flex h-[450px]'>
+                <div className='flex h-[480px] sm:h-[500px]'>
                     {/* Y-Axis Labels */}
-                    <div className='flex flex-col justify-between w-8 mr-4 py-4'>
+                    <div className='flex flex-col justify-between w-6 sm:w-8 mr-2 sm:mr-4 py-2 sm:py-4'>
                         {yAxisLabels.map((label, index) => (
-                            <span 
-                                key={index} 
-                                className='typo-caption text-text_one text-right'
-                            >
+                            <span key={index} className='typo-caption text-text_one text-right text-xs sm:text-sm'>
                                 {label}
                             </span>
                         ))}
                     </div>
 
                     {/* Chart Container */}
-                    <div className='flex-1 relative border-l border-b border-gray-200'>
+                    <div className='flex-1 relative border-l border-b border-gray-200 overflow-x-auto'>
                         {/* Chart Bars */}
-                        <div className='flex items-end justify-between h-full px-2 pb-4'>
+                        <div className='flex items-end justify-between h-full px-1 sm:px-2 pb-2 sm:pb-4 min-w-[600px] sm:min-w-0'>
                             {chartData.map((dataPoint, index) => (
                                 <div key={index} className='flex flex-col items-center'>
                                     <div
-                                        className='bg-primary w-6 rounded-t-sm'
+                                        className='bg-primary w-4 sm:w-6 rounded-t-sm'
                                         style={{
-                                            height: `${(dataPoint.value / maxValue) * 340}px`,
+                                            height: `${(dataPoint.value / maxValue) * 400}px`,
                                             minHeight: '4px'
                                         }}
                                     />
@@ -62,11 +59,11 @@ const PerformanceChart = () => {
                         </div>
 
                         {/* X-Axis Labels */}
-                        <div className='flex justify-between px-2 mt-2'>
+                        <div className='flex justify-between px-1 sm:px-2 mt-1 sm:mt-2 min-w-[600px] sm:min-w-0'>
                             {chartData.map((dataPoint, index) => (
-                                <span 
+                                <span
                                     key={index}
-                                    className='typo-caption text-text_one transform rotate-45'
+                                    className='typo-caption text-text_one transform rotate-45 text-xs sm:text-sm'
                                 >
                                     {dataPoint.date}
                                 </span>

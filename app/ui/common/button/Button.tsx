@@ -1,4 +1,5 @@
 import React from 'react';
+import Loading from '../loading/Loading';
 
 export interface ButtonProps {
     children: React.ReactNode;
@@ -6,6 +7,7 @@ export interface ButtonProps {
     variant?: 'primary' | 'secondary' | 'outline' | 'danger';
     size?: 'sm' | 'md' | 'lg';
     disabled?: boolean;
+    loading?: boolean;
     className?: string;
     type?: 'button' | 'submit' | 'reset';
 }
@@ -16,6 +18,7 @@ const Button: React.FC<ButtonProps> = ({
     variant = 'outline',
     size = 'sm',
     disabled = false,
+    loading = false,
     className = '',
     type = 'button',
     ...props
@@ -51,12 +54,21 @@ const Button: React.FC<ButtonProps> = ({
     return (
         <button
             type={type}
-            onClick={onClick}
-            disabled={disabled}
+            onClick={loading ? undefined : onClick}
+            disabled={disabled || loading}
             className={`${baseClasses} ${getVariantClasses()} ${getSizeClasses()} ${className}`}
             {...props}
         >
-            {children}
+            {loading ? (
+                <Loading
+                    size="xs"
+                    variant="spinner"
+                    center={false}
+                    className={variant === 'primary' || variant === 'secondary' ? 'text-white' : 'text-gray-600'}
+                />
+            ) : (
+                children
+            )}
         </button>
     );
 };

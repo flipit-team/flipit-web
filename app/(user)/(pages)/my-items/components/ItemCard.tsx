@@ -1,12 +1,13 @@
 'use client';
 import Image from 'next/image';
 import {useRouter} from 'next/navigation';
-import {useState} from 'react';
+import {useState, useRef, useEffect} from 'react';
 import Button from '~/ui/common/button';
 import {MyItem} from '../types';
 import {ItemsService} from '~/services/items.service';
 import {useToast} from '~/contexts/ToastContext';
 import DeleteConfirmationModal from '~/ui/common/delete-confirmation-modal/DeleteConfirmationModal';
+import {MoreVertical, Edit, Trash2, CheckCircle, Play, Square} from 'lucide-react';
 
 interface ItemCardProps {
     item: MyItem;
@@ -29,18 +30,35 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [isMarkingSold, setIsMarkingSold] = useState(false);
     const [isUpdatingAuction, setIsUpdatingAuction] = useState(false);
+    const [showDropdown, setShowDropdown] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setShowDropdown(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     const handleEditItem = () => {
+        setShowDropdown(false);
         router.push(`/edit-item/${item.id}`);
     };
 
     const handleMarkAsSold = async () => {
-        // TODO: Implement when API becomes available
+        setShowDropdown(false);
         setIsMarkingSold(true);
-        
+
         try {
             // Placeholder - will be replaced with actual API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise((resolve) => setTimeout(resolve, 1000));
             showSuccess('Item marked as sold successfully!');
             onItemUpdated?.(item.id);
         } catch (error) {
@@ -51,6 +69,7 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
     };
 
     const handleDeleteItem = () => {
+        setShowDropdown(false);
         console.log('Delete button clicked for item:', item.id);
         setShowDeleteModal(true);
         console.log('showDeleteModal set to true');
@@ -59,11 +78,11 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
     const handleConfirmDelete = async () => {
         setIsDeleting(true);
         console.log('Starting delete process for item:', item.id);
-        
+
         try {
             const result = await ItemsService.deleteItem(item.id);
             console.log('Delete result:', result);
-            
+
             if (result.data) {
                 console.log('Delete successful');
                 showSuccess('Item deleted successfully!');
@@ -88,6 +107,7 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
     const handleToggleAuction = async () => {
         if (!item.isAuction) return;
 
+        setShowDropdown(false);
         setIsUpdatingAuction(true);
 
         try {
@@ -95,7 +115,7 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
             const action = item.auctionActive ? 'deactivate' : 'activate';
 
             // Placeholder - will be replaced with actual API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise((resolve) => setTimeout(resolve, 1000));
 
             showSuccess(`Auction ${action}d successfully!`);
             onItemUpdated?.(item.id);
@@ -107,19 +127,86 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
     };
 
     return (
-        <div className='w-[833px] h-[179px] border border-border_gray rounded-md flex p-4'>
-            <div className='w-[157px] h-full bg-gray-200 rounded-md overflow-hidden flex-shrink-0 relative'>
+        <div className='w-full sm:border sm:border-border_gray sm:rounded-md flex flex-col sm:flex-row sm:p-4 sm:h-[179px]'>
+            <div className='w-full h-48 sm:w-[157px] sm:h-full bg-gray-200 rounded-t-md sm:rounded-md overflow-hidden flex-shrink-0 relative mb-2 sm:mb-0'>
                 <Image src={item.image} alt={item.title} fill className='object-cover' />
             </div>
 
-            <div className='flex-1 ml-[22px] flex flex-col justify-between'>
-                <div>
-                    <h3 className='text-gray-700 typo-body-lg-regular mb-2'>{item.title}</h3>
-                    <div className='text-text_one typo-heading-md-medium mb-1'>{formatAmount(item.amount)}</div>
-                    <div className='text-gray-700 typo-body-md-regular'>Views: {item.views}</div>
+            <div className='flex-1 sm:ml-[22px] flex flex-col justify-between'>
+                <div className='flex justify-between items-start'>
+                    <div className='flex-1'>
+                        <h3 className='text-gray-700 typo-body-lg-regular mb-1 sm:mb-2'>{item.title}</h3>
+                        <div className='text-text_one typo-heading-md-medium mb-0.5 sm:mb-1'>
+                            {formatAmount(item.amount)}
+                        </div>
+                        <div className='text-gray-700 typo-body-md-regular mb-2 sm:mb-0'>Views: {item.views}</div>
+                    </div>
+
+                    {/* Mobile dropdown menu */}
+                    <div className='sm:hidden relative' ref={dropdownRef}>
+                        <button
+                            onClick={() => setShowDropdown(!showDropdown)}
+                            className='p-2 text-gray-500 hover:text-gray-700 transition-colors'
+                        >
+                            <MoreVertical className='w-5 h-5' />
+                        </button>
+
+                        {showDropdown && (
+                            <div className='absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10'>
+                                <button
+                                    onClick={handleEditItem}
+                                    className='w-full flex items-center gap-3 px-4 py-2 text-left text-gray-700 hover:bg-gray-50 transition-colors'
+                                >
+                                    <Edit className='w-4 h-4' />
+                                    Edit Item
+                                </button>
+
+                                {item.isAuction ? (
+                                    <button
+                                        onClick={handleToggleAuction}
+                                        disabled={isUpdatingAuction}
+                                        className='w-full flex items-center gap-3 px-4 py-2 text-left text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50'
+                                    >
+                                        {item.auctionActive ? (
+                                            <>
+                                                <Square className='w-4 h-4' />
+                                                {isUpdatingAuction ? 'Deactivating...' : 'Cancel Auction'}
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Play className='w-4 h-4' />
+                                                {isUpdatingAuction ? 'Activating...' : 'Activate Auction'}
+                                            </>
+                                        )}
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={handleMarkAsSold}
+                                        disabled={isMarkingSold}
+                                        className='w-full flex items-center gap-3 px-4 py-2 text-left text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50'
+                                    >
+                                        <CheckCircle className='w-4 h-4' />
+                                        {isMarkingSold ? 'Marking...' : 'Mark as Sold'}
+                                    </button>
+                                )}
+
+                                <div className='border-t border-gray-100 my-1' />
+
+                                <button
+                                    onClick={handleDeleteItem}
+                                    disabled={isDeleting}
+                                    className='w-full flex items-center gap-3 px-4 py-2 text-left text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50'
+                                >
+                                    <Trash2 className='w-4 h-4' />
+                                    Delete Item
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
-                <div className='flex gap-3 mt-[21px]'>
+                {/* Desktop buttons */}
+                <div className='hidden sm:flex gap-3 mt-[21px]'>
                     <Button variant='outline' size='sm' onClick={handleEditItem}>
                         Edit Item
                     </Button>
@@ -130,30 +217,17 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
                             variant={item.auctionActive ? 'danger' : 'primary'}
                             size='sm'
                             onClick={handleToggleAuction}
-                            disabled={isUpdatingAuction}
+                            loading={isUpdatingAuction}
                         >
-                            {isUpdatingAuction
-                                ? (item.auctionActive ? 'Deactivating...' : 'Activating...')
-                                : (item.auctionActive ? 'Cancel Auction' : 'Activate Auction')
-                            }
+                            {item.auctionActive ? 'Cancel Auction' : 'Activate Auction'}
                         </Button>
                     ) : (
-                        <Button
-                            variant='outline'
-                            size='sm'
-                            onClick={handleMarkAsSold}
-                            disabled={isMarkingSold}
-                        >
-                            {isMarkingSold ? 'Marking...' : 'Mark as Sold'}
+                        <Button variant='outline' size='sm' onClick={handleMarkAsSold} loading={isMarkingSold}>
+                            Mark as Sold
                         </Button>
                     )}
 
-                    <Button
-                        variant='danger'
-                        size='sm'
-                        onClick={handleDeleteItem}
-                        disabled={isDeleting}
-                    >
+                    <Button variant='danger' size='sm' onClick={handleDeleteItem} loading={isDeleting}>
                         Delete Item
                     </Button>
                 </div>
@@ -161,7 +235,7 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
 
             <DeleteConfirmationModal
                 isOpen={showDeleteModal}
-                title="Delete Item"
+                title='Delete Item'
                 message={`Are you sure you want to delete "${item.title}"? This action cannot be undone.`}
                 onConfirm={handleConfirmDelete}
                 onCancel={handleCancelDelete}

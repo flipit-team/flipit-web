@@ -34,8 +34,8 @@ export const Loading: React.FC<LoadingProps> = ({
 
   if (variant === 'spinner') {
     return (
-      <div className={`${containerClasses} ${className}`}>
-        <Loader className={`${sizeClasses[size]} animate-spin text-primary`} />
+      <div className={`${containerClasses}`}>
+        <Loader className={`${sizeClasses[size]} animate-spin ${className || 'text-primary'}`} />
         {text && (
           <p className={`${textSizeClasses[size]} text-text_four mt-2`}>{text}</p>
         )}
@@ -45,11 +45,11 @@ export const Loading: React.FC<LoadingProps> = ({
 
   if (variant === 'dots') {
     return (
-      <div className={`${containerClasses} ${className}`}>
+      <div className={`${containerClasses}`}>
         <div className="flex space-x-1">
-          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+          <div className={`w-2 h-2 rounded-full animate-bounce ${className || 'bg-primary'}`} style={{ animationDelay: '0ms' }}></div>
+          <div className={`w-2 h-2 rounded-full animate-bounce ${className || 'bg-primary'}`} style={{ animationDelay: '150ms' }}></div>
+          <div className={`w-2 h-2 rounded-full animate-bounce ${className || 'bg-primary'}`} style={{ animationDelay: '300ms' }}></div>
         </div>
         {text && (
           <p className={`${textSizeClasses[size]} text-text_four mt-2`}>{text}</p>
@@ -60,8 +60,8 @@ export const Loading: React.FC<LoadingProps> = ({
 
   if (variant === 'pulse') {
     return (
-      <div className={`${containerClasses} ${className}`}>
-        <div className={`${sizeClasses[size]} bg-gray-300 rounded-full animate-pulse`}></div>
+      <div className={`${containerClasses}`}>
+        <div className={`${sizeClasses[size]} rounded-full animate-pulse ${className || 'bg-gray-300'}`}></div>
         {text && (
           <p className={`${textSizeClasses[size]} text-text_four mt-2 animate-pulse`}>{text}</p>
         )}

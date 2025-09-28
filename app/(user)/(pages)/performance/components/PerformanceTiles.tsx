@@ -24,25 +24,27 @@ const PerformanceTiles = () => {
     ];
 
     return (
-        <div className='flex gap-6 mb-8'>
-            {tilesData.map((tile, index) => (
-                <div
-                    key={index}
-                    className='bg-white w-[256px] h-[101px] rounded-[8px] border border-border_gray shadow-md px-6 flex items-center justify-between'
-                >
-                    <div className='flex flex-col justify-center'>
-                        <h3 className='text-gray-600 typo-body-md-regular mb-2'>{tile.title}</h3>
-                        <p className='typo-heading-lg-semibold text-gray-900'>{tile.amount}</p>
-                    </div>
+        <div className='overflow-x-auto scrollbar-hide mb-8'>
+            <div className='flex gap-4 sm:gap-6 min-w-max sm:min-w-0'>
+                {tilesData.map((tile, index) => (
+                    <div
+                        key={index}
+                        className='bg-white w-[220px] sm:w-[256px] h-[101px] rounded-[8px] border border-border_gray shadow-md px-4 sm:px-6 flex items-center justify-between flex-shrink-0'
+                    >
+                        <div className='flex flex-col justify-center'>
+                            <h3 className='text-gray-600 typo-body-md-regular mb-2'>{tile.title}</h3>
+                            <p className='typo-heading-lg-semibold text-gray-900'>{tile.amount}</p>
+                        </div>
 
-                    <div className='flex-shrink-0'>
-                        <div className='w-[56px] h-[56px] relative rounded-full bg-primary bg-opacity-10 flex items-center justify-center'>
-                            {/* Temporary placeholder - replace with actual icons later */}
-                            <div className='w-6 h-6 bg-primary rounded'></div>
+                        <div className='flex-shrink-0'>
+                            <div className='w-[56px] h-[56px] relative rounded-full bg-primary bg-opacity-10 flex items-center justify-center'>
+                                {/* Temporary placeholder - replace with actual icons later */}
+                                <div className='w-6 h-6 bg-primary rounded'></div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            ))}
+                ))}
+            </div>
         </div>
     );
 };

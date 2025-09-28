@@ -4,6 +4,7 @@ import {Item} from '~/utils/interface';
 import { getSingleAuctionServerSide } from '~/lib/server-api';
 import { AuctionDTO } from '~/types/api';
 import { Suspense } from 'react';
+import Loading from '~/ui/common/loading/Loading';
 
 type Props = {
     params: Promise<{slug: string}>;
@@ -71,7 +72,7 @@ const page = async ({params}: Props) => {
 
 
         return (
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<Loading size="md" text="Loading..." />}>
                 <LiveAuctionDetails item={item} />
             </Suspense>
         );

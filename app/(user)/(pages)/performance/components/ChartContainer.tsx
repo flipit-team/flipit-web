@@ -11,12 +11,12 @@ const ChartContainer = () => {
     return (
         <div className='relative'>
             {/* Dropdown Selectors */}
-            <div className='absolute top-[18px] right-[18px] flex items-center gap-[18px] z-10'>
-                <DateRangeDropdown 
+            <div className='absolute top-[18px] right-[18px] flex flex-col sm:flex-row items-end sm:items-center gap-2 sm:gap-[18px] z-10'>
+                <DateRangeDropdown
                     selectedRange={selectedDateRange}
                     onRangeChange={setSelectedDateRange}
                 />
-                <FrequencyDropdown 
+                <FrequencyDropdown
                     selectedFrequency={selectedFrequency}
                     onFrequencyChange={setSelectedFrequency}
                 />

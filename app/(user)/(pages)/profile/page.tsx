@@ -1,11 +1,12 @@
 import {redirect} from 'next/navigation';
 import React, {Suspense} from 'react';
 import Profile from '~/ui/wrappers/Profile';
+import Loading from '~/ui/common/loading/Loading';
 
 const page = () => {
     try {
         return (
-            <Suspense fallback={<p>Loading...</p>}>
+            <Suspense fallback={<Loading size="md" text="Loading..." />}>
                 <Profile />
             </Suspense>
         );

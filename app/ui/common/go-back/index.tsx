@@ -7,7 +7,7 @@ const GoBack = () => {
     return (
         <button
             onClick={() => router.back()}
-            className='flex items-center gap-2 text-primary mb-8 transition-colors duration-200'
+            className='flex items-center gap-2 text-primary mb-4 xs:mb-2 transition-colors duration-200'
         >
             <ChevronLeft className='w-5 h-5' />
             <span className='typo-body-md-medium'>Go back</span>

@@ -8,13 +8,14 @@ import NormalSelectBox from '../common/normal-select-box';
 import AuctionDurationSelector from '../common/auction-duration-selector/AuctionDurationSelector';
 import AuctionStartSelector from '../common/auction-start-selector/AuctionStartSelector';
 import LocationSelector from '../common/location-selector/LocationSelector';
+import Loading from '../common/loading/Loading';
 import {useRouter} from 'next/navigation';
 import {useAppContext} from '~/contexts/AppContext';
-import { useCategories } from '~/hooks/useItems';
-import { ItemsService } from '~/services/items.service';
-import { AuctionsService } from '~/services/auctions.service';
-import { CreateItemRequest, CreateAuctionRequest, ItemDTO, UpdateItemRequest } from '~/types/api';
-import { formatErrorForDisplay } from '~/utils/error-messages';
+import {useCategories} from '~/hooks/useItems';
+import {ItemsService} from '~/services/items.service';
+import {AuctionsService} from '~/services/auctions.service';
+import {CreateItemRequest, CreateAuctionRequest, ItemDTO, UpdateItemRequest} from '~/types/api';
+import {formatErrorForDisplay} from '~/utils/error-messages';
 import ErrorDisplay from '../common/error-display/ErrorDisplay';
 
 interface FormProps {
@@ -29,34 +30,41 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
     const [error, setError] = useState<string | null>(null);
     const [errorTitle, setErrorTitle] = useState<string>('');
     const [errorAction, setErrorAction] = useState<string>('');
-    
+
     // Initialize state with existing item data if editing (only used for initial render)
     const getInitialValue = (field: string, defaultValue: any) => {
         if (isEditing && existingItem) {
             switch (field) {
-                case 'title': return existingItem.title || '';
-                case 'description': return existingItem.description || '';
-                case 'price': return existingItem.cashAmount || 0;
-                case 'condition': 
-                    const conditionMapping: { [key: string]: string } = {
-                        'NEW': 'brand-new',
-                        'FAIRLY_USED': 'fairly-used',
-                        'USED': 'fairly-used'
+                case 'title':
+                    return existingItem.title || '';
+                case 'description':
+                    return existingItem.description || '';
+                case 'price':
+                    return existingItem.cashAmount || 0;
+                case 'condition':
+                    const conditionMapping: {[key: string]: string} = {
+                        NEW: 'brand-new',
+                        FAIRLY_USED: 'fairly-used',
+                        USED: 'fairly-used'
                     };
                     return conditionMapping[existingItem.condition || ''] || existingItem.condition || '';
-                case 'location': return existingItem.location || '';
-                case 'brand': return existingItem.brand || '';
-                case 'cash': return existingItem.acceptCash ? 'yes' : 'no';
-                case 'categories': 
-                    return existingItem.itemCategories && existingItem.itemCategories.length > 0 
-                        ? existingItem.itemCategories[0].name 
+                case 'location':
+                    return existingItem.location || '';
+                case 'brand':
+                    return existingItem.brand || '';
+                case 'cash':
+                    return existingItem.acceptCash ? 'yes' : 'no';
+                case 'categories':
+                    return existingItem.itemCategories && existingItem.itemCategories.length > 0
+                        ? existingItem.itemCategories[0].name
                         : '';
-                default: return defaultValue;
+                default:
+                    return defaultValue;
             }
         }
         return defaultValue;
     };
-    
+
     const [title, setTitle] = useState(() => getInitialValue('title', ''));
     const [categories, setCategories] = useState(() => getInitialValue('categories', ''));
     const [price, setPrice] = useState(() => getInitialValue('price', 0));
@@ -65,10 +73,8 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
     const [description, setDescription] = useState(() => getInitialValue('description', ''));
     const [location, setLocation] = useState(() => getInitialValue('location', ''));
     const [brand, setBrand] = useState(() => getInitialValue('brand', ''));
-    const [urls, setUrls] = useState<string[]>(() => 
-        isEditing && existingItem ? (existingItem.imageUrls || []) : []
-    );
-    
+    const [urls, setUrls] = useState<string[]>(() => (isEditing && existingItem ? existingItem.imageUrls || [] : []));
+
     // Update form state when existingItem changes (for async data loading)
     useEffect(() => {
         if (isEditing && existingItem) {
@@ -78,26 +84,26 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
             setLocation(existingItem.location || '');
             setBrand(existingItem.brand || '');
             setCash(existingItem.acceptCash ? 'yes' : 'no');
-            
+
             // Handle condition mapping
-            const conditionMapping: { [key: string]: string } = {
-                'NEW': 'brand-new',
-                'FAIRLY_USED': 'fairly-used',
-                'USED': 'fairly-used'
+            const conditionMapping: {[key: string]: string} = {
+                NEW: 'brand-new',
+                FAIRLY_USED: 'fairly-used',
+                USED: 'fairly-used'
             };
             const mappedCondition = conditionMapping[existingItem.condition || ''] || existingItem.condition || '';
             setCondition(mappedCondition);
-            
+
             // Handle categories
             if (existingItem.itemCategories && existingItem.itemCategories.length > 0) {
                 setCategories(existingItem.itemCategories[0].name);
             }
-            
+
             // Handle URLs
             setUrls(existingItem.imageUrls || []);
         }
     }, [isEditing, existingItem]);
-    
+
     const [startingBid, setStartingBid] = useState(0);
     const [bidIncrement, setBidIncrement] = useState(0);
     const [auctionStartDate, setAuctionStartDate] = useState(() => {
@@ -107,14 +113,15 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
     });
     const [auctionDurationHours, setAuctionDurationHours] = useState(24); // Default 24 hours (1 day)
     const [reservePrice, setReservePrice] = useState(0);
-    const [locationCodes, setLocationCodes] = useState<{ stateCode: string; lgaCode?: string } | null>(null);
+    const [locationCodes, setLocationCodes] = useState<{stateCode: string; lgaCode?: string} | null>(null);
     const {defaultCategories} = useAppContext();
-    const { categories: apiCategories } = useCategories();
+    const {categories: apiCategories} = useCategories();
     const [uploading, setUploading] = useState(false);
 
     // Check if all required fields are valid
     const isFormValid = () => {
-        const commonFields = title.trim() && description.trim() && location.trim() && condition && categories.trim() && urls.length >= 3;
+        const commonFields =
+            title.trim() && description.trim() && location.trim() && condition && categories.trim() && urls.length >= 3;
 
         if (formType === 'listing') {
             return commonFields && cash && (cash === 'no' || price > 0);
@@ -124,9 +131,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
     };
 
     // Use API categories if available, fallback to context categories, then empty array
-    const availableCategories = (apiCategories && apiCategories.length > 0) ? apiCategories : (defaultCategories || []);
-
-
+    const availableCategories = apiCategories && apiCategories.length > 0 ? apiCategories : defaultCategories || [];
 
     const handleInput = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
         setError('');
@@ -161,7 +166,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
         }
     };
 
-    const handleLocationChange = (formattedLocation: string, codes: { stateCode: string; lgaCode?: string }) => {
+    const handleLocationChange = (formattedLocation: string, codes: {stateCode: string; lgaCode?: string}) => {
         setLocation(formattedLocation);
         setLocationCodes(codes);
         setError('');
@@ -211,7 +216,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 const updateData: UpdateItemRequest = {
                     title: title.trim(),
                     description: description.trim(),
-                    imageKeys: urls.filter(url => url != null && url !== ''),
+                    imageKeys: urls.filter((url) => url != null && url !== ''),
                     acceptCash: cash === 'yes',
                     cashAmount: cash === 'yes' ? price : 0,
                     location: location.trim(),
@@ -223,7 +228,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
 
                 try {
                     const result = await ItemsService.updateItem(existingItem.id, updateData);
-                    
+
                     if (result.error) {
                         const errorDetails = formatErrorForDisplay(result.error);
                         setErrorTitle(errorDetails.title);
@@ -253,7 +258,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 const itemData: CreateItemRequest = {
                     title: title.trim(),
                     description: description.trim(),
-                    imageKeys: urls.filter(url => url != null && url !== ''), // Filter out null/empty URLs
+                    imageKeys: urls.filter((url) => url != null && url !== ''), // Filter out null/empty URLs
                     acceptCash: cash === 'yes',
                     cashAmount: cash === 'yes' ? price : 0,
                     location: location.trim(),
@@ -262,37 +267,34 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                     itemCategories: categories ? [categories] : [] // Single category for now
                 };
 
-
                 try {
                     const result = await ItemsService.createItem(itemData);
-                
-                
-                if (result.error) {
-                    const errorDetails = formatErrorForDisplay(result.error);
-                    setErrorTitle(errorDetails.title);
-                    setError(errorDetails.message);
-                    setErrorAction(errorDetails.action || '');
-                    return;
-                }
 
-                if (result.data) {
-                    
-                    // Force a complete page reload to ensure fresh data
-                    window.location.href = '/home';
-                } else {
-                    const errorDetails = formatErrorForDisplay('Item creation response was empty');
+                    if (result.error) {
+                        const errorDetails = formatErrorForDisplay(result.error);
+                        setErrorTitle(errorDetails.title);
+                        setError(errorDetails.message);
+                        setErrorAction(errorDetails.action || '');
+                        return;
+                    }
+
+                    if (result.data) {
+                        // Force a complete page reload to ensure fresh data
+                        window.location.href = '/home';
+                    } else {
+                        const errorDetails = formatErrorForDisplay('Item creation response was empty');
+                        setErrorTitle(errorDetails.title);
+                        setError(errorDetails.message);
+                        setErrorAction(errorDetails.action || '');
+                    }
+                } catch (err: any) {
+                    const errorDetails = formatErrorForDisplay(err);
                     setErrorTitle(errorDetails.title);
                     setError(errorDetails.message);
                     setErrorAction(errorDetails.action || '');
+                } finally {
+                    setLoading(false);
                 }
-            } catch (err: any) {
-                const errorDetails = formatErrorForDisplay(err);
-                setErrorTitle(errorDetails.title);
-                setError(errorDetails.message);
-                setErrorAction(errorDetails.action || '');
-            } finally {
-                setLoading(false);
-            }
             }
         } else {
             // Auction creation validation
@@ -354,7 +356,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
             const auctionData: CreateAuctionRequest = {
                 title: title.trim(),
                 description: description.trim(),
-                imageKeys: urls.filter(url => url != null && url !== ''), // Filter out null/empty URLs
+                imageKeys: urls.filter((url) => url != null && url !== ''), // Filter out null/empty URLs
                 location: location.trim(),
                 condition: condition === 'brand-new' ? 'NEW' : 'FAIRLY_USED',
                 brand: brand.trim() || 'Unknown',
@@ -367,12 +369,11 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 itemId: 0 // Will be created by the backend
             };
 
-
             try {
                 console.log('Creating auction with data:', auctionData);
                 const result = await AuctionsService.createAuction(auctionData);
                 console.log('Auction creation result:', result);
-                
+
                 if (result.error) {
                     const errorDetails = formatErrorForDisplay(result.error);
                     setErrorTitle(errorDetails.title);
@@ -382,7 +383,6 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 }
 
                 if (result.data) {
-                    
                     // Force a complete page reload to ensure fresh data
                     window.location.href = '/live-auction';
                 } else {
@@ -409,7 +409,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
             </h1>
 
             {error && (
-                <ErrorDisplay 
+                <ErrorDisplay
                     error={{
                         title: errorTitle,
                         message: error,
@@ -418,7 +418,15 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 />
             )}
 
-            <InputBox label='Title' name='title' placeholder='Enter item title' type='text' value={title} setValue={handleInput} required />
+            <InputBox
+                label='Title'
+                name='title'
+                placeholder='Enter item title'
+                type='text'
+                value={title}
+                setValue={handleInput}
+                required
+            />
             <InputBox
                 label='Description'
                 name='description'
@@ -446,7 +454,9 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
             />
 
             <div className='typo-body_mr xs:typo-body_sr'>
-                <p>Add photo <span className="text-error ml-1">*</span></p>
+                <p>
+                    Add photo <span className='text-error ml-1'>*</span>
+                </p>
                 <p className='mb-3 xs:mb-2 text-text_four'>Upload at least 3 photos</p>
                 <ImageUpload setUrls={setUrls} setUploading={setUploading} uploading={uploading} initialUrls={urls} />
             </div>
@@ -539,7 +549,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
             />
 
             <div className='flex gap-4'>
-                <Suspense fallback={<div>Loading...</div>}>
+                <Suspense fallback={<Loading size='sm' text='Loading...' />}>
                     <RegularButton
                         isLight
                         text='Cancel'
@@ -548,7 +558,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                         disabled={false}
                     />
                     <RegularButton
-                        text={isEditing ? 'Update Item' : (formType === 'auction' ? 'Post Auction' : 'Post Item')}
+                        text={isEditing ? 'Update Item' : formType === 'auction' ? 'Post Auction' : 'Post Item'}
                         action={handleSubmit}
                         isLoading={loading}
                         disabled={uploading || !isFormValid()}
