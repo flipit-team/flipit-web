@@ -66,7 +66,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
     };
 
     const [title, setTitle] = useState(() => getInitialValue('title', ''));
-    const [categories, setCategories] = useState(() => getInitialValue('categories', ''));
+    const [category, setCategory] = useState(() => getInitialValue('category', ''));
     const [price, setPrice] = useState(() => getInitialValue('price', 0));
     const [condition, setCondition] = useState(() => getInitialValue('condition', ''));
     const [cash, setCash] = useState(() => getInitialValue('cash', ''));
@@ -95,9 +95,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
             setCondition(mappedCondition);
 
             // Handle categories
-            if (existingItem.itemCategories && existingItem.itemCategories.length > 0) {
-                setCategories(existingItem.itemCategories[0].name);
-            }
+            setCategory(existingItem.itemCategory?.name || '');
 
             // Handle URLs
             setUrls(existingItem.imageUrls || []);
@@ -222,7 +220,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                     location: location.trim(),
                     condition: condition === 'brand-new' ? 'NEW' : 'FAIRLY_USED',
                     brand: brand.trim() || 'Unknown',
-                    itemCategories: categories ? [categories] : [],
+                    itemCategory: category ? category : '',
                     published: true // Ensure item remains published after update
                 };
 
@@ -264,7 +262,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                     location: location.trim(),
                     condition: condition === 'brand-new' ? 'NEW' : 'FAIRLY_USED',
                     brand: brand.trim() || 'Unknown', // Default brand if not provided
-                    itemCategories: categories ? [categories] : [] // Single category for now
+                    itemCategory: category ? category : '',// Single category for now
                 };
 
                 try {
@@ -360,7 +358,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 location: location.trim(),
                 condition: condition === 'brand-new' ? 'NEW' : 'FAIRLY_USED',
                 brand: brand.trim() || 'Unknown',
-                itemCategories: categories ? [categories] : [],
+                itemCategory: category ? category : '',
                 startingBid: startingBid,
                 bidIncrement: bidIncrement,
                 reservePrice: reservePrice > 0 ? reservePrice : startingBid, // Use starting bid as minimum reserve price

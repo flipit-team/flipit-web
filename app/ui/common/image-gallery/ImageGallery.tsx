@@ -24,7 +24,7 @@ const ImageGallery = ({
     const [thumbnailStartIndex, setThumbnailStartIndex] = useState(0);
     
     // Fallback to placeholder if no images
-    const imageList = images.length > 0 ? images : ['/placeholder-product-large.png'];
+    const imageList = images.length > 0 ? images : ['https://images.pexels.com/photos/1303084/pexels-photo-1303084.jpeg'];
     const currentImage = imageList[currentImageIndex];
     
     // Number of thumbnails to show at once

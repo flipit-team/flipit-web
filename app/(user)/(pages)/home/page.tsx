@@ -27,7 +27,7 @@ function transformAuctionToItem(auction: AuctionDTO): Item {
         promoted: false,
         liked: false,
         seller: auction.item.seller as any,
-        itemCategories: auction.item.itemCategories,
+        itemCategory: auction.item.itemCategory,
         // Auction-specific fields
         isAuction: true,
         auctionId: auction.id,

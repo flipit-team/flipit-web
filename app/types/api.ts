@@ -178,7 +178,7 @@ export interface CreateItemRequest {
   location: string;
   condition: string;
   brand: string;
-  itemCategories: string;
+  itemCategory: string;
 }
 
 export interface UpdateItemRequest {
@@ -190,7 +190,7 @@ export interface UpdateItemRequest {
   location: string;
   condition: string;
   brand: string;
-  itemCategories: string;
+  itemCategory: string;
   published: boolean;
 }
 
@@ -270,7 +270,7 @@ export interface CreateAuctionRequest {
   location: string;
   condition: string;
   brand: string;
-  itemCategories: string[];
+  itemCategory: string;
 }
 
 export interface UpdateAuctionRequest {
