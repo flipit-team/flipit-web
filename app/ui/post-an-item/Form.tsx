@@ -436,8 +436,8 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
             />
 
             <NormalSelectBox
-                selectedOption={categories}
-                setSelectedOption={setCategories}
+                selectedOption={category}
+                setSelectedOption={setCategory}
                 options={availableCategories}
                 required
             />
