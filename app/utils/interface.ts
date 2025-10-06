@@ -43,11 +43,11 @@ export interface Item {
         reviewCount: number;         // Enhanced review count
         mostRecentReview: ReviewDTO; // Latest review
     };
-    itemCategories: {
+    itemCategory: {
         id?: number;
         name: string;
         description: string;
-    }[];
+    };
     // Auction-specific fields (optional)
     isAuction?: boolean;
     auctionId?: number;

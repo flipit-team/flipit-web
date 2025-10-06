@@ -166,7 +166,7 @@ export interface ItemDTO {
   promoted: boolean;        // NEW: Item promotion status
   liked: boolean;          // NEW: Whether current user liked this item
   seller: UserDTO;
-  itemCategories: CategoryDTO[];
+  itemCategory: CategoryDTO;
 }
 
 export interface CreateItemRequest {
@@ -178,7 +178,7 @@ export interface CreateItemRequest {
   location: string;
   condition: string;
   brand: string;
-  itemCategories: string[];
+  itemCategories: string;
 }
 
 export interface UpdateItemRequest {
@@ -190,7 +190,7 @@ export interface UpdateItemRequest {
   location: string;
   condition: string;
   brand: string;
-  itemCategories: string[];
+  itemCategories: string;
   published: boolean;
 }
 
