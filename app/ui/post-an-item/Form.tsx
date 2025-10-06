@@ -119,7 +119,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
     // Check if all required fields are valid
     const isFormValid = () => {
         const commonFields =
-            title.trim() && description.trim() && location.trim() && condition && categories.trim() && urls.length >= 3;
+            title.trim() && description.trim() && location.trim() && condition && category.trim() && urls.length >= 3;
 
         if (formType === 'listing') {
             return commonFields && cash && (cash === 'no' || price > 0);
