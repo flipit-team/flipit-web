@@ -55,9 +55,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 case 'cash':
                     return existingItem.acceptCash ? 'yes' : 'no';
                 case 'categories':
-                    return existingItem.itemCategories && existingItem.itemCategories.length > 0
-                        ? existingItem.itemCategories[0].name
-                        : '';
+                    return existingItem.itemCategory?.name || '';
                 default:
                     return defaultValue;
             }
