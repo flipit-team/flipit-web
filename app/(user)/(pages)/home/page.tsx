@@ -79,8 +79,8 @@ function transformItems(items: ItemDTO[]): Item[] {
             mostRecentReview: (item.seller.mostRecentReview || { rating: 0, message: '', userId: 0, postedById: 0, createdDate: new Date().toISOString() }) as any,
         },
         itemCategory: {
-            name: item.itemCategory.name,
-            description: item.itemCategory.description,
+            name: item.itemCategory?.name || '',
+            description: item.itemCategory?.description || '',
         },
     }));
 }
