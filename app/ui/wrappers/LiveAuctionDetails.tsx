@@ -224,7 +224,7 @@ const LiveAuctionDetails = (props: Props) => {
                         <tbody>
                             <tr>
                                 <td className='pr-8 py-1'>Type</td>
-                                <td>{item?.itemCategories[0].name}</td>
+                                <td>{item?.itemCategory?.name}</td>
                             </tr>
                             <tr>
                                 <td className='pr-8 py-1'>Brand</td>

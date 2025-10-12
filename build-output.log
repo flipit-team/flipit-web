@@ -1,0 +1,83 @@
+
+> flipit-web@0.1.0 build
+> next build
+
+   ▲ Next.js 15.3.2
+   - Environments: .env.local, .env
+   - Experiments (use with caution):
+     ✓ webpackBuildWorker
+
+   Creating an optimized production build ...
+
+
+Source path: /Users/jose/Desktop/flip_web/app/styles/globals.css
+Setting up new context...
+Finding changed files: 35.499ms
+Reading changed files: 199.389ms
+Sorting candidates: 5.292ms
+Generate rules: 95.687ms
+Build stylesheet: 3.493ms
+Potential classes:  12114
+Active contexts:  1
+JIT TOTAL: 522.479ms
+
+
+
+
+Source path: /Users/jose/Desktop/flip_web/node_modules/swiper/modules/navigation.css
+JIT TOTAL: 0.831ms
+
+
+
+
+Source path: /Users/jose/Desktop/flip_web/node_modules/swiper/swiper.css
+JIT TOTAL: 0.437ms
+
+
+ ✓ Compiled successfully in 9.0s
+   Linting and checking validity of types ...
+
+./app/(user)/(pages)/my-items/page.tsx
+97:8  Warning: React Hook useEffect has a missing dependency: 'fetchUserItems'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./app/(user)/(pages)/settings/components/PersonalDetailsContent.tsx
+70:8  Warning: React Hook useEffect has a missing dependency: 'user'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./app/hooks/useItems.ts
+66:6  Warning: React Hook useEffect has a missing dependency: 'fetchItems'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./app/ui/common/auth/VerifyProfile.tsx
+96:37  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./app/ui/common/image-upload/index.tsx
+30:8  Warning: React Hook useEffect has a missing dependency: 'handleUpload'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./app/ui/common/location-selector/LocationSelector.tsx
+73:6  Warning: React Hook useEffect has a missing dependency: 'onChange'. Either include it or remove the dependency array. If 'onChange' changes too often, find the parent component that defines it and wrap that definition in useCallback.  react-hooks/exhaustive-deps
+
+./app/ui/common/profile-image-upload/ProfileImageUpload.tsx
+28:8  Warning: React Hook useEffect has a missing dependency: 'handleUpload'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./app/ui/wrappers/MainChats.tsx
+46:8  Warning: React Hook useEffect has missing dependencies: 'serverChatData.buyer.length' and 'serverChatData.seller.length'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+
+./app/ui/wrappers/ResetPassword.tsx
+35:8  Warning: React Hook useEffect has a missing dependency: 'setModalMessage'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./app/ui/wrappers/Verify.tsx
+36:8  Warning: React Hook useEffect has a missing dependency: 'setModalMessage'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+Failed to compile.
+
+./app/ui/wrappers/LiveAuctionDetails.tsx:227:44
+Type error: Property 'itemCategories' does not exist on type 'Item'. Did you mean 'itemCategory'?
+
+[0m [90m 225 |[39m                             [33m<[39m[33mtr[39m[33m>[39m[0m
+[0m [90m 226 |[39m                                 [33m<[39m[33mtd[39m className[33m=[39m[32m'pr-8 py-1'[39m[33m>[39m[33mType[39m[33m<[39m[33m/[39m[33mtd[39m[33m>[39m[0m
+[0m[31m[1m>[22m[39m[90m 227 |[39m                                 [33m<[39m[33mtd[39m[33m>[39m{item[33m?[39m[33m.[39mitemCategories[[35m0[39m][33m.[39mname}[33m<[39m[33m/[39m[33mtd[39m[33m>[39m[0m
+[0m [90m     |[39m                                            [31m[1m^[22m[39m[0m
+[0m [90m 228 |[39m                             [33m<[39m[33m/[39m[33mtr[39m[33m>[39m[0m
+[0m [90m 229 |[39m                             [33m<[39m[33mtr[39m[33m>[39m[0m
+[0m [90m 230 |[39m                                 [33m<[39m[33mtd[39m className[33m=[39m[32m'pr-8 py-1'[39m[33m>[39m[33mBrand[39m[33m<[39m[33m/[39m[33mtd[39m[33m>[39m[0m
+Next.js build worker exited with code: 1 and signal: null
