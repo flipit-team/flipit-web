@@ -65,6 +65,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
 
     const [title, setTitle] = useState(() => getInitialValue('title', ''));
     const [category, setCategory] = useState(() => getInitialValue('category', ''));
+    const [subcategory, setSubcategory] = useState(() => existingItem?.subcategory || '');
     const [price, setPrice] = useState(() => getInitialValue('price', 0));
     const [condition, setCondition] = useState(() => getInitialValue('condition', ''));
     const [cash, setCash] = useState(() => getInitialValue('cash', ''));
@@ -94,6 +95,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
 
             // Handle categories
             setCategory(existingItem.itemCategory?.name || '');
+            setSubcategory(existingItem.subcategory || '');
 
             // Handle URLs
             setUrls(existingItem.imageUrls || []);
@@ -128,6 +130,17 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
 
     // Use API categories if available, fallback to context categories, then empty array
     const availableCategories = apiCategories && apiCategories.length > 0 ? apiCategories : defaultCategories || [];
+
+    // Get subcategories for the selected category
+    const selectedCategoryData = availableCategories.find(cat => cat.name === category);
+    const availableSubcategories = (selectedCategoryData as any)?.subcategories || [];
+
+    // Reset subcategory when category changes
+    useEffect(() => {
+        if (category && !availableSubcategories.includes(subcategory)) {
+            setSubcategory('');
+        }
+    }, [category, availableSubcategories, subcategory]);
 
     const handleInput = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
         setError('');
@@ -241,6 +254,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                     condition: condition === 'brand-new' ? 'NEW' : 'FAIRLY_USED',
                     brand: brand.trim() || 'Unknown',
                     itemCategory: category ? category : '',
+                    subcategory: subcategory || undefined,
                     published: true // Ensure item remains published after update
                 };
 
@@ -283,7 +297,8 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                     lgaCode: locationCodes?.lgaCode || '',
                     condition: condition === 'brand-new' ? 'NEW' : 'FAIRLY_USED',
                     brand: brand.trim() || 'Unknown', // Default brand if not provided
-                    itemCategory: category ? category : '',// Single category for now
+                    itemCategory: category ? category : '',
+                    subcategory: subcategory || undefined,
                 };
 
                 try {
@@ -381,6 +396,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 condition: condition === 'brand-new' ? 'NEW' : 'FAIRLY_USED',
                 brand: brand.trim() || 'Unknown',
                 itemCategory: category ? category : '',
+                subcategory: subcategory || undefined,
                 startingBid: startingBid,
                 bidIncrement: bidIncrement,
                 reservePrice: reservePrice > 0 ? reservePrice : startingBid, // Use starting bid as minimum reserve price
@@ -468,6 +484,17 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 placeholder="Select category"
                 required
             />
+
+            {/* Subcategory dropdown - shows only if category is selected and has subcategories */}
+            {category && availableSubcategories.length > 0 && (
+                <Select
+                    label="Subcategory (Optional)"
+                    value={subcategory}
+                    onChange={setSubcategory}
+                    options={availableSubcategories.map((sub: string) => ({value: sub, label: sub}))}
+                    placeholder="Select subcategory"
+                />
+            )}
 
             <InputBox
                 label='Brand (Optional)'
