@@ -279,10 +279,12 @@ export interface CreateAuctionRequest {
   title: string;
   description: string;
   imageKeys: string[];
-  location: string;
+  stateCode: string;      // CHANGED: from location
+  lgaCode: string;        // NEW: LGA code
   condition: string;
   brand: string;
   itemCategory: string;
+  subcategory?: string;   // NEW: Optional subcategory
 }
 
 export interface UpdateAuctionRequest {

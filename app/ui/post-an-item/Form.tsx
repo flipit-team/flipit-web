@@ -7,7 +7,6 @@ import RegularButton from '../common/buttons/RegularButton';
 import Select from '../common/select';
 import AuctionDurationSelector from '../common/auction-duration-selector/AuctionDurationSelector';
 import AuctionStartSelector from '../common/auction-start-selector/AuctionStartSelector';
-import LocationSelector from '../common/location-selector/LocationSelector';
 import StateLGASelector from '../common/state-lga-selector/StateLGASelector';
 import Loading from '../common/loading/Loading';
 import {useRouter} from 'next/navigation';
@@ -237,7 +236,8 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                     imageKeys: urls.filter((url) => url != null && url !== '').map(extractKey),
                     acceptCash: cash === 'yes',
                     cashAmount: cash === 'yes' ? price : 0,
-                    location: location.trim(),
+                    stateCode: locationCodes?.stateCode || '',
+                    lgaCode: locationCodes?.lgaCode || '',
                     condition: condition === 'brand-new' ? 'NEW' : 'FAIRLY_USED',
                     brand: brand.trim() || 'Unknown',
                     itemCategory: category ? category : '',
@@ -279,7 +279,8 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                     imageKeys: urls.filter((url) => url != null && url !== ''), // Filter out null/empty URLs
                     acceptCash: cash === 'yes',
                     cashAmount: cash === 'yes' ? price : 0,
-                    location: location.trim(),
+                    stateCode: locationCodes?.stateCode || '',
+                    lgaCode: locationCodes?.lgaCode || '',
                     condition: condition === 'brand-new' ? 'NEW' : 'FAIRLY_USED',
                     brand: brand.trim() || 'Unknown', // Default brand if not provided
                     itemCategory: category ? category : '',// Single category for now
@@ -375,7 +376,8 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 title: title.trim(),
                 description: description.trim(),
                 imageKeys: urls.filter((url) => url != null && url !== ''), // Filter out null/empty URLs
-                location: location.trim(),
+                stateCode: locationCodes?.stateCode || '',
+                lgaCode: locationCodes?.lgaCode || '',
                 condition: condition === 'brand-new' ? 'NEW' : 'FAIRLY_USED',
                 brand: brand.trim() || 'Unknown',
                 itemCategory: category ? category : '',
@@ -552,7 +554,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 </>
             )}
 
-            <LocationSelector
+            <StateLGASelector
                 label='Location'
                 value={location}
                 onChange={handleLocationChange}

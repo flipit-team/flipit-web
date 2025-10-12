@@ -30,7 +30,7 @@ export default function CategoryPage() {
     const { items: apiItems, loading, hasMore, loadMore, updateParams } = useItems({
         page: 0,
         size: 20,
-        categories: [decodedCategoryName],
+        category: decodedCategoryName,
         sort: filters.sort as any,
     });
 
