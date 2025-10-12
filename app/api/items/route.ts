@@ -28,8 +28,6 @@ export async function GET(req: NextRequest) {
 
         const apiUrl = `${API_BASE_PATH}/items?${backendParams.toString()}`;
 
-        console.log('API Route: Forwarding request to backend:', apiUrl);
-
         // Get token from cookies (optional for public items)
         const cookieStore = await cookies();
         const token = cookieStore.get('token')?.value;
@@ -46,13 +44,6 @@ export async function GET(req: NextRequest) {
 
 
         const apiData = await apiRes.json();
-
-        console.log('API Route: Backend response:', {
-            status: apiRes.status,
-            itemCount: apiData?.content?.length || (Array.isArray(apiData) ? apiData.length : 0),
-            totalElements: apiData?.totalElements,
-            dataStructure: Array.isArray(apiData) ? 'array' : 'object'
-        });
 
         if (!apiRes.ok) {
             return NextResponse.json(

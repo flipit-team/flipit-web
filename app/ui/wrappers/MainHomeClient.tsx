@@ -103,7 +103,6 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
 
     // Handle sort changes
     const handleSortChange = (sortValue: string) => {
-        console.log('Sort changed to:', sortValue);
         setCurrentSort(sortValue);
 
         // Update API params with new sort
@@ -115,7 +114,6 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
                     params.lgaCode = locationFilter.lgaCode;
                 }
             }
-            console.log('Calling updateParams with:', params);
             updateParams(params);
         }
     };
@@ -133,20 +131,6 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
     const defaultCategories = serverCategories && serverCategories.length > 0 ? serverCategories :
          (apiCategories && Array.isArray(apiCategories) ? apiCategories.map(cat => ({ name: cat.name, description: cat.description })) : []);
 
-    // Debug logging
-    React.useEffect(() => {
-        console.log('MainHomeClient Debug:', {
-            hasActiveFilters,
-            currentSort,
-            locationFilter,
-            serverItemsCount: serverItems?.length || 0,
-            apiItemsCount: apiItems?.length || 0,
-            transformedApiItemsCount: transformedApiItems?.length || 0,
-            finalItemsCount: items?.length || 0,
-            itemsLoading,
-            initialized
-        });
-    }, [hasActiveFilters, currentSort, locationFilter, serverItems, apiItems, transformedApiItems, items, itemsLoading, initialized]);
 
 
     return (

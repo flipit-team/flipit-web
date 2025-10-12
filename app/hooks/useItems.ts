@@ -17,15 +17,8 @@ export function useItems(initialParams?: ItemsQueryParams) {
 
   const fetchItems = useCallback(async (searchParams?: ItemsQueryParams, append = false) => {
     const finalParams = searchParams || params;
-    console.log('useItems: Fetching items with params:', finalParams);
 
     const result = await execute(() => ItemsService.getItems(finalParams));
-
-    console.log('useItems: Fetch result:', {
-      success: result.success,
-      itemCount: result.data?.content?.length || 0,
-      error: result.error
-    });
 
     if (result.success && result.data && result.data.content) {
       const newItems = Array.isArray(result.data.content) ? result.data.content : [];

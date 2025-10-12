@@ -13,11 +13,6 @@ export class ItemsService {
   // Get items with filtering and pagination - UPDATED to direct backend
   static async getItems(params?: ItemsQueryParams) {
     const queryString = params ? buildQueryString(params) : '';
-    console.log('ItemsService.getItems:', {
-      params,
-      queryString,
-      fullUrl: `/items${queryString}`
-    });
     return handleApiCall(() =>
       apiClient.get<PaginatedResponse<ItemDTO>>(`/items${queryString}`)
     );

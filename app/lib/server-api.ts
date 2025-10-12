@@ -30,8 +30,6 @@ export async function getItemsServerSide(params: ItemsQueryParams = {}): Promise
     const queryString = buildQueryString(params);
     const apiUrl = `${API_BASE_URL}/api/v1/items${queryString}`;
 
-    console.log('Server-side API call:', apiUrl);
-
     // Get token from cookies for authentication
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
@@ -80,9 +78,8 @@ export async function getItemsServerSide(params: ItemsQueryParams = {}): Promise
         sort: { empty: true, sorted: false, unsorted: true }
       };
       return { data: paginatedData, error: null };
-    } else {
     }
-    
+
     return { data, error: null };
   } catch (error) {
     return { 
@@ -96,8 +93,7 @@ export async function getCategoriesServerSide(): Promise<{ data: CategoryDTO[] |
   try {
     // Call backend API directly from server-side
     const apiUrl = `${API_BASE_URL}/api/v1/items/categories`;
-    
-    
+
     const response = await fetch(apiUrl, {
       headers: {
         'Content-Type': 'application/json'
@@ -130,8 +126,7 @@ export async function getSingleItemServerSide(itemId: string): Promise<{ data: I
   try {
     // Call backend API directly to get single item
     const apiUrl = `${API_BASE_URL}/api/v1/items/${itemId}`;
-    
-    
+
     // Get token from cookies for authentication
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
@@ -169,8 +164,7 @@ export async function getUserItemsServerSide(userId: string): Promise<{ data: It
   try {
     // Call backend API directly to get user's items
     const apiUrl = `${API_BASE_URL}/api/v1/items/user/${userId}`;
-    
-    
+
     // Get token from cookies for authentication
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
@@ -215,7 +209,6 @@ export async function checkAuthServerSide(): Promise<{ isAuthenticated: boolean;
       return { isAuthenticated: false, user: null };
     }
 
-
     // Verify token with backend by making a simple authenticated request
     try {
       const verifyResponse = await fetch(`${API_BASE_URL}/api/v1/user/profile`, {
@@ -226,9 +219,7 @@ export async function checkAuthServerSide(): Promise<{ isAuthenticated: boolean;
         cache: 'no-store'
       });
 
-
       if (!verifyResponse.ok) {
-        
         // Clear invalid cookies
         return { isAuthenticated: false, user: null, clearCookies: true };
       }
@@ -262,8 +253,7 @@ export async function checkAuthServerSide(): Promise<{ isAuthenticated: boolean;
 export async function getAuctionsServerSide(page = 0, size = 15): Promise<{ data: AuctionDTO[] | null; error: string | null }> {
   try {
     const apiUrl = `${API_BASE_URL}/api/v1/auction?page=${page}&size=${size}`;
-    
-    
+
     // Get token from cookies for authentication
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
@@ -300,8 +290,7 @@ export async function getAuctionsServerSide(page = 0, size = 15): Promise<{ data
 export async function getActiveAuctionsServerSide(page = 0, size = 15): Promise<{ data: AuctionDTO[] | null; error: string | null }> {
   try {
     const apiUrl = `${API_BASE_URL}/api/v1/auction?page=${page}&size=${size}`;
-    
-    
+
     // Get token from cookies for authentication
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
@@ -339,8 +328,7 @@ export async function getSingleAuctionServerSide(auctionId: string): Promise<{ d
   try {
     // Use the Next.js API route instead of calling backend directly to avoid serialization issues
     const apiUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/v1/auction/${auctionId}`;
-    
-    
+
     // Get token from cookies for authentication
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;

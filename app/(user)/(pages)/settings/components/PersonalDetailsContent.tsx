@@ -28,46 +28,31 @@ const PersonalDetailsContent = () => {
         const fetchUserProfile = async () => {
             try {
                 setLoading(true);
-                console.log('Fetching user profile...');
 
                 // Always fetch from API to get the most up-to-date data
                 const result = await UserService.getProfile();
-                console.log('Profile API result:', result);
 
                 if (result.data) {
                     // Handle both wrapped and unwrapped response formats
                     const userData = (result.data as any).user || result.data;
-                    console.log('User data received:', userData);
                     setFirstName(userData.firstName || '');
                     setLastName(userData.lastName || '');
                     setEmail(userData.email || '');
                     setPhoneNumber(userData.phoneNumber || userData.phone || '');
                     setProfileImage(userData.avatar || null);
-                    console.log('Form fields set:', {
-                        firstName: userData.firstName,
-                        lastName: userData.lastName,
-                        email: userData.email,
-                        phoneNumber: userData.phoneNumber || userData.phone,
-                        avatar: userData.avatar
-                    });
                 } else if (user) {
                     // Fallback to auth user data if API call fails but we have user context
-                    console.log('Falling back to auth user data:', user);
                     setFirstName(user.firstName || '');
                     setLastName(user.lastName || '');
                     setEmail(user.email || '');
                     setPhoneNumber(user.phoneNumber || user.phone || '');
                     setProfileImage(user.avatar || null);
                 } else {
-                    console.error('No data in profile result:', result.error);
                     showError(result.error || 'Failed to load profile data');
                 }
             } catch (error) {
-                console.error('Error fetching profile:', error);
-
                 // Try to use auth user data as fallback
                 if (user) {
-                    console.log('Error fetching profile, using auth user data:', user);
                     setFirstName(user.firstName || '');
                     setLastName(user.lastName || '');
                     setEmail(user.email || '');
@@ -112,10 +97,8 @@ const PersonalDetailsContent = () => {
             }
 
             const result = await response.json();
-            console.log('Upload response:', result);
-            
+
             if (result.key) {
-                console.log('Setting uploadedImageUrl to:', result.key);
                 setUploadedImageUrl(result.key);
                 showSuccess('Profile image uploaded successfully!');
             } else {
@@ -123,7 +106,6 @@ const PersonalDetailsContent = () => {
             }
         } catch (error) {
             showError('Failed to upload profile image. Please try again.');
-            console.error('Image upload error:', error);
         } finally {
             setUploading(false);
         }
@@ -155,8 +137,7 @@ const PersonalDetailsContent = () => {
 
         try {
             setSaving(true);
-            console.log('uploadedImageUrl before saving:', uploadedImageUrl);
-            
+
             const updateData: UpdateProfileRequest = {
                 firstName: firstName.trim(),
                 lastName: lastName.trim(),
@@ -166,15 +147,10 @@ const PersonalDetailsContent = () => {
             // Add avatar URL if an image was uploaded
             if (uploadedImageUrl) {
                 updateData.avatar = uploadedImageUrl;
-                console.log('Adding avatar to payload:', uploadedImageUrl);
-            } else {
-                console.log('No uploadedImageUrl found, not adding avatar to payload');
             }
-            
-            console.log('Final update payload:', updateData);
 
             const result = await UserService.updateProfile(updateData);
-            
+
             if (result.data) {
                 showSuccess('Profile updated successfully!');
             } else {
