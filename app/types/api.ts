@@ -167,6 +167,9 @@ export interface ItemDTO {
   liked: boolean;          // NEW: Whether current user liked this item
   seller: UserDTO;
   itemCategory: CategoryDTO;
+  subcategory?: string;    // NEW: Subcategory within the main category
+  stateCode?: string;      // NEW: State code for location
+  lgaCode?: string;        // NEW: LGA code for location
 }
 
 export interface CreateItemRequest {
@@ -175,10 +178,12 @@ export interface CreateItemRequest {
   imageKeys: string[];
   acceptCash: boolean;
   cashAmount: number;
-  location: string;
+  stateCode: string;       // CHANGED: from location
+  lgaCode: string;         // NEW: LGA code
   condition: string;
   brand: string;
   itemCategory: string;
+  subcategory?: string;    // NEW: Optional subcategory
 }
 
 export interface UpdateItemRequest {
@@ -187,10 +192,12 @@ export interface UpdateItemRequest {
   imageKeys: string[];
   acceptCash: boolean;
   cashAmount: number;
-  location: string;
+  stateCode: string;       // CHANGED: from location
+  lgaCode: string;         // NEW: LGA code
   condition: string;
   brand: string;
   itemCategory: string;
+  subcategory?: string;    // NEW: Optional subcategory
   published: boolean;
 }
 
@@ -198,18 +205,23 @@ export interface CategoryDTO {
   id: number;
   name: string;
   description: string;
+  thumbnail?: string;      // NEW: Category thumbnail URL
+  subcategories?: string[]; // NEW: List of subcategory names
 }
 
 export interface ItemsQueryParams {
   page?: number;
   size?: number;
   search?: string;
-  categories?: string[];
+  category?: string;
+  subcategory?: string;    // NEW: Filter by subcategory
   stateCode?: string;
   lgaCode?: string;
-  sort?: string; // Allow any string value - backend will handle validation
-  location?: string;
-  category?: string;
+  sort?: string;
+  minAmount?: number;      // NEW: Minimum price filter
+  maxAmount?: number;      // NEW: Maximum price filter
+  isVerifiedSeller?: boolean; // NEW: Filter by verified sellers
+  hasDiscount?: boolean;   // NEW: Filter discounted items
 }
 
 // Offer Types
@@ -411,6 +423,21 @@ export interface ErrorResponse {
   error: string;
   message: string;
   details?: string;
+}
+
+// Location Types
+export interface StateDTO {
+  id: number;
+  name: string;
+  code: string;
+  lgas?: LGADTO[];
+}
+
+export interface LGADTO {
+  id: number;
+  name: string;
+  code: string;
+  state?: StateDTO;
 }
 
 // Common Types

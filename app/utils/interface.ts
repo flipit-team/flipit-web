@@ -47,7 +47,12 @@ export interface Item {
         id?: number;
         name: string;
         description: string;
+        thumbnail?: string;
+        subcategories?: string[];
     };
+    subcategory?: string;        // NEW: Subcategory within main category
+    stateCode?: string;          // NEW: State code for location
+    lgaCode?: string;            // NEW: LGA code for location
     // Auction-specific fields (optional)
     isAuction?: boolean;
     auctionId?: number;

@@ -8,6 +8,7 @@ import Select from '../common/select';
 import AuctionDurationSelector from '../common/auction-duration-selector/AuctionDurationSelector';
 import AuctionStartSelector from '../common/auction-start-selector/AuctionStartSelector';
 import LocationSelector from '../common/location-selector/LocationSelector';
+import StateLGASelector from '../common/state-lga-selector/StateLGASelector';
 import Loading from '../common/loading/Loading';
 import {useRouter} from 'next/navigation';
 import {useAppContext} from '~/contexts/AppContext';
