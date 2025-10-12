@@ -35,7 +35,7 @@ function transformAuctionToItem(auction: AuctionDTO): Item {
             avatar: auction.item.seller.avatar || auction.item.seller.profileImageUrl || '',
             status: auction.item.seller.status || 'Active'
         },
-        itemCategories: auction.item.itemCategories,
+        itemCategory: auction.item.itemCategory,
         // Auction-specific fields
         isAuction: true,
         auctionId: auction.id,

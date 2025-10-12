@@ -29,7 +29,7 @@ function transformItemToMyItem(item: ItemDTO): MyItem {
     return {
         id: item.id,
         title: item.title,
-        image: item.imageUrls?.[0] || '/placeholder-product.png',
+        image: item.imageUrls?.[0] || 'https://images.pexels.com/photos/1303084/pexels-photo-1303084.jpeg',
         amount: item.cashAmount,
         views: 0, // API doesn't provide views yet
         type,

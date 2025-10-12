@@ -75,10 +75,10 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
             reviewCount: item.seller?.reviewCount || 0,
             mostRecentReview: (item.seller?.mostRecentReview || { rating: 0, message: '', userId: 0, postedById: 0, createdDate: new Date().toISOString() }) as any,
         },
-        itemCategories: (item.itemCategories && Array.isArray(item.itemCategories)) ? item.itemCategories.map(cat => ({
-            name: cat?.name || '',
-            description: cat?.description || '',
-        })) : [],
+        itemCategory: {
+            name: item.itemCategory?.name || '',
+            description: item.itemCategory?.description || '',
+        },
     })) : [];
 
     // Log data sources for debugging
