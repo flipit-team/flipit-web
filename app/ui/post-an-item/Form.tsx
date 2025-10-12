@@ -54,7 +54,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                     return existingItem.brand || '';
                 case 'cash':
                     return existingItem.acceptCash ? 'yes' : 'no';
-                case 'categories':
+                case 'category':
                     return existingItem.itemCategory?.name || '';
                 default:
                     return defaultValue;
@@ -459,8 +459,8 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
 
             <Select
                 label="Category"
-                value={categories}
-                onChange={setCategories}
+                value={category}
+                onChange={setCategory}
                 options={availableCategories.map(cat => ({value: cat.name, label: cat.name}))}
                 placeholder="Select category"
                 required
