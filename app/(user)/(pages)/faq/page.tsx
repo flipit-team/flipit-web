@@ -95,12 +95,12 @@ const FAQPage = () => {
     };
 
     return (
-        <div className='w-[672px] mx-auto p-6 bg-gray-50 min-h-screen'>
-            <div className='bg-white rounded-lg shadow-sm min-w-full'>
+        <div className='w-full max-w-[672px] mx-auto p-6 xs:px-4 xs:py-6 bg-gray-50 min-h-screen xs:pb-24'>
+            <div className='bg-white rounded-lg shadow-sm'>
                 {faqData.map((section, sectionIndex) => (
-                    <div key={section.title} className={sectionIndex > 0 ? 'mt-8' : ''}>
-                        <div className='px-6 py-4 border-b border-gray-100'>
-                            <h2 className='typo-heading-md-semibold text-gray-800'>{section.title}</h2>
+                    <div key={section.title} className={sectionIndex > 0 ? 'mt-8 xs:mt-6' : ''}>
+                        <div className='px-6 xs:px-4 py-4 xs:py-3 border-b border-gray-100'>
+                            <h2 className='typo-heading-md-semibold xs:typo-heading_ss text-gray-800'>{section.title}</h2>
                         </div>
 
                         <div className='divide-y divide-gray-100'>
@@ -108,22 +108,22 @@ const FAQPage = () => {
                                 const isOpen = openItems.has(item.id);
 
                                 return (
-                                    <div key={item.id} className='px-6 py-4'>
+                                    <div key={item.id} className='px-6 xs:px-4 py-4 xs:py-3'>
                                         <button
                                             onClick={() => toggleItem(item.id)}
-                                            className='w-full flex items-center justify-between text-left focus:outline-none rounded-lg p-2 -m-2 transition-colors hover:bg-gray-50'
+                                            className='w-full flex items-center justify-between text-left focus:outline-none rounded-lg p-2 -m-2 transition-colors hover:bg-gray-50 active:bg-gray-100'
                                         >
-                                            <span className='text-gray-700 typo-body-md-medium'>{item.question}</span>
+                                            <span className='text-gray-700 typo-body-md-medium xs:typo-body_mr pr-4'>{item.question}</span>
                                             {isOpen ? (
-                                                <ChevronUp className='w-5 h-5 text-gray-400 flex-shrink-0 ml-4' />
+                                                <ChevronUp className='w-5 h-5 xs:w-4 xs:h-4 text-gray-400 flex-shrink-0' />
                                             ) : (
-                                                <ChevronDown className='w-5 h-5 text-gray-400 flex-shrink-0 ml-4' />
+                                                <ChevronDown className='w-5 h-5 xs:w-4 xs:h-4 text-gray-400 flex-shrink-0' />
                                             )}
                                         </button>
 
                                         {isOpen && (
-                                            <div className='mt-3 pl-2'>
-                                                <p className='text-gray-600 typo-body-md-regular leading-relaxed'>{item.answer}</p>
+                                            <div className='mt-3 xs:mt-2 pl-2'>
+                                                <p className='text-gray-600 typo-body-md-regular xs:typo-body_sr leading-relaxed'>{item.answer}</p>
                                             </div>
                                         )}
                                     </div>

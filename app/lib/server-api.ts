@@ -6,16 +6,32 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
   : 'http://localhost:8080';
 
 
+// Helper function to build query string
+function buildQueryString(params: Record<string, any>): string {
+  const searchParams = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== null && value !== undefined && value !== '') {
+      if (Array.isArray(value)) {
+        value.forEach(item => searchParams.append(key, String(item)));
+      } else {
+        searchParams.append(key, String(value));
+      }
+    }
+  });
+
+  const queryString = searchParams.toString();
+  return queryString ? `?${queryString}` : '';
+}
+
 export async function getItemsServerSide(params: ItemsQueryParams = {}): Promise<{ data: PaginatedResponse<ItemDTO> | null; error: string | null }> {
   try {
-    // Call backend API directly from server-side
-    const page = params.page?.toString() ?? '0';
-    const size = params.size?.toString() ?? '10';
-    const query = params.search ?? '';
-    
-    const apiUrl = `${API_BASE_URL}/api/v1/items?page=${page}&size=${size}&search=${encodeURIComponent(query)}`;
-    
-    
+    // Build query string with all parameters
+    const queryString = buildQueryString(params);
+    const apiUrl = `${API_BASE_URL}/api/v1/items${queryString}`;
+
+    console.log('Server-side API call:', apiUrl);
+
     // Get token from cookies for authentication
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;

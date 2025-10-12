@@ -239,11 +239,11 @@ function HeaderContent(props: Props) {
                                 onMouseLeave={handleProfileMouseLeave}
                             >
                                 <Image
-                                    src={profile?.avatar ? profile.avatar : '/profile-picture.svg'}
+                                    src={profile?.avatar || '/placeholder-avatar.svg'}
                                     height={32}
                                     width={32}
                                     alt='profile'
-                                    className='h-7 w-7 xs:h-[30px] xs:w-[30px] rounded-full'
+                                    className='h-7 w-7 xs:h-[30px] xs:w-[30px] rounded-full object-cover'
                                 />
                                 {/* Username - Hidden on mobile */}
                                 <div className='typo-body_ls capitalize xs:hidden'>{user.userName ?? 'John Doe'}</div>

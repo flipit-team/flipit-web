@@ -272,11 +272,11 @@ const ItemDetail = (props: Props) => {
                     <SellersInfo />
                     <div className='flex mb-4'>
                         <Image
-                            src={'/camera-large.png'}
+                            src={item?.seller?.avatar || '/placeholder-avatar.svg'}
                             height={52}
                             width={52}
-                            alt='picture'
-                            className='h-[52px] w-[52px] rounded-full'
+                            alt={`${item?.seller.firstName} ${item?.seller.lastName}`}
+                            className='h-[52px] w-[52px] rounded-full object-cover'
                         />
                         <div className='w-full ml-2'>
                             <div className='typo-body_lm'>{item?.seller.firstName + ' ' + item?.seller.lastName}</div>

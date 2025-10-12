@@ -24,7 +24,7 @@ const ImageGallery = ({
     const [thumbnailStartIndex, setThumbnailStartIndex] = useState(0);
     
     // Fallback to placeholder if no images
-    const imageList = images.length > 0 ? images : ['/placeholder-product-large.png'];
+    const imageList = images.length > 0 ? images : ['/placeholder-product.svg'];
     const currentImage = imageList[currentImageIndex];
     
     // Number of thumbnails to show at once
@@ -67,19 +67,13 @@ const ImageGallery = ({
             <div className={`${className}`}>
                 <div className="flex flex-col">
                     {/* Main Image */}
-                    <div className="relative mb-6">
+                    <div className="relative mb-6 w-[712px] h-[443px] xs:w-full xs:h-auto overflow-hidden">
                         <Image
                             src={currentImage}
                             height={443}
                             width={712}
                             alt="Main product image"
-                            className={`cursor-pointer object-cover ${mainImageClassName}`}
-                            style={{
-                                width: '712px !important',
-                                height: '443px !important',
-                                maxWidth: 'none !important',
-                                minWidth: '712px !important'
-                            }}
+                            className={`cursor-pointer object-cover w-full h-full ${mainImageClassName}`}
                             onClick={openFullscreen}
                             priority
                             quality={75}

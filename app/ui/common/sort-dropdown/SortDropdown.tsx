@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import Image from 'next/image';
 
 interface SortOption {
@@ -14,11 +14,7 @@ interface SortDropdownProps {
     onSelectionChange?: (option: SortOption) => void;
 }
 
-const SortDropdown: React.FC<SortDropdownProps> = ({ 
-    options, 
-    defaultSelection = 'A-Z',
-    onSelectionChange 
-}) => {
+const SortDropdown: React.FC<SortDropdownProps> = ({options, defaultSelection = 'A-Z', onSelectionChange}) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [selectedSort, setSelectedSort] = useState(defaultSelection);
 
@@ -34,7 +30,7 @@ const SortDropdown: React.FC<SortDropdownProps> = ({
             <div className='relative'>
                 <button
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className='w-[166px] typo-body_ss h-[41px] text-text_four border border-border_gray rounded px-4 py-1 focus:outline-none focus:border-border_gray bg-white flex items-center justify-between min-w-[100px]'
+                    className='w-full typo-body_ss h-[41px] text-text_four border border-border_gray rounded px-4 py-1 focus:outline-none focus:border-border_gray bg-white flex items-center justify-between min-w-[100px]'
                 >
                     <span>{selectedSort}</span>
                     <Image

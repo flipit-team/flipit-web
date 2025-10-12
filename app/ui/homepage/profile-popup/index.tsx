@@ -58,11 +58,11 @@ const ProfilePopup = (props: Props) => {
                     </div>
                     <div className='flex xs:flex-col xs:items-center mb-4 border-b border-border_gray pb-[20px] xs:px-4'>
                         <Image
-                            src={'/camera-large.png'}
+                            src={seller?.avatar || '/placeholder-avatar.svg'}
                             height={194}
                             width={194}
-                            alt='picture'
-                            className='h-[194px] w-[194px] rounded-full'
+                            alt={`${seller?.firstName} ${seller?.lastName}`}
+                            className='h-[194px] w-[194px] rounded-full object-cover'
                         />
                         <div className='w-full ml-[36px] xs:ml-0 xs:flex xs:flex-col xs:items-center mt-4'>
                             <div className='typo-body_lm'>{seller?.firstName + ' ' + seller?.lastName}</div>

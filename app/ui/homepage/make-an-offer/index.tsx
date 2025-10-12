@@ -26,7 +26,8 @@ const MakeAnOffer = (props: Props) => {
     const searchParams = useSearchParams();
     const query = searchParams.get('q');
     const [myItems, setMyItems] = useState<Item[]>([]);
-    const [selected, setSelected] = useState('with-cash');
+    const [withCash, setWithCash] = useState(false);
+    const [withItem, setWithItem] = useState(false);
     const [amount, setAmount] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState<
@@ -75,14 +76,20 @@ const MakeAnOffer = (props: Props) => {
         setError(null);
         setSuccess(false);
 
-        // Validation
-        if (selected === 'with-cash' && (!amount || Number(amount) <= 0)) {
-            setError('Please enter a valid amount');
+        // Validation - at least one option must be selected
+        if (!withCash && !withItem) {
+            setError('Please select at least one offer type (Cash or Item)');
             setLoading(false);
             return;
         }
 
-        if (selected === 'with-an-item' && !selectedOption) {
+        if (withCash && (!amount || Number(amount) <= 0)) {
+            setError('Please enter a valid cash amount');
+            setLoading(false);
+            return;
+        }
+
+        if (withItem && !selectedOption) {
             setError('Please select an item to offer');
             setLoading(false);
             return;
@@ -94,30 +101,23 @@ const MakeAnOffer = (props: Props) => {
             return;
         }
 
-        const payload =
-            selected === 'with-cash'
-                ? {
-                      itemId: item?.id,
-                      userId: user?.userId,
-                      withCash: true,
-                      cashAmount: Number(amount)
-                  }
-                : {
-                      itemId: item?.id,
-                      userId: user?.userId,
-                      withCash: false,
-                      offeredItemId: selectedOption?.id
-                  };
-        
-        
-        // Additional validation for null IDs
-        if (!item?.id) {
-            setError('Item ID is missing');
-            setLoading(false);
-            return;
+        // Build payload based on selections
+        const payload: any = {
+            itemId: item?.id,
+            userId: user?.userId,
+            withCash: withCash,
+        };
+
+        if (withCash) {
+            payload.cashAmount = Number(amount);
         }
-        
-        if (selected === 'with-an-item' && !selectedOption?.id) {
+
+        if (withItem) {
+            payload.offeredItemId = selectedOption?.id;
+        }
+
+        // Additional validation for null IDs
+        if (withItem && !selectedOption?.id) {
             setError('Selected item ID is missing');
             setLoading(false);
             return;
@@ -202,7 +202,7 @@ const MakeAnOffer = (props: Props) => {
                         </div>
                         <div className='grid grid-cols-[443px_1fr] xs:flex xs:flex-col gap-[44px] xs:gap-[22px] '>
                             <Image
-                                src={item?.imageUrls?.[0] || '/placeholder-product-large.png'}
+                                src={item?.imageUrls?.[0] || '/placeholder-product.svg'}
                                 height={439}
                                 width={443}
                                 alt='picture'
@@ -210,86 +210,53 @@ const MakeAnOffer = (props: Props) => {
                             />
                             <div className='flex flex-col gap-6'>
                                 <p className='typo-heading_ss xs:typo-body_ls'>How do you want to bid?</p>
-                                <div className='flex space-x-3'>
-                                    {/* Radio Button 1 */}
+                                <div className='flex space-x-6 xs:flex-col xs:space-x-0 xs:space-y-3'>
+                                    {/* Checkbox 1 - With Cash */}
                                     <label className='flex items-center space-x-2 cursor-pointer'>
                                         <input
-                                            type='radio'
-                                            name='toggle'
-                                            value='with-cash'
-                                            checked={selected === 'with-cash'}
-                                            onChange={() => setSelected('with-cash')}
-                                            className='hidden'
+                                            type='checkbox'
+                                            checked={withCash}
+                                            onChange={(e) => setWithCash(e.target.checked)}
+                                            className='w-5 h-5 text-primary accent-primary border-border_gray rounded focus:ring-primary focus:ring-2'
                                         />
-                                        <div
-                                            className={`w-6 h-6 flex items-center justify-center border-8 rounded-full transition ${
-                                                selected === 'with-cash' ? 'border-green-500' : 'border-gray-400'
-                                            }`}
-                                        >
-                                            {selected === 'with-cash' && (
-                                                <div className='w-2 h-2 bg-white rounded-full'></div>
-                                            )}
-                                        </div>
                                         <span className='typo-body_lr xs:typo-body_mr'>With Cash</span>
                                     </label>
 
-                                    {/* Radio Button 2 */}
+                                    {/* Checkbox 2 - With Item */}
                                     <label className='flex items-center space-x-2 cursor-pointer'>
                                         <input
-                                            type='radio'
-                                            name='toggle'
-                                            value='with-an-item'
-                                            checked={selected === 'with-an-item'}
-                                            onChange={() => setSelected('with-an-item')}
-                                            className='hidden'
+                                            type='checkbox'
+                                            checked={withItem}
+                                            onChange={(e) => setWithItem(e.target.checked)}
+                                            className='w-5 h-5 text-primary accent-primary border-border_gray rounded focus:ring-primary focus:ring-2'
                                         />
-                                        <div
-                                            className={`w-6 h-6 flex items-center justify-center border-8 rounded-full transition ${
-                                                selected === 'with-an-item' ? 'border-green-500' : 'border-gray-400'
-                                            }`}
-                                        >
-                                            {selected === 'with-an-item' && (
-                                                <div className='w-2 h-2 bg-white rounded-full'></div>
-                                            )}
-                                        </div>
                                         <span className='typo-body_lr xs:typo-body_mr'>With an Item</span>
                                     </label>
-
-                                    {/* Radio Button 3 */}
-                                    <label className='flex items-center space-x-2 cursor-pointer'>
-                                        <input
-                                            type='radio'
-                                            name='toggle'
-                                            value='with-an-item'
-                                            checked={selected === 'with-an-item'}
-                                            onChange={() => setSelected('with-an-item')}
-                                            className='hidden'
-                                        />
-                                        <div
-                                            className={`w-6 h-6 flex items-center justify-center border-8 rounded-full transition ${
-                                                selected === 'with-an-item' ? 'border-green-500' : 'border-gray-400'
-                                            }`}
-                                        >
-                                            {selected === 'with-an-item' && (
-                                                <div className='w-2 h-2 bg-white rounded-full'></div>
-                                            )}
-                                        </div>
-                                        <span className='typo-body_lr xs:typo-body_mr'>With Cash and Item</span>
-                                    </label>
                                 </div>
-                                <div className='relative w-full xs:flex-none mx-auto outline-none border-none'>
-                                    <label htmlFor='Offer your price' className='typo-body_mr xs:typo-body_mr'>
-                                        {selected === 'with-cash' ? 'Offer your price' : 'Select an Item'}
-                                    </label>
-                                    {selected === 'with-cash' ? (
+
+                                {/* Cash Input - Show when withCash is checked */}
+                                {withCash && (
+                                    <div className='relative w-full xs:flex-none mx-auto outline-none border-none'>
+                                        <label htmlFor='cash-amount' className='typo-body_mr xs:typo-body_mr'>
+                                            Offer your price
+                                        </label>
                                         <input
-                                            type='text'
-                                            placeholder='amount'
+                                            id='cash-amount'
+                                            type='number'
+                                            placeholder='Enter amount'
                                             value={amount}
                                             onChange={(e) => setAmount(e.target.value)}
-                                            className='w-full h-[49px] pl-6 pr-4 py-2 typo-body_lr xs:typo-body_mr text-text_one border border-border_gray outline-none rounded-md focus:outline-none  focus:ring-transparent focus:border-none'
+                                            className='w-full h-[49px] pl-6 pr-4 py-2 typo-body_lr xs:typo-body_mr text-text_one border border-border_gray outline-none rounded-md focus:outline-none focus:ring-transparent focus:border-none'
                                         />
-                                    ) : (
+                                    </div>
+                                )}
+
+                                {/* Item Selector - Show when withItem is checked */}
+                                {withItem && (
+                                    <div className='relative w-full xs:flex-none mx-auto outline-none border-none'>
+                                        <label htmlFor='item-select' className='typo-body_mr xs:typo-body_mr'>
+                                            Select an Item
+                                        </label>
                                         <div className='relative w-full h-[49px]'>
                                             <div
                                                 className='flex items-center justify-between border p-2 rounded-lg cursor-pointer bg-white shadow-sm'
@@ -297,16 +264,7 @@ const MakeAnOffer = (props: Props) => {
                                             >
                                                 <div className='flex items-center gap-2'>
                                                     {selectedOption ? (
-                                                        <>
-                                                            <Image
-                                                                src={selectedOption.img}
-                                                                alt={selectedOption.title}
-                                                                width={24}
-                                                                height={24}
-                                                                className='rounded-full'
-                                                            />
-                                                            <span>{selectedOption.title}</span>
-                                                        </>
+                                                        <span className='typo-body_lr'>{selectedOption.title}</span>
                                                     ) : (
                                                         <span className='typo-body_lr text-text_one '>
                                                             Select option
@@ -347,14 +305,14 @@ const MakeAnOffer = (props: Props) => {
                                                                 onClick={() => {
                                                                     setSelectedOption({
                                                                         id: option.id,
-                                                                        img: option.imageUrls?.[0] || '/camera.png',
+                                                                        img: option.imageUrls?.[0] || '/placeholder-product.svg',
                                                                         title: option.title
                                                                     });
                                                                     setIsOpen(false);
                                                                 }}
                                                             >
                                                                 <Image
-                                                                    src={option.imageUrls?.[0] || '/camera.png'}
+                                                                    src={option.imageUrls?.[0] || '/placeholder-product.svg'}
                                                                     alt={option.title}
                                                                     width={54}
                                                                     height={54}
@@ -373,8 +331,8 @@ const MakeAnOffer = (props: Props) => {
                                                 </div>
                                             )}
                                         </div>
-                                    )}
-                                </div>
+                                    </div>
+                                )}
                                 <div className='w-full'>
                                     <RegularButton text='Place offer' action={handleSubmit} isLoading={loading} />
                                 </div>

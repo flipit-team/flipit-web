@@ -178,11 +178,11 @@ const MainChats = (props: Props) => {
                                 className={`h-[130px] ${chat.chatId === activeChat?.chatId ? 'bg-surface-primary-10' : ''} flex p-6 border-b border-border-secondary`}
                             >
                                 <Image
-                                    src={chat.initiatorAvatar ?? '/profile-picture.svg'}
+                                    src={chat.initiatorAvatar || '/placeholder-avatar.svg'}
                                     height={50}
                                     width={50}
-                                    alt='picture'
-                                    className='h-[50px] w-[50px] mr-4'
+                                    alt={chat.initiatorName}
+                                    className='h-[50px] w-[50px] mr-4 rounded-full object-cover'
                                 />
                                 <div className='flex-1'>
                                     <p className='text-primary typo-body_lm capitalize'>{chat.initiatorName}</p>
@@ -232,11 +232,11 @@ const MainChats = (props: Props) => {
                                 className={`h-[130px] ${chat.chatId === activeChat?.chatId ? 'bg-surface-primary-10' : ''} flex p-6 border-b border-border-secondary`}
                             >
                                 <Image
-                                    src={chat.initiatorAvatar ?? '/profile-picture.svg'}
+                                    src={chat.initiatorAvatar || '/placeholder-avatar.svg'}
                                     height={50}
                                     width={50}
-                                    alt='picture'
-                                    className='h-[50px] w-[50px] mr-4'
+                                    alt={chat.initiatorName}
+                                    className='h-[50px] w-[50px] mr-4 rounded-full object-cover'
                                 />
                                 <div>
                                     <p className='text-primary typo-body_lm capitalize'>{chat.initiatorName}</p>
@@ -252,11 +252,11 @@ const MainChats = (props: Props) => {
                     {activeChat && (
                         <div className='flex items-center p-6'>
                             <Image
-                                src={activeChat?.initiatorAvatar ?? '/profile-picture.svg'}
+                                src={activeChat?.initiatorAvatar || '/placeholder-avatar.svg'}
                                 height={50}
                                 width={50}
-                                alt='picture'
-                                className='h-[50px] w-[50px] mr-4'
+                                alt={activeChat?.initiatorName}
+                                className='h-[50px] w-[50px] mr-4 rounded-full object-cover'
                             />
                             <p className='typo-body_lm capitalize'>{activeChat?.initiatorName}</p>
                         </div>

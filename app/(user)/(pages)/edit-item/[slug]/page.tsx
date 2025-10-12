@@ -80,9 +80,8 @@ const EditItemPage = () => {
         return (
             <div className='w-full h-full'>
                 <div className='flex flex-col items-center mt-[35px] xs:mt-0 py-6 mx-auto h-max w-[648px] xs:w-full lg:shadow-lg px-[30px]'>
-                    <h1 className='typo-heading_ms xs:hidden'>Edit Item</h1>
-                    <Form 
-                        formType="listing" 
+                    <Form
+                        formType="listing"
                         existingItem={item}
                         isEditing={true}
                     />

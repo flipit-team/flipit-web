@@ -280,7 +280,15 @@ const Form = () => {
                     </p>
                 </div>
 
-                <form className='typo-body_mr text-text_one flex flex-col gap-[26px]'>
+                <form
+                    className='typo-body_mr text-text_one flex flex-col gap-[26px]'
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        if (btnActive) {
+                            handleAuth();
+                        }
+                    }}
+                >
                     {formInputs.map((item, i) => {
                         if (item.name === 'password') {
                             return (

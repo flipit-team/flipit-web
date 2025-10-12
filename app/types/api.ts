@@ -207,7 +207,7 @@ export interface ItemsQueryParams {
   categories?: string[];
   stateCode?: string;
   lgaCode?: string;
-  sort?: 'recent' | 'promoted' | 'price-low' | 'price-high';
+  sort?: string; // Allow any string value - backend will handle validation
   location?: string;
   category?: string;
 }

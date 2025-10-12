@@ -22,9 +22,10 @@ interface Props {
 const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, defaultCategories: serverCategories, authStatus }: Props) => {
     const [locationFilter, setLocationFilter] = useState<{ stateCode: string; lgaCode?: string } | null>(null);
     const [currentSort, setCurrentSort] = useState<string>('recent');
-    
+
     // Fetch client-side data with infinite scroll support
-    const { items: apiItems, loading: itemsLoading, hasMore, loadMore, updateParams } = useItems({ page: 0, size: 15, sort: 'recent' });
+    // Don't fetch on mount - we already have server items
+    const { items: apiItems, loading: itemsLoading, hasMore, loadMore, updateParams, initialized } = useItems({ page: 0, size: 15, sort: 'recent' });
     const { categories: apiCategories } = useCategories();
     
     // Set up infinite scroll
@@ -102,6 +103,7 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
 
     // Handle sort changes
     const handleSortChange = (sortValue: string) => {
+        console.log('Sort changed to:', sortValue);
         setCurrentSort(sortValue);
 
         // Update API params with new sort
@@ -113,15 +115,38 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
                     params.lgaCode = locationFilter.lgaCode;
                 }
             }
+            console.log('Calling updateParams with:', params);
             updateParams(params);
         }
     };
 
-    // Prioritize server data, then client-side API data (no dummy data)
-    const items = serverItems && serverItems.length > 0 ? serverItems : (transformedApiItems || []);
+    // Use API data when filters/sorting are active AND data has been fetched, otherwise use server data
+    const hasActiveFilters = locationFilter !== null || currentSort !== 'recent';
+
+    // Show API items only when we have active filters AND the API has fetched data
+    // Otherwise show server items
+    const items = (hasActiveFilters && transformedApiItems.length > 0)
+        ? transformedApiItems
+        : (serverItems && serverItems.length > 0 ? serverItems : transformedApiItems);
+
     const auctionItems = serverAuctionItems || [];
     const defaultCategories = serverCategories && serverCategories.length > 0 ? serverCategories :
          (apiCategories && Array.isArray(apiCategories) ? apiCategories.map(cat => ({ name: cat.name, description: cat.description })) : []);
+
+    // Debug logging
+    React.useEffect(() => {
+        console.log('MainHomeClient Debug:', {
+            hasActiveFilters,
+            currentSort,
+            locationFilter,
+            serverItemsCount: serverItems?.length || 0,
+            apiItemsCount: apiItems?.length || 0,
+            transformedApiItemsCount: transformedApiItems?.length || 0,
+            finalItemsCount: items?.length || 0,
+            itemsLoading,
+            initialized
+        });
+    }, [hasActiveFilters, currentSort, locationFilter, serverItems, apiItems, transformedApiItems, items, itemsLoading, initialized]);
 
 
     return (

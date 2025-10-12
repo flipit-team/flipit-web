@@ -11,6 +11,9 @@ export async function GET(req: NextRequest) {
         const page = searchParams.get('page') || '0';
         const size = searchParams.get('size') || '15';
         const search = searchParams.get('search') || '';
+        const sort = searchParams.get('sort');
+        const stateCode = searchParams.get('stateCode');
+        const lgaCode = searchParams.get('lgaCode');
         const categories = searchParams.getAll('categories[]');
 
         // Build query string for backend
@@ -18,9 +21,14 @@ export async function GET(req: NextRequest) {
         backendParams.set('page', page);
         backendParams.set('size', size);
         if (search) backendParams.set('search', search);
+        if (sort) backendParams.set('sort', sort);
+        if (stateCode) backendParams.set('stateCode', stateCode);
+        if (lgaCode) backendParams.set('lgaCode', lgaCode);
         categories.forEach(cat => backendParams.append('categories[]', cat));
 
         const apiUrl = `${API_BASE_PATH}/items?${backendParams.toString()}`;
+
+        console.log('API Route: Forwarding request to backend:', apiUrl);
 
         // Get token from cookies (optional for public items)
         const cookieStore = await cookies();
@@ -39,11 +47,43 @@ export async function GET(req: NextRequest) {
 
         const apiData = await apiRes.json();
 
+        console.log('API Route: Backend response:', {
+            status: apiRes.status,
+            itemCount: apiData?.content?.length || (Array.isArray(apiData) ? apiData.length : 0),
+            totalElements: apiData?.totalElements,
+            dataStructure: Array.isArray(apiData) ? 'array' : 'object'
+        });
+
         if (!apiRes.ok) {
             return NextResponse.json(
                 {apierror: apiData.apierror ?? {message: 'Failed to fetch items'}},
                 {status: apiRes.status}
             );
+        }
+
+        // If backend returns an array, transform it to paginated format
+        if (Array.isArray(apiData)) {
+            const paginatedResponse = {
+                content: apiData,
+                totalElements: apiData.length,
+                totalPages: 1,
+                size: apiData.length,
+                number: parseInt(page),
+                first: true,
+                last: true,
+                empty: apiData.length === 0,
+                numberOfElements: apiData.length,
+                pageable: {
+                    offset: 0,
+                    sort: { empty: !sort, sorted: !!sort, unsorted: !sort },
+                    pageNumber: parseInt(page),
+                    pageSize: parseInt(size),
+                    paged: true,
+                    unpaged: false
+                },
+                sort: { empty: !sort, sorted: !!sort, unsorted: !sort }
+            };
+            return NextResponse.json(paginatedResponse);
         }
 
         return NextResponse.json(apiData);

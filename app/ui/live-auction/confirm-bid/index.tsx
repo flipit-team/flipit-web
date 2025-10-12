@@ -87,7 +87,7 @@ const ConfirmBid = (props: Props) => {
                         {/* Item Image */}
                         <div className='flex justify-center mb-6'>
                             <Image
-                                src={item?.imageUrls?.[0] || '/placeholder-product-large.png'}
+                                src={item?.imageUrls?.[0] || '/placeholder-product.svg'}
                                 height={99}
                                 width={128}
                                 alt='item'

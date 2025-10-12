@@ -168,7 +168,7 @@ const LiveAuctionDetails = (props: Props) => {
         <div className='grid-sizes grid grid-cols-[712px_1fr] xs:grid-cols-1 gap-6 h-full mt-10 xs:mb-6'>
             <div className='p-6 xs:p-0 shadow-lg'>
                 <ImageGallery
-                    images={item?.imageUrls || ['/camera-large.png']}
+                    images={item?.imageUrls || []}
                     overlayElements={
                         <>
                             <div className='w-[76px] h-[26px] typo-body_sb text-white bg-primary absolute top-7 left-3 flex items-center justify-center rounded'>
@@ -260,11 +260,11 @@ const LiveAuctionDetails = (props: Props) => {
 
                 <div className='flex items-center gap-3 mb-4'>
                     <Image
-                        src={'/camera-large.png'}
+                        src={item?.seller?.avatar || '/placeholder-avatar.svg'}
                         height={32}
                         width={32}
-                        alt='bidder'
-                        className='h-[32px] w-[32px] rounded-full'
+                        alt={`${item?.seller.firstName} ${item?.seller.lastName}`}
+                        className='h-[32px] w-[32px] rounded-full object-cover'
                     />
                     <div className='flex items-center gap-2'>
                         <span className='typo-body_mr text-text_one'>

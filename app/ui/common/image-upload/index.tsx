@@ -68,6 +68,11 @@ const ImageUpload = (props: Props) => {
         }
     };
 
+    const handleRemoveImage = (index: number) => {
+        setPreviewUrls((prev) => prev.filter((_, i) => i !== index));
+        setUrls((prev) => prev.filter((_, i) => i !== index));
+    };
+
     return (
         <div className=''>
             <div className='flex flex-wrap gap-2 items-center'>
@@ -98,18 +103,36 @@ const ImageUpload = (props: Props) => {
 
                 {/* Display Images */}
                 {previewUrls.map((src, index) => (
-                    <div key={index} className='w-[64px] h-[64px] overflow-hidden rounded-lg border border-gray-300'>
+                    <div
+                        key={index}
+                        className='relative w-[64px] h-[64px] overflow-hidden rounded-lg border border-gray-300'
+                    >
                         <Image
                             src={src}
                             alt='Uploaded preview'
                             height={64}
                             width={64}
                             className='w-full h-full object-cover'
-                            sizes="64px"
-                            placeholder="blur"
-                            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+Kic6LbJ7djdjvj28J7vD94nSRnr/Z/9k="
-                            loading="lazy"
+                            sizes='64px'
+                            placeholder='blur'
+                            blurDataURL='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+Kic6LbJ7djdjvj28J7vD94nSRnr/Z/9k='
+                            loading='lazy'
                         />
+                        <button
+                            type='button'
+                            onClick={() => handleRemoveImage(index)}
+                            className='absolute top-[1px] right-[1px] bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center hover:bg-red-600 shadow-md'
+                            aria-label='Remove image'
+                        >
+                            <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                <path
+                                    strokeLinecap='round'
+                                    strokeLinejoin='round'
+                                    strokeWidth={2}
+                                    d='M6 18L18 6M6 6l12 12'
+                                />
+                            </svg>
+                        </button>
                     </div>
                 ))}
             </div>

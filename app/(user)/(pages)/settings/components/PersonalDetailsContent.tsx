@@ -29,52 +29,60 @@ const PersonalDetailsContent = () => {
             try {
                 setLoading(true);
                 console.log('Fetching user profile...');
-                console.log('Current user from auth:', user);
-                
-                // If user is already loaded from auth context, use that data
-                if (user) {
-                    console.log('Using auth user data:', user);
-                    setFirstName(user.firstName || '');
-                    setLastName(user.lastName || '');
-                    setEmail(user.email || '');
-                    setPhoneNumber(user.phoneNumber || '');
-                    setProfileImage(user.avatar || null);
-                    setLoading(false);
-                    return;
-                }
-                
-                // Otherwise, fetch from API
+
+                // Always fetch from API to get the most up-to-date data
                 const result = await UserService.getProfile();
                 console.log('Profile API result:', result);
-                
+
                 if (result.data) {
-                    const userData = result.data;
+                    // Handle both wrapped and unwrapped response formats
+                    const userData = (result.data as any).user || result.data;
                     console.log('User data received:', userData);
                     setFirstName(userData.firstName || '');
                     setLastName(userData.lastName || '');
                     setEmail(userData.email || '');
-                    setPhoneNumber(userData.phoneNumber || '');
+                    setPhoneNumber(userData.phoneNumber || userData.phone || '');
                     setProfileImage(userData.avatar || null);
                     console.log('Form fields set:', {
                         firstName: userData.firstName,
                         lastName: userData.lastName,
                         email: userData.email,
-                        phoneNumber: userData.phoneNumber
+                        phoneNumber: userData.phoneNumber || userData.phone,
+                        avatar: userData.avatar
                     });
+                } else if (user) {
+                    // Fallback to auth user data if API call fails but we have user context
+                    console.log('Falling back to auth user data:', user);
+                    setFirstName(user.firstName || '');
+                    setLastName(user.lastName || '');
+                    setEmail(user.email || '');
+                    setPhoneNumber(user.phoneNumber || user.phone || '');
+                    setProfileImage(user.avatar || null);
                 } else {
                     console.error('No data in profile result:', result.error);
                     showError(result.error || 'Failed to load profile data');
                 }
             } catch (error) {
                 console.error('Error fetching profile:', error);
-                showError('An error occurred while loading your profile');
+
+                // Try to use auth user data as fallback
+                if (user) {
+                    console.log('Error fetching profile, using auth user data:', user);
+                    setFirstName(user.firstName || '');
+                    setLastName(user.lastName || '');
+                    setEmail(user.email || '');
+                    setPhoneNumber(user.phoneNumber || user.phone || '');
+                    setProfileImage(user.avatar || null);
+                } else {
+                    showError('An error occurred while loading your profile');
+                }
             } finally {
                 setLoading(false);
             }
         };
 
         fetchUserProfile();
-    }, [user, showError]);
+    }, [showError]);
 
     const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -197,8 +205,35 @@ const PersonalDetailsContent = () => {
             <div className='h-px bg-border_gray mb-6 md:mb-8 w-full'></div>
 
             <div className='flex flex-col lg:flex-row gap-8 lg:gap-16'>
-                {/* Left side - Form */}
-                <div className='flex-1 space-y-6'>
+                {/* Profile Image - Shows first on mobile, right side on desktop */}
+                <div className='flex flex-col items-center lg:order-2'>
+                    <div className='relative w-[180px] h-[180px] lg:w-[224px] lg:h-[224px] bg-background-secondary rounded-full flex items-center justify-center overflow-hidden mb-4'>
+                        {profileImage ? (
+                            <Image src={profileImage} alt='Profile' fill className='object-cover' />
+                        ) : (
+                            <Camera className='w-12 h-12 text-gray-400' />
+                        )}
+                    </div>
+
+                    <div className='flex justify-center'>
+                        <label htmlFor='profile-image-upload' className={`cursor-pointer ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                            <div className='bg-transparent border border-primary text-primary hover:bg-primary hover:text-white transition-colors duration-200 h-[31px] px-[40px] py-[16px] typo-button-sm flex items-center justify-center rounded-[8px]'>
+                                {uploading ? 'Uploading...' : 'Select Image'}
+                            </div>
+                            <input
+                                id='profile-image-upload'
+                                type='file'
+                                accept='image/*'
+                                onChange={handleImageUpload}
+                                disabled={uploading}
+                                className='hidden'
+                            />
+                        </label>
+                    </div>
+                </div>
+
+                {/* Form - Shows second on mobile, left side on desktop */}
+                <div className='flex-1 space-y-6 lg:order-1'>
                     <InputBox
                         label='First name'
                         name='firstname'
@@ -236,39 +271,12 @@ const PersonalDetailsContent = () => {
                         setValue={(e) => handleInputChange(e, 'phonenumber')}
                     />
                     <div className='w-[167px]'>
-                        <RegularButton 
-                            text={saving ? 'Saving...' : 'Save Changes'} 
+                        <RegularButton
+                            text={saving ? 'Saving...' : 'Save Changes'}
                             action={handleSaveChanges}
                             isLoading={saving}
                             disabled={saving}
                         />
-                    </div>
-                </div>
-
-                {/* Right side - Profile Image */}
-                <div className='flex flex-col items-center'>
-                    <div className='relative w-[180px] h-[180px] lg:w-[224px] lg:h-[224px] bg-background-secondary rounded-full flex items-center justify-center overflow-hidden mb-4'>
-                        {profileImage ? (
-                            <Image src={profileImage} alt='Profile' fill className='object-cover' />
-                        ) : (
-                            <Camera className='w-12 h-12 text-gray-400' />
-                        )}
-                    </div>
-
-                    <div className='flex justify-center'>
-                        <label htmlFor='profile-image-upload' className={`cursor-pointer ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
-                            <div className='bg-transparent border border-primary text-primary hover:bg-primary hover:text-white transition-colors duration-200 h-[31px] px-[40px] py-[16px] typo-button-sm flex items-center justify-center rounded-[8px]'>
-                                {uploading ? 'Uploading...' : 'Select Image'}
-                            </div>
-                            <input
-                                id='profile-image-upload'
-                                type='file'
-                                accept='image/*'
-                                onChange={handleImageUpload}
-                                disabled={uploading}
-                                className='hidden'
-                            />
-                        </label>
                     </div>
                 </div>
             </div>

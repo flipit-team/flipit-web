@@ -4,7 +4,7 @@ import InputBox from '../common/input-box';
 import RadioButtons from '../common/radio-buttons';
 import ImageUpload from '../common/image-upload';
 import RegularButton from '../common/buttons/RegularButton';
-import NormalSelectBox from '../common/normal-select-box';
+import Select from '../common/select';
 import AuctionDurationSelector from '../common/auction-duration-selector/AuctionDurationSelector';
 import AuctionStartSelector from '../common/auction-start-selector/AuctionStartSelector';
 import LocationSelector from '../common/location-selector/LocationSelector';
@@ -213,10 +213,31 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
 
             if (isEditing && existingItem) {
                 // Handle item update
+                // Extract keys from URLs (S3 URLs contain the key in the path)
+                const extractKey = (url: string) => {
+                    if (!url) return '';
+                    // If it's already a key (no protocol), return as is
+                    if (!url.startsWith('http')) {
+                        // Remove leading slash if present
+                        return url.startsWith('/') ? url.substring(1) : url;
+                    }
+
+                    try {
+                        // Parse the URL to get the pathname (removes query params)
+                        const urlObj = new URL(url);
+                        // Remove leading slash and return the path
+                        return urlObj.pathname.substring(1);
+                    } catch (e) {
+                        // If URL parsing fails, fall back to simple extraction
+                        const parts = url.split('?')[0].split('/');
+                        return parts[parts.length - 1];
+                    }
+                };
+
                 const updateData: UpdateItemRequest = {
                     title: title.trim(),
                     description: description.trim(),
-                    imageKeys: urls.filter((url) => url != null && url !== ''),
+                    imageKeys: urls.filter((url) => url != null && url !== '').map(extractKey),
                     acceptCash: cash === 'yes',
                     cashAmount: cash === 'yes' ? price : 0,
                     location: location.trim(),
@@ -405,7 +426,10 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
     return (
         <form className='w-full flex flex-col gap-6 xs:gap-4'>
             <h1 className='typo-heading_ms xs:typo-heading_sr mx-auto xs:text-center xs:block'>
-                {formType === 'auction' ? 'Post an Auction' : 'Post a listed Item'}
+                {isEditing
+                    ? (formType === 'auction' ? 'Edit Auction Item' : 'Edit Listed Item')
+                    : (formType === 'auction' ? 'Post an Auction' : 'Post a listed Item')
+                }
             </h1>
 
             {error && (
@@ -437,10 +461,12 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 required
             />
 
-            <NormalSelectBox
-                selectedOption={categories}
-                setSelectedOption={setCategories}
-                options={availableCategories}
+            <Select
+                label="Category"
+                value={categories}
+                onChange={setCategories}
+                options={availableCategories.map(cat => ({value: cat.name, label: cat.name}))}
+                placeholder="Select category"
                 required
             />
 

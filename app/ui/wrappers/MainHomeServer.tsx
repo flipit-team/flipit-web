@@ -62,8 +62,8 @@ const MainHomeServer = ({ items, auctionItems, defaultCategories, loadMoreRef, l
                 </div>
                 <SearchBar />
             </div>
-            <div className='grid grid-cols-[260px_1fr] xs:grid-cols-1 gap-6 xs:gap-0 overflow-hidden max-w-full'>
-                <Categories defaultCategories={defaultCategories} />
+            <div className={`grid ${defaultCategories.length > 0 ? 'grid-cols-[260px_1fr]' : 'grid-cols-1'} xs:grid-cols-1 gap-6 xs:gap-0 overflow-hidden max-w-full`}>
+                {defaultCategories.length > 0 && <Categories defaultCategories={defaultCategories} />}
 
                 <div className='w-full max-w-full overflow-x-hidden pr-[60px] xs:pr-4 xs:pl-4 no-scrollbar'>
                     <MobileControlsWrapper
