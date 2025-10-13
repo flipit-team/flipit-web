@@ -18,7 +18,8 @@ export default function CategoryPage() {
     const [filters, setFilters] = useState({
         category: decodedCategoryName,
         subCategory: '',
-        location: '',
+        stateCode: '',
+        lgaCode: '',
         priceMin: '',
         priceMax: '',
         verifiedSellers: false,
@@ -87,22 +88,35 @@ export default function CategoryPage() {
         if (updateParams) {
             const apiParams: any = {
                 page: 0,
-                categories: newFilters.category ? [newFilters.category] : undefined,
+                category: newFilters.category || undefined,
+                subcategory: newFilters.subCategory || undefined,
                 sort: newFilters.sort,
             };
 
             // Add location filters
-            if (newFilters.location) {
-                // Parse location if it contains state/LGA info
-                apiParams.location = newFilters.location;
+            if (newFilters.stateCode) {
+                apiParams.stateCode = newFilters.stateCode;
+            }
+            if (newFilters.lgaCode) {
+                apiParams.lgaCode = newFilters.lgaCode;
             }
 
-            // Add price range (API might need minPrice/maxPrice params)
+            // Add price range filters
             if (newFilters.priceMin) {
-                apiParams.minPrice = parseFloat(newFilters.priceMin);
+                apiParams.minAmount = parseFloat(newFilters.priceMin);
             }
             if (newFilters.priceMax) {
-                apiParams.maxPrice = parseFloat(newFilters.priceMax);
+                apiParams.maxAmount = parseFloat(newFilters.priceMax);
+            }
+
+            // Add verified seller filter
+            if (newFilters.verifiedSellers) {
+                apiParams.isVerifiedSeller = true;
+            }
+
+            // Add discount filter
+            if (newFilters.discount) {
+                apiParams.hasDiscount = true;
             }
 
             updateParams(apiParams);

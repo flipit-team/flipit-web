@@ -119,7 +119,13 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
     // Check if all required fields are valid
     const isFormValid = () => {
         const commonFields =
-            title.trim() && description.trim() && location.trim() && condition && category.trim() && urls.length >= 3;
+            title.trim() &&
+            description.trim() &&
+            locationCodes?.stateCode &&
+            locationCodes?.lgaCode &&
+            condition &&
+            category.trim() &&
+            urls.length >= 3;
 
         if (formType === 'listing') {
             return commonFields && cash && (cash === 'no' || price > 0);
@@ -199,8 +205,8 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 setLoading(false);
                 return;
             }
-            if (!location.trim()) {
-                setError('Location is required');
+            if (!locationCodes?.stateCode || !locationCodes?.lgaCode) {
+                setError('Please select both state and LGA');
                 setLoading(false);
                 return;
             }
@@ -342,8 +348,8 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 setLoading(false);
                 return;
             }
-            if (!location.trim()) {
-                setError('Location is required');
+            if (!locationCodes?.stateCode || !locationCodes?.lgaCode) {
+                setError('Please select both state and LGA');
                 setLoading(false);
                 return;
             }

@@ -9,7 +9,8 @@ interface CategorySidebarProps {
     filters: {
         category: string;
         subCategory: string;
-        location: string;
+        stateCode: string;
+        lgaCode: string;
         priceMin: string;
         priceMax: string;
         verifiedSellers: boolean;
@@ -109,15 +110,8 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
     // Update local state when filters prop changes
     useEffect(() => {
         setLocalFilters(filters);
-        // Parse location to get state and LGA
-        if (filters.location) {
-            const [stateCode, lgaCode] = filters.location.split('-');
-            setSelectedState(stateCode || '');
-            setSelectedLGA(lgaCode || '');
-        } else {
-            setSelectedState('');
-            setSelectedLGA('');
-        }
+        setSelectedState(filters.stateCode || '');
+        setSelectedLGA(filters.lgaCode || '');
     }, [filters]);
 
     const handleLocalFilterUpdate = (key: string, value: any) => {
@@ -127,16 +121,19 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
     const handleLocationChange = (stateCode: string, lgaCode?: string) => {
         setSelectedState(stateCode);
         setSelectedLGA(lgaCode || '');
-
-        const locationValue = stateCode ? (lgaCode ? `${stateCode}-${lgaCode}` : stateCode) : '';
-        setLocalFilters(prev => ({ ...prev, location: locationValue }));
+        setLocalFilters(prev => ({
+            ...prev,
+            stateCode: stateCode,
+            lgaCode: lgaCode || ''
+        }));
     };
 
     const resetFilters = () => {
         const resetFilters = {
             category: filters.category,
             subCategory: '',
-            location: '',
+            stateCode: '',
+            lgaCode: '',
             priceMin: '',
             priceMax: '',
             verifiedSellers: false,

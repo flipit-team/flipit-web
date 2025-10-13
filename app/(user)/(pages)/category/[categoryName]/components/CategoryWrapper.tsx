@@ -17,7 +17,8 @@ interface CategoryWrapperProps {
     filters: {
         category: string;
         subCategory: string;
-        location: string;
+        stateCode: string;
+        lgaCode: string;
         priceMin: string;
         priceMax: string;
         verifiedSellers: boolean;
