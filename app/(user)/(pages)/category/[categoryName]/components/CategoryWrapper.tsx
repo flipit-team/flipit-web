@@ -13,7 +13,7 @@ import { useInfiniteScroll } from '~/hooks/useInfiniteScroll';
 interface CategoryWrapperProps {
     categoryName: string;
     items: Item[];
-    categories: Array<{ id?: number; name: string; description: string | null; }>;
+    categories: Array<{ id?: number; name: string; description: string | null; subcategories?: string[]; }>;
     filters: {
         category: string;
         subCategory: string;

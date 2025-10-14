@@ -8,21 +8,26 @@ const nextConfig = {
         webpackBuildWorker: true
     },
     images: {
-        unoptimized: true,
-        loader: 'custom',
-        loaderFile: './app/lib/image-loader.ts',
         remotePatterns: [
             {
                 protocol: 'https',
-                hostname: 'flipitimages1.s3.amazonaws.com'
+                hostname: 'flipitimages1.s3.amazonaws.com',
+                pathname: '/**',
             },
             {
                 protocol: 'https',
-                hostname: 'flipitimages1.s3.us-east-1.amazonaws.com'
+                hostname: 'flipitimages1.s3.us-east-1.amazonaws.com',
+                pathname: '/**',
             },
             {
                 protocol: 'https',
-                hostname: 'images.pexels.com'
+                hostname: 'images.pexels.com',
+                pathname: '/**',
+            },
+            {
+                protocol: 'https',
+                hostname: 'images.unsplash.com',
+                pathname: '/**',
             }
         ]
     }

@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { NIGERIAN_LOCATIONS } from '~/data/nigerianLocations';
 
 interface CategorySidebarProps {
-    categories: Array<{ id?: number; name: string; description: string | null; }>;
+    categories: Array<{ id?: number; name: string; description: string | null; subcategories?: string[]; }>;
     filters: {
         category: string;
         subCategory: string;
@@ -114,6 +114,16 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
         setSelectedLGA(filters.lgaCode || '');
     }, [filters]);
 
+    // Reset subcategory when category changes
+    useEffect(() => {
+        const selectedCategoryObj = categories.find(cat => cat.name === localFilters.category);
+        const availableSubcategories = selectedCategoryObj?.subcategories || [];
+
+        if (localFilters.subCategory && !availableSubcategories.includes(localFilters.subCategory)) {
+            handleLocalFilterUpdate('subCategory', '');
+        }
+    }, [localFilters.category, categories]);
+
     const handleLocalFilterUpdate = (key: string, value: any) => {
         setLocalFilters(prev => ({ ...prev, [key]: value }));
     };
@@ -156,15 +166,12 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
         label: cat.name
     }));
 
-    // Mock subcategories - in real app, these would be fetched based on main category
-    const subCategoryOptions = [
-        { value: 'smartphones', label: 'Smartphones' },
-        { value: 'laptops', label: 'Laptops' },
-        { value: 'tablets', label: 'Tablets' },
-        { value: 'accessories', label: 'Accessories' },
-        { value: 'gaming', label: 'Gaming' },
-        { value: 'audio', label: 'Audio' }
-    ];
+    // Get subcategories based on selected category
+    const selectedCategoryObj = categories.find(cat => cat.name === localFilters.category);
+    const subCategoryOptions = selectedCategoryObj?.subcategories?.map((sub: string) => ({
+        value: sub,
+        label: sub
+    })) || [];
 
     // Real Nigerian states from centralized location data
     const stateOptions = NIGERIAN_LOCATIONS.states.map(state => ({
@@ -203,12 +210,14 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
                         options={categoryOptions}
                         placeholder="Select Category"
                     />
-                    <CustomDropdown
-                        value={localFilters.subCategory}
-                        onChange={(value) => handleLocalFilterUpdate('subCategory', value)}
-                        options={subCategoryOptions}
-                        placeholder="Select Subcategory"
-                    />
+                    {localFilters.category && subCategoryOptions.length > 0 && (
+                        <CustomDropdown
+                            value={localFilters.subCategory}
+                            onChange={(value) => handleLocalFilterUpdate('subCategory', value)}
+                            options={subCategoryOptions}
+                            placeholder="Select Subcategory (Optional)"
+                        />
+                    )}
                 </div>
             </div>
 
