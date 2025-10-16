@@ -125,7 +125,7 @@ function HeaderContent(props: Props) {
         }
     };
 
-    if (!isClient || pathname === '/') return null;
+    if (!isClient || pathname === '/login') return null;
 
     return (
         <>
@@ -293,13 +293,13 @@ function HeaderContent(props: Props) {
                             className='h-7 w-7 xs:h-4 xs:w-4 rounded-full'
                         />
                         <Link
-                            href={'/'}
+                            href={'/login'}
                             className='flex items-center justify-center xs:hidden typo-body_ms h-[45px] w-[145px] text-white rounded-lg'
                         >
                             Sign In
                         </Link>
                         <Link
-                            href={user ? '/post-an-item/entry' : '/'}
+                            href={user ? '/post-an-item/entry' : '/login'}
                             className='flex items-center justify-center bg-secondary xs:hidden typo-body_ms h-[45px] w-[145px] text-white rounded-lg ml-[43px]'
                         >
                             Post Item

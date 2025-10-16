@@ -1,14 +1,5 @@
 import '~/styles/globals.css';
 import {Poppins, Inter} from 'next/font/google';
-import Header from '~/ui/common/layout/header';
-import Footer from '~/ui/common/layout/footer';
-import React, {Suspense} from 'react';
-import ErrorBoundary from '~/error-boundary';
-import {AppProvider} from './contexts/AppContext';
-import {ToastProvider} from './contexts/ToastContext';
-import BottomNavBar from './ui/common/layout/bottom-nav-bar';
-import Overlay from './ui/common/modals/Overlay';
-import { checkAuthServerSide } from '~/lib/server-api';
 const poppins = Poppins({
     display: 'swap',
     variable: '--font-poppins',

@@ -7,8 +7,8 @@ import Loading from '~/ui/common/loading/Loading';
 const ConditionalBottomNav: React.FC = () => {
     const pathname: string = usePathname();
 
-    // Hide bottom nav on login/signup page (root path)
-    const shouldHideBottomNav: boolean = useMemo(() => pathname === '/', [pathname]);
+    // Hide bottom nav on login/signup page
+    const shouldHideBottomNav: boolean = useMemo(() => pathname === '/login', [pathname]);
 
     if (shouldHideBottomNav) {
         return null;
