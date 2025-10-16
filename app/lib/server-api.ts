@@ -124,14 +124,23 @@ export async function getCategoriesServerSide(): Promise<{ data: CategoryDTO[] |
 
 export async function getSingleItemServerSide(itemId: string): Promise<{ data: ItemDTO | null; error: string | null }> {
   try {
+    // Validate itemId
+    if (!itemId || itemId === 'undefined' || itemId === 'null') {
+      console.error('Invalid itemId provided:', itemId);
+      return {
+        data: null,
+        error: 'Invalid item ID'
+      };
+    }
+
     // Call backend API directly to get single item
     const apiUrl = `${API_BASE_URL}/api/v1/items/${itemId}`;
+    console.log('Fetching item from:', apiUrl);
 
     // Get token from cookies for authentication
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
-    
-    
+
     const response = await fetch(apiUrl, {
       headers: {
         'Content-Type': 'application/json',
@@ -140,21 +149,23 @@ export async function getSingleItemServerSide(itemId: string): Promise<{ data: I
       cache: 'no-store',
     });
 
-
     if (!response.ok) {
       const errorText = await response.text();
-      return { 
-        data: null, 
-        error: `API error: ${response.status} ${response.statusText}` 
+      console.error('API error response:', response.status, errorText);
+      return {
+        data: null,
+        error: `API error: ${response.status} ${response.statusText}`
       };
     }
 
     const data = await response.json();
-    
+    console.log('Successfully fetched item:', data?.id);
+
     return { data, error: null };
   } catch (error) {
-    return { 
-      data: null, 
+    console.error('Exception in getSingleItemServerSide:', error);
+    return {
+      data: null,
       error: error instanceof Error ? error.message : 'Unknown error occurred'
     };
   }
