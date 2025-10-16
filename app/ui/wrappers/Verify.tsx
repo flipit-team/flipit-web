@@ -21,7 +21,7 @@ export default function Verify() {
             const newParams = new URLSearchParams(searchParams.toString());
             newParams.set('modal', 'verified');
             setTimeout(() => {
-                router.replace(`/home?${newParams.toString()}`);
+                router.replace(`/?${newParams.toString()}`);
             }, 0);
         } else {
             setModalMessage(messageParam || 'Link is invalid or expired.');
@@ -30,7 +30,7 @@ export default function Verify() {
             const newParams = new URLSearchParams(searchParams.toString());
             newParams.set('modal', 'error');
             setTimeout(() => {
-                router.replace(`/home?${newParams.toString()}`);
+                router.replace(`/?${newParams.toString()}`);
             }, 0);
         }
     }, [searchParams, router]);

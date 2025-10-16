@@ -25,7 +25,7 @@ const AuthButton = (props: Props) => {
     if (link) {
         return (
             <Link
-                href={link ? link : '/home'}
+                href={link ? link : '/'}
                 className={`w-full h-[45px] ${bg ? 'bg-primary text-white' : 'text-text_four'} ${border ? 'border border-border_gray' : ''} flex items-center px-4 rounded-[43px] typo-body_ms cursor-pointer`}
             >
                 {icon ? <Image alt='icon' height={24} width={24} src={icon} className='h-6 w-6' /> : <></>}

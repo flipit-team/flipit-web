@@ -185,7 +185,7 @@ const Form = () => {
 
                 if (result.success) {
                     // Redirect to intended page or home
-                    const redirectTo = searchParams.get('redirectTo') || '/home';
+                    const redirectTo = searchParams.get('redirectTo') || '/';
                     router.push(redirectTo);
                 } else {
                     const errorDetails = formatErrorForDisplay(result.error || 'Login failed');
@@ -214,7 +214,7 @@ const Form = () => {
                 });
 
                 if (result.success) {
-                    router.push('/home?modal=check-inbox');
+                    router.push('/?modal=check-inbox');
                 } else {
                     const errorDetails = formatErrorForDisplay(result.error || 'Signup failed');
                     setErrorTitle(errorDetails.title);
@@ -380,7 +380,7 @@ const Form = () => {
 
                 <div className='flex flex-col gap-4'>
                     <AuthButton title='Continue with Google' icon='/google-icon.svg' border onClick={loginWithGoogle} />
-                    <AuthButton title='Continue with Facebook' icon='/facebook-icon.svg' border link='/home' />
+                    <AuthButton title='Continue with Facebook' icon='/facebook-icon.svg' border link='/' />
                 </div>
             </div>
         </div>

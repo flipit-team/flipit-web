@@ -16,7 +16,7 @@ const page = async ({searchParams}: {searchParams: Promise<{[key: string]: strin
                 maxAge: 60 * 60 * 24 * 7 // 1 week
             });
             // Optionally redirect after setting the cookie
-            redirect('/home'); // or wherever you want
+            redirect('/'); // or wherever you want
         }
         return <div>page</div>;
     } catch {

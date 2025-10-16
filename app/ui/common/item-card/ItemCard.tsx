@@ -51,7 +51,7 @@ const ItemCard: React.FC<ItemCardProps> = memo(
         const href = useMemo(() => {
             if (forEdit) return `/edit-item/${item.id}`;
             if (forLiveAuction) return `/live-auction/${item.auctionId || item.id}`;
-            return `/home/${item.id}`;
+            return `/${item.id}`;
         }, [forEdit, forLiveAuction, item.id, item.auctionId]);
 
         const handleLikeClick = useCallback(

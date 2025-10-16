@@ -21,7 +21,7 @@ export default function LogoutButton(props: Props) {
         Cookies.remove('token', {path: '/'});
         Cookies.remove('userId', {path: '/'});
         props.setShowFlyout(false);
-        window.location.href = '/home';
+        window.location.href = '/';
         router.refresh();
     };
     return (

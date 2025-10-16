@@ -151,7 +151,7 @@ function HeaderContent(props: Props) {
                         />
                     )}
 
-                    <Link href={'/home'} className='typo-heading_mb xs:typo-heading_sb xs:text-center'>
+                    <Link href={'/'} className='typo-heading_mb xs:typo-heading_sb xs:text-center'>
                         Flipit
                     </Link>
                 </div>

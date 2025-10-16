@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
             return NextResponse.redirect('/login?error=empty_token');
         }
 
-        const response = NextResponse.redirect('/home');
+        const response = NextResponse.redirect('/');
 
         response.cookies.set('token', token, {
             httpOnly: true,

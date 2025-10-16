@@ -41,14 +41,14 @@ export function middleware(request: NextRequest) {
 
     // Redirect unauthenticated users from protected routes to login
     if (isProtectedRoute && !isAuthenticated) {
-        const loginUrl = new URL('/', request.url);
+        const loginUrl = new URL('/login', request.url);
         loginUrl.searchParams.set('redirectTo', pathname);
         return NextResponse.redirect(loginUrl);
     }
 
     // Redirect authenticated users from public auth routes to home
-    if (isPublicRoute && isAuthenticated && pathname !== '/') {
-        return NextResponse.redirect(new URL('/home', request.url));
+    if (isPublicRoute && isAuthenticated) {
+        return NextResponse.redirect(new URL('/', request.url));
     }
 
     // Handle error-500 page

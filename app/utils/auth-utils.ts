@@ -27,12 +27,12 @@ export function isPublicPage(pathname: string): boolean {
   const publicPages = [
     '/', // login page
     '/auth',
-    '/register', 
+    '/register',
     '/login',
     '/forgot-password',
     '/reset-password',
     '/verify',
-    '/home', // public home page
+    '/', // public home page
     '/live-auction', // public auction viewing
     '/faq'
   ];

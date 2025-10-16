@@ -22,10 +22,10 @@ const BottomNavBar: React.FC = () => {
     const tabs: Tab[] = useMemo(() => [
         {
             id: 1,
-            link: '/home',
+            link: '/',
             icon: (isActive: boolean) => <HomeIcon isActive={isActive} />,
             label: 'Home',
-            listForActiveLink: ['/home']
+            listForActiveLink: ['/']
         },
         {
             id: 2,

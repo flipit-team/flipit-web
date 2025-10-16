@@ -13,9 +13,9 @@ export default function GoogleCallbackHandler() {
 
             const res = await fetch(`/api/v1/auth/google/callback?code=${code}`);
             if (res.ok) {
-                router.push('/home');
+                router.push('/');
             } else {
-                router.push('/?error=auth_failed');
+                router.push('/login?error=auth_failed');
             }
         };
 

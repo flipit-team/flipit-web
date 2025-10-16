@@ -320,7 +320,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
 
                     if (result.data) {
                         // Force a complete page reload to ensure fresh data
-                        window.location.href = '/home';
+                        window.location.href = '/';
                     } else {
                         const errorDetails = formatErrorForDisplay('Item creation response was empty');
                         setErrorTitle(errorDetails.title);

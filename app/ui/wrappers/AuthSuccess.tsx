@@ -19,7 +19,7 @@ export default function AuthSuccessPage() {
         Cookies.set('userId', userId, {expires: 7});
 
         // Redirect to dashboard or home
-        router.push('/home');
+        router.push('/');
     }, [token, userId, router]);
 
     return (
