@@ -23,7 +23,7 @@ function HeaderContent(props: Props) {
     const [isClient, setIsClient] = useState(false);
     const [hovered, setHovered] = useState(false);
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
-    const [profileDropdownTimeout, setProfileDropdownTimeout] = useState<NodeJS.Timeout | null>(null);
+    const profileDropdownTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
     const router = useRouter();
     const pathname = usePathname();
     const {notifications, profile, user: clientUser, debugMode, toggleDebugMode} = useAppContext();
@@ -42,20 +42,21 @@ function HeaderContent(props: Props) {
         setIsClient(true);
     }, []);
 
-    // Profile dropdown handlers with delay to prevent accidental closures
+    // Profile dropdown handlers - keep dropdown open while hovering
     const handleProfileMouseEnter = () => {
-        if (profileDropdownTimeout) {
-            clearTimeout(profileDropdownTimeout);
-            setProfileDropdownTimeout(null);
+        // Clear any pending close timeout
+        if (profileDropdownTimeoutRef.current) {
+            clearTimeout(profileDropdownTimeoutRef.current);
+            profileDropdownTimeoutRef.current = null;
         }
         setShowProfileDropdown(true);
     };
 
     const handleProfileMouseLeave = () => {
-        const timeout = setTimeout(() => {
+        // Set a timeout to close the dropdown
+        profileDropdownTimeoutRef.current = setTimeout(() => {
             setShowProfileDropdown(false);
-        }, 500); // Increased to 500ms delay before closing
-        setProfileDropdownTimeout(timeout);
+        }, 200); // Short delay to allow mouse movement to dropdown
     };
 
     // Toggle dropdown on click for better mobile/touch support
@@ -66,11 +67,11 @@ function HeaderContent(props: Props) {
     // Cleanup timeout on unmount
     useEffect(() => {
         return () => {
-            if (profileDropdownTimeout) {
-                clearTimeout(profileDropdownTimeout);
+            if (profileDropdownTimeoutRef.current) {
+                clearTimeout(profileDropdownTimeoutRef.current);
             }
         };
-    }, [profileDropdownTimeout]);
+    }, []);
 
     // Log header user state for debugging
     useEffect(() => {
