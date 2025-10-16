@@ -54,8 +54,13 @@ function HeaderContent(props: Props) {
     const handleProfileMouseLeave = () => {
         const timeout = setTimeout(() => {
             setShowProfileDropdown(false);
-        }, 300); // 300ms delay before closing
+        }, 500); // Increased to 500ms delay before closing
         setProfileDropdownTimeout(timeout);
+    };
+
+    // Toggle dropdown on click for better mobile/touch support
+    const handleProfileClick = () => {
+        setShowProfileDropdown(prev => !prev);
     };
 
     // Cleanup timeout on unmount
@@ -234,9 +239,10 @@ function HeaderContent(props: Props) {
                         {/* Profile Icon */}
                         <div className='relative'>
                             <div
-                                className='flex items-center gap-2 cursor-pointer p-2 rounded-full transition'
+                                className='flex items-center gap-2 cursor-pointer p-2 rounded-full transition hover:bg-white/10'
                                 onMouseEnter={handleProfileMouseEnter}
                                 onMouseLeave={handleProfileMouseLeave}
+                                onClick={handleProfileClick}
                             >
                                 <Image
                                     src={profile?.avatar || '/placeholder-avatar.svg'}
@@ -253,7 +259,7 @@ function HeaderContent(props: Props) {
                                     height={32}
                                     width={32}
                                     alt='dropdown'
-                                    className='h-4 w-4 rounded-full xs:hidden'
+                                    className={`h-4 w-4 rounded-full xs:hidden transition-transform ${showProfileDropdown ? 'rotate-180' : ''}`}
                                 />
                             </div>
 
