@@ -5,14 +5,23 @@ import { ItemsService } from '~/services/items.service';
 import { ItemDTO, ItemsQueryParams, CategoryDTO } from '~/types/api';
 import useApi from './useApi';
 
-export function useItems(initialParams?: ItemsQueryParams) {
+interface UseItemsOptions {
+  initialParams?: ItemsQueryParams;
+  autoFetch?: boolean;
+}
+
+export function useItems(options?: UseItemsOptions | ItemsQueryParams) {
+  // Support both old API (just params) and new API (options object)
+  const initialParams: ItemsQueryParams | undefined = options && 'initialParams' in options ? options.initialParams : options as ItemsQueryParams | undefined;
+  const autoFetch = options && 'autoFetch' in options ? options.autoFetch : true;
+
   const [items, setItems] = useState<ItemDTO[]>([]);
   const [params, setParams] = useState<ItemsQueryParams>(initialParams || {});
   const [hasMore, setHasMore] = useState(true);
   const [totalElements, setTotalElements] = useState(0);
   const [initialized, setInitialized] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-  
+
   const { loading, error, execute } = useApi();
 
   const fetchItems = useCallback(async (searchParams?: ItemsQueryParams, append = false) => {
@@ -52,8 +61,9 @@ export function useItems(initialParams?: ItemsQueryParams) {
     return fetchItems({ ...params, page: 0 });
   }, [params, fetchItems]);
 
-  const updateParams = useCallback((newParams: Partial<ItemsQueryParams>) => {
-    const updatedParams = { ...params, ...newParams, page: 0 };
+  const updateParams = useCallback((newParams: Partial<ItemsQueryParams>, replace = false) => {
+    // If replace is true, use newParams directly; otherwise merge with existing params
+    const updatedParams = replace ? { ...newParams, page: 0 } : { ...params, ...newParams, page: 0 };
     setParams(updatedParams);
     setItems([]);
     setCurrentPage(0);
@@ -62,8 +72,10 @@ export function useItems(initialParams?: ItemsQueryParams) {
   }, [params, fetchItems]);
 
   useEffect(() => {
-    fetchItems();
-  }, []);
+    if (autoFetch) {
+      fetchItems();
+    }
+  }, [autoFetch]);
 
   return {
     items: items || [],

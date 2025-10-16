@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Item } from '~/utils/interface';
 import { useItems, useCategories } from '~/hooks/useItems';
 import { useInfiniteScroll } from '~/hooks/useInfiniteScroll';
@@ -20,12 +21,31 @@ interface Props {
 }
 
 const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, defaultCategories: serverCategories, authStatus }: Props) => {
+    const searchParams = useSearchParams();
+    const searchQuery = searchParams.get('q') || '';
     const [locationFilter, setLocationFilter] = useState<{ stateCode: string; lgaCode?: string } | null>(null);
     const [currentSort, setCurrentSort] = useState<string>('recent');
 
     // Fetch client-side data with infinite scroll support
     // Don't fetch on mount - we already have server items
-    const { items: apiItems, loading: itemsLoading, hasMore, loadMore, updateParams, initialized } = useItems({ page: 0, size: 15, sort: 'recent' });
+    const { items: apiItems, loading: itemsLoading, hasMore, loadMore, updateParams, initialized } = useItems({
+        initialParams: { page: 0, size: 15, sort: 'recent' },
+        autoFetch: false
+    });
+
+    // Update items when search query changes
+    useEffect(() => {
+        if (searchQuery && updateParams) {
+            const params: any = { sort: currentSort, search: searchQuery };
+            if (locationFilter) {
+                params.stateCode = locationFilter.stateCode;
+                if (locationFilter.lgaCode) {
+                    params.lgaCode = locationFilter.lgaCode;
+                }
+            }
+            updateParams(params);
+        }
+    }, [searchQuery]);
     const { categories: apiCategories } = useCategories();
     
     // Set up infinite scroll
@@ -118,14 +138,13 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
         }
     };
 
-    // Use API data when filters/sorting are active AND data has been fetched, otherwise use server data
-    const hasActiveFilters = locationFilter !== null || currentSort !== 'recent';
+    // Use API data when filters/sorting/search are active AND data has been fetched, otherwise use server data
+    const hasActiveFilters = locationFilter !== null || currentSort !== 'recent' || searchQuery !== '';
 
-    // Show API items only when we have active filters AND the API has fetched data
-    // Otherwise show server items
-    const items = (hasActiveFilters && transformedApiItems.length > 0)
+    // Show API items when filters are active and initialized, otherwise always show server items
+    const items = (hasActiveFilters && initialized)
         ? transformedApiItems
-        : (serverItems && serverItems.length > 0 ? serverItems : transformedApiItems);
+        : serverItems;
 
     const auctionItems = serverAuctionItems || [];
     const defaultCategories = serverCategories && serverCategories.length > 0 ? serverCategories :

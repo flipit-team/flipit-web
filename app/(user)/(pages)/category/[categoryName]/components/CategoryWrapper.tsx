@@ -24,6 +24,7 @@ interface CategoryWrapperProps {
         verifiedSellers: boolean;
         discount: boolean;
         sort: string;
+        search?: string;
     };
     onFilterChange: (filters: any) => void;
     loading?: boolean;
@@ -70,12 +71,15 @@ const CategoryWrapper: React.FC<CategoryWrapperProps> = ({
 
     const currentSortLabel = sortOptions.find(opt => opt.value === filters.sort)?.label || 'Recent';
 
+    // Use the current filter category or fall back to the URL category name
+    const displayCategoryName = filters.category || categoryName;
+
     return (
         <div className='flex flex-col relative no-scrollbar'>
             {/* Header section - Same as home page */}
             <div className='xs:px-4 h-[206px] xs:h-[184px] bg-surface-primary-95 flex flex-col gap-7 xs:gap-6 py-11 xs:pt-[36px] xs:pb-[29px]'>
                 <div className='flex items-center gap-4 mx-auto text-white xs:flex-col xs:gap-3'>
-                    <p className='typo-body_lr xs:typo-body_sr'>{categoryName} items</p>
+                    <p className='typo-body_lr xs:typo-body_sr'>{displayCategoryName} items</p>
                 </div>
                 <SearchBar />
             </div>
@@ -87,7 +91,7 @@ const CategoryWrapper: React.FC<CategoryWrapperProps> = ({
                     categories={categories}
                     filters={filters}
                     onFilterChange={onFilterChange}
-                    categoryName={categoryName}
+                    categoryName={displayCategoryName}
                 />
 
                 {/* Main content area - Same structure as home page */}
@@ -102,7 +106,7 @@ const CategoryWrapper: React.FC<CategoryWrapperProps> = ({
                     {items.length > 0 ? (
                         <>
                             <div className='py-9 xs:py-4 xs:mb-4 flex items-center justify-between'>
-                                <div className='typo-heading_ms xs:typo-heading_sr'>{categoryName} Items</div>
+                                <div className='typo-heading_ms xs:typo-heading_sr'>{displayCategoryName} Items</div>
                                 <div className='xs:hidden'>
                                     <SortDropdown
                                         options={sortOptions}

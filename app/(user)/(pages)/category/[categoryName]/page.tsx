@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useParams } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { useParams, useSearchParams } from 'next/navigation';
 import CategoryWrapper from './components/CategoryWrapper';
 import { Item } from '~/utils/interface';
 import { useItems, useCategories } from '~/hooks/useItems';
@@ -9,10 +9,14 @@ import Loading from '~/ui/common/loading/Loading';
 
 export default function CategoryPage() {
     const params = useParams();
+    const searchParams = useSearchParams();
     const categoryName = params?.categoryName as string;
 
     // Decode the category name from URL
     const decodedCategoryName = decodeURIComponent(categoryName || '');
+
+    // Get search query from URL
+    const searchQuery = searchParams.get('q') || '';
 
     // Filter state
     const [filters, setFilters] = useState({
@@ -24,15 +28,27 @@ export default function CategoryPage() {
         priceMax: '',
         verifiedSellers: false,
         discount: false,
-        sort: 'recent'
+        sort: 'recent',
+        search: searchQuery
     });
 
+    // Update filters when search query changes from URL
+    useEffect(() => {
+        if (searchQuery !== filters.search) {
+            setFilters(prev => ({ ...prev, search: searchQuery }));
+        }
+    }, [searchQuery]);
+
     // Fetch items with filters
-    const { items: apiItems, loading, hasMore, loadMore, updateParams } = useItems({
-        page: 0,
-        size: 20,
-        category: decodedCategoryName,
-        sort: filters.sort as any,
+    const { items: apiItems, loading, hasMore, loadMore, updateParams, initialized } = useItems({
+        initialParams: {
+            page: 0,
+            size: 20,
+            category: decodedCategoryName,
+            sort: filters.sort as any,
+            search: searchQuery
+        },
+        autoFetch: true
     });
 
     // Fetch categories for filter dropdown
@@ -80,18 +96,52 @@ export default function CategoryPage() {
     const items = transformedApiItems;
     const categories = apiCategories || [];
 
+    // Update items when search query changes from URL
+    useEffect(() => {
+        if (updateParams && searchQuery && initialized) {
+            const apiParams: any = {
+                page: 0,
+                category: decodedCategoryName,
+                sort: filters.sort,
+                search: searchQuery,
+            };
+
+            // Add existing filters
+            if (filters.subCategory) apiParams.subcategory = filters.subCategory;
+            if (filters.stateCode) apiParams.stateCode = filters.stateCode;
+            if (filters.lgaCode) apiParams.lgaCode = filters.lgaCode;
+            if (filters.priceMin) apiParams.minAmount = parseFloat(filters.priceMin);
+            if (filters.priceMax) apiParams.maxAmount = parseFloat(filters.priceMax);
+            if (filters.verifiedSellers) apiParams.isVerifiedSeller = true;
+            if (filters.discount) apiParams.hasDiscount = true;
+
+            updateParams(apiParams, true);
+        }
+    }, [searchQuery]);
+
     // Handle filter changes
     const handleFilterChange = (newFilters: typeof filters) => {
         setFilters(newFilters);
 
-        // Update API params
+        // Update API params - build complete params object
         if (updateParams) {
             const apiParams: any = {
                 page: 0,
-                category: newFilters.category || undefined,
-                subcategory: newFilters.subCategory || undefined,
+                size: 20,
+                // Always use the category from filters, or fall back to the URL category
+                category: newFilters.category || decodedCategoryName,
                 sort: newFilters.sort,
             };
+
+            // Add subcategory if present
+            if (newFilters.subCategory) {
+                apiParams.subcategory = newFilters.subCategory;
+            }
+
+            // Add search if present
+            if (newFilters.search) {
+                apiParams.search = newFilters.search;
+            }
 
             // Add location filters
             if (newFilters.stateCode) {
@@ -109,17 +159,16 @@ export default function CategoryPage() {
                 apiParams.maxAmount = parseFloat(newFilters.priceMax);
             }
 
-            // Add verified seller filter
+            // Add boolean filters only if true (omit if false to remove from query)
             if (newFilters.verifiedSellers) {
                 apiParams.isVerifiedSeller = true;
             }
-
-            // Add discount filter
             if (newFilters.discount) {
                 apiParams.hasDiscount = true;
             }
 
-            updateParams(apiParams);
+            // Use replace=true to completely replace params instead of merging
+            updateParams(apiParams, true);
         }
     };
 

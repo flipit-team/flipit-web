@@ -1,27 +1,43 @@
 'use client';
 import Image from 'next/image';
 import React, {useEffect, useState} from 'react';
-import {useSearchParams} from 'next/navigation';
+import {useSearchParams, useRouter, usePathname} from 'next/navigation';
 
 const SearchBar = () => {
     const searchParams = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
     const initialQuery = searchParams.get('q') || '';
 
     const [query, setQuery] = useState(initialQuery);
+    const [isInitialMount, setIsInitialMount] = useState(true);
+
+    // Skip the initial mount to prevent redirect on page load
+    useEffect(() => {
+        setIsInitialMount(false);
+    }, []);
 
     useEffect(() => {
+        // Don't navigate on initial mount
+        if (isInitialMount) return;
+
         const timeout = setTimeout(() => {
-            const params = new URLSearchParams();
-
             if (query.length >= 3) {
+                // Add search query to current URL
+                const params = new URLSearchParams(searchParams.toString());
                 params.set('q', query);
+                router.push(`${pathname}?${params.toString()}`);
+            } else if (query.length === 0 && initialQuery) {
+                // Only clear search if there was a previous query
+                const params = new URLSearchParams(searchParams.toString());
+                params.delete('q');
+                const queryString = params.toString();
+                router.push(`${pathname}${queryString ? '?' + queryString : ''}`);
             }
-
-            // router.push(`/home?${params.toString()}`);
         }, 500); // debounce delay
 
         return () => clearTimeout(timeout);
-    }, [query]);
+    }, [query, router, pathname, isInitialMount, searchParams, initialQuery]);
 
     return (
         <div className='relative h-[49px] w-[586px] xs:w-full xs:flex-none mx-auto my-auto outline-none border-none'>

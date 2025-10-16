@@ -16,6 +16,7 @@ interface CategorySidebarProps {
         verifiedSellers: boolean;
         discount: boolean;
         sort: string;
+        search?: string;
     };
     onFilterChange: (filters: any) => void;
     categoryName: string;
@@ -148,7 +149,8 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
             priceMax: '',
             verifiedSellers: false,
             discount: false,
-            sort: 'recent'
+            sort: 'recent',
+            search: filters.search || ''
         };
         setLocalFilters(resetFilters);
         setSelectedState('');
@@ -279,7 +281,8 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
                         type='checkbox'
                         checked={localFilters.verifiedSellers}
                         onChange={(e) => handleLocalFilterUpdate('verifiedSellers', e.target.checked)}
-                        className='w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary focus:ring-2'
+                        className='w-4 h-4 border-gray-300 rounded focus:ring-2 focus:ring-primary focus:ring-offset-0 checked:bg-primary checked:border-primary hover:border-primary accent-primary'
+                        style={{ accentColor: 'var(--color-primary, #00A455)' }}
                     />
                     <span className='typo-body_sr text-gray-700'>Show only verified sellers</span>
                 </label>
@@ -293,7 +296,8 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
                         type='checkbox'
                         checked={localFilters.discount}
                         onChange={(e) => handleLocalFilterUpdate('discount', e.target.checked)}
-                        className='w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary focus:ring-2'
+                        className='w-4 h-4 border-gray-300 rounded focus:ring-2 focus:ring-primary focus:ring-offset-0 checked:bg-primary checked:border-primary hover:border-primary accent-primary'
+                        style={{ accentColor: 'var(--color-primary, #00A455)' }}
                     />
                     <span className='typo-body_sr text-gray-700'>Show only discounted items</span>
                 </label>

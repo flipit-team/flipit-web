@@ -12,8 +12,14 @@ export async function GET(req: NextRequest) {
         const size = searchParams.get('size') || '15';
         const search = searchParams.get('search') || '';
         const sort = searchParams.get('sort');
+        const category = searchParams.get('category');
+        const subcategory = searchParams.get('subcategory');
         const stateCode = searchParams.get('stateCode');
         const lgaCode = searchParams.get('lgaCode');
+        const minAmount = searchParams.get('minAmount');
+        const maxAmount = searchParams.get('maxAmount');
+        const isVerifiedSeller = searchParams.get('isVerifiedSeller');
+        const hasDiscount = searchParams.get('hasDiscount');
         const categories = searchParams.getAll('categories[]');
 
         // Build query string for backend
@@ -22,8 +28,14 @@ export async function GET(req: NextRequest) {
         backendParams.set('size', size);
         if (search) backendParams.set('search', search);
         if (sort) backendParams.set('sort', sort);
+        if (category) backendParams.set('category', category);
+        if (subcategory) backendParams.set('subcategory', subcategory);
         if (stateCode) backendParams.set('stateCode', stateCode);
         if (lgaCode) backendParams.set('lgaCode', lgaCode);
+        if (minAmount) backendParams.set('minAmount', minAmount);
+        if (maxAmount) backendParams.set('maxAmount', maxAmount);
+        if (isVerifiedSeller) backendParams.set('isVerifiedSeller', isVerifiedSeller);
+        if (hasDiscount) backendParams.set('hasDiscount', hasDiscount);
         categories.forEach(cat => backendParams.append('categories[]', cat));
 
         const apiUrl = `${API_BASE_PATH}/items?${backendParams.toString()}`;

@@ -125,7 +125,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
             locationCodes?.lgaCode &&
             condition &&
             category.trim() &&
-            urls.length >= 3;
+            urls.length >= 1;
 
         if (formType === 'listing') {
             return commonFields && cash && (cash === 'no' || price > 0);
@@ -515,7 +515,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 <p>
                     Add photo <span className='text-error ml-1'>*</span>
                 </p>
-                <p className='mb-3 xs:mb-2 text-text_four'>Upload at least 3 photos</p>
+                <p className='mb-3 xs:mb-2 text-text_four'>Upload at least 1 photo</p>
                 <ImageUpload setUrls={setUrls} setUploading={setUploading} uploading={uploading} initialUrls={urls} />
             </div>
 
