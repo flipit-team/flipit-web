@@ -65,7 +65,8 @@ export function useItems(options?: UseItemsOptions | ItemsQueryParams) {
     // If replace is true, use newParams directly; otherwise merge with existing params
     const updatedParams = replace ? { ...newParams, page: 0 } : { ...params, ...newParams, page: 0 };
     setParams(updatedParams);
-    setItems([]);
+    // Don't clear items immediately - let fetchItems handle the update
+    // setItems([]);
     setCurrentPage(0);
     setHasMore(true);
     return fetchItems(updatedParams);

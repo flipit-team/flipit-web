@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useParams, useSearchParams } from 'next/navigation';
+import React, { useState, useMemo, useCallback, useRef } from 'react';
+import { useParams } from 'next/navigation';
 import CategoryWrapper from './components/CategoryWrapper';
 import { Item } from '~/utils/interface';
 import { useItems, useCategories } from '~/hooks/useItems';
@@ -9,31 +9,10 @@ import Loading from '~/ui/common/loading/Loading';
 
 export default function CategoryPage() {
     const params = useParams();
-    const searchParams = useSearchParams();
     const categoryName = params?.categoryName as string;
 
     // Decode the category name from URL
     const decodedCategoryName = decodeURIComponent(categoryName || '');
-
-    // Get search query from URL
-    const searchQuery = searchParams.get('q') || '';
-
-    // Track the last search query we updated for
-    const lastSearchQueryRef = React.useRef(searchQuery);
-
-    // Filter state
-    const [filters, setFilters] = useState({
-        category: decodedCategoryName,
-        subCategory: '',
-        stateCode: '',
-        lgaCode: '',
-        priceMin: '',
-        priceMax: '',
-        verifiedSellers: false,
-        discount: false,
-        sort: 'recent',
-        search: searchQuery
-    });
 
     // Fetch items with filters
     const { items: apiItems, loading, hasMore, loadMore, updateParams, initialized } = useItems({
@@ -41,8 +20,7 @@ export default function CategoryPage() {
             page: 0,
             size: 20,
             category: decodedCategoryName,
-            sort: filters.sort as any,
-            search: searchQuery
+            sort: 'recent'
         },
         autoFetch: true
     });
@@ -50,8 +28,8 @@ export default function CategoryPage() {
     // Fetch categories for filter dropdown
     const { categories: apiCategories } = useCategories();
 
-    // Transform API items to legacy format
-    const transformedApiItems: Item[] = (apiItems && Array.isArray(apiItems)) ? apiItems.map(item => ({
+    // Memoize transformed items to prevent unnecessary recalculations
+    const transformedApiItems: Item[] = useMemo(() => (apiItems && Array.isArray(apiItems)) ? apiItems.map(item => ({
         id: item.id,
         title: item.title,
         description: item.description,
@@ -86,42 +64,14 @@ export default function CategoryPage() {
             name: item.itemCategory?.name || '',
             description: item.itemCategory?.description || '',
         },
-    })) : [];
+    })) : [], [apiItems]);
 
     // Use only real API data (no dummy data)
     const items = transformedApiItems;
     const categories = apiCategories || [];
 
-    // Update items when search query changes from URL (but don't cause re-render)
-    useEffect(() => {
-        // Only update if search query actually changed and we're initialized
-        if (updateParams && initialized && searchQuery !== lastSearchQueryRef.current) {
-            lastSearchQueryRef.current = searchQuery;
-
-            const apiParams: any = {
-                page: 0,
-                category: decodedCategoryName,
-                sort: filters.sort,
-                search: searchQuery,
-            };
-
-            // Add existing filters
-            if (filters.subCategory) apiParams.subcategory = filters.subCategory;
-            if (filters.stateCode) apiParams.stateCode = filters.stateCode;
-            if (filters.lgaCode) apiParams.lgaCode = filters.lgaCode;
-            if (filters.priceMin) apiParams.minAmount = parseFloat(filters.priceMin);
-            if (filters.priceMax) apiParams.maxAmount = parseFloat(filters.priceMax);
-            if (filters.verifiedSellers) apiParams.isVerifiedSeller = true;
-            if (filters.discount) apiParams.hasDiscount = true;
-
-            updateParams(apiParams, true);
-        }
-    }, [searchQuery, initialized]);
-
-    // Handle filter changes - memoized to prevent unnecessary re-renders
-    const handleFilterChange = React.useCallback((newFilters: typeof filters) => {
-        setFilters(newFilters);
-
+    // Handle filter changes - directly update params without page state
+    const handleFilterChange = useCallback((newFilters: any) => {
         // Update API params - build complete params object
         if (updateParams) {
             const apiParams: any = {
@@ -175,7 +125,8 @@ export default function CategoryPage() {
         return <div>Category not found</div>;
     }
 
-    if (loading && !items.length) {
+    // Only show loading screen on initial load, not on filter changes
+    if (loading && !items.length && !initialized) {
         return (
             <div className='flex justify-center items-center min-h-screen'>
                 <Loading size='lg' text={`Loading ${decodedCategoryName} items...`} />
@@ -188,7 +139,6 @@ export default function CategoryPage() {
             categoryName={decodedCategoryName}
             items={items}
             categories={categories}
-            filters={filters}
             onFilterChange={handleFilterChange}
             loading={loading}
             hasMore={hasMore}

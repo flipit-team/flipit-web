@@ -1,10 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Item } from '~/utils/interface';
 import CategorySidebar from './CategorySidebar';
 import GridItems from '~/ui/common/grid-items/GridItems';
-import SearchBar from '~/ui/homepage/search-bar';
+import Image from 'next/image';
 import SortDropdown from '~/ui/common/sort-dropdown/SortDropdown';
 import MobileControlsWrapper from '~/ui/wrappers/MobileControlsWrapper';
 import NoData from '~/ui/common/no-data/NoData';
@@ -14,18 +14,6 @@ interface CategoryWrapperProps {
     categoryName: string;
     items: Item[];
     categories: Array<{ id?: number; name: string; description: string | null; subcategories?: string[]; }>;
-    filters: {
-        category: string;
-        subCategory: string;
-        stateCode: string;
-        lgaCode: string;
-        priceMin: string;
-        priceMax: string;
-        verifiedSellers: boolean;
-        discount: boolean;
-        sort: string;
-        search?: string;
-    };
     onFilterChange: (filters: any) => void;
     loading?: boolean;
     hasMore?: boolean;
@@ -36,18 +24,62 @@ const CategoryWrapper: React.FC<CategoryWrapperProps> = React.memo(({
     categoryName,
     items,
     categories,
-    filters,
     onFilterChange,
     loading = false,
     hasMore = false,
     onLoadMore
 }) => {
+    // Local filter state managed within CategoryWrapper
+    const [filters, setFilters] = useState({
+        category: categoryName,
+        subCategory: '',
+        stateCode: '',
+        lgaCode: '',
+        priceMin: '',
+        priceMax: '',
+        verifiedSellers: false,
+        discount: false,
+        sort: 'recent',
+        search: ''
+    });
+
+    // Local search state to prevent page re-renders
+    const [searchQuery, setSearchQuery] = useState('');
+    const inputRef = useRef<HTMLInputElement>(null);
+    const isInitialMount = useRef(true);
+    const lastAppliedSearch = useRef('');
+
     // Set up infinite scroll
     const { loadMoreRef } = useInfiniteScroll({
         hasMore,
         loading,
         onLoadMore: onLoadMore || (() => {})
     });
+
+    // Debounced search effect
+    useEffect(() => {
+        // Skip on initial mount
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+            return;
+        }
+
+        // Only update if search actually changed
+        if (searchQuery === lastAppliedSearch.current) {
+            return;
+        }
+
+        const timeout = setTimeout(() => {
+            if (searchQuery.length >= 1 || (searchQuery.length === 0 && lastAppliedSearch.current)) {
+                // Update filters with new search query
+                lastAppliedSearch.current = searchQuery;
+                const newFilters = { ...filters, search: searchQuery };
+                onFilterChange(newFilters);
+            }
+        }, 500); // 500ms debounce
+
+        return () => clearTimeout(timeout);
+    }, [searchQuery]);
 
 
     const sortOptions = [
@@ -61,11 +93,18 @@ const CategoryWrapper: React.FC<CategoryWrapperProps> = React.memo(({
 
     const handleSortChange = (option: { value: string; label: string }) => {
         const newFilters = { ...filters, sort: option.value };
+        setFilters(newFilters);
         onFilterChange(newFilters);
     };
 
     const handleMobileSortChange = (sortValue: string) => {
         const newFilters = { ...filters, sort: sortValue };
+        setFilters(newFilters);
+        onFilterChange(newFilters);
+    };
+
+    const handleFilterUpdate = (newFilters: typeof filters) => {
+        setFilters(newFilters);
         onFilterChange(newFilters);
     };
 
@@ -81,7 +120,35 @@ const CategoryWrapper: React.FC<CategoryWrapperProps> = React.memo(({
                 <div className='flex items-center gap-4 mx-auto text-white xs:flex-col xs:gap-3'>
                     <p className='typo-body_lr xs:typo-body_sr'>{displayCategoryName} items</p>
                 </div>
-                <SearchBar key="category-search-bar" />
+                {/* Local search bar that doesn't affect URL */}
+                <div className='relative h-[49px] w-[586px] xs:w-full xs:flex-none mx-auto my-auto outline-none border-none'>
+                    <input
+                        ref={inputRef}
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        type='text'
+                        placeholder='Search...'
+                        style={{
+                            width: '100%',
+                            height: '49px',
+                            paddingLeft: '24px',
+                            paddingRight: '16px',
+                            paddingTop: '8px',
+                            paddingBottom: '8px',
+                            backgroundColor: '#ffffff',
+                            border: '1px solid #d1d5db',
+                            borderRadius: '6px',
+                            outline: 'none',
+                            color: '#111827',
+                            fontSize: '16px',
+                            fontFamily: 'system-ui, -apple-system, sans-serif',
+                            fontWeight: '400'
+                        }}
+                    />
+                    <div className='h-[49px] w-[49px] absolute top-[0px] right-0 bg-background-tinted rounded-r-md flex items-center justify-center'>
+                        <Image className='h-6 w-6 cursor-pointer' src={'/search.svg'} alt='search' height={24} width={24} />
+                    </div>
+                </div>
             </div>
 
             {/* Main grid - Same as home page */}
@@ -90,7 +157,7 @@ const CategoryWrapper: React.FC<CategoryWrapperProps> = React.memo(({
                 <CategorySidebar
                     categories={categories}
                     filters={filters}
-                    onFilterChange={onFilterChange}
+                    onFilterChange={handleFilterUpdate}
                     categoryName={displayCategoryName}
                 />
 
