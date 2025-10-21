@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react';
 import NoData from '../common/no-data/NoData';
 import { Item } from '~/utils/interface';
@@ -86,9 +87,9 @@ const MainHomeServer = ({ items, auctionItems, defaultCategories, loadMoreRef, l
                         <>
                             <div className='py-9 xs:py-4 xs:mb-4 flex items-center justify-between overflow-hidden'>
                                 <div className='typo-heading_ms xs:typo-heading_sr'>Live Auction</div>
-                                <div className='flex items-center typo-body_mm xs:typo-body_sr text-text_four border border-border_gray rounded-md h-[31px] xs:h-[28px] px-4 xs:px-3'>
+                                <Link href='/live-auction' className='flex items-center typo-body_mm xs:typo-body_sr text-text_four border border-border_gray rounded-md h-[31px] xs:h-[28px] px-4 xs:px-3 hover:bg-gray-50 transition-colors cursor-pointer'>
                                     View all
-                                </div>
+                                </Link>
                             </div>
                             <div className='xs:mb-6'>
                                 <GridSwiper items={auctionItems} forLiveAuction />
