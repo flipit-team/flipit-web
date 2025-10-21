@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { NIGERIAN_LOCATIONS } from '~/data/nigerianLocations';
 
-interface CategorySidebarProps {
+interface FilterSidebarProps {
     categories: Array<{ id?: number; name: string; description: string | null; subcategories?: string[]; }>;
     filters: {
         category: string;
@@ -19,7 +19,6 @@ interface CategorySidebarProps {
         search?: string;
     };
     onFilterChange: (filters: any) => void;
-    categoryName: string;
 }
 
 interface CustomDropdownProps {
@@ -97,11 +96,10 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
     );
 };
 
-const CategorySidebar: React.FC<CategorySidebarProps> = ({
+const FilterSidebar: React.FC<FilterSidebarProps> = ({
     categories,
     filters,
-    onFilterChange,
-    categoryName
+    onFilterChange
 }) => {
     // Local state to hold filter changes until Apply is clicked
     const [localFilters, setLocalFilters] = useState(filters);
@@ -141,7 +139,7 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
 
     const resetFilters = () => {
         const resetFilters = {
-            category: filters.category,
+            category: '',
             subCategory: '',
             stateCode: '',
             lgaCode: '',
@@ -199,7 +197,7 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
                     height={20}
                     width={20}
                 />
-                <p className='typo-body_mm text-primary'>{categoryName}</p>
+                <p className='typo-body_mm text-primary'>Filters</p>
             </div>
 
             {/* Category Filter */}
@@ -210,7 +208,7 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
                         value={localFilters.category}
                         onChange={(value) => handleLocalFilterUpdate('category', value)}
                         options={categoryOptions}
-                        placeholder="Select Category"
+                        placeholder="All"
                     />
                     {localFilters.category && subCategoryOptions.length > 0 && (
                         <CustomDropdown
@@ -324,4 +322,4 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
     );
 };
 
-export default CategorySidebar;
+export default FilterSidebar;

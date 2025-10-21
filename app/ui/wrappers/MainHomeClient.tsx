@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Item } from '~/utils/interface';
 import { useItems, useCategories } from '~/hooks/useItems';
@@ -23,8 +23,20 @@ interface Props {
 const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, defaultCategories: serverCategories, authStatus }: Props) => {
     const searchParams = useSearchParams();
     const searchQuery = searchParams.get('q') || '';
-    const [locationFilter, setLocationFilter] = useState<{ stateCode: string; lgaCode?: string } | null>(null);
-    const [currentSort, setCurrentSort] = useState<string>('recent');
+
+    // Filter state managed in MainHomeClient
+    const [filters, setFilters] = useState({
+        category: '',
+        subCategory: '',
+        stateCode: '',
+        lgaCode: '',
+        priceMin: '',
+        priceMax: '',
+        verifiedSellers: false,
+        discount: false,
+        sort: 'recent',
+        search: ''
+    });
 
     // Fetch client-side data with infinite scroll support
     // Don't fetch on mount - we already have server items
@@ -36,11 +48,11 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
     // Update items when search query changes
     useEffect(() => {
         if (searchQuery && updateParams) {
-            const params: any = { sort: currentSort, search: searchQuery };
-            if (locationFilter) {
-                params.stateCode = locationFilter.stateCode;
-                if (locationFilter.lgaCode) {
-                    params.lgaCode = locationFilter.lgaCode;
+            const params: any = { sort: filters.sort, search: searchQuery };
+            if (filters.stateCode) {
+                params.stateCode = filters.stateCode;
+                if (filters.lgaCode) {
+                    params.lgaCode = filters.lgaCode;
                 }
             }
             updateParams(params);
@@ -63,8 +75,8 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
         }
     }, [authStatus]);
 
-    // Transform API items to legacy format
-    const transformedApiItems: Item[] = (apiItems && Array.isArray(apiItems)) ? apiItems.map(item => ({
+    // Transform API items to legacy format - memoized
+    const transformedApiItems: Item[] = useMemo(() => (apiItems && Array.isArray(apiItems)) ? apiItems.map(item => ({
         id: item.id,
         title: item.title,
         description: item.description,
@@ -99,47 +111,70 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
             name: item.itemCategory?.name || '',
             description: item.itemCategory?.description || '',
         },
-    })) : [];
+    })) : [], [apiItems]);
 
-    // Log data sources for debugging
+    // Handle filter changes
+    const handleFilterChange = useCallback((newFilters: typeof filters) => {
+        setFilters(newFilters);
 
-    // Handle location filter changes
-    const handleLocationFilter = (stateCode: string, lgaCode?: string) => {
-        const newFilter = stateCode ? { stateCode, lgaCode } : null;
-        setLocationFilter(newFilter);
-
-        // Update API params with location filter
+        // Update API params - build complete params object
         if (updateParams) {
-            const params: any = { sort: currentSort };
-            if (stateCode) {
-                params.stateCode = stateCode;
-                if (lgaCode) {
-                    params.lgaCode = lgaCode;
-                }
+            const apiParams: any = {
+                page: 0,
+                size: 15,
+                sort: newFilters.sort,
+            };
+
+            // Add category filters
+            if (newFilters.category) {
+                apiParams.category = newFilters.category;
             }
-            updateParams(params);
+            if (newFilters.subCategory) {
+                apiParams.subcategory = newFilters.subCategory;
+            }
+
+            // Add search if present
+            if (newFilters.search) {
+                apiParams.search = newFilters.search;
+            }
+
+            // Add location filters
+            if (newFilters.stateCode) {
+                apiParams.stateCode = newFilters.stateCode;
+            }
+            if (newFilters.lgaCode) {
+                apiParams.lgaCode = newFilters.lgaCode;
+            }
+
+            // Add price range filters
+            if (newFilters.priceMin) {
+                apiParams.minAmount = parseFloat(newFilters.priceMin);
+            }
+            if (newFilters.priceMax) {
+                apiParams.maxAmount = parseFloat(newFilters.priceMax);
+            }
+
+            // Add boolean filters only if true
+            if (newFilters.verifiedSellers) {
+                apiParams.isVerifiedSeller = true;
+            }
+            if (newFilters.discount) {
+                apiParams.hasDiscount = true;
+            }
+
+            updateParams(apiParams, true);
         }
-    };
+    }, [updateParams]);
 
     // Handle sort changes
     const handleSortChange = (sortValue: string) => {
-        setCurrentSort(sortValue);
-
-        // Update API params with new sort
-        if (updateParams) {
-            const params: any = { sort: sortValue };
-            if (locationFilter) {
-                params.stateCode = locationFilter.stateCode;
-                if (locationFilter.lgaCode) {
-                    params.lgaCode = locationFilter.lgaCode;
-                }
-            }
-            updateParams(params);
-        }
+        const newFilters = { ...filters, sort: sortValue };
+        handleFilterChange(newFilters);
     };
 
     // Use API data when filters/sorting/search are active AND data has been fetched, otherwise use server data
-    const hasActiveFilters = locationFilter !== null || currentSort !== 'recent' || searchQuery !== '';
+    const hasActiveFilters = filters.category !== '' || filters.stateCode !== '' || filters.sort !== 'recent' || searchQuery !== '' ||
+        filters.priceMin !== '' || filters.priceMax !== '' || filters.verifiedSellers || filters.discount;
 
     // Show API items when filters are active and initialized, otherwise always show server items
     const items = (hasActiveFilters && initialized)
@@ -160,10 +195,11 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
             loadMoreRef={loadMoreRef}
             loading={itemsLoading}
             hasMore={hasMore}
-            onLocationFilter={handleLocationFilter}
-            currentLocationFilter={locationFilter}
             onSortChange={handleSortChange}
-            currentSort={currentSort}
+            currentSort={filters.sort}
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            searchQuery={searchQuery}
         />
     );
 };
