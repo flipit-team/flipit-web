@@ -20,24 +20,68 @@ const publicRoutes = [
     '/forgot-password'
 ];
 
-export function middleware(request: NextRequest) {
+const API_BASE_URL = process.env.NODE_ENV === 'production'
+    ? 'https://api.flipit.ng'
+    : 'http://localhost:8080';
+
+async function validateToken(token: string): Promise<boolean> {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/v1/user/profile`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            cache: 'no-store'
+        });
+        return response.ok;
+    } catch {
+        return false;
+    }
+}
+
+export async function middleware(request: NextRequest) {
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set('x-url', request.url);
 
     const pathname = request.nextUrl.pathname;
     const token = request.cookies.get('token')?.value;
-    const isAuthenticated = Boolean(token);
 
     // Check if the current path is a protected route
-    const isProtectedRoute = protectedRoutes.some(route => 
+    const isProtectedRoute = protectedRoutes.some(route =>
         pathname.startsWith(route)
     );
 
     // Check if the current path is a public auth route
-    const isPublicRoute = publicRoutes.some(route => 
+    const isPublicRoute = publicRoutes.some(route =>
         pathname.startsWith(route)
     );
 
+    // Validate token if it exists
+    let isAuthenticated = false;
+    if (token) {
+        isAuthenticated = await validateToken(token);
+
+        // If token is invalid, clear the cookies
+        if (!isAuthenticated) {
+            const response = NextResponse.next({
+                request: {
+                    headers: requestHeaders
+                }
+            });
+            response.cookies.delete('token');
+            response.cookies.delete('userId');
+            response.cookies.delete('userName');
+
+            // If trying to access protected route with invalid token, redirect to login
+            if (isProtectedRoute) {
+                const loginUrl = new URL('/login', request.url);
+                loginUrl.searchParams.set('redirectTo', pathname);
+                return NextResponse.redirect(loginUrl);
+            }
+
+            return response;
+        }
+    }
 
     // Redirect unauthenticated users from protected routes to login
     if (isProtectedRoute && !isAuthenticated) {

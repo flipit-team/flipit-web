@@ -1,6 +1,6 @@
 'use client';
 import Image from 'next/image';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useTransition, useRef} from 'react';
 import {useSearchParams, useRouter, usePathname} from 'next/navigation';
 
 const SearchBar = () => {
@@ -8,9 +8,11 @@ const SearchBar = () => {
     const router = useRouter();
     const pathname = usePathname();
     const initialQuery = searchParams.get('q') || '';
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const [query, setQuery] = useState(initialQuery);
     const [isInitialMount, setIsInitialMount] = useState(true);
+    const [isPending, startTransition] = useTransition();
 
     // Skip the initial mount to prevent redirect on page load
     useEffect(() => {
@@ -23,16 +25,20 @@ const SearchBar = () => {
 
         const timeout = setTimeout(() => {
             if (query.length >= 3) {
-                // Add search query to current URL
+                // Add search query to current URL using startTransition for non-blocking update
                 const params = new URLSearchParams(searchParams.toString());
                 params.set('q', query);
-                router.push(`${pathname}?${params.toString()}`);
+                startTransition(() => {
+                    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+                });
             } else if (query.length === 0 && initialQuery) {
                 // Only clear search if there was a previous query
                 const params = new URLSearchParams(searchParams.toString());
                 params.delete('q');
                 const queryString = params.toString();
-                router.push(`${pathname}${queryString ? '?' + queryString : ''}`);
+                startTransition(() => {
+                    router.replace(`${pathname}${queryString ? '?' + queryString : ''}`, { scroll: false });
+                });
             }
         }, 500); // debounce delay
 
@@ -42,6 +48,7 @@ const SearchBar = () => {
     return (
         <div className='relative h-[49px] w-[586px] xs:w-full xs:flex-none mx-auto my-auto outline-none border-none'>
             <input
+                ref={inputRef}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 type='text'

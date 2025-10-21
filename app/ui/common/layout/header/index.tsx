@@ -26,17 +26,10 @@ function HeaderContent(props: Props) {
     const profileDropdownTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
     const router = useRouter();
     const pathname = usePathname();
-    const {notifications, profile, user: clientUser, debugMode, toggleDebugMode} = useAppContext();
+    const {notifications, profile, user: clientUser} = useAppContext();
 
-    // Dummy user data for testing (only when debug mode is enabled)
-    const dummyUser = debugMode ? {
-        token: 'dummy-token-123',
-        userId: '1',
-        userName: 'John Doe'
-    } : null;
-
-    // Use debug mode from context to determine which user data to use
-    const user = dummyUser || clientUser || serverUser;
+    // Use client user or server user
+    const user = clientUser || serverUser;
 
     useEffect(() => {
         setIsClient(true);
@@ -73,10 +66,6 @@ function HeaderContent(props: Props) {
         };
     }, []);
 
-    // Log header user state for debugging
-    useEffect(() => {
-        // Debug logging removed
-    }, [debugMode, serverUser, clientUser, user]);
 
     // Main sidebar menu items
     const mainMenuItems = [
@@ -178,21 +167,6 @@ function HeaderContent(props: Props) {
                 </div>
                 {user ? (
                     <div className='flex items-center ml-auto'>
-                        {/* Debug Mode Toggle - Only visible on desktop */}
-                        <div className='relative group xs:hidden mr-[27px]'>
-                            <button
-                                onClick={toggleDebugMode}
-                                className={`h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
-                                    debugMode 
-                                        ? 'bg-red-500 text-white' 
-                                        : 'bg-gray-200 text-gray-600'
-                                }`}
-                                title={`Debug mode: ${debugMode ? 'ON' : 'OFF'}`}
-                            >
-                                D
-                            </button>
-                        </div>
-                        
                         {/* FAQ Icon */}
                         <div className='relative group'>
                             <Link href={'/faq'}>
@@ -293,13 +267,13 @@ function HeaderContent(props: Props) {
                             className='h-7 w-7 xs:h-4 xs:w-4 rounded-full'
                         />
                         <Link
-                            href={'/login'}
-                            className='flex items-center justify-center xs:hidden typo-body_ms h-[45px] w-[145px] text-white rounded-lg'
+                            href='/login'
+                            className='flex items-center justify-center xs:hidden typo-body_ms h-[45px] w-[145px] text-white rounded-lg ml-[27px]'
                         >
                             Sign In
                         </Link>
                         <Link
-                            href={user ? '/post-an-item/entry' : '/login'}
+                            href='/login'
                             className='flex items-center justify-center bg-secondary xs:hidden typo-body_ms h-[45px] w-[145px] text-white rounded-lg ml-[43px]'
                         >
                             Post Item

@@ -21,7 +21,6 @@ interface AppContextProps {
     modalMessage: string;
     profile: Profile | null;
     deleteConfirmCallback: (() => void) | null;
-    debugMode: boolean;
     setShowPopup: React.Dispatch<React.SetStateAction<boolean>>;
     setUser: React.Dispatch<
         React.SetStateAction<{token: string; userId: string | undefined; userName: string | undefined} | null>
@@ -29,7 +28,6 @@ interface AppContextProps {
     setModalMessage: React.Dispatch<React.SetStateAction<string>>;
     setProfile: React.Dispatch<React.SetStateAction<Profile | null>>;
     setDeleteConfirmCallback: React.Dispatch<React.SetStateAction<(() => void) | null>>;
-    toggleDebugMode: () => void;
 }
 
 const AppContext = createContext<AppContextProps | undefined>(undefined);
@@ -50,15 +48,6 @@ export const AppProvider = ({children, initialUser}: AppProviderProps) => {
     const [modalMessage, setModalMessage] = useState('');
     const [profile, setProfile] = useState<Profile | null>(null);
     const [deleteConfirmCallback, setDeleteConfirmCallback] = useState<(() => void) | null>(null);
-    const [debugMode, setDebugMode] = useState<boolean>(false);
-
-    // Initialize debug mode from localStorage
-    useEffect(() => {
-        const savedDebugMode = localStorage.getItem('debugMode');
-        if (savedDebugMode !== null) {
-            setDebugMode(JSON.parse(savedDebugMode));
-        }
-    }, []);
 
     // Client-side auth validation on mount - ONLY run once and only if token exists
     useEffect(() => {
@@ -116,18 +105,6 @@ export const AppProvider = ({children, initialUser}: AppProviderProps) => {
         }
     }, [isInitialized]);
 
-    // Log user state changes for debugging
-    useEffect(() => {
-    }, [user]);
-
-    const toggleDebugMode = () => {
-        const newDebugMode = !debugMode;
-        setDebugMode(newDebugMode);
-        localStorage.setItem('debugMode', JSON.stringify(newDebugMode));
-
-        // Refresh the page to apply debug mode changes
-        window.location.reload();
-    };
 
     return (
         <AppContext.Provider
@@ -139,14 +116,12 @@ export const AppProvider = ({children, initialUser}: AppProviderProps) => {
                 modalMessage,
                 profile,
                 deleteConfirmCallback,
-                debugMode,
                 setModalMessage,
                 setUser,
                 setShowPopup,
                 setProfile,
                 setDefaultCategories,
-                setDeleteConfirmCallback,
-                toggleDebugMode
+                setDeleteConfirmCallback
             }}
         >
             {children}

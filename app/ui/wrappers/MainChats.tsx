@@ -20,17 +20,16 @@ interface Props {
 }
 const MainChats = (props: Props) => {
     const {chatData: serverChatData} = props;
-    const {debugMode} = useAppContext();
     const [apiChatData, setApiChatData] = useState(serverChatData);
     const hasInit = useRef(false);
-    
-    // Fetch chat data from API when not in debug mode - only run once
+
+    // Fetch chat data from API - only run once
     useEffect(() => {
         if (hasInit.current) return; // Prevent multiple calls
-        
+
         const fetchChatData = async () => {
-            if (debugMode || serverChatData.buyer.length > 0 || serverChatData.seller.length > 0) return;
-            
+            if (serverChatData.buyer.length > 0 || serverChatData.seller.length > 0) return;
+
             try {
                 const res = await fetch('/api/v1/chats');
                 if (res.ok) {
@@ -40,13 +39,12 @@ const MainChats = (props: Props) => {
             } catch (error) {
             }
         };
-        
+
         hasInit.current = true;
         fetchChatData();
-    }, [debugMode]);
-    
-    // Use dummy data in debug mode, otherwise use API data
-    const chatData = debugMode ? dummyChats : apiChatData;
+    }, []);
+
+    const chatData = apiChatData;
     const searchParams = useSearchParams();
     const router = useRouter();
     const [input, setInput] = useState('');

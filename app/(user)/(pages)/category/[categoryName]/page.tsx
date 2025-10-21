@@ -18,6 +18,9 @@ export default function CategoryPage() {
     // Get search query from URL
     const searchQuery = searchParams.get('q') || '';
 
+    // Track the last search query we updated for
+    const lastSearchQueryRef = React.useRef(searchQuery);
+
     // Filter state
     const [filters, setFilters] = useState({
         category: decodedCategoryName,
@@ -31,13 +34,6 @@ export default function CategoryPage() {
         sort: 'recent',
         search: searchQuery
     });
-
-    // Update filters when search query changes from URL
-    useEffect(() => {
-        if (searchQuery !== filters.search) {
-            setFilters(prev => ({ ...prev, search: searchQuery }));
-        }
-    }, [searchQuery]);
 
     // Fetch items with filters
     const { items: apiItems, loading, hasMore, loadMore, updateParams, initialized } = useItems({
@@ -96,9 +92,12 @@ export default function CategoryPage() {
     const items = transformedApiItems;
     const categories = apiCategories || [];
 
-    // Update items when search query changes from URL
+    // Update items when search query changes from URL (but don't cause re-render)
     useEffect(() => {
-        if (updateParams && searchQuery && initialized) {
+        // Only update if search query actually changed and we're initialized
+        if (updateParams && initialized && searchQuery !== lastSearchQueryRef.current) {
+            lastSearchQueryRef.current = searchQuery;
+
             const apiParams: any = {
                 page: 0,
                 category: decodedCategoryName,
@@ -117,10 +116,10 @@ export default function CategoryPage() {
 
             updateParams(apiParams, true);
         }
-    }, [searchQuery]);
+    }, [searchQuery, initialized]);
 
-    // Handle filter changes
-    const handleFilterChange = (newFilters: typeof filters) => {
+    // Handle filter changes - memoized to prevent unnecessary re-renders
+    const handleFilterChange = React.useCallback((newFilters: typeof filters) => {
         setFilters(newFilters);
 
         // Update API params - build complete params object
@@ -170,7 +169,7 @@ export default function CategoryPage() {
             // Use replace=true to completely replace params instead of merging
             updateParams(apiParams, true);
         }
-    };
+    }, [updateParams, decodedCategoryName]);
 
     if (!decodedCategoryName) {
         return <div>Category not found</div>;

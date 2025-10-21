@@ -32,7 +32,7 @@ interface CategoryWrapperProps {
     onLoadMore?: () => void;
 }
 
-const CategoryWrapper: React.FC<CategoryWrapperProps> = ({
+const CategoryWrapper: React.FC<CategoryWrapperProps> = React.memo(({
     categoryName,
     items,
     categories,
@@ -81,7 +81,7 @@ const CategoryWrapper: React.FC<CategoryWrapperProps> = ({
                 <div className='flex items-center gap-4 mx-auto text-white xs:flex-col xs:gap-3'>
                     <p className='typo-body_lr xs:typo-body_sr'>{displayCategoryName} items</p>
                 </div>
-                <SearchBar />
+                <SearchBar key="category-search-bar" />
             </div>
 
             {/* Main grid - Same as home page */}
@@ -137,6 +137,8 @@ const CategoryWrapper: React.FC<CategoryWrapperProps> = ({
             </div>
         </div>
     );
-};
+});
+
+CategoryWrapper.displayName = 'CategoryWrapper';
 
 export default CategoryWrapper;
