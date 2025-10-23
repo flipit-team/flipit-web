@@ -73,10 +73,25 @@ export class ApiClient {
 
   // Handle response and error processing
   private async handleResponse<T>(response: Response): Promise<T> {
+    // Handle 204 No Content
+    if (response.status === 204) {
+      return {} as T;
+    }
+
     const isJson = response.headers.get('content-type')?.includes('application/json');
     const responseData = isJson ? await response.json() : await response.text();
 
     if (!response.ok) {
+      // Handle specific HTTP status codes
+      if (response.status === 413) {
+        throw new ApiClientError(
+          response.status,
+          response.statusText,
+          responseData,
+          'File size exceeds the maximum allowed limit'
+        );
+      }
+
       // Handle API errors
       if (isJson && responseData.apierror) {
         throw new ApiClientError(

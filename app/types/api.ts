@@ -159,6 +159,7 @@ export interface ItemDTO {
   cashAmount: number;
   published: boolean;
   sold: boolean;
+  delivered?: boolean;     // NEW: Item delivery status
   location: string;
   condition: string;
   brand: string;

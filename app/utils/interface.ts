@@ -18,6 +18,7 @@ export interface Item {
     condition: string | null;
     published: boolean;
     sold?: boolean;
+    delivered?: boolean;     // NEW: Item delivery status
     location: string;
     brand?: string;
     dateCreated: Date | string;

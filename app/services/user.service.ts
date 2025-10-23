@@ -33,7 +33,7 @@ export class UserService {
   // Get users (admin only) - NEW
   static async getUsers(page = 0, size = 15) {
     return handleApiCall(() =>
-      apiClient.get<UserDTO[]>(`/user/${page}/${size}`, { requireAuth: true })
+      apiClient.get<UserDTO[]>(`/users/findAll?page=${page}&size=${size}`, { requireAuth: true })
     );
   }
 

@@ -44,10 +44,53 @@ export class AuctionsService {
     );
   }
 
-  // Get active auctions (if endpoint exists)
-  static async getActiveAuctions(page = 0, size = 15) {
+  // Get active auctions with filters
+  static async getActiveAuctions(params?: {
+    page?: number;
+    size?: number;
+    category?: string;
+    subcategory?: string;
+    stateCode?: string;
+    lgaCode?: string;
+    minAmount?: number;
+    maxAmount?: number;
+    isVerifiedSeller?: boolean;
+    hasDiscount?: boolean;
+    sort?: string;
+    search?: string;
+  }) {
+    const {
+      page = 0,
+      size = 15,
+      category,
+      subcategory,
+      stateCode,
+      lgaCode,
+      minAmount,
+      maxAmount,
+      isVerifiedSeller,
+      hasDiscount,
+      sort,
+      search
+    } = params || {};
+
+    const queryParams = new URLSearchParams();
+    queryParams.set('page', page.toString());
+    queryParams.set('size', size.toString());
+
+    if (category) queryParams.set('category', category);
+    if (subcategory) queryParams.set('subcategory', subcategory);
+    if (stateCode) queryParams.set('stateCode', stateCode);
+    if (lgaCode) queryParams.set('lgaCode', lgaCode);
+    if (minAmount !== undefined) queryParams.set('minAmount', minAmount.toString());
+    if (maxAmount !== undefined) queryParams.set('maxAmount', maxAmount.toString());
+    if (isVerifiedSeller) queryParams.set('isVerifiedSeller', 'true');
+    if (hasDiscount) queryParams.set('hasDiscount', 'true');
+    if (sort) queryParams.set('sort', sort);
+    if (search) queryParams.set('search', search);
+
     return handleApiCall(() =>
-      apiClient.get<AuctionDTO[]>(`/v1/auction/active?page=${page}&size=${size}`)
+      apiClient.get<AuctionDTO[]>(`/v1/auction/active?${queryParams.toString()}`)
     );
   }
 
