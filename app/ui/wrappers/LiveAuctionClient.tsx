@@ -87,6 +87,14 @@ const LiveAuctionClient = ({ items: serverItems, defaultCategories }: Props) => 
     const [apiAuctions, setApiAuctions] = useState<Item[]>([]);
     const [loading, setLoading] = useState(false);
     const [initialized, setInitialized] = useState(false);
+    const lastAppliedSearchRef = React.useRef<string>('');
+    const isInitialMountRef = React.useRef(true);
+    const filtersRef = React.useRef(filters);
+
+    // Keep filtersRef in sync with filters
+    React.useEffect(() => {
+        filtersRef.current = filters;
+    }, [filters]);
 
     // Handle filter changes
     const handleFilterChange = useCallback(async (newFilters: typeof filters) => {
@@ -111,6 +119,7 @@ const LiveAuctionClient = ({ items: serverItems, defaultCategories }: Props) => 
             if (newFilters.discount) apiParams.hasDiscount = true;
 
             const result = await AuctionsService.getActiveAuctions(apiParams);
+
             if (result.data) {
                 const transformed = result.data.map(transformAuctionToItem);
                 setApiAuctions(transformed);
@@ -124,10 +133,26 @@ const LiveAuctionClient = ({ items: serverItems, defaultCategories }: Props) => 
     }, []);
 
     // Handle sort changes
-    const handleSortChange = (sortValue: string) => {
-        const newFilters = { ...filters, sort: sortValue };
+    const handleSortChange = useCallback((sortValue: string) => {
+        const newFilters = { ...filtersRef.current, sort: sortValue };
         handleFilterChange(newFilters);
-    };
+    }, [handleFilterChange]);
+
+    // Sync URL search query with filter state - without causing infinite loops
+    React.useEffect(() => {
+        // Skip initial mount
+        if (isInitialMountRef.current) {
+            isInitialMountRef.current = false;
+            lastAppliedSearchRef.current = searchQuery;
+            return;
+        }
+
+        // Only update if search actually changed
+        if (searchQuery !== lastAppliedSearchRef.current) {
+            lastAppliedSearchRef.current = searchQuery;
+            handleFilterChange({ ...filtersRef.current, search: searchQuery });
+        }
+    }, [searchQuery, handleFilterChange]);
 
     // Check if any filters are active
     const hasActiveFilters = filters.category !== '' || filters.stateCode !== '' || filters.sort !== 'recent' ||

@@ -43,10 +43,10 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
 
     const searchParams = req.nextUrl.searchParams;
-    const page = searchParams.get('page') ?? '0';
-    const size = searchParams.get('size') ?? '15';
-    
-    const apiUrl = `${API_BASE_PATH}/auction?page=${page}&size=${size}`;
+
+    // Forward all query parameters to backend
+    const queryString = searchParams.toString();
+    const apiUrl = `${API_BASE_PATH}/auction${queryString ? `?${queryString}` : ''}`;
 
     // Get token from cookies
     const cookieStore = await cookies();

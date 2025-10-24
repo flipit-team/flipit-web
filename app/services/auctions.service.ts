@@ -90,7 +90,7 @@ export class AuctionsService {
     if (search) queryParams.set('search', search);
 
     return handleApiCall(() =>
-      apiClient.get<AuctionDTO[]>(`/v1/auction/active?${queryParams.toString()}`)
+      apiClient.get<AuctionDTO[]>(`/v1/auction?${queryParams.toString()}`)
     );
   }
 

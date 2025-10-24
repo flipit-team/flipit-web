@@ -24,7 +24,7 @@ const SearchBar = () => {
         if (isInitialMount) return;
 
         const timeout = setTimeout(() => {
-            if (query.length >= 3) {
+            if (query.length >= 1) {
                 // Add search query to current URL using startTransition for non-blocking update
                 const params = new URLSearchParams(searchParams.toString());
                 params.set('q', query);
