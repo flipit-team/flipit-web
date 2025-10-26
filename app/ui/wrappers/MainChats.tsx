@@ -5,7 +5,7 @@ import React, {useState, useEffect, useRef} from 'react';
 import {useAppContext} from '~/contexts/AppContext';
 import {Chat} from '~/utils/interface';
 import dynamic from 'next/dynamic';
-import {formatTimeTo12Hour, sendMessage} from '~/utils/helpers';
+import {formatTimeTo12Hour, formatMessageTime, sendMessage} from '~/utils/helpers';
 import { ChatService } from '~/services/chat.service';
 import NoData from '../common/no-data/NoData';
 import DeleteConfirmationModal from '../common/delete-confirmation-modal/DeleteConfirmationModal';
@@ -187,7 +187,7 @@ const MainChats = (props: Props) => {
                                     <p className='typo-body_mr w-[203px] line-clamp-2'>{chat.title}</p>
                                 </div>
                                 <div className='flex flex-col items-end gap-2'>
-                                    <p className='typo-body_sr'>{formatTimeTo12Hour(chat.dateCreated)}</p>
+                                    <p className='typo-body_sr'>{formatMessageTime(chat.dateCreated)}</p>
                                     <button
                                         onClick={(e) => handleDeleteClick(chat, e)}
                                         disabled={deleteLoading === chat.chatId}
@@ -241,7 +241,7 @@ const MainChats = (props: Props) => {
                                     <p className='typo-body_mr w-[203px] line-clamp-2'>{chat.title}</p>
                                 </div>
                                 <p className='typo-body_sr xs:hidden'></p>
-                                {formatTimeTo12Hour(chat.dateCreated)}
+                                {formatMessageTime(chat.dateCreated)}
                             </Link>
                         );
                     })}
@@ -276,7 +276,7 @@ const MainChats = (props: Props) => {
                                     <p
                                         className={`text-text-accent typo-body_mr ${item.sentBy === Number(user?.userId) ? '' : 'text-right'}`}
                                     >
-                                        {formatTimeTo12Hour(item.dateCreated)}
+                                        {formatMessageTime(item.dateCreated)}
                                     </p>
                                 </div>
                             );

@@ -44,6 +44,38 @@ export function formatTimeTo12Hour(date: Date | string): string {
     return `${hour12}:${paddedMinutes}${ampm}`;
 }
 
+export function formatMessageTime(date: Date | string): string {
+    const d = typeof date === 'string' ? new Date(date) : date;
+    const now = new Date();
+
+    // Reset time to midnight for date comparison
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const messageDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    // Get time in 12-hour format
+    const hours = d.getHours();
+    const minutes = d.getMinutes();
+    const ampm = hours >= 12 ? 'pm' : 'am';
+    const hour12 = hours % 12 || 12;
+    const paddedMinutes = minutes.toString().padStart(2, '0');
+    const timeStr = `${hour12}:${paddedMinutes}${ampm}`;
+
+    // Determine date prefix
+    if (messageDate.getTime() === today.getTime()) {
+        return `Today ${timeStr}`;
+    } else if (messageDate.getTime() === yesterday.getTime()) {
+        return `Yesterday ${timeStr}`;
+    } else {
+        // For older messages, show date
+        const day = d.getDate();
+        const month = d.toLocaleDateString('en-US', { month: 'short' });
+        const year = d.getFullYear() !== now.getFullYear() ? ` ${d.getFullYear()}` : '';
+        return `${month} ${day}${year} ${timeStr}`;
+    }
+}
+
 export async function sendMessage(chatId: string, message: string) {
     const res = await fetch('/api/v1/chats/message', {
         method: 'POST',

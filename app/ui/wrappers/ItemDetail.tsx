@@ -156,7 +156,7 @@ const ItemDetail = (props: Props) => {
     return (
         <>
             <div className='grid-sizes grid grid-cols-[712px_1fr] xs:grid-cols-1 gap-6 h-full mt-10 xs:mb-6'>
-                <div className='p-6 xs:p-0 shadow-lg'>
+                <div className='p-6 xs:p-0 shadow-lg xs:shadow-none'>
                     <ImageGallery
                         images={item?.imageUrls || []}
                         overlayElements={
@@ -254,7 +254,7 @@ const ItemDetail = (props: Props) => {
                         </table>
                     </div>
                 </div>
-                <div className='p-6 xs:p-0 shadow-lg'>
+                <div className='p-6 xs:p-0 shadow-lg xs:shadow-none'>
                     <UsedBadge text={item?.condition} />
                     <div className='typo-heading_ms xs:typo-heading_ss text-text_one mt-[10px] capitalize'>
                         {item?.title}
@@ -275,6 +275,8 @@ const ItemDetail = (props: Props) => {
                             src={item?.seller?.avatar || '/placeholder-avatar.svg'}
                             height={52}
                             width={52}
+                            sizes="52px"
+                            quality={70}
                             alt={`${item?.seller.firstName} ${item?.seller.lastName}`}
                             className='h-[52px] w-[52px] rounded-full object-cover'
                         />
@@ -301,7 +303,7 @@ const ItemDetail = (props: Props) => {
                             onClick={() => pushParam('callback-request')}
                             className={`w-[232px] text-text_four border border-text_four flex items-center justify-center h-[51px] rounded-lg typo-body_ls cursor-pointer`}
                         >
-                            {'Request for Callback'}
+                            {'Request Callback'}
                         </div>
                     </div>
                     <SafetyTips />

@@ -67,7 +67,7 @@ const ImageGallery = ({
             <div className={`${className}`}>
                 <div className="flex flex-col">
                     {/* Main Image */}
-                    <div className="relative mb-6 w-[712px] h-[443px] xs:w-full xs:h-auto overflow-hidden">
+                    <div className="relative mb-6 w-full max-w-[712px] h-[443px] xs:w-full xs:h-auto overflow-hidden">
                         <Image
                             src={currentImage}
                             height={443}
@@ -80,10 +80,10 @@ const ImageGallery = ({
                         />
                         {overlayElements}
                     </div>
-                    
+
                     {/* Thumbnail Navigation */}
                     {imageList.length > 1 && (
-                        <div className={`relative ${thumbnailsClassName}`}>
+                        <div className={`relative max-w-[712px] ${thumbnailsClassName}`}>
                             <div className="flex items-center gap-2 w-full">
                                 {/* Left Arrow */}
                                 {thumbnailStartIndex > 0 && (

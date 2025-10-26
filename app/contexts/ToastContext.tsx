@@ -1,13 +1,7 @@
 'use client';
-import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
-import Toast from '~/ui/common/toast/Toast';
-
-interface ToastMessage {
-  id: string;
-  message: any;
-  type: 'success' | 'error' | 'warning' | 'info';
-  duration?: number;
-}
+import React, { createContext, useContext, useCallback, ReactNode } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
+import { formatErrorForDisplay } from '~/utils/error-messages';
 
 interface ToastContextValue {
   showToast: (message: any, type?: 'success' | 'error' | 'warning' | 'info', duration?: number) => void;
@@ -39,45 +33,45 @@ interface ToastProviderProps {
 }
 
 export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
-  const [toasts, setToasts] = useState<ToastMessage[]>([]);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const removeToast = useCallback((id: string) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id));
-  }, []);
-
   const showToast = useCallback((message: any, type: 'success' | 'error' | 'warning' | 'info' = 'info', duration: number = 5000) => {
-    const id = Math.random().toString(36).substring(2);
-    const newToast: ToastMessage = { id, message, type, duration };
-    
-    setToasts(prev => [...prev, newToast]);
-    
-    if (duration > 0) {
-      setTimeout(() => {
-        removeToast(id);
-      }, duration);
+    const toastMessage = typeof message === 'string' ? message : message?.message || 'Notification';
+
+    switch (type) {
+      case 'success':
+        toast.success(toastMessage, { duration });
+        break;
+      case 'error':
+        toast.error(toastMessage, { duration });
+        break;
+      case 'warning':
+        toast(toastMessage, { duration, icon: '⚠️' });
+        break;
+      case 'info':
+      default:
+        toast(toastMessage, { duration, icon: 'ℹ️' });
+        break;
     }
-  }, [removeToast]);
+  }, []);
 
   const showError = useCallback((error: any, duration: number = 7000) => {
-    showToast(error, 'error', duration);
-  }, [showToast]);
+    const errorDetails = formatErrorForDisplay(error);
+    const errorMessage = errorDetails.title
+      ? `${errorDetails.title}: ${errorDetails.message}`
+      : errorDetails.message;
+    toast.error(errorMessage, { duration });
+  }, []);
 
   const showSuccess = useCallback((message: string, duration: number = 4000) => {
-    showToast(message, 'success', duration);
-  }, [showToast]);
+    toast.success(message, { duration });
+  }, []);
 
   const showWarning = useCallback((message: string, duration: number = 5000) => {
-    showToast(message, 'warning', duration);
-  }, [showToast]);
+    toast(message, { duration, icon: '⚠️' });
+  }, []);
 
   const showInfo = useCallback((message: string, duration: number = 5000) => {
-    showToast(message, 'info', duration);
-  }, [showToast]);
+    toast(message, { duration, icon: 'ℹ️' });
+  }, []);
 
   const contextValue: ToastContextValue = {
     showToast,
@@ -90,20 +84,27 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
   return (
     <ToastContext.Provider value={contextValue}>
       {children}
-      {mounted && (
-        <div className="fixed top-4 right-4 z-50 space-y-2">
-          {toasts.map(toast => (
-            <Toast
-              key={toast.id}
-              message={toast.message}
-              type={toast.type}
-              duration={0}
-              show={true}
-              onClose={() => removeToast(toast.id)}
-            />
-          ))}
-        </div>
-      )}
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 5000,
+          style: {
+            maxWidth: '500px',
+          },
+          error: {
+            style: {
+              background: '#DC2626',
+              color: '#fff',
+            },
+          },
+          success: {
+            style: {
+              background: '#16A34A',
+              color: '#fff',
+            },
+          },
+        }}
+      />
     </ToastContext.Provider>
   );
 };

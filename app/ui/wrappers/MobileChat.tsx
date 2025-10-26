@@ -1,15 +1,16 @@
 'use client';
 import {Loader} from 'lucide-react';
 import Image from 'next/image';
-import {useParams} from 'next/navigation';
+import {useParams, useRouter} from 'next/navigation';
 import React, {useEffect, useState} from 'react';
 import {useAppContext} from '~/contexts/AppContext';
 import {useChatMessages} from '~/hooks/useChatMessages';
-import {formatTimeTo12Hour, sendMessage} from '~/utils/helpers';
+import {formatTimeTo12Hour, formatMessageTime, sendMessage} from '~/utils/helpers';
 import {Message} from '~/utils/interface';
 
 const MobileChat = () => {
     const params = useParams();
+    const router = useRouter();
     const chatId = Array.isArray(params.slug) ? params.slug[0] : params.slug;
 
     const [loading, setLoading] = useState(false);
@@ -38,7 +39,26 @@ const MobileChat = () => {
 
     return (
         <div className='shadow-lg xs:shadow-transparent h-full flex flex-col flex-1'>
-            <div className='flex items-center justify-center typo-heading_sm xs:typo-body_lm text-primary bg-surface-primary-20 h-[42px]'>
+            <div className='flex items-center justify-center typo-heading_sm xs:typo-body_lm text-primary bg-surface-primary-20 h-[42px] relative px-4'>
+                <button
+                    onClick={() => router.back()}
+                    className='absolute left-4 flex items-center justify-center'
+                    aria-label='Go back'
+                >
+                    <svg
+                        className='w-6 h-6 text-primary'
+                        fill='none'
+                        stroke='currentColor'
+                        viewBox='0 0 24 24'
+                    >
+                        <path
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                            strokeWidth={2}
+                            d='M15 19l-7-7 7-7'
+                        />
+                    </svg>
+                </button>
                 iPhone 12 promax
             </div>
 
@@ -52,7 +72,7 @@ const MobileChat = () => {
                                 {item.message}
                             </div>
                             <p className={`text-text-accent typo-body_mr  ${item.sentBy === Number(user?.userId) ? '' : 'text-right'}`}>
-                                {formatTimeTo12Hour(item.dateCreated)}
+                                {formatMessageTime(item.dateCreated)}
                             </p>
                         </div>
                     );

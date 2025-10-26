@@ -1,7 +1,7 @@
 import {useSearchParams, useRouter} from 'next/navigation';
 import React, {useState} from 'react';
-import { SupportService } from '~/services/support.service';
-import { useAppContext } from '~/contexts/AppContext';
+import {SupportService} from '~/services/support.service';
+import {useAppContext} from '~/contexts/AppContext';
 
 interface CallbackRequestProps {
     title: string;
@@ -19,7 +19,7 @@ const CallbackRequest: React.FC<CallbackRequestProps> = ({title, onClose, onSubm
     const searchParams = useSearchParams();
     const query = searchParams.get('q');
     const router = useRouter();
-    const { setModalMessage } = useAppContext();
+    const {setModalMessage} = useAppContext();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

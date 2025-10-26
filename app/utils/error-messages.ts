@@ -72,6 +72,13 @@ export const errorMessageMap: Record<string, UserFriendlyError> = {
     action: 'Try signing in instead or use a different email address.'
   },
 
+  // File Upload errors
+  'Maximum upload size exceeded': {
+    title: 'File Too Large',
+    message: 'The file you are trying to upload exceeds the maximum allowed size.',
+    action: 'Please select a smaller file and try again.'
+  },
+
   // Item/Auction errors
   'Error writing JSON output': {
     title: 'Unable to Save Item',

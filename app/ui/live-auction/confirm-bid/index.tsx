@@ -92,7 +92,6 @@ const ConfirmBid = (props: Props) => {
                                 width={128}
                                 alt='item'
                                 className='h-[99px] w-[128px] rounded-lg object-cover'
-                                unoptimized
                             />
                         </div>
 

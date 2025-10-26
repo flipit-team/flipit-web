@@ -43,6 +43,7 @@ const Categories = (props: Props) => {
                             alt='search'
                             height={20}
                             width={20}
+                            sizes="20px"
                         />
                         <p className='typo-body_mm text-primary'>Browse all</p>
                     </>

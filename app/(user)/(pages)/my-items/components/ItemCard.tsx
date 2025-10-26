@@ -129,7 +129,14 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
     return (
         <div className='w-full sm:border sm:border-border_gray sm:rounded-md flex flex-col sm:flex-row sm:p-4 sm:h-[179px]'>
             <div className='w-full h-48 sm:w-[157px] sm:h-full bg-gray-200 rounded-t-md sm:rounded-md overflow-hidden flex-shrink-0 relative mb-2 sm:mb-0'>
-                <Image src={item.image} alt={item.title} fill className='object-cover' />
+                <Image
+                    src={item.image}
+                    alt={item.title}
+                    fill
+                    sizes="(max-width: 640px) 100vw, 157px"
+                    quality={75}
+                    className='object-cover'
+                />
             </div>
 
             <div className='flex-1 sm:ml-[22px] flex flex-col justify-between'>

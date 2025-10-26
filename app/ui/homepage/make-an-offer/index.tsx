@@ -7,6 +7,7 @@ import {useAppContext} from '~/contexts/AppContext';
 import RegularButton from '~/ui/common/buttons/RegularButton';
 import {formatToNaira} from '~/utils/helpers';
 import {Item} from '~/utils/interface';
+import {useToast} from '~/contexts/ToastContext';
 
 const options = [
     {id: 1, title: 'iPhone 12 Promax', img: '/camera.png'},
@@ -23,6 +24,7 @@ const MakeAnOffer = (props: Props) => {
     const {item, onClose, onSubmit} = props;
     const router = useRouter();
     const {user} = useAppContext();
+    const {showError, showSuccess} = useToast();
     const searchParams = useSearchParams();
     const query = searchParams.get('q');
     const [myItems, setMyItems] = useState<Item[]>([]);
@@ -39,8 +41,6 @@ const MakeAnOffer = (props: Props) => {
         | undefined
     >();
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>('');
-    const [success, setSuccess] = useState(false);
 
     useEffect(() => {
         const fetchItems = async () => {
@@ -62,41 +62,39 @@ const MakeAnOffer = (props: Props) => {
                 const data = await res.json();
                 setMyItems(data);
             } catch (err: any) {
-                setError(err.message || 'Something went wrong');
+                showError(err.message || 'Something went wrong');
             } finally {
                 setLoading(false);
             }
         };
 
         fetchItems();
-    }, [user?.userId]);
+    }, [user?.userId, showError]);
 
     const handleSubmit = async () => {
         setLoading(true);
-        setError(null);
-        setSuccess(false);
 
         // Validation - at least one option must be selected
         if (!withCash && !withItem) {
-            setError('Please select at least one offer type (Cash or Item)');
+            showError('Please select at least one offer type (Cash or Item)');
             setLoading(false);
             return;
         }
 
         if (withCash && (!amount || Number(amount) <= 0)) {
-            setError('Please enter a valid cash amount');
+            showError('Please enter a valid cash amount');
             setLoading(false);
             return;
         }
 
         if (withItem && !selectedOption) {
-            setError('Please select an item to offer');
+            showError('Please select an item to offer');
             setLoading(false);
             return;
         }
 
         if (!item?.id) {
-            setError('Item information is missing');
+            showError('Item information is missing');
             setLoading(false);
             return;
         }
@@ -105,7 +103,7 @@ const MakeAnOffer = (props: Props) => {
         const payload: any = {
             itemId: item?.id,
             userId: user?.userId,
-            withCash: withCash,
+            withCash: withCash
         };
 
         if (withCash) {
@@ -118,7 +116,7 @@ const MakeAnOffer = (props: Props) => {
 
         // Additional validation for null IDs
         if (withItem && !selectedOption?.id) {
-            setError('Selected item ID is missing');
+            showError('Selected item ID is missing');
             setLoading(false);
             return;
         }
@@ -135,14 +133,14 @@ const MakeAnOffer = (props: Props) => {
             const data = await res.json();
 
             if (!res.ok) {
-                
                 let errorMessage = 'Failed to create offer';
-                
+
                 // Try to extract error message from different response formats
                 if (data.details) {
                     try {
                         const parsedDetails = JSON.parse(data.details);
-                        errorMessage = parsedDetails.apierror?.debugMessage || parsedDetails.apierror?.message || errorMessage;
+                        errorMessage =
+                            parsedDetails.apierror?.debugMessage || parsedDetails.apierror?.message || errorMessage;
                     } catch (e) {
                         errorMessage = data.details;
                     }
@@ -151,17 +149,17 @@ const MakeAnOffer = (props: Props) => {
                 } else if (data.message) {
                     errorMessage = data.message;
                 }
-                
-                setError(errorMessage);
+
+                showError(errorMessage);
             } else {
-                setSuccess(true);
+                showSuccess('Offer submitted successfully!');
                 setTimeout(() => {
                     onClose();
                     router.replace('/current-bids');
                 }, 1500);
             }
         } catch (err: any) {
-            setError(err.message);
+            showError(err.message);
         } finally {
             setLoading(false);
         }
@@ -192,8 +190,6 @@ const MakeAnOffer = (props: Props) => {
                         />
                     </div>
                     <div className='flex flex-col  mb-4 xs:px-4'>
-                        {error && <div className='mb-4 text-center text-red-500'>{error}</div>}
-                        {success && <div className='mb-4 text-center text-green-500'>Offer submitted successfully! Redirecting...</div>}
                         <div className='mb-4'>
                             <p className='typo-heading_ms xs:typo-body_ls capitalize'>{item?.title}</p>
                             <p className='typo-heading_ms xs:typo-body_ls text-primary'>
@@ -296,37 +292,57 @@ const MakeAnOffer = (props: Props) => {
                                             </div>
 
                                             {isOpen && (
-                                                <div className='absolute left-0 p-[22px] w-full bg-white border rounded-lg shadow-md z-10'>
-                                                    <ul className='max-h-48 overflow-auto'>
+                                                <div className='absolute left-0 p-[22px] w-full max-h-[60vh] xs:max-h-[23vh] bg-white border rounded-lg shadow-md z-10 overflow-y-auto'>
+                                                    <ul>
                                                         {myItems.map((option) => (
                                                             <li
                                                                 key={option.id}
-                                                                className='flex h-[54px] items-center gap-4 mb-[24px] xs:mb-0 hover:bg-gray-100 cursor-pointer'
+                                                                className='flex h-[54px] items-center gap-4 mb-2 pr-3 rounded-lg border border-primary/20 hover:bg-primary/5 hover:border-primary/40 cursor-pointer transition-colors overflow-hidden'
                                                                 onClick={() => {
                                                                     setSelectedOption({
                                                                         id: option.id,
-                                                                        img: option.imageUrls?.[0] || '/placeholder-product.svg',
+                                                                        img:
+                                                                            option.imageUrls?.[0] ||
+                                                                            '/placeholder-product.svg',
                                                                         title: option.title
                                                                     });
                                                                     setIsOpen(false);
                                                                 }}
                                                             >
                                                                 <Image
-                                                                    src={option.imageUrls?.[0] || '/placeholder-product.svg'}
+                                                                    src={
+                                                                        option.imageUrls?.[0] ||
+                                                                        '/placeholder-product.svg'
+                                                                    }
                                                                     alt={option.title}
                                                                     width={54}
                                                                     height={54}
-                                                                    className='h-[54px] w-[54px] xs:h-[32px] xs:w-[32px] object-cover rounded'
+                                                                    className='h-full w-[54px] xs:w-[54px] object-cover rounded-l-lg flex-shrink-0'
                                                                 />
-                                                                <span className='xs:typo-body_mr'>{option.title}</span>
+                                                                <span className='xs:typo-body_mr flex-1'>
+                                                                    {option.title}
+                                                                </span>
                                                             </li>
                                                         ))}
                                                     </ul>
                                                     <Link
-                                                        href={'/post-an-item'}
-                                                        className='w-max mt-[20px] text-center typo-heading_sm xs:typo-body_lm text-primary'
+                                                        href={'/post-an-item/entry'}
+                                                        className='flex items-center justify-center gap-2 w-full mt-4 px-4 py-2 rounded-lg border-2 border-primary bg-white hover:bg-primary hover:text-white transition-colors typo-body_lm text-primary sticky bottom-0'
                                                     >
-                                                        + Add New Item
+                                                        <svg
+                                                            className='w-5 h-5'
+                                                            fill='none'
+                                                            stroke='currentColor'
+                                                            viewBox='0 0 24 24'
+                                                        >
+                                                            <path
+                                                                strokeLinecap='round'
+                                                                strokeLinejoin='round'
+                                                                strokeWidth={2}
+                                                                d='M12 4v16m8-8H4'
+                                                            />
+                                                        </svg>
+                                                        Add New Item
                                                     </Link>
                                                 </div>
                                             )}

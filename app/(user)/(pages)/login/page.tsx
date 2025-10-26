@@ -31,6 +31,9 @@ const Login = async ({searchParams}: {searchParams: Promise<{[key: string]: stri
                         src={'/auth-banner.png'}
                         height={365}
                         width={365}
+                        sizes="365px"
+                        priority
+                        quality={85}
                         alt='banner'
                         className='h-[365px] w-[365px]'
                     />

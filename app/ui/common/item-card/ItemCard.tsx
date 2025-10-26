@@ -7,6 +7,7 @@ import AuctionCountdown from '../badges/AuctionCountdown';
 import {Item} from '~/utils/interface';
 import {useItemLike} from '~/hooks/useLikes';
 import RemoveItemConfirmation from '../modals/RemoveItemConfirmation';
+import {useAppContext} from '~/contexts/AppContext';
 
 interface ItemCardProps {
     item: Item;
@@ -40,6 +41,7 @@ const ItemCard: React.FC<ItemCardProps> = memo(
         customFooter,
         priority = false
     }: ItemCardProps) => {
+        const {user} = useAppContext();
         const url = useMemo(() => item.imageUrls?.[0] || 'https://images.pexels.com/photos/1303084/pexels-photo-1303084.jpeg', [item.imageUrls]);
 
         // Like functionality
@@ -51,8 +53,13 @@ const ItemCard: React.FC<ItemCardProps> = memo(
         const href = useMemo(() => {
             if (forEdit) return `/edit-item/${item.id}`;
             if (forLiveAuction) return `/live-auction/${item.auctionId || item.id}`;
+
+            // Check if this item belongs to the current user
+            const isOwnItem = user?.userId && item.seller?.id?.toString() === user.userId;
+            if (isOwnItem) return `/manage-item/${item.id}`;
+
             return `/${item.id}`;
-        }, [forEdit, forLiveAuction, item.id, item.auctionId]);
+        }, [forEdit, forLiveAuction, item.id, item.auctionId, item.seller?.id, user?.userId]);
 
         const handleLikeClick = useCallback(
             async (e: React.MouseEvent) => {

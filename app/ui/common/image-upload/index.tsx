@@ -19,14 +19,7 @@ const ImageUpload = (props: Props) => {
     useEffect(() => {
         if (!file) return;
 
-        const url = URL.createObjectURL(file);
-        setPreviewUrls((prev) => {
-            return [...prev, url];
-        });
-
         handleUpload(file);
-
-        return () => URL.revokeObjectURL(url);
     }, [file]);
 
     const handleUpload = async (selectedFile: File) => {
@@ -35,6 +28,9 @@ const ImageUpload = (props: Props) => {
         const formData = new FormData();
         formData.append('file', selectedFile);
 
+        // Create preview URL
+        const previewUrl = URL.createObjectURL(selectedFile);
+
         try {
             const res = await fetch('/api/upload', {
                 method: 'POST',
@@ -42,8 +38,24 @@ const ImageUpload = (props: Props) => {
             });
 
             if (!res.ok) {
-                const errorText = await res.text();
-                throw new Error(`Upload failed with status: ${res.status} - ${errorText}`);
+                const errorData = await res.json().catch(() => ({error: 'Upload failed'}));
+
+                // Extract the message from nested structure
+                let errorMessage = 'Upload failed';
+
+                if (errorData.error && typeof errorData.error === 'string') {
+                    try {
+                        // Parse nested JSON error
+                        const nestedError = JSON.parse(errorData.error.replace('Upload failed: ', ''));
+                        errorMessage = nestedError.apierror?.message || 'Upload failed';
+                    } catch {
+                        errorMessage = 'Upload failed';
+                    }
+                }
+
+                // Revoke preview URL on error
+                URL.revokeObjectURL(previewUrl);
+                throw new Error(errorMessage);
             }
 
             // Prevent parsing if there's no body or wrong content type
@@ -57,12 +69,17 @@ const ImageUpload = (props: Props) => {
             }
 
             if (data && data.key) {
+                // Only add preview if upload succeeded
+                setPreviewUrls((prev) => [...prev, previewUrl]);
                 setUrls((prev) => [...prev, data.key]);
             } else {
+                // Revoke preview URL on error
+                URL.revokeObjectURL(previewUrl);
                 showError('Upload failed - no file key returned');
             }
         } catch (error) {
-            showError(error);
+            // Preview URL already revoked in error handling above
+            showError(error instanceof Error ? error.message : 'Upload failed');
         } finally {
             setUploading(false);
         }

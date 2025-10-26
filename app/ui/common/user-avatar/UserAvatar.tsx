@@ -22,8 +22,16 @@ const textSizeClasses = {
   xs: 'text-xs',
   sm: 'text-sm',
   md: 'text-base',
-  lg: 'text-lg', 
+  lg: 'text-lg',
   xl: 'text-xl'
+};
+
+const imageSizes = {
+  xs: '24px',
+  sm: '32px',
+  md: '40px',
+  lg: '48px',
+  xl: '64px'
 };
 
 export const UserAvatar: React.FC<UserAvatarProps> = ({
@@ -44,6 +52,8 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
           alt={alt}
           width={48}
           height={48}
+          sizes={imageSizes[size]}
+          quality={70}
           className="w-full h-full object-cover"
         />
       </div>

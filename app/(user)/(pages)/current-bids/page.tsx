@@ -34,8 +34,16 @@ const page = async () => {
             return <NoData text={`Error loading bids: ${errorData.error || 'Failed to fetch bids'}`} />;
         }
 
-        const data: Bid[] = await res.json();
-        return <CurrentBids bids={data} fallbackToApi={false} />;
+        const data = await res.json();
+
+        // Transform API response to match Bid interface
+        const transformedBids: Bid[] = data.map((bid: any) => ({
+            ...bid,
+            auctionItem: bid.item, // Map 'item' to 'auctionItem'
+            sentBy: bid.sentBy
+        }));
+
+        return <CurrentBids bids={transformedBids} fallbackToApi={false} />;
     } catch (error) {
         redirect('/error-page');
     }

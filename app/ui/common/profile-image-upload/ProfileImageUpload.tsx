@@ -67,6 +67,8 @@ const ProfileImageUpload = ({
                     src={previewUrl}
                     height={224}
                     width={224}
+                    sizes="(max-width: 640px) 180px, 224px"
+                    quality={80}
                     alt='profile picture'
                     className='h-[224px] w-[224px] rounded-full'
                 />
