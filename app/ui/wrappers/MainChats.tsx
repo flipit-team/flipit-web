@@ -173,7 +173,7 @@ const MainChats = (props: Props) => {
                                     pushParam(chat.chatId);
                                     setActiveChat(chat);
                                 }}
-                                className={`h-[130px] ${chat.chatId === activeChat?.chatId ? 'bg-surface-primary-10' : ''} flex p-6 border-b border-border-secondary`}
+                                className={`h-[130px] ${chat.chatId === activeChat?.chatId ? 'bg-surface-primary-10' : ''} flex p-6 border-b border-border-secondary cursor-pointer hover:bg-surface-primary-10 transition-colors`}
                             >
                                 <Image
                                     src={chat.initiatorAvatar || '/placeholder-avatar.svg'}
