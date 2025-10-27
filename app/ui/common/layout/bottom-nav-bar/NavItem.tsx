@@ -9,7 +9,7 @@ interface Props {
 }
 const NavItem = ({href, icon, label, activeTab}: Props) => {
     return (
-        <Link href={href} className='flex items-center flex-col' onClick={() => {}}>
+        <Link href={href} className='flex items-center flex-col'>
             {icon}
             <span
                 className={clsx({
