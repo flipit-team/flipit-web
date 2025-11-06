@@ -265,7 +265,7 @@ const ItemDetail = (props: Props) => {
                     <p className='typo-body_mr text-text_four mb-[42px]'>{timeAgo(item?.dateCreated)}</p>
                     <RegularButton text='Make an offer' slug='make-an-offer' usePopup />
                     <div className='h-6'></div>
-                    <RegularButton text='Buy right away' isLight action={() => setInputActive(!inputActive)} />
+                    <RegularButton text='Buy right away' isLight action={() => router.push('/transaction/1')} />
 
                     <div className='typo-body_mm text-text_one mt-6'>Location</div>
                     <div className='typo-body_mr text-text_four mb-8'>{item?.location}</div>

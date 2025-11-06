@@ -6,9 +6,10 @@ interface CountdownTimerProps {
     startTime?: Date | string;
     className?: string;
     variant?: 'auction-card' | 'auction-details'; // Different text styles
+    onComplete?: () => void; // Callback when auction ends
 }
 
-const CountdownTimer = ({endTime, startTime, className = '', variant = 'auction-details'}: CountdownTimerProps) => {
+const CountdownTimer = ({endTime, startTime, className = '', variant = 'auction-details', onComplete}: CountdownTimerProps) => {
     const [timeLeft, setTimeLeft] = useState({
         days: 0,
         hours: 0,
@@ -16,6 +17,7 @@ const CountdownTimer = ({endTime, startTime, className = '', variant = 'auction-
         seconds: 0
     });
     const [status, setStatus] = useState<'not-started' | 'active' | 'ended'>('active');
+    const [hasCalledComplete, setHasCalledComplete] = useState(false);
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -43,9 +45,15 @@ const CountdownTimer = ({endTime, startTime, className = '', variant = 'auction-
 
             setStatus(currentStatus);
 
+            // Call onComplete callback when auction ends (only once)
+            if (currentStatus === 'ended' && !hasCalledComplete && onComplete) {
+                setHasCalledComplete(true);
+                onComplete();
+            }
+
             if (targetTime > 0) {
                 const distance = targetTime - now;
-                
+
                 if (distance > 0) {
                     const days = Math.floor(distance / (1000 * 60 * 60 * 24));
                     const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -62,7 +70,7 @@ const CountdownTimer = ({endTime, startTime, className = '', variant = 'auction-
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [endTime, startTime]);
+    }, [endTime, startTime, onComplete, hasCalledComplete]);
 
     const formatTime = (value: number) => value.toString().padStart(2, '0');
 

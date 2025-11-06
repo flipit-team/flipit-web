@@ -343,14 +343,31 @@ export interface CreateReviewRequest {
   reviewedUserId: number;
 }
 
+// Home Types
+export interface TopNavDTO {
+  auctionsCount: number;      // Total auctions for user
+  messagesCount: number;       // Unread messages count
+  biddingCount: number;        // Active bids count
+  notificationsCount: number;  // Unread notifications count
+}
+
 // Chat Types
 export interface ChatDTO {
-  id: string;
-  participants: UserDTO[];
+  chatId: string;
+  title: string;
+  initiatorId: number;
+  receiverId: number;
+  initiatorAvatar: string;    // Full URL to avatar image
+  receiverAvatar: string;     // Full URL to avatar image
+  initiatorName: string;
+  receiverName: string;
+  dateCreated: string;        // ISO datetime
+  // Legacy fields for backward compatibility
+  id?: string;
+  participants?: UserDTO[];
   item?: ItemDTO;
   lastMessage?: MessageDTO;
-  dateCreated: string;
-  dateUpdated: string;
+  dateUpdated?: string;
 }
 
 export interface MessageDTO {
@@ -382,6 +399,7 @@ export interface NotificationDTO {
   message: string;
   resourceLink: string;
   read: boolean;
+  seen: boolean;              // Tracks if notification was viewed
   dateCreated: string;
 }
 

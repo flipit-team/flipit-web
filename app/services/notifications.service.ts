@@ -17,6 +17,20 @@ export class NotificationsService {
     );
   }
 
+  // Mark notification as seen
+  static async markAsSeen(notificationId: number) {
+    return handleApiCall(() =>
+      apiClient.put<{ message: string }>(`/notifications/${notificationId}/markAsSeen`, {}, { requireAuth: true })
+    );
+  }
+
+  // Mark all notifications as seen
+  static async markAllAsSeen() {
+    return handleApiCall(() =>
+      apiClient.put<{ message: string }>('/notifications/mark-all-seen', {}, { requireAuth: true })
+    );
+  }
+
   // Mark all notifications as read (if endpoint exists)
   static async markAllAsRead() {
     return handleApiCall(() =>

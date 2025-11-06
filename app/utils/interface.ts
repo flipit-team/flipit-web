@@ -208,6 +208,7 @@ export interface Notification {
         message: string;
         resourceLink: string;
         read: boolean;
+        seen: boolean;
         dateCreated: Date;
     }[];
     number: number;

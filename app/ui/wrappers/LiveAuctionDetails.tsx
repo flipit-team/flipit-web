@@ -164,6 +164,16 @@ const LiveAuctionDetails = (props: Props) => {
         return `₦${amount.toLocaleString()}`;
     };
 
+    // TODO: Implement auction win flow
+    // When the countdown timer ends and the user is the winning bidder,
+    // this function should redirect them to the transaction page
+    const handleAuctionEnd = () => {
+        // Check if current user is the winning bidder
+        // If so, redirect to: router.push(`/transaction/1?type=auction&auctionId=${item.auctionId}`);
+        // Backend should handle creating the transaction when auction ends
+        console.log('Auction ended. Implement win detection and redirect to transaction flow.');
+    };
+
     return (
         <div className='grid-sizes grid grid-cols-[712px_1fr] xs:grid-cols-1 gap-6 h-full mt-10 xs:mb-6'>
             <div className='p-6 xs:p-0 shadow-lg'>
@@ -240,11 +250,12 @@ const LiveAuctionDetails = (props: Props) => {
             </div>
 
             <div className='p-6 xs:p-0 shadow-lg'>
-                <CountdownTimer 
-                    endTime={endTime} 
-                    startTime={startTime || undefined} 
-                    variant='auction-details' 
-                    className='mb-4 w-max h-[44px]' 
+                <CountdownTimer
+                    endTime={endTime}
+                    startTime={startTime || undefined}
+                    variant='auction-details'
+                    className='mb-4 w-max h-[44px]'
+                    onComplete={handleAuctionEnd}
                 />
 
                 <div className='border-b border-border_gray mb-4'></div>

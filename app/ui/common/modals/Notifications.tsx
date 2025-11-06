@@ -11,6 +11,7 @@ interface Props {
         message: string;
         resourceLink: string;
         read: boolean;
+        seen?: boolean;
         dateCreated: Date;
     }[];
 }
@@ -37,13 +38,18 @@ const Notifications = (props: Props) => {
                             href={`/notifications/${item.id}`}
                             key={i}
                             className={`whitespace-nowrap py-[8px] px-[12px] text-text_one h-[36px] cursor-pointer
-                         flex items-center hover:text-form-text-active hover-state-300`}
+                         flex items-center hover:text-form-text-active hover-state-300 gap-2 ${
+                             !item.read ? 'font-semibold' : ''
+                         }`}
                         >
-                            {item.title}
+                            {!item.read && (
+                                <div className='h-2 w-2 rounded-full bg-secondary flex-shrink-0' title='Unread' />
+                            )}
+                            <span className='truncate'>{item.title}</span>
                         </Link>
                     );
                 })}
-                <Link href={'/notifications'} className='text-text_one'>
+                <Link href={'/notifications'} className='text-text_one block py-[8px] px-[12px] border-t border-border-primary hover:text-primary'>
                     See all notifications
                 </Link>
             </div>

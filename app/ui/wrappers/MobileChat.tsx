@@ -19,7 +19,7 @@ const MobileChat = () => {
     const [chats, setChats] = useState<Message[] | null>([]);
     const [input, setInput] = useState('');
 
-    const {messages, isLoading, error: chatError} = useChatMessages(chatId);
+    const {messages, isLoading, error: chatError, mutate: mutateMessages} = useChatMessages(chatId);
 
     const handleSend = async () => {
         if (!input) return;
@@ -30,6 +30,9 @@ const MobileChat = () => {
         try {
             const data = await sendMessage(chatId ?? '', input);
             setInput('');
+
+            // Immediately refresh messages after sending
+            mutateMessages();
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -63,20 +66,29 @@ const MobileChat = () => {
             </div>
 
             <div className='p-[40px] flex flex-col gap-2 flex-1 h-full'>
-                {messages?.map((item, i) => {
-                    return (
-                        <div key={i} className={`w-[90%] ${item.sentBy === Number(user?.userId) ? 'mr-auto' : 'ml-auto'}`}>
-                            <div
-                                className={`${item.sentBy === Number(user?.userId) ? 'bg-background-tertiary' : 'bg-surface-primary-10'} p-3 rounded-lg`}
-                            >
-                                {item.message}
-                            </div>
-                            <p className={`text-text-accent typo-body_mr  ${item.sentBy === Number(user?.userId) ? '' : 'text-right'}`}>
-                                {formatMessageTime(item.dateCreated)}
-                            </p>
+                {isLoading ? (
+                    <div className='flex justify-center items-center h-full'>
+                        <div className='flex items-center gap-2 text-text-secondary'>
+                            <div className='animate-spin rounded-full h-6 w-6 border-b-2 border-primary'></div>
+                            <span className='typo-body-md-regular'>Loading messages...</span>
                         </div>
-                    );
-                })}
+                    </div>
+                ) : (
+                    messages?.map((item, i) => {
+                        return (
+                            <div key={i} className={`w-[90%] ${item.sentBy === Number(user?.userId) ? 'mr-auto' : 'ml-auto'}`}>
+                                <div
+                                    className={`${item.sentBy === Number(user?.userId) ? 'bg-background-tertiary' : 'bg-surface-primary-10'} p-3 rounded-lg`}
+                                >
+                                    {item.message}
+                                </div>
+                                <p className={`text-text-accent typo-body_mr  ${item.sentBy === Number(user?.userId) ? '' : 'text-right'}`}>
+                                    {formatMessageTime(item.dateCreated)}
+                                </p>
+                            </div>
+                        );
+                    })
+                )}
             </div>
             <div className='h-[86px] border-t border-border_gray flex items-center px-[20px]'>
                 <Image src={'/microphone.svg'} height={24} width={24} alt='mic' className='h-[24px] w-[24px] mr-2' />

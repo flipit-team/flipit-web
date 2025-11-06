@@ -7,6 +7,9 @@ import {useAppContext} from '~/contexts/AppContext';
 import Notifications from '../../modals/Notifications';
 import {ShoppingBag, Megaphone, BarChart3, Settings, LogOut} from 'lucide-react';
 import ProfileDropdown from './ProfileDropdown';
+import HomeService from '~/services/home.service';
+import {TopNavDTO} from '~/types/api';
+import CountBadge from '../../count-badge/CountBadge';
 
 interface Props {
     avatar?: string;
@@ -27,6 +30,7 @@ function HeaderContent(props: Props) {
     const router = useRouter();
     const pathname = usePathname();
     const {notifications, profile, user: clientUser} = useAppContext();
+    const [topNavCounts, setTopNavCounts] = useState<TopNavDTO | null>(null);
 
     // Use client user or server user
     const user = clientUser || serverUser;
@@ -34,6 +38,33 @@ function HeaderContent(props: Props) {
     useEffect(() => {
         setIsClient(true);
     }, []);
+
+    // Fetch top nav counters
+    useEffect(() => {
+        if (!user) return;
+
+        const fetchTopNavCounters = async () => {
+            const result = await HomeService.getTopNavCounters();
+            if (result.data) {
+                setTopNavCounts(result.data);
+            } else {
+                // Fallback to dummy data for testing if API fails
+                setTopNavCounts({
+                    auctionsCount: 5,
+                    messagesCount: 12,
+                    biddingCount: 3,
+                    notificationsCount: 8
+                });
+            }
+        };
+
+        fetchTopNavCounters();
+
+        // Poll for updates every 30 seconds
+        const interval = setInterval(fetchTopNavCounters, 30000);
+
+        return () => clearInterval(interval);
+    }, [user]);
 
     // Profile dropdown handlers - keep dropdown open while hovering
     const handleProfileMouseEnter = () => {
@@ -148,21 +179,24 @@ function HeaderContent(props: Props) {
                 <div className='flex xs:hidden gap-[42px] typo-body_ls ml-[70px]'>
                     <Link
                         href={'/live-auction'}
-                        className={pathname === '/live-auction' ? 'text-secondary' : 'text-white'}
+                        className={`relative ${pathname === '/live-auction' ? 'text-secondary' : 'text-white'}`}
                     >
                         Live Auction
+                        {topNavCounts && <CountBadge count={topNavCounts.auctionsCount} />}
                     </Link>
                     <Link
                         href={'/messages'}
-                        className={pathname.startsWith('/messages') ? 'text-secondary' : 'text-white'}
+                        className={`relative ${pathname.startsWith('/messages') ? 'text-secondary' : 'text-white'}`}
                     >
                         Messages
+                        {topNavCounts && <CountBadge count={topNavCounts.messagesCount} />}
                     </Link>
                     <Link
                         href={'/current-bids'}
-                        className={pathname === '/current-bids' ? 'text-secondary' : 'text-white'}
+                        className={`relative ${pathname === '/current-bids' ? 'text-secondary' : 'text-white'}`}
                     >
                         Current Bids
+                        {topNavCounts && <CountBadge count={topNavCounts.biddingCount} />}
                     </Link>
                 </div>
                 {user ? (
@@ -194,15 +228,16 @@ function HeaderContent(props: Props) {
                         </div>
                         
                         {/* Notifications Icon */}
-                        <div className='relative group'>
-                            <Link href={'/notifications'}>
+                        <div className='relative group mr-[27px] xs:mr-[16px]'>
+                            <Link href={'/notifications'} className='relative inline-block'>
                                 <Image
                                     src={pathname === '/notifications' ? '/bell-yellow.svg' : '/bell.svg'}
                                     height={32}
                                     width={32}
                                     alt='notifications'
-                                    className='h-6 w-6 mr-[27px] xs:h-6 xs:w-6 xs:mr-[16px]'
+                                    className='h-6 w-6'
                                 />
+                                {topNavCounts && <CountBadge count={topNavCounts.notificationsCount} />}
                             </Link>
                             {!hovered && (
                                 <div className='absolute right-0 mt-2 xs:hidden bg-white shadow-md rounded px-4 py-2 text-sm z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto'>

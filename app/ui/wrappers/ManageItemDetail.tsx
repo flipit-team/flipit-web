@@ -1,11 +1,19 @@
 'use client';
 import Image from 'next/image';
 import React, {useState} from 'react';
+import {useRouter} from 'next/navigation';
 import {formatToNaira, timeAgo} from '~/utils/helpers';
+import {useAppContext} from '~/contexts/AppContext';
 import UsedBadge from '../common/badges/UsedBadge';
 import ImageGallery from '../common/image-gallery/ImageGallery';
 import RegularButton from '../common/buttons/RegularButton';
 import StarRating from '../common/star-rating/StarRating';
+import TransactionService from '~/services/transaction.service';
+import {TransactionType} from '~/types/transaction';
+import AcceptOfferModal from '../common/modals/AcceptOfferModal';
+import DeclineOfferModal from '../common/modals/DeclineOfferModal';
+import SuccessModal from '../common/modals/Success';
+import ErrorModal from '../common/modals/Error';
 
 // Dummy data types
 interface Offer {
@@ -199,26 +207,77 @@ const ManageItemDetail = ({item: propItem, offers: propOffers, isAuction = false
     const [offers, setOffers] = useState<Offer[]>(propOffers && propOffers.length > 0 ? propOffers : dummyOffers);
     const [hasAcceptedOffer, setHasAcceptedOffer] = useState(false);
     const [activeTab, setActiveTab] = useState<'details' | 'offers'>(isAuction ? 'details' : 'offers');
+    const [isCreatingTransaction, setIsCreatingTransaction] = useState(false);
+    const [showAcceptModal, setShowAcceptModal] = useState(false);
+    const [showDeclineModal, setShowDeclineModal] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [showErrorModal, setShowErrorModal] = useState(false);
+    const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const router = useRouter();
+    const {user} = useAppContext();
 
-    const handleAcceptOffer = (offerId: number) => {
-        // When accepting an offer, set all other accepted offers back to pending
-        setOffers(
-            offers.map((offer) => {
-                if (offer.id === offerId) {
-                    return {...offer, status: 'accepted' as const};
-                }
-                // If this offer was previously accepted, set it back to pending
-                if (offer.status === 'accepted') {
-                    return {...offer, status: 'pending' as const};
-                }
-                return offer;
-            })
-        );
-        setHasAcceptedOffer(true);
+    const handleAcceptOfferClick = (offerId: number) => {
+        const offer = offers.find(o => o.id === offerId);
+        if (!offer) return;
+        setSelectedOffer(offer);
+        setShowAcceptModal(true);
     };
 
-    const handleDeclineOffer = (offerId: number) => {
-        setOffers(offers.map((offer) => (offer.id === offerId ? {...offer, status: 'declined' as const} : offer)));
+    const handleAcceptOfferConfirm = async () => {
+        if (!selectedOffer) return;
+
+        setIsCreatingTransaction(true);
+
+        // Simulate API call with dummy data
+        setTimeout(() => {
+            // Update offer status locally
+            setOffers(
+                offers.map((o) => {
+                    if (o.id === selectedOffer.id) {
+                        return {...o, status: 'accepted' as const};
+                    }
+                    // If this offer was previously accepted, set it back to pending
+                    if (o.status === 'accepted') {
+                        return {...o, status: 'pending' as const};
+                    }
+                    return o;
+                })
+            );
+            setHasAcceptedOffer(true);
+            setShowAcceptModal(false);
+            setShowSuccessModal(true);
+            setIsCreatingTransaction(false);
+
+            // Redirect to transaction page after showing success
+            // Determine transaction type for URL parameter
+            let transactionType = 'cash';
+            if (selectedOffer.offeredItem && selectedOffer.cashAmount) {
+                transactionType = 'exchange-cash';
+            } else if (selectedOffer.offeredItem) {
+                transactionType = 'exchange';
+            } else if (isAuction) {
+                transactionType = 'auction';
+            }
+
+            setTimeout(() => {
+                router.push(`/transaction/1?type=${transactionType}`);
+            }, 2000);
+        }, 1000); // Simulate 1 second API delay
+    };
+
+    const handleDeclineOfferClick = (offerId: number) => {
+        const offer = offers.find(o => o.id === offerId);
+        if (!offer) return;
+        setSelectedOffer(offer);
+        setShowDeclineModal(true);
+    };
+
+    const handleDeclineOfferConfirm = () => {
+        if (!selectedOffer) return;
+        setOffers(offers.map((offer) => (offer.id === selectedOffer.id ? {...offer, status: 'declined' as const} : offer)));
+        setShowDeclineModal(false);
+        setSelectedOffer(null);
     };
 
     const pendingOffers = offers.filter((o) => o.status === 'pending');
@@ -405,10 +464,13 @@ const ManageItemDetail = ({item: propItem, offers: propOffers, isAuction = false
 
                         {hasAcceptedOffer && acceptedOffers.length > 0 && (
                             <div className='bg-green-50 border border-green-200 rounded-lg p-4 mb-6'>
-                                <p className='typo-body_mr text-green-800'>
-                                    ✓ You&apos;ve accepted an offer. The buyer will be notified to proceed with the
-                                    transaction.
+                                <p className='typo-body_mr text-green-800 mb-2'>
+                                    ✓ You&apos;ve accepted an offer. Redirecting to transaction page...
                                 </p>
+                                <div className='flex items-center gap-2'>
+                                    <div className='w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full animate-spin'></div>
+                                    <span className='typo-body_sr text-green-700'>Creating transaction...</span>
+                                </div>
                             </div>
                         )}
 
@@ -489,18 +551,18 @@ const ManageItemDetail = ({item: propItem, offers: propOffers, isAuction = false
                                             {/* Actions */}
                                             <div className='flex gap-3'>
                                                 <button
-                                                    onClick={() => handleAcceptOffer(offer.id)}
-                                                    disabled={hasAcceptedOffer}
+                                                    onClick={() => handleAcceptOfferClick(offer.id)}
+                                                    disabled={hasAcceptedOffer || isCreatingTransaction}
                                                     className={`flex-1 h-[42px] rounded-lg typo-body_lr ${
-                                                        hasAcceptedOffer
+                                                        hasAcceptedOffer || isCreatingTransaction
                                                             ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                                                             : 'bg-primary text-white hover:bg-primary/90'
                                                     }`}
                                                 >
-                                                    Accept Offer
+                                                    {isCreatingTransaction ? 'Accepting...' : 'Accept Offer'}
                                                 </button>
                                                 <button
-                                                    onClick={() => handleDeclineOffer(offer.id)}
+                                                    onClick={() => handleDeclineOfferClick(offer.id)}
                                                     className='flex-1 h-[42px] border border-text_four text-text_four rounded-lg typo-body_lr hover:bg-gray-50'
                                                 >
                                                     Decline
@@ -622,6 +684,49 @@ const ManageItemDetail = ({item: propItem, offers: propOffers, isAuction = false
                     </div>
                 </div>
             </div>
+
+            {/* Modals */}
+            {selectedOffer && (
+                <>
+                    <AcceptOfferModal
+                        isOpen={showAcceptModal}
+                        onClose={() => setShowAcceptModal(false)}
+                        onConfirm={handleAcceptOfferConfirm}
+                        bidderName={selectedOffer.bidder.name}
+                        bidderAvatar={selectedOffer.bidder.avatar}
+                        cashAmount={selectedOffer.cashAmount}
+                        offeredItem={selectedOffer.offeredItem}
+                        isLoading={isCreatingTransaction}
+                    />
+                    <DeclineOfferModal
+                        isOpen={showDeclineModal}
+                        onClose={() => setShowDeclineModal(false)}
+                        onConfirm={handleDeclineOfferConfirm}
+                        bidderName={selectedOffer.bidder.name}
+                    />
+                </>
+            )}
+
+            {/* Success Modal */}
+            {showSuccessModal && (
+                <div className='fixed inset-0 bg-black bg-opacity-50 h-screen flex justify-center items-center z-[1001]'>
+                    <div className='relative bg-white rounded-2xl w-[558px] h-max xs:w-full py-[48px] px-[56px] xs:px-8 xs:py-8 mx-6'>
+                        <SuccessModal
+                            onClose={() => setShowSuccessModal(false)}
+                            message='Offer accepted! Creating transaction and redirecting...'
+                        />
+                    </div>
+                </div>
+            )}
+
+            {/* Error Modal */}
+            {showErrorModal && (
+                <div className='fixed inset-0 bg-black bg-opacity-50 h-screen flex justify-center items-center z-[1001]'>
+                    <div className='relative bg-white rounded-2xl w-[558px] h-max xs:w-full py-[48px] px-[56px] xs:px-8 xs:py-8 mx-6'>
+                        <ErrorModal onClose={() => setShowErrorModal(false)} message={errorMessage} />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

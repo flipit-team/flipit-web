@@ -21,6 +21,7 @@ interface Props {
 const MainChats = (props: Props) => {
     const {chatData: serverChatData} = props;
     const [apiChatData, setApiChatData] = useState(serverChatData);
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
     const hasInit = useRef(false);
 
     // Fetch chat data from API - only run once
@@ -28,7 +29,10 @@ const MainChats = (props: Props) => {
         if (hasInit.current) return; // Prevent multiple calls
 
         const fetchChatData = async () => {
-            if (serverChatData.buyer.length > 0 || serverChatData.seller.length > 0) return;
+            if (serverChatData.buyer.length > 0 || serverChatData.seller.length > 0) {
+                setIsInitialLoading(false);
+                return;
+            }
 
             try {
                 const res = await fetch('/api/v1/chats');
@@ -37,6 +41,8 @@ const MainChats = (props: Props) => {
                     setApiChatData(data);
                 }
             } catch (error) {
+            } finally {
+                setIsInitialLoading(false);
             }
         };
 
@@ -132,7 +138,7 @@ const MainChats = (props: Props) => {
         setChatToDelete(null);
     };
 
-    if (userMessagesLoading)
+    if (userMessagesLoading || isInitialLoading)
         return (
             <div className='w-full py-10'>
                 <LoaderMain color='green' />
