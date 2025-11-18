@@ -126,9 +126,16 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
         }
     };
 
+    const handleCardClick = () => {
+        router.push(`/manage-item-demo?id=${item.id}`);
+    };
+
     return (
         <div className='w-full sm:border sm:border-border_gray sm:rounded-md flex flex-col sm:flex-row sm:p-4 sm:h-[179px]'>
-            <div className='w-full h-48 sm:w-[157px] sm:h-full bg-gray-200 rounded-t-md sm:rounded-md overflow-hidden flex-shrink-0 relative mb-2 sm:mb-0'>
+            <div
+                className='w-full h-48 sm:w-[157px] sm:h-full bg-gray-200 rounded-t-md sm:rounded-md overflow-hidden flex-shrink-0 relative mb-2 sm:mb-0 cursor-pointer'
+                onClick={handleCardClick}
+            >
                 <Image
                     src={item.image}
                     alt={item.title}
@@ -141,7 +148,7 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
 
             <div className='flex-1 sm:ml-[22px] flex flex-col justify-between'>
                 <div className='flex justify-between items-start'>
-                    <div className='flex-1'>
+                    <div className='flex-1 cursor-pointer' onClick={handleCardClick}>
                         <h3 className='text-gray-700 typo-body-lg-regular mb-1 sm:mb-2'>{item.title}</h3>
                         <div className='text-text_one typo-heading-md-medium mb-0.5 sm:mb-1'>
                             {formatAmount(item.amount)}

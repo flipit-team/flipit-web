@@ -8,7 +8,7 @@ import NotificationsService from '~/services/notifications.service';
 import {useRouter} from 'next/navigation';
 
 const Notifications = () => {
-    const {notifications} = useAppContext();
+    const {notifications, refreshNotifications} = useAppContext();
     const router = useRouter();
     const [localNotifications, setLocalNotifications] = useState(notifications?.content || []);
 
@@ -21,6 +21,8 @@ const Notifications = () => {
         const markAllAsSeen = async () => {
             try {
                 await NotificationsService.markAllAsSeen();
+                // Refresh notifications to update counts
+                await refreshNotifications();
             } catch (error) {
                 console.error('Failed to mark notifications as seen:', error);
             }

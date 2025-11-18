@@ -47,14 +47,6 @@ function HeaderContent(props: Props) {
             const result = await HomeService.getTopNavCounters();
             if (result.data) {
                 setTopNavCounts(result.data);
-            } else {
-                // Fallback to dummy data for testing if API fails
-                setTopNavCounts({
-                    auctionsCount: 5,
-                    messagesCount: 12,
-                    biddingCount: 3,
-                    notificationsCount: 8
-                });
             }
         };
 

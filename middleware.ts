@@ -20,9 +20,8 @@ const publicRoutes = [
     '/forgot-password'
 ];
 
-const API_BASE_URL = process.env.NODE_ENV === 'production'
-    ? 'https://api.flipit.ng'
-    : 'http://localhost:8080';
+// Use production backend for all environments
+const API_BASE_URL = 'https://api.flipit.ng';
 
 async function validateToken(token: string): Promise<boolean> {
     try {
@@ -33,9 +32,15 @@ async function validateToken(token: string): Promise<boolean> {
             },
             cache: 'no-store'
         });
-        return response.ok;
+        // Only return false on 401 (invalid token), not on 404 or 500
+        if (response.status === 401) {
+            return false;
+        }
+        // For other status codes (including 404 if endpoint doesn't exist), assume token is valid
+        return response.ok || response.status !== 401;
     } catch {
-        return false;
+        // On network errors, assume token is valid (don't log users out on network issues)
+        return true;
     }
 }
 

@@ -1,9 +1,8 @@
 import { cookies } from 'next/headers';
 import { ItemDTO, CategoryDTO, ItemsQueryParams, PaginatedResponse, AuctionDTO } from '~/types/api';
 
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://api.flipit.ng' 
-  : 'http://localhost:8080';
+// Use production backend for all environments
+const API_BASE_URL = 'https://api.flipit.ng';
 
 
 // Helper function to build query string
@@ -231,14 +230,17 @@ export async function checkAuthServerSide(): Promise<{ isAuthenticated: boolean;
       });
 
       if (!verifyResponse.ok) {
-        // Clear invalid cookies
-        return { isAuthenticated: false, user: null, clearCookies: true };
+        // Only clear cookies if it's an explicit 401 Unauthorized (invalid token)
+        // Don't clear on 404 (endpoint doesn't exist) or 500 (server error)
+        if (verifyResponse.status === 401) {
+          return { isAuthenticated: false, user: null, clearCookies: true };
+        }
+        // For other errors, fall through to use cookie data
+      } else {
+        // If successful, get actual user data from the response
+        const verifiedUserData = await verifyResponse.json();
+        return { isAuthenticated: true, user: verifiedUserData };
       }
-
-      // If successful, get actual user data from the response
-      const verifiedUserData = await verifyResponse.json();
-      
-      return { isAuthenticated: true, user: verifiedUserData };
     } catch (verifyError) {
       // On network errors, fall back to cookie data but mark as potentially stale
     }
@@ -338,7 +340,7 @@ export async function getActiveAuctionsServerSide(page = 0, size = 15): Promise<
 export async function getSingleAuctionServerSide(auctionId: string): Promise<{ data: AuctionDTO | null; error: string | null }> {
   try {
     // Use the Next.js API route instead of calling backend directly to avoid serialization issues
-    const apiUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/v1/auction/${auctionId}`;
+    const apiUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/v1/auction/${auctionId}`;
 
     // Get token from cookies for authentication
     const cookieStore = await cookies();

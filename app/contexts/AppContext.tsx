@@ -1,6 +1,7 @@
 'use client';
-import React, {createContext, ReactNode, useContext, useEffect, useState} from 'react';
+import React, {createContext, ReactNode, useContext, useEffect, useState, useCallback} from 'react';
 import {Notification, Profile} from '~/utils/interface';
+import NotificationsService from '~/services/notifications.service';
 
 interface AppContextProps {
     showPopup: boolean;
@@ -21,6 +22,7 @@ interface AppContextProps {
     modalMessage: string;
     profile: Profile | null;
     deleteConfirmCallback: (() => void) | null;
+    refreshNotifications: () => Promise<void>;
     setShowPopup: React.Dispatch<React.SetStateAction<boolean>>;
     setUser: React.Dispatch<
         React.SetStateAction<{token: string; userId: string | undefined; userName: string | undefined} | null>
@@ -49,31 +51,49 @@ export const AppProvider = ({children, initialUser}: AppProviderProps) => {
     const [profile, setProfile] = useState<Profile | null>(null);
     const [deleteConfirmCallback, setDeleteConfirmCallback] = useState<(() => void) | null>(null);
 
+    // Fetch notifications with useCallback to avoid stale closures
+    const refreshNotifications = useCallback(async () => {
+        if (!user) return;
+
+        try {
+            const result = await NotificationsService.getNotifications({ page: 0, size: 50 });
+            if (result.data) {
+                setNotifications(result.data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch notifications:', error);
+        }
+    }, [user]);
+
+    // Fetch notifications when user is available
+    useEffect(() => {
+        if (user) {
+            refreshNotifications();
+
+            // Poll for new notifications every 30 seconds
+            const interval = setInterval(refreshNotifications, 30000);
+
+            return () => clearInterval(interval);
+        }
+    }, [user, refreshNotifications]);
+
     // Client-side auth validation on mount - ONLY run once and only if token exists
     useEffect(() => {
         const validateAuth = async () => {
             if (typeof window === 'undefined') return; // Server-side skip
-            
-            // Check if we have a token in cookies first
-            const hasToken = document.cookie.includes('token=') && 
-                            document.cookie.split(';').some(cookie => {
-                              const [name, value] = cookie.trim().split('=');
-                              return name === 'token' && value && value !== '';
-                            });
-                            
-            if (!hasToken) {
-                // Don't clear user data - trust server-side validation instead
-                // HttpOnly cookies mean we can't see them in JavaScript, but they're still valid
+
+            // If we already have a user from server-side rendering, trust it
+            if (initialUser) {
                 setIsInitialized(true);
                 return;
             }
-            
+
             try {
-                const response = await fetch('/api/auth/validate', { 
+                const response = await fetch('/api/auth/validate', {
                     credentials: 'include',
-                    cache: 'no-store' 
+                    cache: 'no-store'
                 });
-                
+
                 if (response.ok) {
                     const userData = await response.json();
                     if (userData.isAuthenticated && userData.user) {
@@ -83,15 +103,9 @@ export const AppProvider = ({children, initialUser}: AppProviderProps) => {
                             userName: userData.user.firstName || userData.user.username || userData.user.email || ''
                         };
                         setUser(validatedUser);
-                    } else {
-                        setUser(null);
-                        
-                        // Don't redirect automatically on initial load
-                        // Let middleware and ProtectedRoute components handle redirects
                     }
-                } else {
-                    setUser(null);
                 }
+                // Don't clear user on validation failure - trust server-side
             } catch (error) {
                 // Keep existing user state on error (might be network issue)
             } finally {
@@ -103,7 +117,7 @@ export const AppProvider = ({children, initialUser}: AppProviderProps) => {
         if (!isInitialized) {
             validateAuth();
         }
-    }, [isInitialized]);
+    }, [isInitialized, initialUser]);
 
 
     return (
@@ -116,6 +130,7 @@ export const AppProvider = ({children, initialUser}: AppProviderProps) => {
                 modalMessage,
                 profile,
                 deleteConfirmCallback,
+                refreshNotifications,
                 setModalMessage,
                 setUser,
                 setShowPopup,
