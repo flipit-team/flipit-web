@@ -2,6 +2,7 @@
 import React, {createContext, ReactNode, useContext, useEffect, useState, useCallback} from 'react';
 import {Notification, Profile} from '~/utils/interface';
 import NotificationsService from '~/services/notifications.service';
+import {PaginatedResponse, NotificationDTO} from '~/types/api';
 
 interface AppContextProps {
     showPopup: boolean;
@@ -18,7 +19,7 @@ interface AppContextProps {
             }[]
         >
     >;
-    notifications: Notification | null;
+    notifications: PaginatedResponse<NotificationDTO> | null;
     modalMessage: string;
     profile: Profile | null;
     deleteConfirmCallback: (() => void) | null;
@@ -46,7 +47,7 @@ export const AppProvider = ({children, initialUser}: AppProviderProps) => {
     );
     const [isInitialized, setIsInitialized] = useState<boolean>(false);
     const [defaultCategories, setDefaultCategories] = useState<{name: string; description: string | null}[]>([]);
-    const [notifications, setNotifications] = useState<Notification | null>(null);
+    const [notifications, setNotifications] = useState<PaginatedResponse<NotificationDTO> | null>(null);
     const [modalMessage, setModalMessage] = useState('');
     const [profile, setProfile] = useState<Profile | null>(null);
     const [deleteConfirmCallback, setDeleteConfirmCallback] = useState<(() => void) | null>(null);

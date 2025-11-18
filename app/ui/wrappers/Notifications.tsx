@@ -31,6 +31,8 @@ const Notifications = () => {
         if (notifications?.content && notifications.content.length > 0) {
             markAllAsSeen();
         }
+        // Only run on mount
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleNotificationClick = async (notificationId: number, resourceLink: string) => {
