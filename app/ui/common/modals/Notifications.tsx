@@ -1,19 +1,11 @@
 import Link from 'next/link';
 import React from 'react';
+import {NotificationDTO} from '~/types/api';
 
 interface Props {
     setHovered: React.Dispatch<React.SetStateAction<boolean>>;
     pointer?: boolean;
-    notifications?: {
-        id: number;
-        type: string;
-        title: string;
-        message: string;
-        resourceLink: string;
-        read: boolean;
-        seen?: boolean;
-        dateCreated: Date;
-    }[];
+    notifications?: NotificationDTO[];
 }
 
 const Notifications = (props: Props) => {
