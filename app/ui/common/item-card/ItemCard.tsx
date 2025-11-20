@@ -52,7 +52,7 @@ const ItemCard: React.FC<ItemCardProps> = memo(
 
         const href = useMemo(() => {
             if (forEdit) return `/edit-item/${item.id}`;
-            if (forLiveAuction) return `/live-auction/${item.auctionId || item.id}`;
+            if (forLiveAuction) return `/manage-auction/${item.auctionId || item.id}`;
 
             // Check if this item belongs to the current user
             const isOwnItem = user?.userId && item.seller?.id?.toString() === user.userId;
