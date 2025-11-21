@@ -12,6 +12,7 @@ import CountdownTimer from '../common/countdown-timer/CountdownTimer';
 import Success from '../common/modals/Success';
 import Error from '../common/modals/Error';
 import ConfirmationModal from '../common/modals/ConfirmationModal';
+import confetti from 'canvas-confetti';
 
 // Bid interface
 interface Bid {
@@ -281,11 +282,89 @@ const ManageAuctionDetail = ({auction: propAuction, bids: propBids, isOwner = tr
         }, 1000);
     };
 
+    // Celebration function for winner
+    const celebrateWin = useCallback(() => {
+        // Check if user prefers reduced motion
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        if (!prefersReducedMotion) {
+            // Confetti animation - multiple bursts for excitement
+            const duration = 3000;
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
+
+            const randomInRange = (min: number, max: number) => {
+                return Math.random() * (max - min) + min;
+            };
+
+            const interval: any = setInterval(() => {
+                const timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                const particleCount = 50 * (timeLeft / duration);
+
+                // Fire confetti from two points
+                confetti({
+                    ...defaults,
+                    particleCount,
+                    origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+                });
+                confetti({
+                    ...defaults,
+                    particleCount,
+                    origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+                });
+            }, 250);
+        }
+
+        // Play celebration sound
+        try {
+            // Create a simple success sound using Web Audio API
+            const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+
+            // Create a series of ascending notes for a "success" sound
+            const playNote = (frequency: number, startTime: number, duration: number) => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.frequency.value = frequency;
+                oscillator.type = 'sine';
+
+                gainNode.gain.setValueAtTime(0.3, startTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+
+                oscillator.start(startTime);
+                oscillator.stop(startTime + duration);
+            };
+
+            // Play a cheerful ascending melody
+            const now = audioContext.currentTime;
+            playNote(523.25, now, 0.15); // C5
+            playNote(659.25, now + 0.15, 0.15); // E5
+            playNote(783.99, now + 0.3, 0.3); // G5
+        } catch (error) {
+            console.log('Could not play celebration sound:', error);
+        }
+    }, []);
+
     // Navigate to transaction page when auction ends (for winner)
-    const handleAuctionEnd = () => {
+    const handleAuctionEnd = useCallback(() => {
         setAuctionEnded(true);
         console.log('Auction ended! Reserve met:', reserveMet);
-    };
+
+        // If bidder view and user is winning, celebrate!
+        if (!isOwner && bids.length > 0 && bids[0].bidder.name === 'You') {
+            setTimeout(() => {
+                celebrateWin();
+            }, 500); // Small delay for better UX
+        }
+    }, [isOwner, bids, celebrateWin]);
 
     // Check if auction already ended on load
     useEffect(() => {
