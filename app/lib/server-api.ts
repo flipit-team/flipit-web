@@ -1,7 +1,6 @@
 import { cookies } from 'next/headers';
 import { ItemDTO, CategoryDTO, ItemsQueryParams, PaginatedResponse, AuctionDTO } from '~/types/api';
 
-// Use production backend for all environments
 const API_BASE_URL = 'https://api.flipit.ng';
 
 
@@ -124,7 +123,7 @@ export async function getCategoriesServerSide(): Promise<{ data: CategoryDTO[] |
 export async function getSingleItemServerSide(itemId: string): Promise<{ data: ItemDTO | null; error: string | null }> {
   try {
     // Validate itemId
-    if (!itemId || itemId === 'undefined' || itemId === 'null') {
+    if (!itemId || itemId === 'undefined' || itemId === 'null' || isNaN(Number(itemId))) {
       console.error('Invalid itemId provided:', itemId);
       return {
         data: null,
