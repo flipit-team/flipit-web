@@ -26,7 +26,9 @@ function HeaderContent(props: Props) {
     const [isClient, setIsClient] = useState(false);
     const [hovered, setHovered] = useState(false);
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+    const [showNotificationsDropdown, setShowNotificationsDropdown] = useState(false);
     const profileDropdownTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+    const notificationsDropdownTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
     const router = useRouter();
     const pathname = usePathname();
     const {notifications, profile, user: clientUser} = useAppContext();
@@ -80,11 +82,31 @@ function HeaderContent(props: Props) {
         setShowProfileDropdown(prev => !prev);
     };
 
+    // Notifications dropdown handlers - keep dropdown open while hovering
+    const handleNotificationsMouseEnter = () => {
+        // Clear any pending close timeout
+        if (notificationsDropdownTimeoutRef.current) {
+            clearTimeout(notificationsDropdownTimeoutRef.current);
+            notificationsDropdownTimeoutRef.current = null;
+        }
+        setShowNotificationsDropdown(true);
+    };
+
+    const handleNotificationsMouseLeave = () => {
+        // Set a timeout to close the dropdown
+        notificationsDropdownTimeoutRef.current = setTimeout(() => {
+            setShowNotificationsDropdown(false);
+        }, 200); // Short delay to allow mouse movement to dropdown
+    };
+
     // Cleanup timeout on unmount
     useEffect(() => {
         return () => {
             if (profileDropdownTimeoutRef.current) {
                 clearTimeout(profileDropdownTimeoutRef.current);
+            }
+            if (notificationsDropdownTimeoutRef.current) {
+                clearTimeout(notificationsDropdownTimeoutRef.current);
             }
         };
     }, []);
@@ -220,7 +242,11 @@ function HeaderContent(props: Props) {
                         </div>
                         
                         {/* Notifications Icon */}
-                        <div className='relative group mr-[27px] xs:mr-[16px]'>
+                        <div
+                            className='relative mr-[27px] xs:mr-[16px]'
+                            onMouseEnter={handleNotificationsMouseEnter}
+                            onMouseLeave={handleNotificationsMouseLeave}
+                        >
                             <Link href={'/notifications'} className='relative inline-block'>
                                 <Image
                                     src={pathname === '/notifications' ? '/bell-yellow.svg' : '/bell.svg'}
@@ -231,8 +257,12 @@ function HeaderContent(props: Props) {
                                 />
                                 {topNavCounts && <CountBadge count={topNavCounts.notificationsCount} />}
                             </Link>
-                            {!hovered && (
-                                <div className='absolute right-0 mt-2 xs:hidden bg-white shadow-md rounded px-4 py-2 text-sm z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto'>
+                            {showNotificationsDropdown && (
+                                <div
+                                    className='absolute right-0 mt-2 xs:hidden bg-white shadow-md rounded px-4 py-2 text-sm z-10'
+                                    onMouseEnter={handleNotificationsMouseEnter}
+                                    onMouseLeave={handleNotificationsMouseLeave}
+                                >
                                     <Notifications setHovered={setHovered} notifications={notifications?.content} pointer />
                                 </div>
                             )}
