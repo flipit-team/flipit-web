@@ -236,7 +236,7 @@ const Form = () => {
         return condition ? (
             <Image src={'/green-check.svg'} height={20} width={20} alt='check' className='h-[20px] w-[20px]' />
         ) : (
-            <Image src={'/grey-check.svg'} height={20} width={20} alt='check' className='h-[20px] w-[20px]' />
+            <Image src={'/red-check.svg'} height={20} width={20} alt='check' className='h-[20px] w-[20px]' />
         );
     };
 
