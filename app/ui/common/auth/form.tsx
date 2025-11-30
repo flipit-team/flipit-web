@@ -331,7 +331,7 @@ const Form = () => {
                                     name={item.name}
                                     value={phone}
                                     setValue={handleInput}
-                                    placeholder="080 123 4567"
+                                    placeholder="801 234 5678"
                                 />
                             );
                         }
