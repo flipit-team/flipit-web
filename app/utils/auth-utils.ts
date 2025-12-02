@@ -49,7 +49,7 @@ export function isProtectedPage(pathname: string): boolean {
   const protectedPages = [
     '/post-an-item',
     '/my-items',
-    '/current-bids', 
+    '/offers',
     '/saved-items',
     '/settings',
     '/notifications',

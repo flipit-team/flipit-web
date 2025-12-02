@@ -2,6 +2,7 @@ import MainHome from '~/ui/wrappers/MainHome';
 import { Item } from '~/utils/interface';
 import { getItemsServerSide, getCategoriesServerSide, checkAuthServerSide, getActiveAuctionsServerSide } from '~/lib/server-api';
 import { ItemDTO, AuctionDTO } from '~/types/api';
+import { cookies } from 'next/headers';
 
 interface SearchParams {
     q?: string;
@@ -88,7 +89,13 @@ function transformItems(items: ItemDTO[]): Item[] {
 export default async function Page({searchParams}: {searchParams?: Promise<SearchParams>}) {
     // Check authentication status and log for debugging
     const authStatus = await checkAuthServerSide();
-    if (authStatus.user) {
+
+    // If token is expired/invalid, clear cookies
+    if (authStatus.clearCookies) {
+        const cookieStore = await cookies();
+        cookieStore.delete('token');
+        cookieStore.delete('userId');
+        cookieStore.delete('userName');
     }
 
     // Get search parameters
@@ -114,13 +121,22 @@ export default async function Page({searchParams}: {searchParams?: Promise<Searc
         categoriesData.map(cat => ({ name: cat.name, description: cat.description })) : [];
     const auctionItems: Item[] = auctionsData ? auctionsData.map(transformAuctionToItem) : [];
 
+    console.log('=== HOME PAGE SERVER DATA ===');
+    console.log('Items count:', items.length);
+    console.log('Items error:', itemsError);
+    console.log('Categories count:', categories.length);
+    console.log('Auctions count:', auctionItems.length);
+    console.log('Auth status:', authStatus.isAuthenticated);
 
     if (itemsError) {
+        console.error('Items error:', itemsError);
     }
     if (categoriesError) {
+        console.error('Categories error:', categoriesError);
     }
     if (auctionsError) {
+        console.error('Auctions error:', auctionsError);
     }
 
-    return <MainHome items={items} auctionItems={auctionItems} defaultCategories={categories} authStatus={authStatus} />;
+    return <MainHome items={items} auctionItems={auctionItems} defaultCategories={categories} authStatus={authStatus} shouldLogout={authStatus.clearCookies} />;
 }

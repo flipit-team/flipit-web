@@ -54,6 +54,52 @@ export async function GET(req: NextRequest) {
             cache: 'no-store'
         });
 
+        // If we get 401 with a token, retry without authentication (items endpoint is public)
+        if (!apiRes.ok && apiRes.status === 401 && token) {
+            const retryRes = await fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                cache: 'no-store'
+            });
+
+            const retryData = await retryRes.json();
+
+            if (!retryRes.ok) {
+                return NextResponse.json(
+                    {apierror: retryData.apierror ?? {message: 'Failed to fetch items'}},
+                    {status: retryRes.status}
+                );
+            }
+
+            // If backend returns an array, transform it to paginated format
+            if (Array.isArray(retryData)) {
+                const paginatedResponse = {
+                    content: retryData,
+                    totalElements: retryData.length,
+                    totalPages: 1,
+                    size: retryData.length,
+                    number: parseInt(page),
+                    first: true,
+                    last: true,
+                    empty: retryData.length === 0,
+                    numberOfElements: retryData.length,
+                    pageable: {
+                        offset: 0,
+                        sort: { empty: !sort, sorted: !!sort, unsorted: !sort },
+                        pageNumber: parseInt(page),
+                        pageSize: parseInt(size),
+                        paged: true,
+                        unpaged: false
+                    },
+                    sort: { empty: !sort, sorted: !!sort, unsorted: !sort }
+                };
+                return NextResponse.json(paginatedResponse);
+            }
+
+            return NextResponse.json(retryData);
+        }
 
         const apiData = await apiRes.json();
 

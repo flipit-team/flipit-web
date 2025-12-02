@@ -159,13 +159,13 @@ const MainChats = (props: Props) => {
                 <div className='shadow-lg xs:shadow-transparent xs:hidden'>
                     <div className='px-6 flex items-center gap-[34px] typo-body_lm'>
                         <div
-                            className={` py-6 ${activeTab === 'seller' ? ' border-b border-primary text-primary' : 'text-text_four'}`}
+                            className={` py-6 cursor-pointer ${activeTab === 'seller' ? ' border-b border-primary text-primary' : 'text-text_four'}`}
                             onClick={() => setActiveTab('seller')}
                         >
                             Selling
                         </div>
                         <div
-                            className={` py-6 ${activeTab === 'buyer' ? ' border-b border-primary text-primary' : 'text-text_four'}`}
+                            className={` py-6 cursor-pointer ${activeTab === 'buyer' ? ' border-b border-primary text-primary' : 'text-text_four'}`}
                             onClick={() => setActiveTab('buyer')}
                         >
                             Buying
@@ -216,13 +216,13 @@ const MainChats = (props: Props) => {
                 <div className='shadow-lg xs:shadow-transparent hidden xs:block'>
                     <div className='px-6 flex items-center gap-[34px] typo-body_lm'>
                         <div
-                            className={`text-primary py-6 ${activeTab === 'seller' ? ' border-b border-primary' : ''}`}
+                            className={`text-primary py-6 cursor-pointer ${activeTab === 'seller' ? ' border-b border-primary' : ''}`}
                             onClick={() => setActiveTab('seller')}
                         >
                             Selling
                         </div>
                         <div
-                            className={`text-text_four py-6 ${activeTab === 'buyer' ? ' border-b border-primary' : ''}`}
+                            className={`text-text_four py-6 cursor-pointer ${activeTab === 'buyer' ? ' border-b border-primary' : ''}`}
                             onClick={() => setActiveTab('buyer')}
                         >
                             Buying

@@ -31,8 +31,10 @@ export async function getItemsServerSide(params: ItemsQueryParams = {}): Promise
     // Get token from cookies for authentication
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
-    
-    
+
+    console.log('getItemsServerSide - API URL:', apiUrl);
+    console.log('getItemsServerSide - Has token:', !!token);
+
     const response = await fetch(apiUrl, {
       headers: {
         'Content-Type': 'application/json',
@@ -41,17 +43,73 @@ export async function getItemsServerSide(params: ItemsQueryParams = {}): Promise
       cache: 'no-store',
     });
 
+    // If we get 401 with a token, retry without authentication (items endpoint is public)
+    if (!response.ok && response.status === 401 && token) {
+      console.log('getItemsServerSide - Got 401, retrying without token...');
+      const retryResponse = await fetch(apiUrl, {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        cache: 'no-store',
+      });
+
+      console.log('getItemsServerSide - Retry response status:', retryResponse.status);
+
+      if (!retryResponse.ok) {
+        const errorText = await retryResponse.text();
+        console.error('getItemsServerSide - Retry failed:', errorText);
+        return {
+          data: null,
+          error: `API error: ${retryResponse.status} ${retryResponse.statusText}`
+        };
+      }
+
+      const data = await retryResponse.json();
+      console.log('getItemsServerSide - Retry success, items count:', Array.isArray(data) ? data.length : data.content?.length || 0);
+
+      // The API might return items directly as an array or in a paginated wrapper
+      if (Array.isArray(data)) {
+        // Transform to paginated format for consistency
+        const paginatedData = {
+          content: data,
+          totalElements: data.length,
+          totalPages: 1,
+          size: data.length,
+          number: 0,
+          first: true,
+          last: true,
+          empty: data.length === 0,
+          numberOfElements: data.length,
+          pageable: {
+            offset: 0,
+            sort: { empty: true, sorted: false, unsorted: true },
+            pageNumber: 0,
+            pageSize: data.length,
+            paged: true,
+            unpaged: false
+          },
+          sort: { empty: true, sorted: false, unsorted: true }
+        };
+        return { data: paginatedData, error: null };
+      }
+
+      return { data, error: null };
+    }
+
+    console.log('getItemsServerSide - Response status:', response.status);
 
     if (!response.ok) {
       const errorText = await response.text();
-      return { 
-        data: null, 
-        error: `API error: ${response.status} ${response.statusText}` 
+      console.error('getItemsServerSide - Error:', errorText);
+      return {
+        data: null,
+        error: `API error: ${response.status} ${response.statusText}`
       };
     }
 
     const data = await response.json();
-    
+    console.log('getItemsServerSide - Success, items count:', Array.isArray(data) ? data.length : data.content?.length || 0);
+
     // The API might return items directly as an array or in a paginated wrapper
     if (Array.isArray(data)) {
       // Transform to paginated format for consistency
@@ -80,8 +138,8 @@ export async function getItemsServerSide(params: ItemsQueryParams = {}): Promise
 
     return { data, error: null };
   } catch (error) {
-    return { 
-      data: null, 
+    return {
+      data: null,
       error: error instanceof Error ? error.message : 'Unknown error occurred'
     };
   }
@@ -306,8 +364,8 @@ export async function getActiveAuctionsServerSide(page = 0, size = 15): Promise<
     // Get token from cookies for authentication
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
-    
-    
+
+
     const response = await fetch(apiUrl, {
       headers: {
         'Content-Type': 'application/json',
@@ -316,21 +374,41 @@ export async function getActiveAuctionsServerSide(page = 0, size = 15): Promise<
       cache: 'no-store',
     });
 
+    // If we get 401 with a token, retry without authentication (auctions endpoint is public)
+    if (!response.ok && response.status === 401 && token) {
+      const retryResponse = await fetch(apiUrl, {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        cache: 'no-store',
+      });
+
+      if (!retryResponse.ok) {
+        const errorText = await retryResponse.text();
+        return {
+          data: null,
+          error: `API error: ${retryResponse.status} ${retryResponse.statusText}`
+        };
+      }
+
+      const data = await retryResponse.json();
+      return { data: Array.isArray(data) ? data : [], error: null };
+    }
 
     if (!response.ok) {
       const errorText = await response.text();
-      return { 
-        data: null, 
-        error: `API error: ${response.status} ${response.statusText}` 
+      return {
+        data: null,
+        error: `API error: ${response.status} ${response.statusText}`
       };
     }
 
     const data = await response.json();
-    
+
     return { data: Array.isArray(data) ? data : [], error: null };
   } catch (error) {
-    return { 
-      data: null, 
+    return {
+      data: null,
       error: error instanceof Error ? error.message : 'Unknown error occurred'
     };
   }

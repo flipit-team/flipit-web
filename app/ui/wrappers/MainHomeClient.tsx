@@ -18,11 +18,28 @@ interface Props {
         isAuthenticated: boolean;
         user: any | null;
     };
+    shouldLogout?: boolean;
 }
 
-const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, defaultCategories: serverCategories, authStatus }: Props) => {
+const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, defaultCategories: serverCategories, authStatus, shouldLogout }: Props) => {
     const searchParams = useSearchParams();
     const searchQuery = searchParams.get('q') || '';
+
+    // Handle automatic logout for expired tokens
+    useEffect(() => {
+        if (shouldLogout) {
+            // Call logout API to clear cookies and redirect
+            fetch('/api/auth/logout', {
+                method: 'POST',
+                credentials: 'include'
+            }).then(() => {
+                window.location.href = '/login';
+            }).catch(() => {
+                // Even if logout fails, redirect to login
+                window.location.href = '/login';
+            });
+        }
+    }, [shouldLogout]);
 
     // Filter state managed in MainHomeClient
     const [filters, setFilters] = useState({

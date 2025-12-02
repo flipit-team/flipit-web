@@ -155,7 +155,7 @@ const MakeAnOffer = (props: Props) => {
                 showSuccess('Offer submitted successfully!');
                 setTimeout(() => {
                     onClose();
-                    router.replace('/current-bids');
+                    router.replace('/offers');
                 }, 1500);
             }
         } catch (err: any) {

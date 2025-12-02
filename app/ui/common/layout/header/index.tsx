@@ -206,10 +206,10 @@ function HeaderContent(props: Props) {
                         {topNavCounts && <CountBadge count={topNavCounts.messagesCount} />}
                     </Link>
                     <Link
-                        href={'/current-bids'}
-                        className={`relative ${pathname === '/current-bids' ? 'text-secondary' : 'text-white'}`}
+                        href={'/offers'}
+                        className={`relative ${pathname === '/offers' ? 'text-secondary' : 'text-white'}`}
                     >
-                        Current Bids
+                        Offers
                         {topNavCounts && <CountBadge count={topNavCounts.biddingCount} />}
                     </Link>
                 </div>
