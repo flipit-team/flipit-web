@@ -105,7 +105,7 @@ export function transformChatsResponse(response: import('./interface').ChatsResp
         initiatorName: dto.chat.initiatorName,
         receiverName: dto.chat.receiverName,
         dateCreated: new Date(dto.chat.dateCreated),
-        unreadCount: dto.unreadCount
+        ...(dto.unreadCount > 0 && { unreadCount: dto.unreadCount }) // Only include if > 0
     });
 
     return {

@@ -205,7 +205,7 @@ const MainChats = (props: Props) => {
                                     <button
                                         onClick={(e) => handleDeleteClick(chat, e)}
                                         disabled={deleteLoading === chat.chatId}
-                                        className='text-red-500 hover:text-red-700 text-sm p-1 rounded hover:bg-red-50 transition-colors disabled:opacity-50'
+                                        className='text-error hover:text-error/80 transition-colors disabled:opacity-50'
                                         title='Delete chat'
                                     >
                                         {deleteLoading === chat.chatId ? (

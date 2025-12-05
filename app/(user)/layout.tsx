@@ -8,6 +8,7 @@ import Footer from '~/ui/common/layout/footer';
 import Overlay from '../ui/common/modals/Overlay';
 import {checkAuthServerSide} from '~/lib/server-api';
 import ConditionalBottomNav from '../ui/common/layout/ConditionalBottomNav';
+import AuthInterceptor from '../components/AuthInterceptor';
 
 export default async function UserLayout({
     children
@@ -27,6 +28,7 @@ export default async function UserLayout({
 
     return (
         <AppProvider initialUser={user}>
+            <AuthInterceptor />
             <ToastProvider>
                 <LikesProvider>
                     <main className='flex flex-col flex-1 xs:pb-[100px]'>

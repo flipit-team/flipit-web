@@ -104,11 +104,21 @@ export const AppProvider = ({children, initialUser}: AppProviderProps) => {
                             userName: userData.user.firstName || userData.user.username || userData.user.email || ''
                         };
                         setUser(validatedUser);
+                    } else {
+                        // Clear user if validation says not authenticated
+                        setUser(null);
+                    }
+                } else if (response.status === 401) {
+                    // Token is invalid/expired - clear user and redirect to login
+                    setUser(null);
+                    if (typeof window !== 'undefined') {
+                        window.location.href = '/login';
                     }
                 }
-                // Don't clear user on validation failure - trust server-side
+                // For other errors (500, network), keep existing state
             } catch (error) {
-                // Keep existing user state on error (might be network issue)
+                // On network error, keep existing user state
+                console.error('Auth validation error:', error);
             } finally {
                 setIsInitialized(true);
             }
