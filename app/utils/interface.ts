@@ -189,11 +189,35 @@ export interface Chat {
     initiatorName: string;
     receiverName: string;
     dateCreated: Date;
+    unreadCount?: number; // Optional: for display purposes
 }
+
+// Backend response structure (new)
+export interface ChatWithUnreadCountDTO {
+    chat: {
+        chatId: string;
+        title: string;
+        initiatorId: number;
+        receiverId: number;
+        initiatorAvatar: string;
+        receiverAvatar: string;
+        initiatorName: string;
+        receiverName: string;
+        dateCreated: string; // ISO string from backend
+    };
+    unreadCount: number;
+}
+
+export interface ChatsResponse {
+    seller: ChatWithUnreadCountDTO[];
+    buyer: ChatWithUnreadCountDTO[];
+}
+
 export interface Message {
     message: string;
     sentBy: number;
     chatId: string;
+    readByReceiver?: boolean;
     dateCreated: Date;
 }
 

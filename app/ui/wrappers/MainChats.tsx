@@ -5,7 +5,7 @@ import React, {useState, useEffect, useRef} from 'react';
 import {useAppContext} from '~/contexts/AppContext';
 import {Chat} from '~/utils/interface';
 import dynamic from 'next/dynamic';
-import {formatTimeTo12Hour, formatMessageTime, sendMessage} from '~/utils/helpers';
+import {formatTimeTo12Hour, formatMessageTime, sendMessage, transformChatsResponse} from '~/utils/helpers';
 import { ChatService } from '~/services/chat.service';
 import NoData from '../common/no-data/NoData';
 import DeleteConfirmationModal from '../common/delete-confirmation-modal/DeleteConfirmationModal';
@@ -37,10 +37,13 @@ const MainChats = (props: Props) => {
             try {
                 const res = await fetch('/api/v1/chats');
                 if (res.ok) {
-                    const data = await res.json();
-                    setApiChatData(data);
+                    const backendData = await res.json();
+                    // Transform the new backend structure to our frontend structure
+                    const transformedData = transformChatsResponse(backendData);
+                    setApiChatData(transformedData);
                 }
             } catch (error) {
+                console.error('Failed to fetch chats:', error);
             } finally {
                 setIsInitialLoading(false);
             }
@@ -194,6 +197,11 @@ const MainChats = (props: Props) => {
                                 </div>
                                 <div className='flex flex-col items-end gap-2'>
                                     <p className='typo-body_sr'>{formatMessageTime(chat.dateCreated)}</p>
+                                    {chat.unreadCount && chat.unreadCount > 0 && (
+                                        <div className='bg-accent-coral text-white rounded-full h-5 w-5 flex items-center justify-center text-xs font-medium'>
+                                            {chat.unreadCount > 9 ? '9+' : chat.unreadCount}
+                                        </div>
+                                    )}
                                     <button
                                         onClick={(e) => handleDeleteClick(chat, e)}
                                         disabled={deleteLoading === chat.chatId}
@@ -242,12 +250,18 @@ const MainChats = (props: Props) => {
                                     alt={chat.initiatorName}
                                     className='h-[50px] w-[50px] mr-4 rounded-full object-cover'
                                 />
-                                <div>
+                                <div className='flex-1'>
                                     <p className='text-primary typo-body_lm capitalize'>{chat.initiatorName}</p>
                                     <p className='typo-body_mr w-[203px] line-clamp-2'>{chat.title}</p>
                                 </div>
-                                <p className='typo-body_sr xs:hidden'></p>
-                                {formatMessageTime(chat.dateCreated)}
+                                <div className='flex flex-col items-end gap-2'>
+                                    <p className='typo-body_sr'>{formatMessageTime(chat.dateCreated)}</p>
+                                    {chat.unreadCount && chat.unreadCount > 0 && (
+                                        <div className='bg-accent-coral text-white rounded-full h-5 w-5 flex items-center justify-center text-xs font-medium'>
+                                            {chat.unreadCount > 9 ? '9+' : chat.unreadCount}
+                                        </div>
+                                    )}
+                                </div>
                             </Link>
                         );
                     })}

@@ -82,15 +82,36 @@ export async function sendMessage(chatId: string, message: string) {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({chatId, content: message})
+        body: JSON.stringify({chatId, message}) // Changed from 'content' to 'message'
     });
 
     if (!res.ok) {
         const error = await res.json();
-        throw new Error(error.details || 'Failed to send message');
+        throw new Error(error.details || error.message || 'Failed to send message');
     }
 
     return res.json();
+}
+
+// Transform ChatWithUnreadCountDTO to Chat
+export function transformChatsResponse(response: import('./interface').ChatsResponse): {buyer: import('./interface').Chat[]; seller: import('./interface').Chat[]} {
+    const transformChat = (dto: import('./interface').ChatWithUnreadCountDTO): import('./interface').Chat => ({
+        chatId: dto.chat.chatId,
+        title: dto.chat.title,
+        initiatorId: dto.chat.initiatorId,
+        receiverId: dto.chat.receiverId,
+        initiatorAvatar: dto.chat.initiatorAvatar,
+        receiverAvatar: dto.chat.receiverAvatar,
+        initiatorName: dto.chat.initiatorName,
+        receiverName: dto.chat.receiverName,
+        dateCreated: new Date(dto.chat.dateCreated),
+        unreadCount: dto.unreadCount
+    });
+
+    return {
+        buyer: response.buyer.map(transformChat),
+        seller: response.seller.map(transformChat)
+    };
 }
 
 export async function createMessage(receiverId: string, title: string, itemId: string) {
