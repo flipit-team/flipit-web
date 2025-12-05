@@ -83,8 +83,8 @@ const DualItemDisplay: React.FC<Props> = ({sellerItem, buyerItem, seller, buyer,
                 {/* Buyer's Item */}
                 {buyerItem ? (
                     <div className={`${userRole === 'buyer' ? 'order-1' : 'order-2'}`}>
-                        <div className='bg-blue-50 rounded-lg p-3 mb-3'>
-                            <p className='typo-body_sr text-blue-700 font-medium'>
+                        <div className='bg-accent-navy/5 rounded-lg p-3 mb-3'>
+                            <p className='typo-body_sr text-accent-navy font-medium'>
                                 {userRole === 'buyer' ? 'Your Item' : 'Their Item'}
                             </p>
                         </div>
@@ -104,7 +104,7 @@ const DualItemDisplay: React.FC<Props> = ({sellerItem, buyerItem, seller, buyer,
                             <div className='p-4'>
                                 <h3 className='typo-body_lm text-text_one mb-2 line-clamp-2'>{buyerItem.title}</h3>
                                 {buyerItem.cashAmount && (
-                                    <p className='typo-body_mm text-blue-600 mb-2'>
+                                    <p className='typo-body_mm text-accent-navy mb-2'>
                                         {formatToNaira(buyerItem.cashAmount)}
                                     </p>
                                 )}
@@ -143,15 +143,15 @@ const DualItemDisplay: React.FC<Props> = ({sellerItem, buyerItem, seller, buyer,
                     </div>
                 ) : (
                     <div className={`${userRole === 'buyer' ? 'order-1' : 'order-2'}`}>
-                        <div className='bg-secondary/10 rounded-lg p-3 mb-3'>
-                            <p className='typo-body_sr text-secondary font-medium'>
+                        <div className='bg-accent-navy/5 rounded-lg p-3 mb-3'>
+                            <p className='typo-body_sr text-accent-navy font-medium'>
                                 {userRole === 'buyer' ? 'Your Payment' : 'Their Payment'}
                             </p>
                         </div>
 
                         <div className='border border-border_gray rounded-lg p-8 text-center'>
-                            <div className='w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center mx-auto mb-4'>
-                                <svg className='w-8 h-8 text-secondary' fill='currentColor' viewBox='0 0 20 20'>
+                            <div className='w-16 h-16 bg-accent-navy/10 rounded-full flex items-center justify-center mx-auto mb-4'>
+                                <svg className='w-8 h-8 text-accent-navy' fill='currentColor' viewBox='0 0 20 20'>
                                     <path d='M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z' />
                                     <path
                                         fillRule='evenodd'
@@ -160,7 +160,7 @@ const DualItemDisplay: React.FC<Props> = ({sellerItem, buyerItem, seller, buyer,
                                     />
                                 </svg>
                             </div>
-                            <p className='typo-heading_sm text-secondary mb-2'>{formatToNaira(cashAmount || 0)}</p>
+                            <p className='typo-heading_sm text-accent-navy mb-2'>{formatToNaira(cashAmount || 0)}</p>
                             <p className='typo-body_mr text-text_four'>Cash Only Purchase</p>
 
                             {/* Buyer Info */}

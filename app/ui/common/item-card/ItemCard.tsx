@@ -94,7 +94,7 @@ const ItemCard: React.FC<ItemCardProps> = memo(
 
         return (
             <>
-                <Link href={href} className={className}>
+                <Link href={href} className={`${className} card-hover block`}>
                     <div className='relative h-[302px] w-full xs:h-max xs:bg-gray-100'>
                         <Image
                             className={imageClassName}

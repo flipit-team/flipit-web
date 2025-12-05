@@ -9,9 +9,24 @@ const config: Config = {
     theme: {
         extend: {
             colors: {
-                // Brand colors
-                primary: '#005F73',
-                secondary: '#FFC300',
+                // Brand colors from brand guide
+                primary: '#025F73', // Main Teal (darker)
+                'primary-light': '#00918D', // Main Teal (lighter)
+                secondary: '#FFC411', // Main Yellow
+                accent: {
+                    coral: '#FF674B', // Accent Coral
+                    navy: '#092446', // Accent Navy
+                },
+                brand: {
+                    teal: {
+                        light: '#00918D',
+                        dark: '#025F73',
+                    },
+                    yellow: '#FFC411',
+                    white: '#FFFFFF',
+                    coral: '#FF674B',
+                    navy: '#092446',
+                },
                 
                 // Legacy text colors (kept for backward compatibility)
                 text_one: '#333333',
@@ -720,6 +735,30 @@ const config: Config = {
 
                 '.hover-state-500': {
                     transition: 'all 0.5s ease-out'
+                },
+
+                /*CARD HOVER EFFECTS - Modern subtle lift with shadow*/
+                '.card-hover': {
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    '&:hover': {
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 12px 24px -10px rgba(0, 95, 115, 0.15), 0 4px 8px -4px rgba(0, 95, 115, 0.08)',
+                    }
+                },
+
+                '.card-hover-subtle': {
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                    '&:hover': {
+                        transform: 'translateY(-1px)',
+                        boxShadow: '0 8px 16px -8px rgba(0, 95, 115, 0.12), 0 2px 4px -2px rgba(0, 95, 115, 0.06)',
+                    }
+                },
+
+                '.link-hover': {
+                    transition: 'color 0.2s ease, opacity 0.2s ease',
+                    '&:hover': {
+                        opacity: '0.8'
+                    }
                 },
 
                 /*GRADIENTS*/

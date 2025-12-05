@@ -43,7 +43,7 @@ export const Card: React.FC<CardProps> = ({
     ${shadowClasses[shadow]}
     ${roundedClasses[rounded]}
     bg-white
-    ${onClick ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''}
+    ${onClick ? 'cursor-pointer card-hover' : ''}
     ${className}
   `.trim();
 

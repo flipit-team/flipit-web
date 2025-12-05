@@ -17,32 +17,32 @@ interface Props {
 const InfoCard: React.FC<Props> = ({title, message, variant = 'info', icon, action}) => {
     const variantStyles = {
         info: {
-            container: 'bg-blue-50 border-blue-200',
-            icon: 'text-blue-600',
-            title: 'text-blue-800',
-            message: 'text-blue-700',
-            button: 'bg-blue-600 hover:bg-blue-700 text-white'
+            container: 'bg-accent-navy/5 border-accent-navy/20',
+            icon: 'text-accent-navy',
+            title: 'text-accent-navy',
+            message: 'text-text_one',
+            button: 'bg-accent-navy hover:bg-accent-navy/90 text-white transition-all'
         },
         success: {
-            container: 'bg-green-50 border-green-200',
-            icon: 'text-green-600',
-            title: 'text-green-800',
-            message: 'text-green-700',
-            button: 'bg-green-600 hover:bg-green-700 text-white'
+            container: 'bg-surface-primary border-primary/20',
+            icon: 'text-primary',
+            title: 'text-primary',
+            message: 'text-text_one',
+            button: 'bg-primary hover:bg-primary/90 text-white transition-all'
         },
         warning: {
-            container: 'bg-yellow-50 border-yellow-200',
-            icon: 'text-yellow-600',
-            title: 'text-yellow-800',
-            message: 'text-yellow-700',
-            button: 'bg-yellow-600 hover:bg-yellow-700 text-white'
+            container: 'bg-surface-secondary border-warning/20',
+            icon: 'text-warning',
+            title: 'text-warning',
+            message: 'text-text_one',
+            button: 'bg-secondary hover:bg-secondary/90 text-white transition-all'
         },
         error: {
-            container: 'bg-red-50 border-red-200',
-            icon: 'text-red-600',
-            title: 'text-red-800',
-            message: 'text-red-700',
-            button: 'bg-red-600 hover:bg-red-700 text-white'
+            container: 'bg-surface-error border-error/20',
+            icon: 'text-error',
+            title: 'text-error',
+            message: 'text-text_one',
+            button: 'bg-error hover:bg-error/90 text-white transition-all'
         },
         neutral: {
             container: 'bg-gray-50 border-gray-200',

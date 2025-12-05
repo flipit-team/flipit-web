@@ -297,12 +297,12 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                     <div
                         className={`px-4 py-2 rounded-lg typo-body_lm font-medium ${
                             transaction.status === 'COMPLETED'
-                                ? 'bg-green-100 text-green-700'
+                                ? 'bg-surface-primary text-primary'
                                 : ['CANCELLED', 'DISPUTED'].includes(transaction.status)
-                                  ? 'bg-red-100 text-red-700'
+                                  ? 'bg-surface-error text-error'
                                   : ['PAYMENT_PENDING', 'SHIPPING_PENDING'].includes(transaction.status)
-                                    ? 'bg-yellow-100 text-yellow-700'
-                                    : 'bg-blue-100 text-blue-700'
+                                    ? 'bg-surface-secondary text-warning'
+                                    : 'bg-accent-navy/5 text-accent-navy'
                         }`}
                     >
                         {transaction.status.replace(/_/g, ' ')}
@@ -436,8 +436,8 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                         <h3 className='typo-body_lm text-text_one mb-4 font-semibold'>Protected Transaction</h3>
                         <div className='space-y-4'>
                             <div className='flex items-start gap-3'>
-                                <div className='w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0'>
-                                    <svg className='w-4 h-4 text-green-600' fill='currentColor' viewBox='0 0 20 20'>
+                                <div className='w-8 h-8 rounded-full bg-surface-primary flex items-center justify-center flex-shrink-0'>
+                                    <svg className='w-4 h-4 text-primary' fill='currentColor' viewBox='0 0 20 20'>
                                         <path
                                             fillRule='evenodd'
                                             d='M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z'
@@ -454,8 +454,8 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                             </div>
 
                             <div className='flex items-start gap-3'>
-                                <div className='w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0'>
-                                    <svg className='w-4 h-4 text-blue-600' fill='currentColor' viewBox='0 0 20 20'>
+                                <div className='w-8 h-8 rounded-full bg-accent-navy/10 flex items-center justify-center flex-shrink-0'>
+                                    <svg className='w-4 h-4 text-accent-navy' fill='currentColor' viewBox='0 0 20 20'>
                                         <path d='M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z' />
                                         <path d='M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z' />
                                     </svg>
@@ -467,8 +467,8 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                             </div>
 
                             <div className='flex items-start gap-3'>
-                                <div className='w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0'>
-                                    <svg className='w-4 h-4 text-yellow-600' fill='currentColor' viewBox='0 0 20 20'>
+                                <div className='w-8 h-8 rounded-full bg-surface-secondary flex items-center justify-center flex-shrink-0'>
+                                    <svg className='w-4 h-4 text-warning' fill='currentColor' viewBox='0 0 20 20'>
                                         <path
                                             fillRule='evenodd'
                                             d='M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z'
@@ -489,7 +489,7 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                         <button
                             onClick={handleCancelTransaction}
                             disabled={isLoading}
-                            className='w-full h-[48px] border-2 border-red-500 text-red-500 rounded-lg typo-body_lr font-medium hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
+                            className='w-full h-[48px] border-2 border-error text-error rounded-lg typo-body_lr font-medium hover:bg-surface-error disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
                         >
                             {isLoading ? 'Cancelling...' : 'Cancel Transaction'}
                         </button>

@@ -70,10 +70,10 @@ const PaymentSection = ({transaction, userRole, onPaymentComplete}: Props) => {
                             <span
                                 className={`typo-body_mr px-3 py-1 rounded-full ${
                                     payment.status === 'COMPLETED'
-                                        ? 'bg-green-100 text-green-600'
+                                        ? 'bg-surface-primary text-primary'
                                         : payment.status === 'FAILED'
-                                          ? 'bg-red-100 text-red-600'
-                                          : 'bg-yellow-100 text-yellow-600'
+                                          ? 'bg-surface-error text-error'
+                                          : 'bg-surface-secondary text-warning'
                                 }`}
                             >
                                 {payment.status}
@@ -105,9 +105,9 @@ const PaymentSection = ({transaction, userRole, onPaymentComplete}: Props) => {
 
                     {/* Escrow Information */}
                     {payment.status === 'IN_ESCROW' && (
-                        <div className='mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg'>
+                        <div className='mt-4 p-3 bg-accent-navy/5 border border-accent-navy/20 rounded-lg'>
                             <div className='flex items-start gap-2'>
-                                <svg className='w-5 h-5 text-blue-600 mt-0.5' fill='currentColor' viewBox='0 0 20 20'>
+                                <svg className='w-5 h-5 text-accent-navy mt-0.5' fill='currentColor' viewBox='0 0 20 20'>
                                     <path
                                         fillRule='evenodd'
                                         d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z'
@@ -115,8 +115,8 @@ const PaymentSection = ({transaction, userRole, onPaymentComplete}: Props) => {
                                     />
                                 </svg>
                                 <div>
-                                    <h4 className='typo-body_lr text-blue-800 mb-1'>Payment in Escrow</h4>
-                                    <p className='typo-body_sr text-blue-700'>
+                                    <h4 className='typo-body_lr text-accent-navy mb-1'>Payment in Escrow</h4>
+                                    <p className='typo-body_sr text-text_one'>
                                         Your payment is securely held in escrow. The seller will receive it once you
                                         confirm delivery.
                                     </p>
@@ -194,9 +194,9 @@ const PaymentSection = ({transaction, userRole, onPaymentComplete}: Props) => {
                     </div>
 
                     {/* Security Badge */}
-                    <div className='bg-green-50 border border-green-200 rounded-lg p-4'>
+                    <div className='bg-surface-primary border border-primary/20 rounded-lg p-4'>
                         <div className='flex items-start gap-2'>
-                            <svg className='w-5 h-5 text-green-600 mt-0.5' fill='currentColor' viewBox='0 0 20 20'>
+                            <svg className='w-5 h-5 text-primary mt-0.5' fill='currentColor' viewBox='0 0 20 20'>
                                 <path
                                     fillRule='evenodd'
                                     d='M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z'
@@ -204,8 +204,8 @@ const PaymentSection = ({transaction, userRole, onPaymentComplete}: Props) => {
                                 />
                             </svg>
                             <div>
-                                <h4 className='typo-body_lr text-green-800 mb-1'>Secure Escrow Protection</h4>
-                                <p className='typo-body_sr text-green-700'>
+                                <h4 className='typo-body_lr text-primary mb-1'>Secure Escrow Protection</h4>
+                                <p className='typo-body_sr text-text_one'>
                                     Your payment is held securely until you confirm delivery. Seller cannot access funds
                                     until transaction is complete.
                                 </p>
@@ -244,8 +244,8 @@ const PaymentSection = ({transaction, userRole, onPaymentComplete}: Props) => {
             {/* Waiting for Payment (Seller View) */}
             {userRole === 'seller' && ['PAYMENT_PENDING', 'OFFER_ACCEPTED'].includes(transaction.status) && (
                 <div className='text-center py-8'>
-                    <div className='w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4'>
-                        <svg className='w-8 h-8 text-yellow-600' fill='currentColor' viewBox='0 0 20 20'>
+                    <div className='w-16 h-16 bg-surface-secondary rounded-full flex items-center justify-center mx-auto mb-4'>
+                        <svg className='w-8 h-8 text-warning' fill='currentColor' viewBox='0 0 20 20'>
                             <path d='M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z' />
                             <path
                                 fillRule='evenodd'
@@ -264,8 +264,8 @@ const PaymentSection = ({transaction, userRole, onPaymentComplete}: Props) => {
             {/* Payment Completed */}
             {payment && payment.status === 'COMPLETED' && (
                 <div className='text-center py-8'>
-                    <div className='w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4'>
-                        <svg className='w-8 h-8 text-green-600' fill='currentColor' viewBox='0 0 20 20'>
+                    <div className='w-16 h-16 bg-surface-primary rounded-full flex items-center justify-center mx-auto mb-4'>
+                        <svg className='w-8 h-8 text-primary' fill='currentColor' viewBox='0 0 20 20'>
                             <path
                                 fillRule='evenodd'
                                 d='M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z'
@@ -273,7 +273,7 @@ const PaymentSection = ({transaction, userRole, onPaymentComplete}: Props) => {
                             />
                         </svg>
                     </div>
-                    <h3 className='typo-body_lm text-green-600 mb-2'>Payment Completed</h3>
+                    <h3 className='typo-body_lm text-primary mb-2'>Payment Completed</h3>
                     <p className='typo-body_mr text-text_four'>
                         {userRole === 'buyer'
                             ? 'Your payment has been received and is securely held in escrow.'

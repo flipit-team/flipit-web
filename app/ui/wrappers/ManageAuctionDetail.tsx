@@ -384,16 +384,24 @@ const ManageAuctionDetail = ({auction: propAuction, bids: propBids, isOwner = tr
     // Get auction status badge
     const getStatusBadge = () => {
         if (auction.status === 'CANCELLED') {
-            return <div className='px-3 py-1 bg-red-100 text-red-600 rounded typo-body_sr'>Cancelled</div>;
+            return <div className='px-3 py-1 bg-surface-error text-error rounded typo-body_sr'>Cancelled</div>;
         }
         if (hasEnded) {
             return <div className='px-3 py-1 bg-gray-100 text-gray-600 rounded typo-body_sr'>Ended</div>;
         }
         if (!hasStarted) {
-            return <div className='px-3 py-1 bg-yellow-100 text-yellow-600 rounded typo-body_sr'>Not Started</div>;
+            return <div className='px-3 py-1 bg-surface-secondary text-warning rounded typo-body_sr'>Not Started</div>;
         }
         if (auction.status === 'ACTIVE') {
-            return <div className='px-3 py-1 bg-green-100 text-green-600 rounded typo-body_sr'>Live</div>;
+            return (
+                <div className='px-3 py-1 bg-surface-primary text-primary rounded typo-body_sr flex items-center gap-1.5'>
+                    <span className='relative flex h-2 w-2'>
+                        <span className='animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75'></span>
+                        <span className='relative inline-flex rounded-full h-2 w-2 bg-primary'></span>
+                    </span>
+                    Live
+                </div>
+            );
         }
         return null;
     };
@@ -410,11 +418,6 @@ const ManageAuctionDetail = ({auction: propAuction, bids: propBids, isOwner = tr
                                 {auction.promoted && (
                                     <div className='w-[76px] h-[26px] typo-body_sr text-white bg-primary absolute top-7 left-3 flex items-center justify-center rounded'>
                                         Promoted
-                                    </div>
-                                )}
-                                {auction.status === 'ACTIVE' && (
-                                    <div className='w-[76px] h-[26px] typo-body_sb text-white bg-green-500 absolute top-7 right-3 flex items-center justify-center rounded'>
-                                        Live
                                     </div>
                                 )}
                             </>
@@ -557,7 +560,7 @@ const ManageAuctionDetail = ({auction: propAuction, bids: propBids, isOwner = tr
                                             <td className='py-2 text-text_four'>Reserve Price</td>
                                             <td className='py-2 text-text_one'>
                                                 {formatToNaira(auction.reservePrice)}
-                                                {reserveMet && <span className='ml-2 text-green-600'>(Met)</span>}
+                                                {reserveMet && <span className='ml-2 text-primary'>(Met)</span>}
                                             </td>
                                         </tr>
                                     </tbody>
@@ -609,7 +612,7 @@ const ManageAuctionDetail = ({auction: propAuction, bids: propBids, isOwner = tr
                         </div>
                         <div className='mt-2 w-full bg-gray-200 rounded-full h-2'>
                             <div
-                                className={`h-2 rounded-full ${reserveMet ? 'bg-green-500' : 'bg-yellow-500'}`}
+                                className={`h-2 rounded-full ${reserveMet ? 'bg-primary' : 'bg-secondary'}`}
                                 style={{width: `${Math.min((currentHighestBid / auction.reservePrice) * 100, 100)}%`}}
                             />
                         </div>
@@ -639,13 +642,13 @@ const ManageAuctionDetail = ({auction: propAuction, bids: propBids, isOwner = tr
                                 <>
                                     {bids.length > 0 ? (
                                         <div className='space-y-3'>
-                                            <div className='p-4 bg-green-50 rounded-lg border border-green-200'>
-                                                <div className='typo-body_lm text-green-700 mb-2 text-center'>
+                                            <div className='p-4 bg-surface-primary rounded-lg border border-primary/20'>
+                                                <div className='typo-body_lm text-primary mb-2 text-center'>
                                                     ✓ Auction Successful!
                                                 </div>
                                                 <div className='flex justify-between items-center mb-1'>
                                                     <span className='typo-body_sr text-text_four'>Winning Bid:</span>
-                                                    <span className='typo-body_lr text-green-700'>
+                                                    <span className='typo-body_lr text-primary'>
                                                         {formatToNaira(bids[0].amount)}
                                                     </span>
                                                 </div>
@@ -654,8 +657,8 @@ const ManageAuctionDetail = ({auction: propAuction, bids: propBids, isOwner = tr
                                                     <span className='typo-body_lr text-text_one'>{bids[0].bidder.name}</span>
                                                 </div>
                                                 {!reserveMet && (
-                                                    <div className='mt-2 pt-2 border-t border-green-300'>
-                                                        <p className='typo-body_sr text-green-600 text-center'>
+                                                    <div className='mt-2 pt-2 border-t border-primary/20'>
+                                                        <p className='typo-body_sr text-primary text-center'>
                                                             Reserve not met, but highest bidder wins
                                                         </p>
                                                     </div>
@@ -668,11 +671,11 @@ const ManageAuctionDetail = ({auction: propAuction, bids: propBids, isOwner = tr
                                             />
                                         </div>
                                     ) : (
-                                        <div className='p-4 bg-yellow-50 rounded-lg border border-yellow-200'>
-                                            <div className='typo-body_lm text-yellow-700 mb-1 text-center'>
+                                        <div className='p-4 bg-surface-secondary rounded-lg border border-warning/20'>
+                                            <div className='typo-body_lm text-warning mb-1 text-center'>
                                                 Auction Ended
                                             </div>
-                                            <div className='typo-body_sr text-yellow-600 text-center'>
+                                            <div className='typo-body_sr text-warning text-center'>
                                                 No bids were placed.
                                             </div>
                                         </div>
@@ -739,9 +742,9 @@ const ManageAuctionDetail = ({auction: propAuction, bids: propBids, isOwner = tr
                                     </div>
 
                                     {/* Bidding Tips */}
-                                    <div className='mt-6 p-4 bg-yellow-50 rounded-lg'>
+                                    <div className='mt-6 p-4 bg-surface-secondary rounded-lg'>
                                         <div className='flex gap-2'>
-                                            <div className='w-5 h-5 rounded-full bg-yellow-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0'>
+                                            <div className='w-5 h-5 rounded-full bg-secondary text-white flex items-center justify-center text-xs font-bold flex-shrink-0'>
                                                 i
                                             </div>
                                             <div>
@@ -763,17 +766,17 @@ const ManageAuctionDetail = ({auction: propAuction, bids: propBids, isOwner = tr
                                             {/* Check if user won the auction */}
                                             {bids.length > 0 && bids[0].bidder.name === 'You' ? (
                                                 <div className='space-y-3'>
-                                                    <div className='p-4 bg-green-50 rounded-lg text-center border border-green-200'>
+                                                    <div className='p-4 bg-surface-primary rounded-lg text-center border border-primary/20'>
                                                         <div className='text-4xl mb-2'>🎉</div>
-                                                        <div className='typo-body_lm text-green-700 mb-1'>
+                                                        <div className='typo-body_lm text-primary mb-1'>
                                                             Congratulations! You Won!
                                                         </div>
-                                                        <div className='typo-body_sr text-green-600'>
+                                                        <div className='typo-body_sr text-primary'>
                                                             Winning bid: {formatToNaira(bids[0].amount)}
                                                         </div>
                                                         {!reserveMet && (
-                                                            <div className='mt-2 pt-2 border-t border-green-300'>
-                                                                <p className='typo-body_sr text-green-600'>
+                                                            <div className='mt-2 pt-2 border-t border-primary/20'>
+                                                                <p className='typo-body_sr text-primary'>
                                                                     Reserve not met, but you&apos;re the highest bidder
                                                                 </p>
                                                             </div>
@@ -785,7 +788,7 @@ const ManageAuctionDetail = ({auction: propAuction, bids: propBids, isOwner = tr
                                                         action={() => router.push(`/transaction/1?type=auction&auctionId=${auction.id}`)}
                                                     />
 
-                                                    <div className='p-3 bg-yellow-50 rounded-lg'>
+                                                    <div className='p-3 bg-surface-secondary rounded-lg'>
                                                         <div className='typo-body_sr text-text_four text-center'>
                                                             ⏰ You have 4 days to complete payment
                                                         </div>
@@ -867,9 +870,9 @@ const ManageAuctionDetail = ({auction: propAuction, bids: propBids, isOwner = tr
                     </div>
 
                     {/* Safety Tips */}
-                    <div className='mt-6 p-4 bg-blue-50 rounded-lg'>
+                    <div className='mt-6 p-4 bg-surface-primary rounded-lg'>
                         <div className='flex gap-2'>
-                            <div className='w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0'>
+                            <div className='w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold flex-shrink-0'>
                                 ✓
                             </div>
                             <div>

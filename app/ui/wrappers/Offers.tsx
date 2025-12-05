@@ -976,27 +976,36 @@ const Offers = (props: Props) => {
     const [maxBidAmount, setMaxBidAmount] = useState('');
     const [showNotificationSettings, setShowNotificationSettings] = useState(false);
 
-    // Get status styling
+    // Get status styling - Using brand colors (Teal, Yellow, Coral, Navy)
     const getStatusStyle = (status: string) => {
         const styles: Record<string, string> = {
-            PENDING: 'bg-yellow-100 text-yellow-700 border-yellow-300',
-            ACCEPTED: 'bg-blue-100 text-blue-700 border-blue-300',
-            REJECTED: 'bg-red-100 text-red-700 border-red-300',
-            WINNING: 'bg-green-100 text-green-700 border-green-300',
-            OUTBID: 'bg-orange-100 text-orange-700 border-orange-300',
-            WON: 'bg-green-100 text-green-700 border-green-300',
-            LOST: 'bg-gray-100 text-gray-700 border-gray-300',
-            PAID: 'bg-purple-100 text-purple-700 border-purple-300',
-            IN_PROGRESS: 'bg-cyan-100 text-cyan-700 border-cyan-300',
-            DELIVERED: 'bg-teal-100 text-teal-700 border-teal-300',
-            COMPLETED: 'bg-emerald-100 text-emerald-700 border-emerald-300',
-            CANCELLED: 'bg-gray-100 text-gray-700 border-gray-300',
-            EXPIRED: 'bg-gray-100 text-gray-700 border-gray-300',
-            COUNTER_OFFER: 'bg-amber-100 text-amber-700 border-amber-300',
-            HIGHEST: 'bg-green-100 text-green-700 border-green-300',
-            ACTIVE: 'bg-blue-100 text-blue-700 border-blue-300'
+            // Success states - Teal (primary)
+            WINNING: 'bg-surface-primary text-primary border-primary/20',
+            WON: 'bg-surface-primary text-primary border-primary/20',
+            COMPLETED: 'bg-surface-primary text-primary border-primary/20',
+            DELIVERED: 'bg-surface-primary text-primary border-primary/20',
+            HIGHEST: 'bg-surface-primary text-primary border-primary/20',
+
+            // Pending/Active states - Yellow (secondary)
+            PENDING: 'bg-surface-secondary text-warning border-warning/20',
+            ACTIVE: 'bg-surface-secondary text-warning border-warning/20',
+            IN_PROGRESS: 'bg-surface-secondary text-warning border-warning/20',
+
+            // Accepted/Paid - Navy (accent)
+            ACCEPTED: 'bg-accent-navy/5 text-accent-navy border-accent-navy/20',
+            PAID: 'bg-accent-navy/5 text-accent-navy border-accent-navy/20',
+
+            // Warning states - Coral (accent)
+            OUTBID: 'bg-surface-warning text-warning border-warning/20',
+            COUNTER_OFFER: 'bg-surface-warning text-warning border-warning/20',
+
+            // Negative states - Error (using existing error color)
+            REJECTED: 'bg-surface-error text-error border-error/20',
+            LOST: 'bg-gray-100 text-text_four border-border_gray',
+            CANCELLED: 'bg-gray-100 text-text_four border-border_gray',
+            EXPIRED: 'bg-gray-100 text-text_four border-border_gray'
         };
-        return styles[status] || 'bg-gray-100 text-gray-700 border-gray-300';
+        return styles[status] || 'bg-gray-100 text-text_four border-border_gray';
     };
 
     // Filter and sort bids
@@ -1143,10 +1152,10 @@ const Offers = (props: Props) => {
                 <>
                     {/* Action Required Section */}
                     {actionRequiredItems.length > 0 && (
-                        <div className='bg-red-50 border-2 border-red-200 rounded-lg p-4 mb-6 xs:mx-4'>
+                        <div className='bg-accent-coral/5 border-2 border-accent-coral/20 rounded-lg p-4 mb-6 xs:mx-4'>
                             <div className='flex items-center gap-2 mb-3'>
                                 <span className='text-2xl'>⚠️</span>
-                                <h2 className='typo-body_lm text-red-700'>Action Required ({actionRequiredItems.length})</h2>
+                                <h2 className='typo-body_lm text-accent-coral'>Action Required ({actionRequiredItems.length})</h2>
                             </div>
                             <div className='space-y-2'>
                                 {actionRequiredItems.map(item => (
@@ -1221,8 +1230,8 @@ const Offers = (props: Props) => {
                         <div className='w-full bg-gray-200 rounded-full h-3'>
                             <div
                                 className={`h-3 rounded-full transition-all ${
-                                    (myBidsStats.totalSpent / budget) * 100 > 90 ? 'bg-red-500' :
-                                    (myBidsStats.totalSpent / budget) * 100 > 70 ? 'bg-orange-500' : 'bg-green-500'
+                                    (myBidsStats.totalSpent / budget) * 100 > 90 ? 'bg-error' :
+                                    (myBidsStats.totalSpent / budget) * 100 > 70 ? 'bg-warning' : 'bg-primary'
                                 }`}
                                 style={{width: `${Math.min((myBidsStats.totalSpent / budget) * 100, 100)}%`}}
                             />
@@ -1294,12 +1303,12 @@ const Offers = (props: Props) => {
                                 return (
                                     <div
                                         key={bid.id}
-                                        className={`border rounded-lg p-4 hover:border-primary/50 transition-all ${
-                                            bid.actionRequired ? 'border-red-300 bg-red-50' : 'border-border_gray'
+                                        className={`border rounded-lg p-4 card-hover cursor-pointer ${
+                                            bid.actionRequired ? 'border-accent-coral/30 bg-accent-coral/5' : 'border-border_gray'
                                         }`}
                                     >
                                         {bid.actionRequired && (
-                                            <div className='flex items-center gap-2 mb-3 text-red-600 typo-body_sm'>
+                                            <div className='flex items-center gap-2 mb-3 text-accent-coral typo-body_sm'>
                                                 <span className='text-lg'>⚠️</span>
                                                 <span>Action Required</span>
                                             </div>
@@ -1325,7 +1334,7 @@ const Offers = (props: Props) => {
                                                                 {bid.status}
                                                             </span>
                                                             {isAuction && (
-                                                                <span className='px-3 py-1 bg-purple-100 text-purple-700 rounded typo-body_sr'>
+                                                                <span className='px-3 py-1 bg-accent-navy/10 text-accent-navy rounded typo-body_sr'>
                                                                     Auction
                                                                 </span>
                                                             )}
@@ -1346,7 +1355,7 @@ const Offers = (props: Props) => {
                                                         <div className='typo-body_sr text-text_four'>Your Bid</div>
                                                         <div className='typo-heading_ss text-primary'>{formatToNaira(bid.cashAmount)}</div>
                                                         {hasMaxBid && (
-                                                            <div className='typo-body_sr text-green-600 mt-1'>
+                                                            <div className='typo-body_sr text-primary mt-1'>
                                                                 Max: {formatToNaira(bid.maxBid!)}
                                                             </div>
                                                         )}
@@ -1356,7 +1365,7 @@ const Offers = (props: Props) => {
                                                             </div>
                                                         )}
                                                         {bid.bidPosition && bid.bidPosition > 1 && bid.auctionDetails && (
-                                                            <div className='typo-body_sr text-orange-600 mt-1'>
+                                                            <div className='typo-body_sr text-warning mt-1'>
                                                                 To win: +{formatToNaira(bid.auctionDetails.currentBid - bid.cashAmount + bid.auctionDetails.bidIncrement!)}
                                                             </div>
                                                         )}
@@ -1380,7 +1389,7 @@ const Offers = (props: Props) => {
                                                 </div>
 
                                                 {isAuction && bid.auctionDetails?.endDate && new Date(bid.auctionDetails.endDate) > new Date() && (
-                                                    <div className='bg-yellow-50 p-3 rounded-lg mb-3'>
+                                                    <div className='bg-surface-secondary p-3 rounded-lg mb-3'>
                                                         <div className='typo-body_sr text-text_four mb-1'>Time Remaining</div>
                                                         <CountdownTimer endTime={new Date(bid.auctionDetails.endDate)} />
                                                     </div>
@@ -1406,7 +1415,7 @@ const Offers = (props: Props) => {
                                                                 setMaxBidAmount('');
                                                                 setShowMaxBidModal(true);
                                                             }}
-                                                            className='px-4 py-2 bg-green-600 text-white rounded-lg typo-body_sr hover:bg-green-700'
+                                                            className='px-4 py-2 bg-primary text-white rounded-lg typo-body_sr hover:bg-primary/90 transition-all'
                                                         >
                                                             {hasMaxBid ? 'Update Max Bid' : 'Set Max Bid'}
                                                         </button>
@@ -1414,7 +1423,7 @@ const Offers = (props: Props) => {
 
                                                     {bid.status === 'WON' && (
                                                         <Link href={`/transaction/${bid.id}?type=auction`}>
-                                                            <button className='px-4 py-2 bg-green-600 text-white rounded-lg typo-body_sr hover:bg-green-700 w-full'>
+                                                            <button className='px-4 py-2 bg-primary text-white rounded-lg typo-body_sr hover:bg-primary/90 transition-all w-full'>
                                                                 Pay Now
                                                             </button>
                                                         </Link>
@@ -1422,14 +1431,14 @@ const Offers = (props: Props) => {
 
                                                     {bid.status === 'ACCEPTED' && (
                                                         <Link href={`/transaction/${bid.id}`}>
-                                                            <button className='px-4 py-2 bg-blue-600 text-white rounded-lg typo-body_sr hover:bg-blue-700 w-full'>
+                                                            <button className='px-4 py-2 bg-accent-navy text-white rounded-lg typo-body_sr hover:bg-accent-navy/90 transition-all w-full'>
                                                                 Proceed to Payment
                                                             </button>
                                                         </Link>
                                                     )}
 
                                                     {bid.status === 'OUTBID' && (
-                                                        <button className='px-4 py-2 bg-orange-600 text-white rounded-lg typo-body_sr hover:bg-orange-700'>
+                                                        <button className='px-4 py-2 bg-accent-coral text-white rounded-lg typo-body_sr hover:bg-accent-coral/90 transition-all'>
                                                             Increase Bid
                                                         </button>
                                                     )}
@@ -1453,7 +1462,7 @@ const Offers = (props: Props) => {
                                     <div
                                         key={bid.id}
                                         onClick={() => setSelectedBidId(bid.id)}
-                                        className='flex items-center border border-border_gray rounded-lg p-3 hover:border-primary/30 transition-colors cursor-pointer'
+                                        className='flex items-center border border-border_gray rounded-lg p-3 card-hover-subtle cursor-pointer'
                                     >
                                         <Image
                                             src={imageUrl}
@@ -1471,7 +1480,7 @@ const Offers = (props: Props) => {
                                             </div>
                                             <p className='typo-body_mr text-text_one'>
                                                 Your bid: {formatToNaira(bid.cashAmount)}
-                                                {bid.maxBid && <span className='text-green-600'> (Max: {formatToNaira(bid.maxBid)})</span>}
+                                                {bid.maxBid && <span className='text-primary'> (Max: {formatToNaira(bid.maxBid)})</span>}
                                             </p>
                                         </div>
                                     </div>
@@ -1494,7 +1503,7 @@ const Offers = (props: Props) => {
                                         </thead>
                                         <tbody>
                                             {filteredAndSortedBids.map((bid) => (
-                                                <tr key={bid.id} className='border-b border-border_gray hover:bg-gray-50'>
+                                                <tr key={bid.id} className='border-b border-border_gray hover:bg-surface-primary transition-colors cursor-pointer'>
                                                     <td className='px-4 py-3'>
                                                         <div className='flex items-center gap-3'>
                                                             <Image
@@ -1510,7 +1519,7 @@ const Offers = (props: Props) => {
                                                     <td className='px-4 py-3 typo-body_mr text-primary'>
                                                         {formatToNaira(bid.cashAmount)}
                                                     </td>
-                                                    <td className='px-4 py-3 typo-body_mr text-green-600'>
+                                                    <td className='px-4 py-3 typo-body_mr text-primary'>
                                                         {bid.maxBid ? formatToNaira(bid.maxBid) : '-'}
                                                     </td>
                                                     <td className='px-4 py-3'>
@@ -1571,7 +1580,7 @@ const Offers = (props: Props) => {
                             {receivedBids.map((bid) => (
                                 <div
                                     key={bid.id}
-                                    className='border border-border_gray rounded-lg p-4 hover:border-primary/50 transition-all'
+                                    className='border border-border_gray rounded-lg p-4 card-hover cursor-pointer'
                                 >
                                     <div className='flex gap-4 xs:flex-col'>
                                         <Image
@@ -1587,17 +1596,19 @@ const Offers = (props: Props) => {
                                                 <div className='flex-1'>
                                                     <h3 className='typo-body_lm text-text_one mb-1'>{bid.item.title}</h3>
                                                     <div className='flex items-center gap-2 mb-3'>
-                                                        <span className={`px-3 py-1 rounded typo-body_sr border ${getStatusStyle(bid.status)}`}>
+                                                        <span className={`px-3 py-1 rounded typo-body_sr border ${
+                                                            bid.isHighest ? 'bg-surface-primary text-primary border-primary/20' : getStatusStyle(bid.status)
+                                                        }`}>
                                                             {bid.isHighest ? 'Highest Bid' : bid.status}
                                                         </span>
                                                         {bid.item.isAuction && (
-                                                            <span className='px-3 py-1 bg-purple-100 text-purple-700 rounded typo-body_sr'>
+                                                            <span className='px-3 py-1 bg-accent-navy/10 text-accent-navy rounded typo-body_sr'>
                                                                 Auction
                                                             </span>
                                                         )}
                                                         {bid.item.reservePrice && (
                                                             <span className={`px-2 py-1 rounded typo-body_sr ${
-                                                                bid.item.reserveMet ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                                                                bid.item.reserveMet ? 'bg-surface-primary text-primary' : 'bg-surface-secondary text-warning'
                                                             }`}>
                                                                 {bid.item.reserveMet ? '✓ Reserve Met' : 'Reserve Not Met'}
                                                             </span>
@@ -1634,7 +1645,7 @@ const Offers = (props: Props) => {
                                             </div>
 
                                             {bid.item.endDate && new Date(bid.item.endDate) > new Date() && (
-                                                <div className='bg-yellow-50 p-3 rounded-lg mb-3'>
+                                                <div className='bg-surface-secondary p-3 rounded-lg mb-3'>
                                                     <div className='typo-body_sr text-text_four mb-1'>Time Remaining</div>
                                                     <CountdownTimer endTime={new Date(bid.item.endDate)} />
                                                 </div>
@@ -1651,7 +1662,7 @@ const Offers = (props: Props) => {
                                                         Manage Item
                                                     </button>
                                                 </Link>
-                                                <button className='px-4 py-2 bg-green-600 text-white rounded-lg typo-body_sr hover:bg-green-700'>
+                                                <button className='px-4 py-2 bg-primary text-white rounded-lg typo-body_sr hover:bg-primary/90 transition-all'>
                                                     Accept Bid
                                                 </button>
                                                 <button className='px-4 py-2 border border-border_gray text-text_one rounded-lg typo-body_sr hover:bg-gray-50'>
@@ -1728,8 +1739,8 @@ const Offers = (props: Props) => {
                             placeholder='Enter your maximum bid'
                             className='w-full h-[51px] px-4 border border-border_gray rounded-lg typo-body_mr mb-4'
                         />
-                        <div className='bg-blue-50 p-3 rounded-lg mb-4'>
-                            <p className='typo-body_sr text-blue-700'>
+                        <div className='bg-surface-primary p-3 rounded-lg mb-4'>
+                            <p className='typo-body_sr text-primary'>
                                 💡 Tip: Set your true maximum. Our system will bid incrementally to keep you competitive.
                             </p>
                         </div>

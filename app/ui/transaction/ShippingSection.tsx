@@ -256,8 +256,8 @@ const ShippingSection = ({transaction, userRole, onShippingUpdate}: Props) => {
             {/* Arrange Shipping */}
             {needsToShip && !showShippingForm && (
                 <div className='shadow-lg rounded-lg bg-white p-6 xs:px-4 text-center'>
-                    <div className='w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4'>
-                        <svg className='w-8 h-8 text-blue-600' fill='currentColor' viewBox='0 0 20 20'>
+                    <div className='w-16 h-16 bg-accent-navy/10 rounded-full flex items-center justify-center mx-auto mb-4'>
+                        <svg className='w-8 h-8 text-accent-navy' fill='currentColor' viewBox='0 0 20 20'>
                             <path d='M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z' />
                             <path d='M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z' />
                         </svg>

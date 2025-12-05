@@ -12,33 +12,33 @@ const TransactionStatusTimeline = ({transaction}: Props) => {
         status: TransactionStatus
     ): {icon: string; color: string; bgColor: string; label: string} => {
         const configs = {
-            OFFER_ACCEPTED: {icon: '✓', color: 'text-green-600', bgColor: 'bg-green-100', label: 'Offer Accepted'},
+            OFFER_ACCEPTED: {icon: '✓', color: 'text-primary', bgColor: 'bg-surface-primary', label: 'Offer Accepted'},
             PAYMENT_PENDING: {
                 icon: '⏳',
-                color: 'text-yellow-600',
-                bgColor: 'bg-yellow-100',
+                color: 'text-warning',
+                bgColor: 'bg-surface-secondary',
                 label: 'Payment Pending'
             },
             PAYMENT_RECEIVED: {
                 icon: '💰',
-                color: 'text-green-600',
-                bgColor: 'bg-green-100',
+                color: 'text-primary',
+                bgColor: 'bg-surface-primary',
                 label: 'Payment Received'
             },
             SHIPPING_PENDING: {
                 icon: '📦',
-                color: 'text-yellow-600',
-                bgColor: 'bg-yellow-100',
+                color: 'text-warning',
+                bgColor: 'bg-surface-secondary',
                 label: 'Shipping Pending'
             },
-            SELLER_SHIPPED: {icon: '🚚', color: 'text-blue-600', bgColor: 'bg-blue-100', label: 'Seller Shipped'},
-            BUYER_SHIPPED: {icon: '🚚', color: 'text-blue-600', bgColor: 'bg-blue-100', label: 'Buyer Shipped'},
-            IN_TRANSIT: {icon: '🚛', color: 'text-blue-600', bgColor: 'bg-blue-100', label: 'In Transit'},
-            DELIVERED: {icon: '✓', color: 'text-green-600', bgColor: 'bg-green-100', label: 'Delivered'},
-            REVIEW_PENDING: {icon: '⭐', color: 'text-yellow-600', bgColor: 'bg-yellow-100', label: 'Review Pending'},
-            COMPLETED: {icon: '✅', color: 'text-green-600', bgColor: 'bg-green-100', label: 'Completed'},
-            CANCELLED: {icon: '❌', color: 'text-red-600', bgColor: 'bg-red-100', label: 'Cancelled'},
-            DISPUTED: {icon: '⚠️', color: 'text-red-600', bgColor: 'bg-red-100', label: 'Disputed'}
+            SELLER_SHIPPED: {icon: '🚚', color: 'text-accent-navy', bgColor: 'bg-accent-navy/5', label: 'Seller Shipped'},
+            BUYER_SHIPPED: {icon: '🚚', color: 'text-accent-navy', bgColor: 'bg-accent-navy/5', label: 'Buyer Shipped'},
+            IN_TRANSIT: {icon: '🚛', color: 'text-accent-navy', bgColor: 'bg-accent-navy/5', label: 'In Transit'},
+            DELIVERED: {icon: '✓', color: 'text-primary', bgColor: 'bg-surface-primary', label: 'Delivered'},
+            REVIEW_PENDING: {icon: '⭐', color: 'text-warning', bgColor: 'bg-surface-secondary', label: 'Review Pending'},
+            COMPLETED: {icon: '✅', color: 'text-primary', bgColor: 'bg-surface-primary', label: 'Completed'},
+            CANCELLED: {icon: '❌', color: 'text-error', bgColor: 'bg-surface-error', label: 'Cancelled'},
+            DISPUTED: {icon: '⚠️', color: 'text-error', bgColor: 'bg-surface-error', label: 'Disputed'}
         };
 
         return configs[status] || {icon: '•', color: 'text-gray-600', bgColor: 'bg-gray-100', label: status};
@@ -101,7 +101,7 @@ const TransactionStatusTimeline = ({transaction}: Props) => {
                                         isCompleted || isCurrent
                                             ? 'bg-primary'
                                             : isCancelled
-                                              ? 'bg-red-300'
+                                              ? 'bg-error/30'
                                               : 'bg-gray-200'
                                     }`}
                                 />
@@ -114,7 +114,7 @@ const TransactionStatusTimeline = ({transaction}: Props) => {
                                         isCompleted || isCurrent
                                             ? 'bg-primary text-white'
                                             : isCancelled
-                                              ? 'bg-red-100 text-red-600'
+                                              ? 'bg-surface-error text-error'
                                               : 'bg-gray-100 text-gray-400'
                                     }`}
                                 >
@@ -130,7 +130,7 @@ const TransactionStatusTimeline = ({transaction}: Props) => {
                                             isCompleted || isCurrent
                                                 ? 'text-text_one'
                                                 : isCancelled
-                                                  ? 'text-red-600'
+                                                  ? 'text-error'
                                                   : 'text-text_four'
                                         }`}
                                     >
@@ -194,11 +194,11 @@ const TransactionStatusTimeline = ({transaction}: Props) => {
             {/* Cancellation/Dispute Reason */}
             {(transaction.cancellationReason || transaction.disputeReason) && (
                 <div className='mt-6 pt-6 border-t border-border_gray'>
-                    <div className='bg-red-50 border border-red-200 rounded-lg p-4'>
-                        <h3 className='typo-body_lm text-red-800 mb-2'>
+                    <div className='bg-surface-error border border-error/20 rounded-lg p-4'>
+                        <h3 className='typo-body_lm text-error mb-2'>
                             {transaction.cancellationReason ? 'Cancellation Reason' : 'Dispute Reason'}
                         </h3>
-                        <p className='typo-body_mr text-red-700'>
+                        <p className='typo-body_mr text-error'>
                             {transaction.cancellationReason || transaction.disputeReason}
                         </p>
                     </div>

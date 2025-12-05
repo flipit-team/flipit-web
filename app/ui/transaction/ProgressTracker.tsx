@@ -57,7 +57,7 @@ const ProgressTracker: React.FC<Props> = ({steps, currentStep, status = 'active'
                                             : isCurrent
                                               ? 'bg-white border-4 border-primary shadow-lg scale-110'
                                               : isCancelled
-                                                ? 'bg-red-100 border-2 border-red-300'
+                                                ? 'bg-surface-error border-2 border-error/30'
                                                 : 'bg-white border-2 border-gray-300'
                                     }`}
                                 >
@@ -83,7 +83,7 @@ const ProgressTracker: React.FC<Props> = ({steps, currentStep, status = 'active'
                                             isCompleted || isCurrent
                                                 ? 'text-text_one'
                                                 : isCancelled
-                                                  ? 'text-red-600'
+                                                  ? 'text-error'
                                                   : 'text-text_four'
                                         }`}
                                     >
@@ -117,7 +117,7 @@ const ProgressTracker: React.FC<Props> = ({steps, currentStep, status = 'active'
                                         : isCurrent
                                           ? 'bg-white border-3 border-primary'
                                           : isCancelled
-                                            ? 'bg-red-100 border-2 border-red-300'
+                                            ? 'bg-surface-error border-2 border-error/30'
                                             : 'bg-gray-100 border-2 border-gray-300'
                                 }`}
                             >
@@ -143,7 +143,7 @@ const ProgressTracker: React.FC<Props> = ({steps, currentStep, status = 'active'
                                         isCompleted || isCurrent
                                             ? 'text-text_one'
                                             : isCancelled
-                                              ? 'text-red-600'
+                                              ? 'text-error'
                                               : 'text-text_four'
                                     }`}
                                 >

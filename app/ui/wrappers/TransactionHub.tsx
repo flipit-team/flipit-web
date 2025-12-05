@@ -104,11 +104,11 @@ const TransactionHub = ({transaction: initialTransaction}: Props) => {
 
     const getStatusColor = () => {
         const status = transaction.status;
-        if (['COMPLETED'].includes(status)) return 'text-green-600 bg-green-50';
-        if (['CANCELLED', 'DISPUTED'].includes(status)) return 'text-red-600 bg-red-50';
+        if (['COMPLETED'].includes(status)) return 'text-primary bg-surface-primary';
+        if (['CANCELLED', 'DISPUTED'].includes(status)) return 'text-error bg-surface-error';
         if (['PAYMENT_PENDING', 'SHIPPING_PENDING', 'REVIEW_PENDING'].includes(status))
-            return 'text-yellow-600 bg-yellow-50';
-        return 'text-blue-600 bg-blue-50';
+            return 'text-warning bg-surface-secondary';
+        return 'text-accent-navy bg-accent-navy/5';
     };
 
     return (
@@ -315,7 +315,7 @@ const TransactionHub = ({transaction: initialTransaction}: Props) => {
                         <button
                             onClick={handleCancelTransaction}
                             disabled={isLoading}
-                            className='w-full h-[48px] border border-red-500 text-red-500 rounded-lg typo-body_lr hover:bg-red-50 disabled:opacity-50'
+                            className='w-full h-[48px] border-2 border-error text-error rounded-lg typo-body_lr hover:bg-surface-error disabled:opacity-50 transition-colors'
                         >
                             {isLoading ? 'Cancelling...' : 'Cancel Transaction'}
                         </button>
