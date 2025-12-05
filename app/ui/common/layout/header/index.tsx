@@ -193,21 +193,33 @@ function HeaderContent(props: Props) {
                 <div className='flex xs:hidden gap-[42px] typo-body_ls ml-[70px]'>
                     <Link
                         href={'/live-auction'}
-                        className={`relative ${pathname === '/live-auction' ? 'text-secondary' : 'text-white'}`}
+                        className={`relative transition-colors duration-200 ${
+                            pathname === '/live-auction'
+                                ? 'text-secondary'
+                                : 'text-white hover:text-white/80'
+                        }`}
                     >
                         Live Auction
                         {topNavCounts && <CountBadge count={topNavCounts.auctionsCount} />}
                     </Link>
                     <Link
                         href={'/messages'}
-                        className={`relative ${pathname.startsWith('/messages') ? 'text-secondary' : 'text-white'}`}
+                        className={`relative transition-colors duration-200 ${
+                            pathname.startsWith('/messages')
+                                ? 'text-secondary'
+                                : 'text-white hover:text-white/80'
+                        }`}
                     >
                         Messages
                         {topNavCounts && <CountBadge count={topNavCounts.messagesCount} />}
                     </Link>
                     <Link
                         href={'/offers'}
-                        className={`relative ${pathname === '/offers' ? 'text-secondary' : 'text-white'}`}
+                        className={`relative transition-colors duration-200 ${
+                            pathname === '/offers'
+                                ? 'text-secondary'
+                                : 'text-white hover:text-white/80'
+                        }`}
                     >
                         Offers
                         {topNavCounts && <CountBadge count={topNavCounts.biddingCount} />}

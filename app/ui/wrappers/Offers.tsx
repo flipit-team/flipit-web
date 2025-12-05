@@ -1181,7 +1181,11 @@ const Offers = (props: Props) => {
                                         </div>
                                         <button
                                             onClick={() => setSelectedBidId(item.id)}
-                                            className='px-4 py-2 bg-primary text-white rounded-lg typo-body_sr hover:bg-primary/90'
+                                            className={`px-4 py-2 text-white rounded-lg typo-body_sr transition-all ${
+                                                item.status === 'WON' || item.status === 'ACCEPTED'
+                                                    ? 'bg-primary-light hover:bg-primary-light/90'
+                                                    : 'bg-primary hover:bg-primary/90'
+                                            }`}
                                         >
                                             {item.status === 'WON' || item.status === 'ACCEPTED' ? 'Pay Now' : 'Take Action'}
                                         </button>
@@ -1423,7 +1427,7 @@ const Offers = (props: Props) => {
 
                                                     {bid.status === 'WON' && (
                                                         <Link href={`/transaction/${bid.id}?type=auction`}>
-                                                            <button className='px-4 py-2 bg-primary text-white rounded-lg typo-body_sr hover:bg-primary/90 transition-all w-full'>
+                                                            <button className='px-4 py-2 bg-primary-light text-white rounded-lg typo-body_sr hover:bg-primary-light/90 transition-all w-full'>
                                                                 Pay Now
                                                             </button>
                                                         </Link>
@@ -1431,7 +1435,7 @@ const Offers = (props: Props) => {
 
                                                     {bid.status === 'ACCEPTED' && (
                                                         <Link href={`/transaction/${bid.id}`}>
-                                                            <button className='px-4 py-2 bg-accent-navy text-white rounded-lg typo-body_sr hover:bg-accent-navy/90 transition-all w-full'>
+                                                            <button className='px-4 py-2 bg-primary-light text-white rounded-lg typo-body_sr hover:bg-primary-light/90 transition-all w-full'>
                                                                 Proceed to Payment
                                                             </button>
                                                         </Link>
@@ -1966,12 +1970,12 @@ const Offers = (props: Props) => {
                             </Link>
                             {selectedBid.status === 'WON' && (
                                 <Link href={`/transaction/${selectedBid.id}?type=auction`} className='flex-1'>
-                                    <RegularButton text='Pay Now' />
+                                    <RegularButton text='Pay Now' useLightTeal />
                                 </Link>
                             )}
                             {selectedBid.status === 'ACCEPTED' && (
                                 <Link href={`/transaction/${selectedBid.id}`} className='flex-1'>
-                                    <RegularButton text='Proceed to Payment' />
+                                    <RegularButton text='Proceed to Payment' useLightTeal />
                                 </Link>
                             )}
                         </div>
