@@ -349,6 +349,7 @@ export interface TopNavDTO {
   messagesCount: number;       // Unread messages count
   biddingCount: number;        // Active bids count
   notificationsCount: number;  // Unread notifications count
+  topNotifications: NotificationDTO[];  // Top 5 recent notifications
 }
 
 // Chat Types

@@ -1,12 +1,14 @@
 'use client';
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import HomeService from '~/services/home.service';
+import { NotificationDTO } from '~/types/api';
 
 interface UnreadCounts {
   messagesCount: number;
   notificationsCount: number;
   auctionsCount: number;
   biddingCount: number;
+  topNotifications: NotificationDTO[];
 }
 
 interface UnreadCountContextType {
@@ -25,6 +27,7 @@ export const UnreadCountProvider: React.FC<{ children: React.ReactNode }> = ({ c
     notificationsCount: 0,
     auctionsCount: 0,
     biddingCount: 0,
+    topNotifications: [],
   });
 
   const refreshCounts = useCallback(async () => {
@@ -36,6 +39,7 @@ export const UnreadCountProvider: React.FC<{ children: React.ReactNode }> = ({ c
           notificationsCount: result.data.notificationsCount || 0,
           auctionsCount: result.data.auctionsCount || 0,
           biddingCount: result.data.biddingCount || 0,
+          topNotifications: result.data.topNotifications || [],
         });
       }
     } catch (error) {

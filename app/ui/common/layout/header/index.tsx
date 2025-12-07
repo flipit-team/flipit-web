@@ -257,7 +257,7 @@ function HeaderContent(props: Props) {
                                     onMouseEnter={handleNotificationsMouseEnter}
                                     onMouseLeave={handleNotificationsMouseLeave}
                                 >
-                                    <Notifications setHovered={setHovered} notifications={notifications?.content} pointer />
+                                    <Notifications setHovered={setHovered} notifications={counts.topNotifications} pointer />
                                 </div>
                             )}
                         </div>

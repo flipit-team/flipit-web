@@ -27,7 +27,7 @@ const Notifications = (props: Props) => {
                     return (
                         <Link
                             prefetch={false}
-                            href={`/notifications/${item.id}`}
+                            href={item.resourceLink || '/notifications'}
                             key={i}
                             className={`whitespace-nowrap py-[8px] px-[12px] text-text_one h-[36px] cursor-pointer
                          flex items-center hover:text-form-text-active hover-state-300 gap-2 ${
