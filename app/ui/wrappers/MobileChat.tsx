@@ -21,14 +21,14 @@ const MobileChat = () => {
     const {decrementMessageCount} = useUnreadCount();
     const [chats, setChats] = useState<Message[] | null>([]);
     const [input, setInput] = useState('');
-    const hasMarkedAsRead = useRef(false);
+    const markedAsReadRef = useRef<Set<string>>(new Set());
 
     const {messages, isLoading, error: chatError, mutate: mutateMessages} = useChatMessages(chatId);
 
-    // Mark messages as read when component mounts
+    // Mark messages as read when chat changes
     useEffect(() => {
-        if (chatId && !hasMarkedAsRead.current) {
-            hasMarkedAsRead.current = true;
+        if (chatId && !markedAsReadRef.current.has(chatId)) {
+            markedAsReadRef.current.add(chatId);
 
             // Optimistically decrement counter (assume 1 unread for now)
             // The actual count will sync from backend on next refresh
