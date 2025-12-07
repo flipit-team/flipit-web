@@ -13,8 +13,8 @@ export function setupFetchInterceptor() {
 
       // If we get a 401 Unauthorized or 403 Forbidden, automatically logout and redirect
       if (response.status === 401 || response.status === 403) {
-        // Prevent multiple redirects
-        if (!isRedirecting) {
+        // Prevent multiple redirects and don't redirect if already on login page
+        if (!isRedirecting && !window.location.pathname.includes('/login')) {
           isRedirecting = true;
 
           console.warn('Token expired or invalid. Logging out...');

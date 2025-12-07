@@ -1448,7 +1448,7 @@ const Offers = (props: Props) => {
                                                     )}
 
                                                     <Link href={`/${bid.auctionItem?.id}`}>
-                                                        <button className='px-4 py-2 border border-border_gray text-text_one rounded-lg typo-body_sr hover:bg-gray-50 w-full'>
+                                                        <button className='px-4 py-2 border border-border_gray text-text_one rounded-lg typo-body_sr hover:bg-gray-50 hover:text-primary-light transition-colors w-full'>
                                                             View Item
                                                         </button>
                                                     </Link>

@@ -111,7 +111,8 @@ export const AppProvider = ({children, initialUser}: AppProviderProps) => {
                 } else if (response.status === 401 || response.status === 403) {
                     // Token is invalid/expired - clear user and redirect to login
                     setUser(null);
-                    if (typeof window !== 'undefined') {
+                    // Only redirect if not already on login page to prevent infinite loop
+                    if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
                         window.location.href = '/login';
                     }
                 }
