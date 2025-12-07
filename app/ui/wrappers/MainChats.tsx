@@ -196,7 +196,7 @@ const MainChats = (props: Props) => {
                             className={`py-6 cursor-pointer flex items-center gap-2 ${activeTab === 'seller' ? ' border-b border-primary text-primary' : 'text-text_four'}`}
                             onClick={() => setActiveTab('seller')}
                         >
-                            Selling
+                            My Sales
                             {sellerUnreadCount > 0 && (
                                 <span className='bg-secondary text-white text-[10px] font-bold rounded-full h-[18px] min-w-[18px] flex items-center justify-center px-1'>
                                     {sellerUnreadCount > 99 ? '99+' : sellerUnreadCount}
@@ -207,7 +207,7 @@ const MainChats = (props: Props) => {
                             className={`py-6 cursor-pointer flex items-center gap-2 ${activeTab === 'buyer' ? ' border-b border-primary text-primary' : 'text-text_four'}`}
                             onClick={() => setActiveTab('buyer')}
                         >
-                            Buying
+                            My Purchases
                             {buyerUnreadCount > 0 && (
                                 <span className='bg-secondary text-white text-[10px] font-bold rounded-full h-[18px] min-w-[18px] flex items-center justify-center px-1'>
                                     {buyerUnreadCount > 99 ? '99+' : buyerUnreadCount}
@@ -265,7 +265,7 @@ const MainChats = (props: Props) => {
                             className={`text-primary py-6 cursor-pointer flex items-center gap-2 ${activeTab === 'seller' ? ' border-b border-primary' : ''}`}
                             onClick={() => setActiveTab('seller')}
                         >
-                            Selling
+                            My Sales
                             {sellerUnreadCount > 0 && (
                                 <span className='bg-secondary text-white text-[10px] font-bold rounded-full h-[18px] min-w-[18px] flex items-center justify-center px-1'>
                                     {sellerUnreadCount > 99 ? '99+' : sellerUnreadCount}
@@ -276,7 +276,7 @@ const MainChats = (props: Props) => {
                             className={`text-text_four py-6 cursor-pointer flex items-center gap-2 ${activeTab === 'buyer' ? ' border-b border-primary' : ''}`}
                             onClick={() => setActiveTab('buyer')}
                         >
-                            Buying
+                            My Purchases
                             {buyerUnreadCount > 0 && (
                                 <span className='bg-secondary text-white text-[10px] font-bold rounded-full h-[18px] min-w-[18px] flex items-center justify-center px-1'>
                                     {buyerUnreadCount > 99 ? '99+' : buyerUnreadCount}
