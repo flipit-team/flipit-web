@@ -10,6 +10,7 @@ import {formatTimeTo12Hour, formatMessageTime, sendMessage, transformChatsRespon
 import { ChatService } from '~/services/chat.service';
 import NoData from '../common/no-data/NoData';
 import DeleteConfirmationModal from '../common/delete-confirmation-modal/DeleteConfirmationModal';
+import CountBadge from '../common/count-badge/CountBadge';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {useChatMessages, useUserMessages} from '~/hooks/useChatMessages';
 import {Loader} from 'lucide-react';
@@ -70,6 +71,10 @@ const MainChats = (props: Props) => {
     const displayedChat = activeTab === 'buyer' ? chatData.buyer : chatData.seller;
     const [activeChat, setActiveChat] = useState<Chat | null>(null);
     const markedAsReadRef = useRef<Set<string>>(new Set());
+
+    // Calculate unread counts for each tab
+    const sellerUnreadCount = chatData.seller.reduce((sum, chat) => sum + (chat.unreadCount || 0), 0);
+    const buyerUnreadCount = chatData.buyer.reduce((sum, chat) => sum + (chat.unreadCount || 0), 0);
 
     const pushParam = (id: string) => {
         const params = new URLSearchParams(searchParams.toString());
@@ -188,16 +193,26 @@ const MainChats = (props: Props) => {
                 <div className='shadow-lg xs:shadow-transparent xs:hidden'>
                     <div className='px-6 flex items-center gap-[34px] typo-body_lm'>
                         <div
-                            className={` py-6 cursor-pointer ${activeTab === 'seller' ? ' border-b border-primary text-primary' : 'text-text_four'}`}
+                            className={`py-6 cursor-pointer flex items-center gap-2 ${activeTab === 'seller' ? ' border-b border-primary text-primary' : 'text-text_four'}`}
                             onClick={() => setActiveTab('seller')}
                         >
                             Selling
+                            {sellerUnreadCount > 0 && (
+                                <span className='bg-secondary text-white text-[10px] font-bold rounded-full h-[18px] min-w-[18px] flex items-center justify-center px-1'>
+                                    {sellerUnreadCount > 99 ? '99+' : sellerUnreadCount}
+                                </span>
+                            )}
                         </div>
                         <div
-                            className={` py-6 cursor-pointer ${activeTab === 'buyer' ? ' border-b border-primary text-primary' : 'text-text_four'}`}
+                            className={`py-6 cursor-pointer flex items-center gap-2 ${activeTab === 'buyer' ? ' border-b border-primary text-primary' : 'text-text_four'}`}
                             onClick={() => setActiveTab('buyer')}
                         >
                             Buying
+                            {buyerUnreadCount > 0 && (
+                                <span className='bg-secondary text-white text-[10px] font-bold rounded-full h-[18px] min-w-[18px] flex items-center justify-center px-1'>
+                                    {buyerUnreadCount > 99 ? '99+' : buyerUnreadCount}
+                                </span>
+                            )}
                         </div>
                     </div>
                     {displayedChat?.map((chat: any, i: number) => {
@@ -220,8 +235,8 @@ const MainChats = (props: Props) => {
                                 </div>
                                 <div className='flex flex-col items-end gap-2'>
                                     <p className='typo-body_sr'>{formatMessageTime(chat.dateCreated)}</p>
-                                    {chat.unreadCount && chat.unreadCount > 0 && (
-                                        <div className='bg-accent-coral text-white rounded-full h-5 w-5 flex items-center justify-center text-xs font-medium'>
+                                    {chat.unreadCount > 0 && (
+                                        <div className='bg-secondary text-white rounded-full h-5 w-5 flex items-center justify-center text-xs font-medium'>
                                             {chat.unreadCount > 9 ? '9+' : chat.unreadCount}
                                         </div>
                                     )}
@@ -247,16 +262,26 @@ const MainChats = (props: Props) => {
                 <div className='shadow-lg xs:shadow-transparent hidden xs:block'>
                     <div className='px-6 flex items-center gap-[34px] typo-body_lm'>
                         <div
-                            className={`text-primary py-6 cursor-pointer ${activeTab === 'seller' ? ' border-b border-primary' : ''}`}
+                            className={`text-primary py-6 cursor-pointer flex items-center gap-2 ${activeTab === 'seller' ? ' border-b border-primary' : ''}`}
                             onClick={() => setActiveTab('seller')}
                         >
                             Selling
+                            {sellerUnreadCount > 0 && (
+                                <span className='bg-secondary text-white text-[10px] font-bold rounded-full h-[18px] min-w-[18px] flex items-center justify-center px-1'>
+                                    {sellerUnreadCount > 99 ? '99+' : sellerUnreadCount}
+                                </span>
+                            )}
                         </div>
                         <div
-                            className={`text-text_four py-6 cursor-pointer ${activeTab === 'buyer' ? ' border-b border-primary' : ''}`}
+                            className={`text-text_four py-6 cursor-pointer flex items-center gap-2 ${activeTab === 'buyer' ? ' border-b border-primary' : ''}`}
                             onClick={() => setActiveTab('buyer')}
                         >
                             Buying
+                            {buyerUnreadCount > 0 && (
+                                <span className='bg-secondary text-white text-[10px] font-bold rounded-full h-[18px] min-w-[18px] flex items-center justify-center px-1'>
+                                    {buyerUnreadCount > 99 ? '99+' : buyerUnreadCount}
+                                </span>
+                            )}
                         </div>
                     </div>
                     {displayedChat?.map((chat: any, i: number) => {
@@ -279,8 +304,8 @@ const MainChats = (props: Props) => {
                                 </div>
                                 <div className='flex flex-col items-end gap-2'>
                                     <p className='typo-body_sr'>{formatMessageTime(chat.dateCreated)}</p>
-                                    {chat.unreadCount && chat.unreadCount > 0 && (
-                                        <div className='bg-accent-coral text-white rounded-full h-5 w-5 flex items-center justify-center text-xs font-medium'>
+                                    {chat.unreadCount > 0 && (
+                                        <div className='bg-secondary text-white rounded-full h-5 w-5 flex items-center justify-center text-xs font-medium'>
                                             {chat.unreadCount > 9 ? '9+' : chat.unreadCount}
                                         </div>
                                     )}
