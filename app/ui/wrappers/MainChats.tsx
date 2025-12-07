@@ -76,6 +76,38 @@ const MainChats = (props: Props) => {
     const sellerUnreadCount = chatData.seller.reduce((sum, chat) => sum + (chat.unreadCount || 0), 0);
     const buyerUnreadCount = chatData.buyer.reduce((sum, chat) => sum + (chat.unreadCount || 0), 0);
 
+    // Refresh chat data periodically to get new messages
+    useEffect(() => {
+        const refreshChats = async () => {
+            try {
+                const res = await fetch('/api/v1/chats');
+                if (res.ok) {
+                    const backendData = await res.json();
+                    const transformedData = transformChatsResponse(backendData);
+                    setApiChatData(transformedData);
+                }
+            } catch (error) {
+                console.error('Failed to refresh chats:', error);
+            }
+        };
+
+        // Poll every 10 seconds for new messages
+        const interval = setInterval(refreshChats, 10000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    // Get the other person's details (not the current user)
+    const getOtherPerson = (chat: Chat) => {
+        const currentUserId = Number(user?.userId);
+        const isInitiator = chat.initiatorId === currentUserId;
+
+        return {
+            name: isInitiator ? chat.receiverName : chat.initiatorName,
+            avatar: isInitiator ? chat.receiverAvatar : chat.initiatorAvatar
+        };
+    };
+
     const pushParam = (id: string) => {
         const params = new URLSearchParams(searchParams.toString());
         params.set('chatId', id);
@@ -220,6 +252,7 @@ const MainChats = (props: Props) => {
                         )}
                     </div>
                     {displayedChat?.map((chat: any, i: number) => {
+                        const otherPerson = getOtherPerson(chat);
                         return (
                             <div
                                 key={i}
@@ -227,14 +260,14 @@ const MainChats = (props: Props) => {
                                 className={`h-[130px] ${chat.chatId === activeChat?.chatId ? 'bg-surface-primary-10' : ''} flex p-6 border-b border-border-secondary cursor-pointer hover:bg-surface-primary-10 transition-colors`}
                             >
                                 <Image
-                                    src={chat.initiatorAvatar || '/placeholder-avatar.svg'}
+                                    src={otherPerson.avatar || '/placeholder-avatar.svg'}
                                     height={50}
                                     width={50}
-                                    alt={chat.initiatorName}
+                                    alt={otherPerson.name}
                                     className='h-[50px] w-[50px] mr-4 rounded-full object-cover'
                                 />
                                 <div className='flex-1'>
-                                    <p className='text-primary typo-body_lm capitalize'>{chat.initiatorName}</p>
+                                    <p className='text-primary typo-body_lm capitalize'>{otherPerson.name}</p>
                                     <p className='typo-body_mr w-[203px] line-clamp-2'>{chat.title}</p>
                                 </div>
                                 <div className='flex flex-col items-end gap-2'>
@@ -293,6 +326,7 @@ const MainChats = (props: Props) => {
                         )}
                     </div>
                     {displayedChat?.map((chat: any, i: number) => {
+                        const otherPerson = getOtherPerson(chat);
                         return (
                             <Link
                                 key={i}
@@ -300,14 +334,14 @@ const MainChats = (props: Props) => {
                                 className={`h-[130px] ${chat.chatId === activeChat?.chatId ? 'bg-surface-primary-10' : ''} flex p-6 border-b border-border-secondary`}
                             >
                                 <Image
-                                    src={chat.initiatorAvatar || '/placeholder-avatar.svg'}
+                                    src={otherPerson.avatar || '/placeholder-avatar.svg'}
                                     height={50}
                                     width={50}
-                                    alt={chat.initiatorName}
+                                    alt={otherPerson.name}
                                     className='h-[50px] w-[50px] mr-4 rounded-full object-cover'
                                 />
                                 <div className='flex-1'>
-                                    <p className='text-primary typo-body_lm capitalize'>{chat.initiatorName}</p>
+                                    <p className='text-primary typo-body_lm capitalize'>{otherPerson.name}</p>
                                     <p className='typo-body_mr w-[203px] line-clamp-2'>{chat.title}</p>
                                 </div>
                                 <div className='flex flex-col items-end gap-2'>
@@ -323,24 +357,27 @@ const MainChats = (props: Props) => {
                     })}
                 </div>
                 <div className='shadow-lg xs:shadow-transparent xs:hidden'>
-                    {activeChat && (
-                        <div className='flex items-center p-6'>
-                            <Image
-                                src={activeChat?.initiatorAvatar || '/placeholder-avatar.svg'}
-                                height={50}
-                                width={50}
-                                alt={activeChat?.initiatorName}
-                                className='h-[50px] w-[50px] mr-4 rounded-full object-cover'
-                            />
-                            <p className='typo-body_lm capitalize'>{activeChat?.initiatorName}</p>
-                        </div>
-                    )}
+                    {activeChat && (() => {
+                        const otherPerson = getOtherPerson(activeChat);
+                        return (
+                            <div className='flex items-center p-6'>
+                                <Image
+                                    src={otherPerson.avatar || '/placeholder-avatar.svg'}
+                                    height={50}
+                                    width={50}
+                                    alt={otherPerson.name}
+                                    className='h-[50px] w-[50px] mr-4 rounded-full object-cover'
+                                />
+                                <p className='typo-body_lm capitalize'>{otherPerson.name}</p>
+                            </div>
+                        );
+                    })()}
                     {activeChat && (
                         <div className='flex items-center justify-center typo-heading_sm text-primary bg-surface-primary-20 h-[42px]'>
                             {activeChat?.title}
                         </div>
                     )}
-                    <div className='p-[40px] flex flex-col gap-2'>
+                    <div className='p-[40px] flex flex-col-reverse gap-2'>
                         {messages?.map((item, i) => {
                             return (
                                 <div key={i} className={`w-2/4 ${item.sentBy === Number(user?.userId) ? 'ml-auto' : 'mr-auto'}`}>
