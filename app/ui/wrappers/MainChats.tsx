@@ -192,28 +192,32 @@ const MainChats = (props: Props) => {
             <div className='grid grid-cols-[424px_1fr] xs:grid-cols-1 gap-6'>
                 <div className='shadow-lg xs:shadow-transparent xs:hidden'>
                     <div className='px-6 flex items-center gap-[34px] typo-body_lm'>
-                        <div
-                            className={`py-6 cursor-pointer flex items-center gap-2 ${activeTab === 'seller' ? ' border-b border-primary text-primary' : 'text-text_four'}`}
-                            onClick={() => setActiveTab('seller')}
-                        >
-                            My Sales
-                            {sellerUnreadCount > 0 && (
-                                <span className='bg-secondary text-white text-[10px] font-bold rounded-full h-[18px] min-w-[18px] flex items-center justify-center px-1'>
-                                    {sellerUnreadCount > 99 ? '99+' : sellerUnreadCount}
-                                </span>
-                            )}
-                        </div>
-                        <div
-                            className={`py-6 cursor-pointer flex items-center gap-2 ${activeTab === 'buyer' ? ' border-b border-primary text-primary' : 'text-text_four'}`}
-                            onClick={() => setActiveTab('buyer')}
-                        >
-                            My Purchases
-                            {buyerUnreadCount > 0 && (
-                                <span className='bg-secondary text-white text-[10px] font-bold rounded-full h-[18px] min-w-[18px] flex items-center justify-center px-1'>
-                                    {buyerUnreadCount > 99 ? '99+' : buyerUnreadCount}
-                                </span>
-                            )}
-                        </div>
+                        {chatData.seller.length > 0 && (
+                            <div
+                                className={`py-6 cursor-pointer flex items-center gap-2 ${activeTab === 'seller' ? ' border-b border-primary text-primary' : 'text-text_four'}`}
+                                onClick={() => setActiveTab('seller')}
+                            >
+                                My Sales
+                                {sellerUnreadCount > 0 && (
+                                    <span className='bg-secondary text-white text-[10px] font-bold rounded-full h-[18px] min-w-[18px] flex items-center justify-center px-1'>
+                                        {sellerUnreadCount > 99 ? '99+' : sellerUnreadCount}
+                                    </span>
+                                )}
+                            </div>
+                        )}
+                        {chatData.buyer.length > 0 && (
+                            <div
+                                className={`py-6 cursor-pointer flex items-center gap-2 ${activeTab === 'buyer' ? ' border-b border-primary text-primary' : 'text-text_four'}`}
+                                onClick={() => setActiveTab('buyer')}
+                            >
+                                My Purchases
+                                {buyerUnreadCount > 0 && (
+                                    <span className='bg-secondary text-white text-[10px] font-bold rounded-full h-[18px] min-w-[18px] flex items-center justify-center px-1'>
+                                        {buyerUnreadCount > 99 ? '99+' : buyerUnreadCount}
+                                    </span>
+                                )}
+                            </div>
+                        )}
                     </div>
                     {displayedChat?.map((chat: any, i: number) => {
                         return (
@@ -261,28 +265,32 @@ const MainChats = (props: Props) => {
                 </div>
                 <div className='shadow-lg xs:shadow-transparent hidden xs:block'>
                     <div className='px-6 flex items-center gap-[34px] typo-body_lm'>
-                        <div
-                            className={`text-primary py-6 cursor-pointer flex items-center gap-2 ${activeTab === 'seller' ? ' border-b border-primary' : ''}`}
-                            onClick={() => setActiveTab('seller')}
-                        >
-                            My Sales
-                            {sellerUnreadCount > 0 && (
-                                <span className='bg-secondary text-white text-[10px] font-bold rounded-full h-[18px] min-w-[18px] flex items-center justify-center px-1'>
-                                    {sellerUnreadCount > 99 ? '99+' : sellerUnreadCount}
-                                </span>
-                            )}
-                        </div>
-                        <div
-                            className={`text-text_four py-6 cursor-pointer flex items-center gap-2 ${activeTab === 'buyer' ? ' border-b border-primary' : ''}`}
-                            onClick={() => setActiveTab('buyer')}
-                        >
-                            My Purchases
-                            {buyerUnreadCount > 0 && (
-                                <span className='bg-secondary text-white text-[10px] font-bold rounded-full h-[18px] min-w-[18px] flex items-center justify-center px-1'>
-                                    {buyerUnreadCount > 99 ? '99+' : buyerUnreadCount}
-                                </span>
-                            )}
-                        </div>
+                        {chatData.seller.length > 0 && (
+                            <div
+                                className={`text-primary py-6 cursor-pointer flex items-center gap-2 ${activeTab === 'seller' ? ' border-b border-primary' : ''}`}
+                                onClick={() => setActiveTab('seller')}
+                            >
+                                My Sales
+                                {sellerUnreadCount > 0 && (
+                                    <span className='bg-secondary text-white text-[10px] font-bold rounded-full h-[18px] min-w-[18px] flex items-center justify-center px-1'>
+                                        {sellerUnreadCount > 99 ? '99+' : sellerUnreadCount}
+                                    </span>
+                                )}
+                            </div>
+                        )}
+                        {chatData.buyer.length > 0 && (
+                            <div
+                                className={`text-text_four py-6 cursor-pointer flex items-center gap-2 ${activeTab === 'buyer' ? ' border-b border-primary' : ''}`}
+                                onClick={() => setActiveTab('buyer')}
+                            >
+                                My Purchases
+                                {buyerUnreadCount > 0 && (
+                                    <span className='bg-secondary text-white text-[10px] font-bold rounded-full h-[18px] min-w-[18px] flex items-center justify-center px-1'>
+                                        {buyerUnreadCount > 99 ? '99+' : buyerUnreadCount}
+                                    </span>
+                                )}
+                            </div>
+                        )}
                     </div>
                     {displayedChat?.map((chat: any, i: number) => {
                         return (
