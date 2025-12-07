@@ -2,11 +2,13 @@
 import {Loader} from 'lucide-react';
 import Image from 'next/image';
 import {useParams, useRouter} from 'next/navigation';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {useAppContext} from '~/contexts/AppContext';
+import {useUnreadCount} from '~/contexts/UnreadCountContext';
 import {useChatMessages} from '~/hooks/useChatMessages';
 import {formatTimeTo12Hour, formatMessageTime, sendMessage} from '~/utils/helpers';
 import {Message} from '~/utils/interface';
+import {ChatService} from '~/services/chat.service';
 
 const MobileChat = () => {
     const params = useParams();
@@ -16,10 +18,28 @@ const MobileChat = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const {user} = useAppContext();
+    const {decrementMessageCount} = useUnreadCount();
     const [chats, setChats] = useState<Message[] | null>([]);
     const [input, setInput] = useState('');
+    const hasMarkedAsRead = useRef(false);
 
     const {messages, isLoading, error: chatError, mutate: mutateMessages} = useChatMessages(chatId);
+
+    // Mark messages as read when component mounts
+    useEffect(() => {
+        if (chatId && !hasMarkedAsRead.current) {
+            hasMarkedAsRead.current = true;
+
+            // Optimistically decrement counter (assume 1 unread for now)
+            // The actual count will sync from backend on next refresh
+            decrementMessageCount(1);
+
+            // Mark as read in backend (fire and forget)
+            ChatService.markMessagesAsRead(chatId).catch(err => {
+                console.error('Failed to mark messages as read:', err);
+            });
+        }
+    }, [chatId, decrementMessageCount]);
 
     const handleSend = async () => {
         if (!input) return;

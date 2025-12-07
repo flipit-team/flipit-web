@@ -11,8 +11,8 @@ export function setupFetchInterceptor() {
     try {
       const response = await originalFetch(...args);
 
-      // If we get a 401 Unauthorized, automatically logout and redirect
-      if (response.status === 401) {
+      // If we get a 401 Unauthorized or 403 Forbidden, automatically logout and redirect
+      if (response.status === 401 || response.status === 403) {
         // Prevent multiple redirects
         if (!isRedirecting) {
           isRedirecting = true;

@@ -87,3 +87,13 @@ body {
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
 }
+
+/* Global button hover opacity */
+button:hover:not(:disabled) {
+    opacity: 0.85;
+    transition: opacity 0.2s ease-in-out;
+}
+
+button {
+    transition: opacity 0.2s ease-in-out;
+}

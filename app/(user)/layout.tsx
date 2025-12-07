@@ -2,6 +2,7 @@ import React from 'react';
 import ErrorBoundary from '~/error-boundary';
 import {AppProvider} from '../contexts/AppContext';
 import {ToastProvider} from '../contexts/ToastContext';
+import {UnreadCountProvider} from '../contexts/UnreadCountContext';
 import {LikesProvider} from '../hooks/useLikes';
 import Header from '~/ui/common/layout/header';
 import Footer from '~/ui/common/layout/footer';
@@ -29,17 +30,19 @@ export default async function UserLayout({
     return (
         <AppProvider initialUser={user}>
             <AuthInterceptor />
-            <ToastProvider>
-                <LikesProvider>
-                    <main className='flex flex-col flex-1 xs:pb-[100px]'>
-                        <Header user={user} />
-                        <Overlay />
-                        <ErrorBoundary>{children}</ErrorBoundary>
-                    </main>
-                    <Footer />
-                    <ConditionalBottomNav />
-                </LikesProvider>
-            </ToastProvider>
+            <UnreadCountProvider>
+                <ToastProvider>
+                    <LikesProvider>
+                        <main className='flex flex-col flex-1 xs:pb-[100px]'>
+                            <Header user={user} />
+                            <Overlay />
+                            <ErrorBoundary>{children}</ErrorBoundary>
+                        </main>
+                        <Footer />
+                        <ConditionalBottomNav />
+                    </LikesProvider>
+                </ToastProvider>
+            </UnreadCountProvider>
         </AppProvider>
     );
 }

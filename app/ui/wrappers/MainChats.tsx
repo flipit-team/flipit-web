@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, {useState, useEffect, useRef} from 'react';
 import {useAppContext} from '~/contexts/AppContext';
+import {useUnreadCount} from '~/contexts/UnreadCountContext';
 import {Chat} from '~/utils/interface';
 import dynamic from 'next/dynamic';
 import {formatTimeTo12Hour, formatMessageTime, sendMessage, transformChatsResponse} from '~/utils/helpers';
@@ -63,15 +64,40 @@ const MainChats = (props: Props) => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [chatToDelete, setChatToDelete] = useState<Chat | null>(null);
     const {user} = useAppContext();
+    const {decrementMessageCount} = useUnreadCount();
     const chatId = searchParams.get('chatId');
     const [activeTab, setActiveTab] = useState<'seller' | 'buyer'>('buyer');
     const displayedChat = activeTab === 'buyer' ? chatData.buyer : chatData.seller;
     const [activeChat, setActiveChat] = useState<Chat | null>(null);
+    const markedAsReadRef = useRef<Set<string>>(new Set());
 
     const pushParam = (id: string) => {
         const params = new URLSearchParams(searchParams.toString());
         params.set('chatId', id);
         router.push(`/messages?${params.toString()}`);
+    };
+
+    // Handle marking chat as read when viewing it
+    const handleChatClick = (chat: Chat) => {
+        pushParam(chat.chatId);
+        setActiveChat(chat);
+
+        // Optimistically decrement the counter if this chat has unread messages
+        if (chat.unreadCount && chat.unreadCount > 0 && !markedAsReadRef.current.has(chat.chatId)) {
+            decrementMessageCount(chat.unreadCount);
+            markedAsReadRef.current.add(chat.chatId);
+
+            // Mark chat as read in the UI immediately
+            setApiChatData(prev => ({
+                buyer: prev.buyer.map(c => c.chatId === chat.chatId ? {...c, unreadCount: 0} : c),
+                seller: prev.seller.map(c => c.chatId === chat.chatId ? {...c, unreadCount: 0} : c)
+            }));
+
+            // Call backend to mark as read (fire and forget)
+            ChatService.markMessagesAsRead(chat.chatId).catch(err => {
+                console.error('Failed to mark messages as read:', err);
+            });
+        }
     };
 
     const {messages, isLoading, error: chatError, mutate: mutateMessages} = useChatMessages(chatId);
@@ -178,10 +204,7 @@ const MainChats = (props: Props) => {
                         return (
                             <div
                                 key={i}
-                                onClick={() => {
-                                    pushParam(chat.chatId);
-                                    setActiveChat(chat);
-                                }}
+                                onClick={() => handleChatClick(chat)}
                                 className={`h-[130px] ${chat.chatId === activeChat?.chatId ? 'bg-surface-primary-10' : ''} flex p-6 border-b border-border-secondary cursor-pointer hover:bg-surface-primary-10 transition-colors`}
                             >
                                 <Image

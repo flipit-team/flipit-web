@@ -287,9 +287,9 @@ export async function checkAuthServerSide(): Promise<{ isAuthenticated: boolean;
       });
 
       if (!verifyResponse.ok) {
-        // Only clear cookies if it's an explicit 401 Unauthorized (invalid token)
+        // Clear cookies if it's 401 Unauthorized or 403 Forbidden (invalid/expired token)
         // Don't clear on 404 (endpoint doesn't exist) or 500 (server error)
-        if (verifyResponse.status === 401) {
+        if (verifyResponse.status === 401 || verifyResponse.status === 403) {
           return { isAuthenticated: false, user: null, clearCookies: true };
         }
         // For other errors, fall through to use cookie data

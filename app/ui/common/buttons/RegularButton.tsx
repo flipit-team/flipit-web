@@ -23,7 +23,7 @@ const RegularButton = ({isLight, useLightTeal, text, slug, usePopup, isLoading, 
     params.set('q', slug ?? '');
 
     const getButtonClass = () => {
-        if (isLight) return 'bg-surface-primary-16 text-primary';
+        if (isLight) return 'bg-surface-primary-16 text-primary hover:text-primary-light transition-colors';
         if (useLightTeal) return 'bg-primary-light text-white';
         return 'bg-primary text-white';
     };

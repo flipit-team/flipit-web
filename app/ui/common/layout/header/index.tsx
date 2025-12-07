@@ -4,6 +4,7 @@ import Link from 'next/link';
 import {usePathname, useRouter} from 'next/navigation';
 import React, {useState, useEffect, Suspense} from 'react';
 import {useAppContext} from '~/contexts/AppContext';
+import {useUnreadCount} from '~/contexts/UnreadCountContext';
 import Notifications from '../../modals/Notifications';
 import {ShoppingBag, Megaphone, BarChart3, Settings, LogOut} from 'lucide-react';
 import ProfileDropdown from './ProfileDropdown';
@@ -32,7 +33,7 @@ function HeaderContent(props: Props) {
     const router = useRouter();
     const pathname = usePathname();
     const {notifications, profile, user: clientUser} = useAppContext();
-    const [topNavCounts, setTopNavCounts] = useState<TopNavDTO | null>(null);
+    const {counts} = useUnreadCount();
 
     // Use client user or server user
     const user = clientUser || serverUser;
@@ -40,25 +41,6 @@ function HeaderContent(props: Props) {
     useEffect(() => {
         setIsClient(true);
     }, []);
-
-    // Fetch top nav counters
-    useEffect(() => {
-        if (!user) return;
-
-        const fetchTopNavCounters = async () => {
-            const result = await HomeService.getTopNavCounters();
-            if (result.data) {
-                setTopNavCounts(result.data);
-            }
-        };
-
-        fetchTopNavCounters();
-
-        // Poll for updates every 30 seconds
-        const interval = setInterval(fetchTopNavCounters, 30000);
-
-        return () => clearInterval(interval);
-    }, [user]);
 
     // Profile dropdown handlers - keep dropdown open while hovering
     const handleProfileMouseEnter = () => {
@@ -200,7 +182,7 @@ function HeaderContent(props: Props) {
                         }`}
                     >
                         Live Auction
-                        {topNavCounts && <CountBadge count={topNavCounts.auctionsCount} />}
+                        <CountBadge count={counts.auctionsCount} />
                     </Link>
                     <Link
                         href={'/messages'}
@@ -211,7 +193,7 @@ function HeaderContent(props: Props) {
                         }`}
                     >
                         Messages
-                        {topNavCounts && <CountBadge count={topNavCounts.messagesCount} />}
+                        <CountBadge count={counts.messagesCount} />
                     </Link>
                     <Link
                         href={'/offers'}
@@ -222,7 +204,7 @@ function HeaderContent(props: Props) {
                         }`}
                     >
                         Offers
-                        {topNavCounts && <CountBadge count={topNavCounts.biddingCount} />}
+                        <CountBadge count={counts.biddingCount} />
                     </Link>
                 </div>
                 {user ? (
@@ -267,7 +249,7 @@ function HeaderContent(props: Props) {
                                     alt='notifications'
                                     className='h-6 w-6'
                                 />
-                                {topNavCounts && <CountBadge count={topNavCounts.notificationsCount} />}
+                                <CountBadge count={counts.notificationsCount} />
                             </Link>
                             {showNotificationsDropdown && (
                                 <div

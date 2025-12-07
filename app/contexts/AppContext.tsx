@@ -108,7 +108,7 @@ export const AppProvider = ({children, initialUser}: AppProviderProps) => {
                         // Clear user if validation says not authenticated
                         setUser(null);
                     }
-                } else if (response.status === 401) {
+                } else if (response.status === 401 || response.status === 403) {
                     // Token is invalid/expired - clear user and redirect to login
                     setUser(null);
                     if (typeof window !== 'undefined') {
