@@ -60,8 +60,27 @@ export const AppProvider = ({children, initialUser}: AppProviderProps) => {
             const result = await NotificationsService.getNotifications({ page: 0, size: 50 });
             if (result.data) {
                 // Handle both array response and paginated response
-                const notificationsData = Array.isArray(result.data)
-                    ? { content: result.data, totalPages: 1, totalElements: result.data.length, size: result.data.length, number: 0 }
+                const notificationsData: PaginatedResponse<NotificationDTO> = Array.isArray(result.data)
+                    ? {
+                        content: result.data,
+                        totalPages: 1,
+                        totalElements: result.data.length,
+                        size: result.data.length,
+                        number: 0,
+                        first: true,
+                        last: true,
+                        empty: result.data.length === 0,
+                        numberOfElements: result.data.length,
+                        pageable: {
+                            offset: 0,
+                            sort: { empty: true, sorted: false, unsorted: true },
+                            pageNumber: 0,
+                            pageSize: result.data.length,
+                            paged: true,
+                            unpaged: false
+                        },
+                        sort: { empty: true, sorted: false, unsorted: true }
+                    }
                     : result.data;
                 setNotifications(notificationsData);
             }
