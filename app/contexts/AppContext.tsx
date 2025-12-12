@@ -59,7 +59,11 @@ export const AppProvider = ({children, initialUser}: AppProviderProps) => {
         try {
             const result = await NotificationsService.getNotifications({ page: 0, size: 50 });
             if (result.data) {
-                setNotifications(result.data);
+                // Handle both array response and paginated response
+                const notificationsData = Array.isArray(result.data)
+                    ? { content: result.data, totalPages: 1, totalElements: result.data.length, size: result.data.length, number: 0 }
+                    : result.data;
+                setNotifications(notificationsData);
             }
         } catch (error) {
             console.error('Failed to fetch notifications:', error);
