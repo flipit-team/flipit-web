@@ -601,7 +601,20 @@ const config: Config = {
                 }
             },
             borderRadius: {},
-
+            animation: {
+                'pulse-smooth': 'pulse-smooth 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                'bounce-dot': 'bounce-dot 1.4s infinite ease-in-out',
+            },
+            keyframes: {
+                'pulse-smooth': {
+                    '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+                    '50%': { opacity: '0.85', transform: 'scale(0.98)' },
+                },
+                'bounce-dot': {
+                    '0%, 80%, 100%': { transform: 'scale(0)', opacity: '0.5' },
+                    '40%': { transform: 'scale(1)', opacity: '1' },
+                },
+            },
             screens: {
                 xs: {max: '767px'}, //only for mob styles
                 md: '768px', //min 768
