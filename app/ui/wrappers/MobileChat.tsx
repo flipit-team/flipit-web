@@ -85,7 +85,7 @@ const MobileChat = () => {
                 iPhone 12 promax
             </div>
 
-            <div className='p-[40px] flex flex-col-reverse gap-2 flex-1 h-full'>
+            <div className='p-[40px] flex flex-col gap-2 flex-1 h-full'>
                 {isLoading ? (
                     <div className='flex justify-center items-center h-full'>
                         <div className='flex items-center gap-2 text-text-secondary'>

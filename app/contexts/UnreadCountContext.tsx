@@ -69,8 +69,8 @@ export const UnreadCountProvider: React.FC<{ children: React.ReactNode }> = ({ c
   useEffect(() => {
     refreshCounts();
 
-    // Poll for updates every 30 seconds
-    const interval = setInterval(refreshCounts, 30000);
+    // Poll for updates every 10 seconds
+    const interval = setInterval(refreshCounts, 10000);
 
     return () => clearInterval(interval);
   }, [refreshCounts]);

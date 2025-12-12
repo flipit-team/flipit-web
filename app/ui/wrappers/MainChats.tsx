@@ -91,8 +91,8 @@ const MainChats = (props: Props) => {
             }
         };
 
-        // Poll every 10 seconds for new messages
-        const interval = setInterval(refreshChats, 10000);
+        // Poll every 3 seconds for new messages
+        const interval = setInterval(refreshChats, 3000);
 
         return () => clearInterval(interval);
     }, []);
@@ -153,7 +153,7 @@ const MainChats = (props: Props) => {
         try {
             const data = await sendMessage(activeChat?.chatId ?? '', input);
             setInput('');
-            
+
             // Immediately refresh messages after sending
             mutateMessages();
         } catch (err: any) {
@@ -377,7 +377,7 @@ const MainChats = (props: Props) => {
                             {activeChat?.title}
                         </div>
                     )}
-                    <div className='p-[40px] flex flex-col-reverse gap-2'>
+                    <div className='p-[40px] flex flex-col gap-2'>
                         {messages?.map((item, i) => {
                             return (
                                 <div key={i} className={`w-2/4 ${item.sentBy === Number(user?.userId) ? 'ml-auto' : 'mr-auto'}`}>
