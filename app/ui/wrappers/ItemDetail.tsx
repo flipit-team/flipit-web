@@ -295,7 +295,7 @@ const ItemDetail = (props: Props) => {
                     <div className='flex gap-6 mb-6'>
                         <div
                             onClick={() => pushParam('send-message')}
-                            className={`w-[232px] border border-primary flex items-center justify-center h-[51px] bg-surface-primary-16 rounded-lg text-primary typo-body_ls cursor-pointer`}
+                            className={`w-[232px] border border-primary flex items-center justify-center h-[51px] bg-surface-primary-16 rounded-lg text-primary typo-body_ls cursor-pointer hover:text-primary-light hover:border-primary-light transition-colors`}
                         >
                             {'Send Message'}
                         </div>
@@ -312,7 +312,7 @@ const ItemDetail = (props: Props) => {
                         {(item?.seller.reviewCount || 0) > 0 && (
                             <Link
                                 href={`/feedback?sellerId=${item?.seller.id}&itemId=${item?.id}`}
-                                className='border border-border_gray h-[30px] w-[93px] flex items-center justify-center typo-body_mr text-text_four rounded-lg cursor-pointer'
+                                className='border border-border_gray h-[30px] w-[93px] flex items-center justify-center typo-body_mr text-text_four rounded-lg cursor-pointer hover:text-primary-light hover:border-primary-light transition-colors'
                             >
                                 View all
                             </Link>

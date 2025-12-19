@@ -126,35 +126,35 @@ const AuctionStartSelector: React.FC<Props> = ({
           <button
             type="button"
             onClick={() => handleQuickSelect(1)}
-            className="px-3 py-1.5 typo-body_sr rounded-md border transition-colors bg-white text-text_secondary border-border_gray hover:bg-surface-primary-16 hover:border-primary"
+            className="px-3 py-1.5 typo-body_sr rounded-md border transition-colors bg-white text-text_secondary border-border_gray hover:bg-surface-primary-16 hover:border-primary hover:text-primary-light"
           >
             1 hour
           </button>
           <button
             type="button"
             onClick={() => handleQuickSelect(12)}
-            className="px-3 py-1.5 typo-body_sr rounded-md border transition-colors bg-white text-text_secondary border-border_gray hover:bg-surface-primary-16 hover:border-primary"
+            className="px-3 py-1.5 typo-body_sr rounded-md border transition-colors bg-white text-text_secondary border-border_gray hover:bg-surface-primary-16 hover:border-primary hover:text-primary-light"
           >
             12 hours
           </button>
           <button
             type="button"
             onClick={() => handleQuickSelect(24)}
-            className="px-3 py-1.5 typo-body_sr rounded-md border transition-colors bg-white text-text_secondary border-border_gray hover:bg-surface-primary-16 hover:border-primary"
+            className="px-3 py-1.5 typo-body_sr rounded-md border transition-colors bg-white text-text_secondary border-border_gray hover:bg-surface-primary-16 hover:border-primary hover:text-primary-light"
           >
             1 day
           </button>
           <button
             type="button"
             onClick={() => handleQuickSelect(72)}
-            className="px-3 py-1.5 typo-body_sr rounded-md border transition-colors bg-white text-text_secondary border-border_gray hover:bg-surface-primary-16 hover:border-primary"
+            className="px-3 py-1.5 typo-body_sr rounded-md border transition-colors bg-white text-text_secondary border-border_gray hover:bg-surface-primary-16 hover:border-primary hover:text-primary-light"
           >
             3 days
           </button>
           <button
             type="button"
             onClick={() => handleQuickSelect(168)}
-            className="px-3 py-1.5 typo-body_sr rounded-md border transition-colors bg-white text-text_secondary border-border_gray hover:bg-surface-primary-16 hover:border-primary"
+            className="px-3 py-1.5 typo-body_sr rounded-md border transition-colors bg-white text-text_secondary border-border_gray hover:bg-surface-primary-16 hover:border-primary hover:text-primary-light"
           >
             7 days
           </button>

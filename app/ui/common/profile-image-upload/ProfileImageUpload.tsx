@@ -94,7 +94,7 @@ const ProfileImageUpload = ({
                     />
                     <div
                         onClick={() => inputRef.current?.click()}
-                        className='flex items-center justify-center h-[45px] w-[159px] border border-primary text-primary rounded-lg typo-body_ms mt-5 cursor-pointer'
+                        className='flex items-center justify-center h-[45px] w-[159px] border border-primary text-primary rounded-lg typo-body_ms mt-5 cursor-pointer hover:text-primary-light hover:border-primary-light transition-colors'
                     >
                         Choose Image
                     </div>

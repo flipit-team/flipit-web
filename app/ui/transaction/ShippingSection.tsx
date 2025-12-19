@@ -198,7 +198,7 @@ const ShippingSection = ({transaction, userRole, onShippingUpdate}: Props) => {
                             href={userShipping.trackingUrl}
                             target='_blank'
                             rel='noopener noreferrer'
-                            className='mt-6 w-full h-[48px] border border-primary text-primary rounded-lg typo-body_lr hover:bg-surface-primary-10 flex items-center justify-center gap-2'
+                            className='mt-6 w-full h-[48px] border border-primary text-primary rounded-lg typo-body_lr hover:bg-surface-primary-10 hover:text-primary-light hover:border-primary-light transition-colors flex items-center justify-center gap-2'
                         >
                             <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                 <path
@@ -445,7 +445,7 @@ const ShippingSection = ({transaction, userRole, onShippingUpdate}: Props) => {
                             <button
                                 type='button'
                                 onClick={() => setShowShippingForm(false)}
-                                className='flex-1 h-[48px] border border-border_gray text-text_four rounded-lg typo-body_lr hover:bg-gray-50'
+                                className='flex-1 h-[48px] border border-border_gray text-text_four rounded-lg typo-body_lr hover:bg-gray-50 hover:text-primary-light hover:border-primary-light transition-colors'
                             >
                                 Cancel
                             </button>

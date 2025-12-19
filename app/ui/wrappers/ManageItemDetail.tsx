@@ -563,7 +563,7 @@ const ManageItemDetail = ({item: propItem, offers: propOffers, isAuction = false
                                                 </button>
                                                 <button
                                                     onClick={() => handleDeclineOfferClick(offer.id)}
-                                                    className='flex-1 h-[42px] border border-text_four text-text_four rounded-lg typo-body_lr hover:bg-gray-50'
+                                                    className='flex-1 h-[42px] border border-text_four text-text_four rounded-lg typo-body_lr hover:bg-gray-50 hover:text-primary-light hover:border-primary-light transition-colors'
                                                 >
                                                     Decline
                                                 </button>

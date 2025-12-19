@@ -33,7 +33,7 @@ const Button: React.FC<ButtonProps> = ({
                 return 'border-border-muted text-border-muted hover:bg-red-50 hover:text-red-600 hover:border-red-300';
             case 'outline':
             default:
-                return 'border-border-muted text-border-muted hover:bg-gray-50';
+                return 'border-border-muted text-border-muted hover:text-primary-light hover:border-primary-light';
         }
     };
 

@@ -83,7 +83,7 @@ const RemoveItemConfirmation: React.FC<RemoveItemConfirmationProps> = ({
             <button
               onClick={onClose}
               disabled={isRemoving}
-              className="px-6 py-3 border border-border-primary text-text-secondary rounded-lg hover:bg-background-secondary transition-colors font-medium typo-body-md-semibold disabled:opacity-50"
+              className="px-6 py-3 border border-border-primary text-text-secondary rounded-lg hover:bg-background-secondary hover:text-primary-light hover:border-primary-light transition-colors font-medium typo-body-md-semibold disabled:opacity-50"
             >
               Cancel
             </button>

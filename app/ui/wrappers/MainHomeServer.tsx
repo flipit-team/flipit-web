@@ -87,7 +87,7 @@ const MainHomeServer = ({ items, auctionItems, defaultCategories, loadMoreRef, l
                         <>
                             <div className='py-9 xs:py-4 xs:mb-4 flex items-center justify-between overflow-hidden'>
                                 <div className='typo-heading_ms xs:typo-heading_sr'>Live Auction</div>
-                                <Link href='/live-auction' className='flex items-center typo-body_mm xs:typo-body_sr text-text_four border border-border_gray rounded-md h-[31px] xs:h-[28px] px-4 xs:px-3 hover:bg-gray-50 transition-colors cursor-pointer'>
+                                <Link href='/live-auction' className='flex items-center typo-body_mm xs:typo-body_sr text-text_four border border-border_gray rounded-md h-[31px] xs:h-[28px] px-4 xs:px-3 hover:bg-gray-50 hover:text-primary-light hover:border-primary-light transition-colors cursor-pointer'>
                                     View all
                                 </Link>
                             </div>

@@ -20,7 +20,7 @@ const SellOptionCard: React.FC<SellOptionCardProps> = ({icon, title, description
             <button
                 onClick={onContinue}
                 className='typo-body_ms xs:typo-body_sr w-full max-w-xs xs:max-w-none py-3 xs:py-2.5 px-6 xs:px-4 border border-primary text-primary
-                   rounded-lg hover:bg-primary/10 transition-colors'
+                   rounded-lg hover:bg-primary/10 hover:text-primary-light hover:border-primary-light transition-colors'
             >
                 Continue
             </button>

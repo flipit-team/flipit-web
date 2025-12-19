@@ -859,10 +859,10 @@ const ManageAuctionDetail = ({auction: propAuction, bids: propBids, isOwner = tr
 
                         {!isOwner && (
                             <div className='flex gap-3 mt-4'>
-                                <button className='flex-1 h-[44px] border border-primary bg-surface-primary-16 text-primary rounded-lg typo-body_lr'>
+                                <button className='flex-1 h-[44px] border border-primary bg-surface-primary-16 text-primary rounded-lg typo-body_lr hover:text-primary-light hover:border-primary-light transition-colors'>
                                     Send Message
                                 </button>
-                                <button className='flex-1 h-[44px] border border-border_gray text-text_four rounded-lg typo-body_lr'>
+                                <button className='flex-1 h-[44px] border border-border_gray text-text_four rounded-lg typo-body_lr hover:text-primary-light hover:border-primary-light transition-colors'>
                                     View Profile
                                 </button>
                             </div>

@@ -194,7 +194,7 @@ const ReviewModal = ({transaction, onClose, onReviewSubmitted}: Props) => {
                                             return newComment.slice(0, 500);
                                         })
                                     }
-                                    className='px-3 py-1 border border-border_gray rounded-full typo-body_sr text-text_four hover:border-primary hover:text-primary transition-colors'
+                                    className='px-3 py-1 border border-border_gray rounded-full typo-body_sr text-text_four hover:border-primary-light hover:text-primary-light transition-colors'
                                 >
                                     + {suggestion}
                                 </button>
@@ -224,7 +224,7 @@ const ReviewModal = ({transaction, onClose, onReviewSubmitted}: Props) => {
                             type='button'
                             onClick={onClose}
                             disabled={isSubmitting}
-                            className='flex-1 h-[48px] border border-border_gray text-text_four rounded-lg typo-body_lr hover:bg-gray-50 disabled:opacity-50'
+                            className='flex-1 h-[48px] border border-border_gray text-text_four rounded-lg typo-body_lr hover:bg-gray-50 hover:text-primary-light hover:border-primary-light transition-colors disabled:opacity-50'
                         >
                             Cancel
                         </button>

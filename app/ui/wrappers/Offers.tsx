@@ -1115,13 +1115,13 @@ const Offers = (props: Props) => {
                     <div className='flex gap-2 xs:w-full xs:justify-end'>
                         <button
                             onClick={() => setShowBudgetManager(true)}
-                            className='px-3 py-2 border border-border_gray rounded-lg typo-body_sr hover:bg-gray-50'
+                            className='px-3 py-2 border border-border_gray rounded-lg typo-body_sr hover:bg-gray-50 hover:text-primary-light hover:border-primary-light transition-colors'
                         >
                             💰 Budget
                         </button>
                         <button
                             onClick={() => setShowNotificationSettings(true)}
-                            className='px-3 py-2 border border-border_gray rounded-lg typo-body_sr hover:bg-gray-50'
+                            className='px-3 py-2 border border-border_gray rounded-lg typo-body_sr hover:bg-gray-50 hover:text-primary-light hover:border-primary-light transition-colors'
                         >
                             🔔 Alerts
                         </button>
@@ -1669,10 +1669,10 @@ const Offers = (props: Props) => {
                                                 <button className='px-4 py-2 bg-primary text-white rounded-lg typo-body_sr hover:bg-primary/90 transition-all'>
                                                     Accept Bid
                                                 </button>
-                                                <button className='px-4 py-2 border border-border_gray text-text_one rounded-lg typo-body_sr hover:bg-gray-50'>
+                                                <button className='px-4 py-2 border border-border_gray text-text_one rounded-lg typo-body_sr hover:bg-gray-50 hover:text-primary-light hover:border-primary-light transition-colors'>
                                                     Reject
                                                 </button>
-                                                <button className='px-4 py-2 border border-border_gray text-text_one rounded-lg typo-body_sr hover:bg-gray-50'>
+                                                <button className='px-4 py-2 border border-border_gray text-text_one rounded-lg typo-body_sr hover:bg-gray-50 hover:text-primary-light hover:border-primary-light transition-colors'>
                                                     Counter Offer
                                                 </button>
                                             </div>
@@ -1712,7 +1712,7 @@ const Offers = (props: Props) => {
                         <div className='flex gap-3'>
                             <button
                                 onClick={() => setShowBudgetManager(false)}
-                                className='flex-1 px-4 py-2 border border-border_gray text-text_one rounded-lg typo-body_lr hover:bg-gray-50'
+                                className='flex-1 px-4 py-2 border border-border_gray text-text_one rounded-lg typo-body_lr hover:bg-gray-50 hover:text-primary-light hover:border-primary-light transition-colors'
                             >
                                 Cancel
                             </button>
@@ -1754,7 +1754,7 @@ const Offers = (props: Props) => {
                                     setShowMaxBidModal(false);
                                     setSelectedBidForMaxBid(null);
                                 }}
-                                className='flex-1 px-4 py-2 border border-border_gray text-text_one rounded-lg typo-body_lr hover:bg-gray-50'
+                                className='flex-1 px-4 py-2 border border-border_gray text-text_one rounded-lg typo-body_lr hover:bg-gray-50 hover:text-primary-light hover:border-primary-light transition-colors'
                             >
                                 Cancel
                             </button>
@@ -1836,7 +1836,7 @@ const Offers = (props: Props) => {
                         <div className='flex gap-3 mt-6'>
                             <button
                                 onClick={() => setShowNotificationSettings(false)}
-                                className='flex-1 px-4 py-2 border border-border_gray text-text_one rounded-lg typo-body_lr hover:bg-gray-50'
+                                className='flex-1 px-4 py-2 border border-border_gray text-text_one rounded-lg typo-body_lr hover:bg-gray-50 hover:text-primary-light hover:border-primary-light transition-colors'
                             >
                                 Cancel
                             </button>
