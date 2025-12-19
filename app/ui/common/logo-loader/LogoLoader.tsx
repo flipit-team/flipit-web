@@ -8,15 +8,15 @@ const LogoLoader = () => {
             <div className='flex flex-col items-center gap-4'>
                 <div className='animate-pulse-smooth'>
                     <Image
-                        src='/logo-text.png'
+                        src='/logos/logo-text-cropped.png'
                         alt='Flipit Logo'
-                        width={250}
-                        height={250}
+                        width={200}
+                        height={79}
                         priority
                         className='object-contain'
                     />
                 </div>
-                <div className='flex gap-3 -mt-6'>
+                <div className='flex gap-3'>
                     <div
                         className='w-2 h-2 bg-primary rounded-full animate-bounce-dot'
                         style={{animationDelay: '0ms'}}

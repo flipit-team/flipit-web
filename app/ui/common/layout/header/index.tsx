@@ -167,8 +167,15 @@ function HeaderContent(props: Props) {
                         />
                     )}
 
-                    <Link href={'/'} className='typo-heading_mb xs:typo-heading_sb xs:text-center'>
-                        Flipit
+                    <Link href={'/'} className='flex items-center'>
+                        <Image
+                            src={'/logos/logo-transparent-cropped.png'}
+                            height={35}
+                            width={89}
+                            alt='Flipit'
+                            className='h-[35px] w-[89px] xs:h-[28px] xs:w-[71px]'
+                            priority
+                        />
                     </Link>
                 </div>
 

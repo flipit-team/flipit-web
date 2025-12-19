@@ -14,7 +14,16 @@ const Login = async ({searchParams}: {searchParams: Promise<{[key: string]: stri
         return (
             <div className='flex-1 grid grid-cols-2 xs:grid-cols-1 w-full xs:grid-sizes'>
                 <div className='w-[454px] xs:w-full mx-auto overflow-y-auto no-scrollbar'>
-                    <div className='typo-heading_sb text-primary flex w-full mt-[46px] xs:justify-center'>Flipit</div>
+                    <div className='flex w-full mt-[46px] xs:justify-center'>
+                        <Image
+                            src={'/logos/logo-text-cropped.png'}
+                            height={35}
+                            width={89}
+                            alt='Flipit'
+                            className='h-[35px] w-[89px]'
+                            priority
+                        />
+                    </div>
 
                     {authValue === 'verify' ? (
                         <VerifyProfile forVerify={true} />
