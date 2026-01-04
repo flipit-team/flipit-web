@@ -47,7 +47,12 @@ const Notifications = () => {
 
             // Navigate to resource link
             if (resourceLink) {
-                router.push(resourceLink);
+                // If resource link contains "offer" or points to offer-related pages, redirect to offers page
+                if (resourceLink.toLowerCase().includes('offer')) {
+                    router.push('/offers');
+                } else {
+                    router.push(resourceLink);
+                }
             }
         } catch (error) {
             console.error('Failed to mark notification as read:', error);
@@ -71,8 +76,8 @@ const Notifications = () => {
                             key={i}
                             onClick={() => handleNotificationClick(item.id, item.resourceLink)}
                             className={`flex items-center border-b border-border_gray w-full p-6 cursor-pointer hover:bg-gray-50 transition-colors ${
-                                !item.read ? 'bg-surface-primary-10' : ''
-                            } ${!item.seen ? 'border-l-4 border-l-secondary' : ''}`}
+                                !item.read ? 'bg-surface-primary-10 border-l-4 border-l-secondary' : ''
+                            }`}
                         >
                             <Image
                                 src={'/speaker.svg'}

@@ -145,7 +145,7 @@ function HeaderContent(props: Props) {
 
     return (
         <>
-            <div className='xs:grid-sizes bg-primary h-[102px] xs:h-[56px] flex items-center xs:justify-between px-[120px] xs:px-0 text-white'>
+            <div className='xs:grid-sizes bg-primary h-[102px] xs:h-[56px] flex items-center xs:justify-between px-[120px] xs:px-0 text-white sticky top-0 z-50'>
                 <div className='flex items-center'>
                     {pathname.includes('messages/m') ? (
                         <Image

@@ -18,6 +18,7 @@ const CountdownTimer = ({endTime, startTime, className = '', variant = 'auction-
     });
     const [status, setStatus] = useState<'not-started' | 'active' | 'ended'>('active');
     const [hasCalledComplete, setHasCalledComplete] = useState(false);
+    const [progressPercentage, setProgressPercentage] = useState(100);
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -61,11 +62,19 @@ const CountdownTimer = ({endTime, startTime, className = '', variant = 'auction-
                     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
                     setTimeLeft({days, hours, minutes, seconds});
+
+                    // Calculate progress percentage
+                    const totalDuration = endTimestamp - (startTimestamp || endTimestamp - (7 * 24 * 60 * 60 * 1000)); // Default to 7 days if no start time
+                    const elapsed = totalDuration - distance;
+                    const percentage = Math.max(0, Math.min(100, ((totalDuration - elapsed) / totalDuration) * 100));
+                    setProgressPercentage(percentage);
                 } else {
                     setTimeLeft({days: 0, hours: 0, minutes: 0, seconds: 0});
+                    setProgressPercentage(0);
                 }
             } else {
                 setTimeLeft({days: 0, hours: 0, minutes: 0, seconds: 0});
+                setProgressPercentage(0);
             }
         }, 1000);
 
@@ -80,7 +89,7 @@ const CountdownTimer = ({endTime, startTime, className = '', variant = 'auction-
         }
 
         const timeStr = `${timeLeft.days}d ${formatTime(timeLeft.hours)}h ${formatTime(timeLeft.minutes)}m ${formatTime(timeLeft.seconds)}s`;
-        
+
         if (status === 'not-started') {
             if (variant === 'auction-card') {
                 return `Starts in ${timeLeft.days} day${timeLeft.days !== 1 ? 's' : ''}`;
@@ -95,12 +104,16 @@ const CountdownTimer = ({endTime, startTime, className = '', variant = 'auction-
     };
 
     return (
-        <div
-            className={`bg-surface-warning-18 px-4 flex items-center justify-center rounded-lg ${className}`}
-        >
-            <p className='typo-body_lm text-text_one'>
-                {getDisplayText()}
-            </p>
+        <div className={`relative rounded-lg overflow-hidden ${className}`}>
+            <div
+                className='absolute inset-0 bg-surface-warning-18 transition-all duration-1000 ease-linear'
+                style={{width: `${progressPercentage}%`}}
+            />
+            <div className='relative px-4 flex items-center justify-center'>
+                <p className='typo-body_lm text-text_one'>
+                    {getDisplayText()}
+                </p>
+            </div>
         </div>
     );
 };

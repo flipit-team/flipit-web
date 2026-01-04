@@ -38,22 +38,8 @@ const Form = () => {
         setDateOfBirth('');
     }, [isLogin]);
 
-    const loginWithGoogle = async () => {
-        try {
-            const { data, error } = await AuthService.getGoogleLoginUrl();
-            if (error) {
-                setErrorMessage(error.message);
-                return;
-            }
-            if (data?.url) {
-                window.location.href = data.url;
-            } else {
-                window.location.href = '/api/auth/google-login';
-            }
-        } catch (error) {
-            setErrorMessage('Failed to initiate Google login');
-            window.location.href = '/api/auth/google-login';
-        }
+    const loginWithGoogle = () => {
+        window.location.href = '/api/auth/google-login';
     };
 
     const pushParam = (param: string) => {
@@ -195,7 +181,7 @@ const Form = () => {
                 }
             } else {
                 // Additional validation for signup
-                if (!phone?.trim() || phone.length < 14) { // +234XXXXXXXXXX = 14 chars minimum
+                if (!phone?.trim() || phone.length < 10) { // Minimum international format (e.g., +1XXXXXXXXXX)
                     const errorDetails = formatErrorForDisplay('Phone number is required');
                     setErrorTitle(errorDetails.title);
                     setErrorMessage(errorDetails.message);

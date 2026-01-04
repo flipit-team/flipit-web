@@ -24,7 +24,33 @@ const MainChats = (props: Props) => {
     const {chatData: serverChatData} = props;
     const [apiChatData, setApiChatData] = useState(serverChatData);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
+    const [lastMessages, setLastMessages] = useState<Record<string, string>>({});
     const hasInit = useRef(false);
+
+    // Fetch last message for each chat
+    const fetchLastMessages = async (chats: Chat[]) => {
+        const messagesMap: Record<string, string> = {};
+
+        await Promise.all(
+            chats.map(async (chat) => {
+                try {
+                    const res = await fetch(`/api/v1/chats/${chat.chatId}/messages`);
+                    if (res.ok) {
+                        const messages = await res.json();
+                        if (messages && messages.length > 0) {
+                            // Get the last message
+                            const lastMsg = messages[messages.length - 1];
+                            messagesMap[chat.chatId] = lastMsg.message;
+                        }
+                    }
+                } catch (error) {
+                    console.error(`Failed to fetch messages for chat ${chat.chatId}:`, error);
+                }
+            })
+        );
+
+        setLastMessages(messagesMap);
+    };
 
     // Fetch chat data from API - only run once
     useEffect(() => {
@@ -43,6 +69,10 @@ const MainChats = (props: Props) => {
                     // Transform the new backend structure to our frontend structure
                     const transformedData = transformChatsResponse(backendData);
                     setApiChatData(transformedData);
+
+                    // Fetch last messages for all chats
+                    const allChats = [...transformedData.buyer, ...transformedData.seller];
+                    await fetchLastMessages(allChats);
                 }
             } catch (error) {
                 console.error('Failed to fetch chats:', error);
@@ -85,6 +115,10 @@ const MainChats = (props: Props) => {
                     const backendData = await res.json();
                     const transformedData = transformChatsResponse(backendData);
                     setApiChatData(transformedData);
+
+                    // Fetch last messages for all chats
+                    const allChats = [...transformedData.buyer, ...transformedData.seller];
+                    await fetchLastMessages(allChats);
                 }
             } catch (error) {
                 console.error('Failed to refresh chats:', error);
@@ -253,24 +287,32 @@ const MainChats = (props: Props) => {
                     </div>
                     {displayedChat?.map((chat: any, i: number) => {
                         const otherPerson = getOtherPerson(chat);
+                        const lastMessage = lastMessages[chat.chatId];
                         return (
                             <div
                                 key={i}
                                 onClick={() => handleChatClick(chat)}
-                                className={`h-[130px] ${chat.chatId === activeChat?.chatId ? 'bg-surface-primary-10' : ''} flex p-6 border-b border-border-secondary cursor-pointer hover:bg-surface-primary-10 transition-colors`}
+                                className={`min-h-[130px] ${chat.chatId === activeChat?.chatId ? 'bg-surface-primary-10' : ''} flex p-6 border-b border-border-secondary cursor-pointer hover:bg-surface-primary-10 transition-colors`}
                             >
                                 <Image
                                     src={otherPerson.avatar || '/placeholder-avatar.svg'}
                                     height={50}
                                     width={50}
                                     alt={otherPerson.name}
-                                    className='h-[50px] w-[50px] mr-4 rounded-full object-cover'
+                                    className='h-[50px] w-[50px] mr-4 rounded-full object-cover flex-shrink-0'
                                 />
-                                <div className='flex-1'>
-                                    <p className='text-primary typo-body_lm capitalize'>{otherPerson.name}</p>
-                                    <p className='typo-body_mr w-[203px] line-clamp-2'>{chat.title}</p>
+                                <div className='flex-1 min-w-0'>
+                                    <p className='text-primary typo-body_lm capitalize mb-1'>{otherPerson.name}</p>
+                                    <p className='typo-body_sm text-text_three mb-1'>
+                                        <span className='font-medium'>Product:</span> {chat.title}
+                                    </p>
+                                    {lastMessage && (
+                                        <p className='typo-body_sr text-text_four truncate'>
+                                            <span className='font-medium'>Message:</span> {lastMessage}
+                                        </p>
+                                    )}
                                 </div>
-                                <div className='flex flex-col items-end gap-2'>
+                                <div className='flex flex-col items-end gap-2 ml-2 flex-shrink-0'>
                                     <p className='typo-body_sr'>{formatMessageTime(chat.dateCreated)}</p>
                                     {chat.unreadCount > 0 && (
                                         <div className='bg-secondary text-white rounded-full h-5 w-5 flex items-center justify-center text-xs font-medium'>
@@ -327,24 +369,32 @@ const MainChats = (props: Props) => {
                     </div>
                     {displayedChat?.map((chat: any, i: number) => {
                         const otherPerson = getOtherPerson(chat);
+                        const lastMessage = lastMessages[chat.chatId];
                         return (
                             <Link
                                 key={i}
                                 href={`/messages/${chat.chatId}`}
-                                className={`h-[130px] ${chat.chatId === activeChat?.chatId ? 'bg-surface-primary-10' : ''} flex p-6 border-b border-border-secondary`}
+                                className={`min-h-[130px] ${chat.chatId === activeChat?.chatId ? 'bg-surface-primary-10' : ''} flex p-6 border-b border-border-secondary`}
                             >
                                 <Image
                                     src={otherPerson.avatar || '/placeholder-avatar.svg'}
                                     height={50}
                                     width={50}
                                     alt={otherPerson.name}
-                                    className='h-[50px] w-[50px] mr-4 rounded-full object-cover'
+                                    className='h-[50px] w-[50px] mr-4 rounded-full object-cover flex-shrink-0'
                                 />
-                                <div className='flex-1'>
-                                    <p className='text-primary typo-body_lm capitalize'>{otherPerson.name}</p>
-                                    <p className='typo-body_mr w-[203px] line-clamp-2'>{chat.title}</p>
+                                <div className='flex-1 min-w-0'>
+                                    <p className='text-primary typo-body_lm capitalize mb-1'>{otherPerson.name}</p>
+                                    <p className='typo-body_sm text-text_three mb-1'>
+                                        <span className='font-medium'>Product:</span> {chat.title}
+                                    </p>
+                                    {lastMessage && (
+                                        <p className='typo-body_sr text-text_four truncate'>
+                                            <span className='font-medium'>Message:</span> {lastMessage}
+                                        </p>
+                                    )}
                                 </div>
-                                <div className='flex flex-col items-end gap-2'>
+                                <div className='flex flex-col items-end gap-2 ml-2 flex-shrink-0'>
                                     <p className='typo-body_sr'>{formatMessageTime(chat.dateCreated)}</p>
                                     {chat.unreadCount > 0 && (
                                         <div className='bg-secondary text-white rounded-full h-5 w-5 flex items-center justify-center text-xs font-medium'>
