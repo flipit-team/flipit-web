@@ -446,6 +446,57 @@
             height: 20px;
             border-radius: 4px;
         }
+
+        /* Checkbox styles */
+        .api-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            margin-right: 10px;
+            accent-color: #10b981;
+        }
+
+        .completed-row {
+            opacity: 0.6;
+            text-decoration: line-through;
+            background: #f0fdf4 !important;
+        }
+
+        .progress-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .progress-summary strong {
+            font-size: 1.2em;
+        }
+
+        .reset-btn {
+            padding: 8px 16px;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            background: #f3f4f6;
+            transform: scale(1.05);
+        }
+
+        .checkbox-cell {
+            text-align: center;
+            width: 50px;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -560,6 +611,14 @@
         <div class="section">
             <h2>🔍 Detailed API Analysis</h2>
 
+            <!-- Progress Summary -->
+            <div class="progress-summary">
+                <div>
+                    <strong id="completedCount">0</strong> / <strong id="totalCount">39</strong> APIs Completed
+                </div>
+                <button class="reset-btn" onclick="resetProgress()">🔄 Reset Progress</button>
+            </div>
+
             <input type="text" class="searchbox" id="searchBox" placeholder="🔍 Search APIs by name, endpoint, or page..." onkeyup="filterAPIs()">
 
             <div class="filter-buttons">
@@ -585,6 +644,7 @@
                 <table class="api-table">
                     <thead>
                         <tr>
+                            <th class="checkbox-cell">✓</th>
                             <th>API Name</th>
                             <th>Wrong Endpoint</th>
                             <th>Correct Endpoint</th>
@@ -594,7 +654,10 @@
                         </tr>
                     </thead>
                     <tbody id="wrong-endpoints-table">
-                        <tr>
+                        <tr id="api-get-notifications">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-get-notifications', this)">
+                            </td>
                             <td class="expandable" onclick="toggleDetails(this)">Get Notifications</td>
                             <td><code>/notifications/get-notifications</code></td>
                             <td><code>/api/v1/notifications</code></td>
@@ -603,7 +666,7 @@
                             <td>1 hour</td>
                         </tr>
                         <tr>
-                            <td colspan="6">
+                            <td colspan="7">
                                 <div class="details">
                                     <strong>Impact:</strong> Notifications page currently broken<br>
                                     <strong>Fix:</strong> Update endpoint in /app/services/notifications.service.ts<br>
@@ -619,7 +682,10 @@ async getNotifications(page = 0, size = 10) {
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="api-mark-notification-read">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-mark-notification-read', this)">
+                            </td>
                             <td class="expandable" onclick="toggleDetails(this)">Mark Notification as Read</td>
                             <td><code>/notifications/{id}/markAsRead</code></td>
                             <td><code>/api/v1/notifications/{id}/markAsRead</code></td>
@@ -628,14 +694,17 @@ async getNotifications(page = 0, size = 10) {
                             <td>30 min</td>
                         </tr>
                         <tr>
-                            <td colspan="6">
+                            <td colspan="7">
                                 <div class="details">
                                     <strong>Impact:</strong> Can't clear notifications<br>
                                     <strong>Fix:</strong> Add /api/v1 prefix to endpoint
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="api-upload-file">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-upload-file', this)">
+                            </td>
                             <td class="expandable" onclick="toggleDetails(this)">Upload File</td>
                             <td><code>/upload</code></td>
                             <td><code>/api/v1/files/upload</code></td>
@@ -644,7 +713,7 @@ async getNotifications(page = 0, size = 10) {
                             <td>2 hours</td>
                         </tr>
                         <tr>
-                            <td colspan="6">
+                            <td colspan="7">
                                 <div class="details">
                                     <strong>Impact:</strong> File uploads may fail inconsistently<br>
                                     <strong>Where Used:</strong> Item images, Auction images, Avatar upload, ID verification<br>
@@ -652,7 +721,10 @@ async getNotifications(page = 0, size = 10) {
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="api-get-states-lgas">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-get-states-lgas', this)">
+                            </td>
                             <td class="expandable" onclick="toggleDetails(this)">Get States/LGAs</td>
                             <td><code>/states</code></td>
                             <td><code>/api/v1/state</code></td>
@@ -661,7 +733,7 @@ async getNotifications(page = 0, size = 10) {
                             <td>1 hour</td>
                         </tr>
                         <tr>
-                            <td colspan="6">
+                            <td colspan="7">
                                 <div class="details">
                                     <strong>Impact:</strong> Location selection broken - HIGH SEVERITY<br>
                                     <strong>Where Used:</strong> Item creation, Auction creation, Shipping<br>
@@ -669,7 +741,10 @@ async getNotifications(page = 0, size = 10) {
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="api-start-chat">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-start-chat', this)">
+                            </td>
                             <td class="expandable" onclick="toggleDetails(this)">Start Chat</td>
                             <td><code>/chats/create</code></td>
                             <td><code>POST /api/v1/chats</code></td>
@@ -678,14 +753,17 @@ async getNotifications(page = 0, size = 10) {
                             <td>1 hour</td>
                         </tr>
                         <tr>
-                            <td colspan="6">
+                            <td colspan="7">
                                 <div class="details">
                                     <strong>Impact:</strong> Chat creation may fail<br>
                                     <strong>Where Used:</strong> Item details page "Start Chat" button
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="api-get-offers-sent">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-get-offers-sent', this)">
+                            </td>
                             <td class="expandable" onclick="toggleDetails(this)">Get Offers Sent</td>
                             <td><code>/api/v1/offer/user/{userId}/offers</code></td>
                             <td><code>/api/v1/offer/user/{userId}/sent</code></td>
@@ -694,14 +772,17 @@ async getNotifications(page = 0, size = 10) {
                             <td>30 min</td>
                         </tr>
                         <tr>
-                            <td colspan="6">
+                            <td colspan="7">
                                 <div class="details">
                                     <strong>Impact:</strong> CRITICAL - Can't see sent offers<br>
                                     <strong>Where Used:</strong> Offers page "Sent" tab
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="api-get-offers-received">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-get-offers-received', this)">
+                            </td>
                             <td class="expandable" onclick="toggleDetails(this)">Get Offers Received</td>
                             <td><code>/api/v1/offer/user/{userId}/offers</code></td>
                             <td><code>/api/v1/offer/user/{userId}/received</code></td>
@@ -710,7 +791,7 @@ async getNotifications(page = 0, size = 10) {
                             <td>30 min</td>
                         </tr>
                         <tr>
-                            <td colspan="6">
+                            <td colspan="7">
                                 <div class="details">
                                     <strong>Impact:</strong> CRITICAL - Can't manage incoming offers<br>
                                     <strong>Where Used:</strong> Offers page "Received" tab
@@ -730,6 +811,7 @@ async getNotifications(page = 0, size = 10) {
                 <table class="api-table">
                     <thead>
                         <tr>
+                            <th class="checkbox-cell">✓</th>
                             <th>API Name</th>
                             <th>Endpoint</th>
                             <th>Where to Use</th>
@@ -739,7 +821,10 @@ async getNotifications(page = 0, size = 10) {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
+                        <tr id="api-user-performance-metrics">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-user-performance-metrics', this)">
+                            </td>
                             <td class="expandable" onclick="toggleDetails(this)">User Performance Metrics</td>
                             <td><code>GET /api/v1/user/performance</code></td>
                             <td>Performance dashboard</td>
@@ -748,7 +833,7 @@ async getNotifications(page = 0, size = 10) {
                             <td>1 hour</td>
                         </tr>
                         <tr>
-                            <td colspan="6">
+                            <td colspan="7">
                                 <div class="details">
                                     <strong>What it returns:</strong><br>
                                     <pre><code>{
@@ -762,7 +847,10 @@ async getNotifications(page = 0, size = 10) {
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="api-email-verification">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-email-verification', this)">
+                            </td>
                             <td class="expandable" onclick="toggleDetails(this)">Email Verification</td>
                             <td><code>GET /api/v1/user/{id}/verify-email</code></td>
                             <td>Settings verification</td>
@@ -771,7 +859,7 @@ async getNotifications(page = 0, size = 10) {
                             <td>2 hours</td>
                         </tr>
                         <tr>
-                            <td colspan="6">
+                            <td colspan="7">
                                 <div class="details">
                                     <strong>Query Param:</strong> ?code={verificationCode}<br>
                                     <strong>Returns:</strong> Success message string<br>
@@ -779,7 +867,10 @@ async getNotifications(page = 0, size = 10) {
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="api-phone-verification">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-phone-verification', this)">
+                            </td>
                             <td class="expandable" onclick="toggleDetails(this)">Phone Verification</td>
                             <td><code>POST /api/v1/user/{id}/verify-phoneNumber</code></td>
                             <td>Settings verification</td>
@@ -788,14 +879,17 @@ async getNotifications(page = 0, size = 10) {
                             <td>1 hour</td>
                         </tr>
                         <tr>
-                            <td colspan="6">
+                            <td colspan="7">
                                 <div class="details">
                                     <strong>Component:</strong> PhoneVerificationStep.tsx<br>
                                     <strong>Action:</strong> Verify using correct endpoint path
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="api-profile-verification">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-profile-verification', this)">
+                            </td>
                             <td class="expandable" onclick="toggleDetails(this)">Profile Verification (KYC)</td>
                             <td><code>POST /api/v1/user/{id}/verifyProfile</code></td>
                             <td>Settings verification</td>
@@ -804,7 +898,7 @@ async getNotifications(page = 0, size = 10) {
                             <td>3 hours</td>
                         </tr>
                         <tr>
-                            <td colspan="6">
+                            <td colspan="7">
                                 <div class="details">
                                     <strong>Required for:</strong> Verified Seller badge<br>
                                     <strong>Uploads:</strong> ID document + BVN<br>
@@ -812,7 +906,10 @@ async getNotifications(page = 0, size = 10) {
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="api-get-users-items">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-get-users-items', this)">
+                            </td>
                             <td class="expandable" onclick="toggleDetails(this)">Get User's Items</td>
                             <td><code>GET /api/v1/items/user/{userId}</code></td>
                             <td>My Adverts page</td>
@@ -821,7 +918,7 @@ async getNotifications(page = 0, size = 10) {
                             <td>2 hours</td>
                         </tr>
                         <tr>
-                            <td colspan="6">
+                            <td colspan="7">
                                 <div class="details">
                                     <strong>Impact:</strong> CRITICAL - Users can't manage listings<br>
                                     <strong>Page:</strong> /app/(user)/(pages)/my-adverts/page.tsx<br>
@@ -829,7 +926,10 @@ async getNotifications(page = 0, size = 10) {
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="api-mark-item-sold">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-mark-item-sold', this)">
+                            </td>
                             <td class="expandable" onclick="toggleDetails(this)">Mark Item as Sold</td>
                             <td><code>PUT /api/v1/items/{id}/markAsSold</code></td>
                             <td>Item management</td>
@@ -838,7 +938,7 @@ async getNotifications(page = 0, size = 10) {
                             <td>2 hours</td>
                         </tr>
                         <tr>
-                            <td colspan="6">
+                            <td colspan="7">
                                 <div class="details">
                                     <strong>Impact:</strong> Items stay active after being sold<br>
                                     <strong>Where:</strong> Manage item page, My adverts<br>
@@ -846,7 +946,10 @@ async getNotifications(page = 0, size = 10) {
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="api-top-nav-data">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-top-nav-data', this)">
+                            </td>
                             <td class="expandable" onclick="toggleDetails(this)">Top Nav Data</td>
                             <td><code>GET /api/v1/home/top_nav</code></td>
                             <td>Navigation bar</td>
@@ -855,14 +958,17 @@ async getNotifications(page = 0, size = 10) {
                             <td>2 hours</td>
                         </tr>
                         <tr>
-                            <td colspan="6">
+                            <td colspan="7">
                                 <div class="details">
                                     <strong>Returns:</strong> Counts for auctions, messages, bids, notifications<br>
                                     <strong>Action:</strong> Replace static counts with real-time data
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="api-get-offers-for-item">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-get-offers-for-item', this)">
+                            </td>
                             <td class="expandable" onclick="toggleDetails(this)">Get Offers for Item</td>
                             <td><code>GET /api/v1/offer/items/{itemId}/offers</code></td>
                             <td>Item management</td>
@@ -871,7 +977,7 @@ async getNotifications(page = 0, size = 10) {
                             <td>1 hour</td>
                         </tr>
                         <tr>
-                            <td colspan="6">
+                            <td colspan="7">
                                 <div class="details">
                                     <strong>Use Case:</strong> Show all offers on a specific item<br>
                                     <strong>Value:</strong> Better offer management for sellers
@@ -896,6 +1002,7 @@ async getNotifications(page = 0, size = 10) {
                 <table class="api-table">
                     <thead>
                         <tr>
+                            <th class="checkbox-cell">✓</th>
                             <th>Category</th>
                             <th>API Name</th>
                             <th>Endpoint Needed</th>
@@ -904,7 +1011,10 @@ async getNotifications(page = 0, size = 10) {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
+                        <tr id="api-accept-offer">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-accept-offer', this)">
+                            </td>
                             <td rowspan="2"><strong>Offers</strong></td>
                             <td class="expandable" onclick="toggleDetails(this)">Accept Offer</td>
                             <td><code>PUT /api/v1/offer/{id}/accept</code></td>
@@ -912,7 +1022,7 @@ async getNotifications(page = 0, size = 10) {
                             <td>3 days</td>
                         </tr>
                         <tr>
-                            <td colspan="4">
+                            <td colspan="5">
                                 <div class="details">
                                     <strong>🔴 CRITICAL BLOCKER</strong> - Entire transaction flow depends on this<br>
                                     <strong>What happens:</strong> Seller accepts → Creates transaction → Locks item → Redirects both parties<br>
@@ -921,7 +1031,10 @@ async getNotifications(page = 0, size = 10) {
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="api-reject-offer">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-reject-offer', this)">
+                            </td>
                             <td></td>
                             <td class="expandable" onclick="toggleDetails(this)">Reject Offer</td>
                             <td><code>PUT /api/v1/offer/{id}/reject</code></td>
@@ -929,14 +1042,17 @@ async getNotifications(page = 0, size = 10) {
                             <td>2 days</td>
                         </tr>
                         <tr>
-                            <td colspan="4">
+                            <td colspan="5">
                                 <div class="details">
                                     <strong>Priority:</strong> P0 - Essential for offer management<br>
                                     <strong>Optional:</strong> Rejection reason field
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="api-create-transaction">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-create-transaction', this)">
+                            </td>
                             <td rowspan="8"><strong>Transactions</strong></td>
                             <td class="expandable" onclick="toggleDetails(this)">Create Transaction</td>
                             <td><code>POST /api/v1/transactions</code></td>
@@ -944,7 +1060,7 @@ async getNotifications(page = 0, size = 10) {
                             <td>5 days</td>
                         </tr>
                         <tr>
-                            <td colspan="4">
+                            <td colspan="5">
                                 <div class="details">
                                     <strong>Triggered by:</strong> Offer acceptance or auction win<br>
                                     <strong>Determines:</strong> Transaction type (CASH_ONLY, ITEM_EXCHANGE, ITEM_PLUS_CASH, AUCTION_WIN)<br>
@@ -953,47 +1069,62 @@ async getNotifications(page = 0, size = 10) {
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="api-get-transaction">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-get-transaction', this)">
+                            </td>
                             <td class="expandable" onclick="toggleDetails(this)">Get Transaction</td>
                             <td><code>GET /api/v1/transactions/{id}</code></td>
                             <td>Retrieves transaction details</td>
                             <td>2 days</td>
                         </tr>
                         <tr>
-                            <td colspan="4">
+                            <td colspan="5">
                                 <div class="details">
                                     <strong>Returns:</strong> Complete transaction data, buyer/seller info, items, payment status, shipping status, timeline<br>
                                     <strong>Page:</strong> /app/(user)/(pages)/transaction/[id]/page.tsx
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="api-update-status">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-update-status', this)">
+                            </td>
                             <td class="expandable" onclick="toggleDetails(this)">Update Status</td>
                             <td><code>PUT /api/v1/transactions/{id}/status</code></td>
                             <td>Updates transaction status</td>
                             <td>3 days</td>
                         </tr>
                         <tr>
-                            <td colspan="4">
+                            <td colspan="5">
                                 <div class="details">
                                     <strong>Status Flow:</strong> OFFER_ACCEPTED → PAYMENT_PENDING → PAYMENT_RECEIVED → SHIPPING_PENDING → IN_TRANSIT → DELIVERED → REVIEW_PENDING → COMPLETED<br>
                                     <strong>Validates:</strong> Status transitions, triggers notifications
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="api-cancel-transaction">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-cancel-transaction', this)">
+                            </td>
                             <td>Cancel Transaction</td>
                             <td><code>PUT /api/v1/transactions/{id}/cancel</code></td>
                             <td>Cancels transaction, handles refunds</td>
                             <td>3 days</td>
                         </tr>
-                        <tr>
+                        <tr id="api-complete-transaction">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-complete-transaction', this)">
+                            </td>
                             <td>Complete Transaction</td>
                             <td><code>PUT /api/v1/transactions/{id}/complete</code></td>
                             <td>Finalizes transaction, releases escrow</td>
                             <td>3 days</td>
                         </tr>
-                        <tr>
+                        <tr id="api-initialize-payment">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-initialize-payment', this)">
+                            </td>
                             <td rowspan="4"><strong>Payment</strong></td>
                             <td class="expandable" onclick="toggleDetails(this)">Initialize Payment</td>
                             <td><code>POST /api/v1/transactions/payment/initialize</code></td>
@@ -1001,7 +1132,7 @@ async getNotifications(page = 0, size = 10) {
                             <td>4 days</td>
                         </tr>
                         <tr>
-                            <td colspan="4">
+                            <td colspan="5">
                                 <div class="details">
                                     <strong>Integration:</strong> Paystack or Flutterwave payment gateway<br>
                                     <strong>Returns:</strong> Authorization URL for redirect<br>
@@ -1009,19 +1140,28 @@ async getNotifications(page = 0, size = 10) {
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="api-verify-payment">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-verify-payment', this)">
+                            </td>
                             <td>Verify Payment</td>
                             <td><code>POST /api/v1/transactions/payment/verify</code></td>
                             <td>Confirms payment, moves to escrow</td>
                             <td>3 days</td>
                         </tr>
-                        <tr>
+                        <tr id="api-release-escrow">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-release-escrow', this)">
+                            </td>
                             <td>Release Escrow</td>
                             <td><code>PUT /api/v1/transactions/{id}/release-escrow</code></td>
                             <td>Pays seller after delivery confirmed</td>
                             <td>4 days</td>
                         </tr>
-                        <tr>
+                        <tr id="api-create-shipment">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-create-shipment', this)">
+                            </td>
                             <td rowspan="4"><strong>Shipping</strong></td>
                             <td class="expandable" onclick="toggleDetails(this)">Create Shipment</td>
                             <td><code>POST /api/v1/shipping/gig/create</code></td>
@@ -1029,7 +1169,7 @@ async getNotifications(page = 0, size = 10) {
                             <td>5 days</td>
                         </tr>
                         <tr>
-                            <td colspan="4">
+                            <td colspan="5">
                                 <div class="details">
                                     <strong>External Integration:</strong> GIG Logistics API<br>
                                     <strong>Generates:</strong> Waybill number<br>
@@ -1038,32 +1178,47 @@ async getNotifications(page = 0, size = 10) {
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="api-track-shipment">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-track-shipment', this)">
+                            </td>
                             <td>Track Shipment</td>
                             <td><code>GET /api/v1/shipping/gig/track/{waybill}</code></td>
                             <td>Real-time delivery tracking</td>
                             <td>2 days</td>
                         </tr>
-                        <tr>
+                        <tr id="api-confirm-delivery">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-confirm-delivery', this)">
+                            </td>
                             <td>Confirm Delivery</td>
                             <td><code>POST /api/v1/transactions/{id}/confirm-delivery</code></td>
                             <td>Buyer confirms receipt, triggers escrow</td>
                             <td>2 days</td>
                         </tr>
-                        <tr>
+                        <tr id="api-open-dispute">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-open-dispute', this)">
+                            </td>
                             <td rowspan="3"><strong>Disputes</strong></td>
                             <td>Open Dispute</td>
                             <td><code>POST /api/v1/transactions/{id}/dispute/open</code></td>
                             <td>Files dispute, pauses escrow</td>
                             <td>4 days</td>
                         </tr>
-                        <tr>
+                        <tr id="api-add-evidence">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-add-evidence', this)">
+                            </td>
                             <td>Add Evidence</td>
                             <td><code>POST /api/v1/transactions/{id}/dispute/{disputeId}/evidence</code></td>
                             <td>Uploads proof (photos, messages)</td>
                             <td>2 days</td>
                         </tr>
-                        <tr>
+                        <tr id="api-resolve-dispute">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-resolve-dispute', this)">
+                            </td>
                             <td>Resolve Dispute</td>
                             <td><code>PUT /api/v1/transactions/{id}/dispute/{disputeId}/resolve</code></td>
                             <td>Admin decision, executes resolution</td>
@@ -1086,6 +1241,7 @@ async getNotifications(page = 0, size = 10) {
                 <table class="api-table">
                     <thead>
                         <tr>
+                            <th class="checkbox-cell">✓</th>
                             <th>API Name</th>
                             <th>Endpoint</th>
                             <th>Purpose</th>
@@ -1094,56 +1250,80 @@ async getNotifications(page = 0, size = 10) {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
+                        <tr id="api-user-reputation">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-user-reputation', this)">
+                            </td>
                             <td>User Reputation</td>
                             <td><code>GET /api/v1/user/{id}/reputation</code></td>
                             <td>Trust badges (Top Seller, Fast Responder)</td>
                             <td><span class="badge priority-p1">P1</span></td>
                             <td>4 days</td>
                         </tr>
-                        <tr>
+                        <tr id="api-response-time-tracking">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-response-time-tracking', this)">
+                            </td>
                             <td>Response Time Tracking</td>
                             <td><code>GET /api/v1/user/{id}/response-metrics</code></td>
                             <td>"Usually responds within X hours"</td>
                             <td><span class="badge priority-p2">P2</span></td>
                             <td>2 days</td>
                         </tr>
-                        <tr>
+                        <tr id="api-block-user">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-block-user', this)">
+                            </td>
                             <td>Block User</td>
                             <td><code>POST /api/v1/user/{id}/block</code></td>
                             <td>Safety: Block users from contacting</td>
                             <td><span class="badge priority-p1">P1</span></td>
                             <td>2 days</td>
                         </tr>
-                        <tr>
+                        <tr id="api-report-user">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-report-user', this)">
+                            </td>
                             <td>Report User</td>
                             <td><code>POST /api/v1/user/{id}/report</code></td>
                             <td>Safety: Report violations</td>
                             <td><span class="badge priority-p1">P1</span></td>
                             <td>2 days</td>
                         </tr>
-                        <tr>
+                        <tr id="api-shipping-quote">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-shipping-quote', this)">
+                            </td>
                             <td>Shipping Quote</td>
                             <td><code>POST /api/v1/shipping/gig/quote</code></td>
                             <td>Calculate shipping cost before transaction</td>
                             <td><span class="badge priority-p1">P1</span></td>
                             <td>2 days</td>
                         </tr>
-                        <tr>
+                        <tr id="api-schedule-pickup">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-schedule-pickup', this)">
+                            </td>
                             <td>Schedule Pickup</td>
                             <td><code>POST /api/v1/shipping/gig/schedule-pickup</code></td>
                             <td>Schedule courier pickup from seller</td>
                             <td><span class="badge priority-p1">P1</span></td>
                             <td>2 days</td>
                         </tr>
-                        <tr>
+                        <tr id="api-inspection-period">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-inspection-period', this)">
+                            </td>
                             <td>Inspection Period</td>
                             <td><code>POST /api/v1/transactions/{id}/start-inspection</code></td>
                             <td>3-day buyer inspection before escrow release</td>
                             <td><span class="badge priority-p0">P0</span></td>
                             <td>3 days</td>
                         </tr>
-                        <tr>
+                        <tr id="api-get-user-transactions">
+                            <td class="checkbox-cell">
+                                <input type="checkbox" class="api-checkbox" onchange="toggleAPI('api-get-user-transactions', this)">
+                            </td>
                             <td>Get User Transactions</td>
                             <td><code>GET /api/v1/transactions/user/{userId}</code></td>
                             <td>Transaction history</td>
@@ -1468,6 +1648,63 @@ async getNotifications(page = 0, size = 10) {
                 });
             });
         }
+
+        // Checkbox and progress tracking
+        function toggleAPI(apiId, checkbox) {
+            const row = document.getElementById(apiId);
+            if (checkbox.checked) {
+                row.classList.add('completed-row');
+                localStorage.setItem(apiId, 'completed');
+            } else {
+                row.classList.remove('completed-row');
+                localStorage.removeItem(apiId);
+            }
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const allCheckboxes = document.querySelectorAll('.api-checkbox');
+            const checkedBoxes = document.querySelectorAll('.api-checkbox:checked');
+
+            document.getElementById('completedCount').textContent = checkedBoxes.length;
+            document.getElementById('totalCount').textContent = allCheckboxes.length;
+        }
+
+        function resetProgress() {
+            if (confirm('Are you sure you want to reset all progress? This will uncheck all APIs.')) {
+                const allCheckboxes = document.querySelectorAll('.api-checkbox');
+                allCheckboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                    const row = checkbox.closest('tr');
+                    if (row) {
+                        row.classList.remove('completed-row');
+                    }
+                });
+                localStorage.clear();
+                updateProgress();
+            }
+        }
+
+        // Load saved progress from localStorage on page load
+        function loadProgress() {
+            const allCheckboxes = document.querySelectorAll('.api-checkbox');
+            allCheckboxes.forEach(checkbox => {
+                const row = checkbox.closest('tr');
+                if (row && row.id) {
+                    const saved = localStorage.getItem(row.id);
+                    if (saved === 'completed') {
+                        checkbox.checked = true;
+                        row.classList.add('completed-row');
+                    }
+                }
+            });
+            updateProgress();
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            loadProgress();
+        });
 
         // Charts
         const ctx = document.getElementById('statusChart').getContext('2d');
