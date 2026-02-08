@@ -72,6 +72,13 @@ export class ItemsService {
     const params = { search: query, page, size };
     return this.getItems(params);
   }
+
+  // Mark item as sold - NEW
+  static async markAsSold(itemId: number) {
+    return handleApiCall(() =>
+      apiClient.put<ItemDTO>(`/v1/items/${itemId}/markAsSold`, {}, { requireAuth: true })
+    );
+  }
 }
 
 export default ItemsService;

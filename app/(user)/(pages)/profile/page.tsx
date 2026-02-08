@@ -6,7 +6,7 @@ import Loading from '~/ui/common/loading/Loading';
 const page = () => {
     try {
         return (
-            <Suspense fallback={<Loading size="md" text="Loading..." />}>
+            <Suspense fallback={<Loading size="md" />}>
                 <Profile />
             </Suspense>
         );

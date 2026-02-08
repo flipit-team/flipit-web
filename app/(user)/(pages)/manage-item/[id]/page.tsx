@@ -30,19 +30,29 @@ async function getItemData(itemId: string, token: string) {
 
 async function getItemOffers(itemId: string, token: string) {
     try {
-        const res = await fetch(`${API_BASE_PATH}/bids/item/${itemId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            cache: 'no-store'
-        });
+        // Fetch both bids (for auctions) and offers (for regular items)
+        const [bidsRes, offersRes] = await Promise.all([
+            fetch(`${API_BASE_PATH}/bids/item/${itemId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                cache: 'no-store'
+            }).catch(() => null),
+            fetch(`${API_BASE_PATH}/offer/items/${itemId}/offers`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                cache: 'no-store'
+            }).catch(() => null)
+        ]);
 
-        if (!res.ok) {
-            return [];
-        }
+        const bids = bidsRes && bidsRes.ok ? await bidsRes.json().catch(() => []) : [];
+        const offers = offersRes && offersRes.ok ? await offersRes.json().catch(() => []) : [];
 
-        return await res.json();
+        // Combine and return both (bids for auctions, offers for regular items)
+        return [...bids, ...offers];
     } catch (error) {
         console.error('Failed to fetch offers:', error);
         return [];

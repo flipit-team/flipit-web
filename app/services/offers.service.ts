@@ -23,10 +23,24 @@ export class OffersService {
     );
   }
 
-  // Get user's offers
+  // Get user's offers (DEPRECATED - use getUserOffersSent or getUserOffersReceived)
   static async getUserOffers(userId: number) {
     return handleApiCall(() =>
       apiClient.get<OfferDTO[]>(`/v1/offer/user/${userId}/offers`, { requireAuth: true })
+    );
+  }
+
+  // Get offers sent by user - NEW
+  static async getUserOffersSent(userId: number) {
+    return handleApiCall(() =>
+      apiClient.get<OfferDTO[]>(`/v1/offer/user/${userId}/sent`, { requireAuth: true })
+    );
+  }
+
+  // Get offers received by user - NEW
+  static async getUserOffersReceived(userId: number) {
+    return handleApiCall(() =>
+      apiClient.get<OfferDTO[]>(`/v1/offer/user/${userId}/received`, { requireAuth: true })
     );
   }
 

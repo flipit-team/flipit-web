@@ -2,6 +2,8 @@
 import { useState, useRef } from 'react';
 import { RefreshCcw } from 'lucide-react';
 import Button from '~/ui/common/button';
+import UserService from '~/services/user.service';
+import { useAppContext } from '~/contexts/AppContext';
 
 interface PhoneVerificationStepProps {
     onComplete: () => void;
@@ -10,7 +12,10 @@ interface PhoneVerificationStepProps {
 
 const PhoneVerificationStep = ({ onComplete, onBack }: PhoneVerificationStepProps) => {
     const [code, setCode] = useState<string[]>(Array(6).fill(''));
+    const [isVerifying, setIsVerifying] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
+    const { user, profile } = useAppContext();
 
     const handleChange = (index: number, value: string) => {
         if (!/^[0-9]?$/.test(value)) return;
@@ -44,16 +49,33 @@ const PhoneVerificationStep = ({ onComplete, onBack }: PhoneVerificationStepProp
         }
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         const fullCode = code.join('');
-        if (fullCode.length === 6) {
-            // Validate OTP here
-            onComplete();
+        if (fullCode.length !== 6 || !profile?.id) return;
+
+        setIsVerifying(true);
+        setError(null);
+
+        try {
+            const result = await UserService.verifyPhoneNumber(profile.id, { code: fullCode });
+
+            if (result.data) {
+                onComplete();
+            } else if (result.error) {
+                setError(result.error.message || 'Verification failed. Please try again.');
+            }
+        } catch (err) {
+            setError('An error occurred. Please try again.');
+        } finally {
+            setIsVerifying(false);
         }
     };
 
-    const handleResendCode = () => {
-        // Implement resend logic
+    const handleResendCode = async () => {
+        // TODO: Implement resend OTP API call when available
+        // For now, just clear the error
+        setError(null);
+        setCode(Array(6).fill(''));
     };
 
     const isCodeComplete = code.every(digit => digit !== '');
@@ -80,26 +102,35 @@ const PhoneVerificationStep = ({ onComplete, onBack }: PhoneVerificationStepProp
                         onPaste={handlePaste}
                         onKeyDown={(e) => handleKeyDown(index, e)}
                         maxLength={1}
+                        disabled={isVerifying}
                         className={`
-                            w-14 h-14 text-center typo-heading-md-semibold border-2 rounded-lg 
+                            w-14 h-14 text-center typo-heading-md-semibold border-2 rounded-lg
                             focus:ring-2 focus:ring-primary focus:border-primary outline-none
                             transition-colors duration-200
                             ${digit ? 'border-primary bg-primary/5' : 'border-gray-300'}
+                            ${isVerifying ? 'opacity-50 cursor-not-allowed' : ''}
                         `}
                     />
                 ))}
             </div>
 
+            {/* Error Message */}
+            {error && (
+                <div className='mb-4 p-3 bg-surface-error border border-error rounded-lg text-error text-sm'>
+                    {error}
+                </div>
+            )}
+
             {/* Action Buttons */}
             <div className='space-y-4'>
-                <Button 
-                    variant='primary' 
-                    size='lg' 
+                <Button
+                    variant='primary'
+                    size='lg'
                     onClick={handleSubmit}
-                    disabled={!isCodeComplete}
+                    disabled={!isCodeComplete || isVerifying}
                     className='w-full'
                 >
-                    Verify Account
+                    {isVerifying ? 'Verifying...' : 'Verify Account'}
                 </Button>
 
                 <div className='text-center'>

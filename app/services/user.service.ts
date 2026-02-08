@@ -78,6 +78,25 @@ export class UserService {
       apiClient.delete<{ message: string }>(`/user/${userId}`, { requireAuth: true })
     );
   }
+
+  // Get user performance metrics - NEW
+  static async getPerformanceMetrics() {
+    return handleApiCall(() =>
+      apiClient.get<{
+        impressionsCount: number;
+        visitorsCount: number;
+        phoneViewsCount: number;
+        chatRequestsCount: number;
+      }>('/v1/user/performance', { requireAuth: true })
+    );
+  }
+
+  // Verify email - NEW
+  static async verifyEmail(userId: number, code: string) {
+    return handleApiCall(() =>
+      apiClient.get<string>(`/v1/user/${userId}/verify-email?code=${code}`, { requireAuth: true })
+    );
+  }
 }
 
 export default UserService;

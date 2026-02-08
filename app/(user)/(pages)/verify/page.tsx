@@ -6,7 +6,7 @@ import Loading from '~/ui/common/loading/Loading';
 export default function page() {
     try {
         return (
-            <Suspense fallback={<Loading size="md" text="Loading..." />}>
+            <Suspense fallback={<Loading size="md" />}>
                 <Verify />
             </Suspense>
         );

@@ -3,10 +3,11 @@ import { useState } from 'react';
 import VerificationSteps from './VerificationSteps';
 import ProfileVerificationStep from './ProfileVerificationStep';
 import PhoneVerificationStep from './PhoneVerificationStep';
+import EmailVerificationStep from './EmailVerificationStep';
 
 const VerificationContent = () => {
     const [currentStep, setCurrentStep] = useState(1);
-    const totalSteps = 2;
+    const totalSteps = 3;
 
     const handleNextStep = () => {
         if (currentStep < totalSteps) {
@@ -31,6 +32,8 @@ const VerificationContent = () => {
                 return 'Verify Your Profile';
             case 2:
                 return 'Verify Your Phone Number';
+            case 3:
+                return 'Verify Your Email';
             default:
                 return 'Verification';
         }
@@ -42,6 +45,8 @@ const VerificationContent = () => {
                 return 'Secure your account and gain trust in the community';
             case 2:
                 return 'Complete your verification by confirming your phone number';
+            case 3:
+                return 'Verify your email address to complete the verification process';
             default:
                 return '';
         }
@@ -68,7 +73,13 @@ const VerificationContent = () => {
                     <ProfileVerificationStep onNext={handleNextStep} />
                 )}
                 {currentStep === 2 && (
-                    <PhoneVerificationStep 
+                    <PhoneVerificationStep
+                        onComplete={handleNextStep}
+                        onBack={handlePreviousStep}
+                    />
+                )}
+                {currentStep === 3 && (
+                    <EmailVerificationStep
                         onComplete={handleComplete}
                         onBack={handlePreviousStep}
                     />

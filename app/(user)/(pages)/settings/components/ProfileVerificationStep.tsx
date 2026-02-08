@@ -5,6 +5,8 @@ import { useState, useRef } from 'react';
 import InputBox from '~/ui/common/input-box';
 import RadioButtons from '~/ui/common/radio-buttons';
 import Button from '~/ui/common/button';
+import UserService from '~/services/user.service';
+import { useAppContext } from '~/contexts/AppContext';
 
 interface ProfileVerificationStepProps {
     onNext: () => void;
@@ -13,9 +15,13 @@ interface ProfileVerificationStepProps {
 const ProfileVerificationStep = ({ onNext }: ProfileVerificationStepProps) => {
     const [profileImage, setProfileImage] = useState<string | null>(null);
     const [documentImage, setDocumentImage] = useState<string | null>(null);
+    const [documentFile, setDocumentFile] = useState<File | null>(null);
     const [fileInfo, setFileInfo] = useState<{ name: string; size: string } | null>(null);
     const [selectedDocType, setSelectedDocType] = useState('');
     const [bvn, setBvn] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const { user, profile } = useAppContext();
 
     const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>, isProfile: boolean) => {
         const file = event.target.files?.[0];
@@ -26,6 +32,7 @@ const ProfileVerificationStep = ({ onNext }: ProfileVerificationStepProps) => {
                     setProfileImage(reader.result as string);
                 } else {
                     setDocumentImage(reader.result as string);
+                    setDocumentFile(file);
                     setFileInfo({
                         name: file.name,
                         size: (file.size / 1024 / 1024).toFixed(2) + ' MB'
@@ -36,10 +43,51 @@ const ProfileVerificationStep = ({ onNext }: ProfileVerificationStepProps) => {
         }
     };
 
-    const handleSubmit = () => {
-        // Validation logic here
-        if (profileImage && bvn && selectedDocType && documentImage) {
-            onNext();
+    const getIdType = () => {
+        switch (selectedDocType) {
+            case 'passport':
+                return 'International_Passport';
+            case 'id':
+                return 'National_ID';
+            case 'license':
+                return 'Drivers_License';
+            default:
+                return '';
+        }
+    };
+
+    const handleSubmit = async () => {
+        // Validation
+        if (!bvn || !selectedDocType || !documentImage || !profile?.id) {
+            setError('Please fill in all required fields');
+            return;
+        }
+
+        setIsSubmitting(true);
+        setError(null);
+
+        try {
+            // TODO: Upload document file to get file path
+            // For now, we'll pass the file name as placeholder
+            const idFilePath = documentFile?.name || '';
+
+            const verificationData = {
+                idType: getIdType(),
+                bvn: bvn,
+                idFilePath: idFilePath
+            };
+
+            const result = await UserService.verifyProfile(profile.id, verificationData);
+
+            if (result.data) {
+                onNext();
+            } else if (result.error) {
+                setError(result.error.message || 'Verification failed. Please try again.');
+            }
+        } catch (err) {
+            setError('An error occurred. Please try again.');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -126,6 +174,7 @@ const ProfileVerificationStep = ({ onNext }: ProfileVerificationStepProps) => {
                             onClick={() => {
                                 setFileInfo(null);
                                 setDocumentImage(null);
+                                setDocumentFile(null);
                             }}
                             className='text-gray-400 hover:text-red-500 transition-colors'
                         >
@@ -137,15 +186,23 @@ const ProfileVerificationStep = ({ onNext }: ProfileVerificationStepProps) => {
                 )}
             </div>
 
+            {/* Error Message */}
+            {error && (
+                <div className='p-3 bg-surface-error border border-error rounded-lg text-error text-sm'>
+                    {error}
+                </div>
+            )}
+
             {/* Continue Button */}
             <div className='pt-6'>
-                <Button 
-                    variant='primary' 
-                    size='lg' 
+                <Button
+                    variant='primary'
+                    size='lg'
                     onClick={handleSubmit}
+                    disabled={isSubmitting}
                     className='w-full'
                 >
-                    Continue
+                    {isSubmitting ? 'Submitting...' : 'Continue'}
                 </Button>
             </div>
         </div>

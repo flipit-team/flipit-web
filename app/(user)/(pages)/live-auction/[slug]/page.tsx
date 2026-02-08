@@ -72,7 +72,7 @@ const page = async ({params}: Props) => {
 
 
         return (
-            <Suspense fallback={<Loading size="md" text="Loading..." />}>
+            <Suspense fallback={<Loading size="md" />}>
                 <LiveAuctionDetails item={item} />
             </Suspense>
         );

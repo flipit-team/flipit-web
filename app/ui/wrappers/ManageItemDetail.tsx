@@ -9,6 +9,7 @@ import ImageGallery from '../common/image-gallery/ImageGallery';
 import RegularButton from '../common/buttons/RegularButton';
 import StarRating from '../common/star-rating/StarRating';
 import TransactionService from '~/services/transaction.service';
+import ItemsService from '~/services/items.service';
 import {TransactionType} from '~/types/transaction';
 import AcceptOfferModal from '../common/modals/AcceptOfferModal';
 import DeclineOfferModal from '../common/modals/DeclineOfferModal';
@@ -208,6 +209,7 @@ const ManageItemDetail = ({item: propItem, offers: propOffers, isAuction = false
     const [hasAcceptedOffer, setHasAcceptedOffer] = useState(false);
     const [activeTab, setActiveTab] = useState<'details' | 'offers'>(isAuction ? 'details' : 'offers');
     const [isCreatingTransaction, setIsCreatingTransaction] = useState(false);
+    const [isMarkingAsSold, setIsMarkingAsSold] = useState(false);
     const [showAcceptModal, setShowAcceptModal] = useState(false);
     const [showDeclineModal, setShowDeclineModal] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -280,6 +282,33 @@ const ManageItemDetail = ({item: propItem, offers: propOffers, isAuction = false
         setSelectedOffer(null);
     };
 
+    const handleMarkAsSold = async () => {
+        if (!item?.id) return;
+
+        setIsMarkingAsSold(true);
+
+        try {
+            const result = await ItemsService.markAsSold(item.id);
+
+            if (result.data) {
+                setShowSuccessModal(true);
+                setErrorMessage('');
+                // Redirect to my adverts page after a delay
+                setTimeout(() => {
+                    router.push('/my-adverts');
+                }, 2000);
+            } else if (result.error) {
+                setErrorMessage(result.error.message || 'Failed to mark item as sold');
+                setShowErrorModal(true);
+            }
+        } catch (err) {
+            setErrorMessage('An error occurred while marking item as sold');
+            setShowErrorModal(true);
+        } finally {
+            setIsMarkingAsSold(false);
+        }
+    };
+
     const pendingOffers = offers.filter((o) => o.status === 'pending');
     const acceptedOffers = offers.filter((o) => o.status === 'accepted');
     const declinedOffers = offers.filter((o) => o.status === 'declined');
@@ -287,9 +316,29 @@ const ManageItemDetail = ({item: propItem, offers: propOffers, isAuction = false
     return (
         <div className='mx-[120px] xs:mx-0 mb-10 mt-10 xs:mt-8 xs:mb-6'>
             {/* Header */}
-            <div className='mb-6 xs:px-4'>
-                <h1 className='typo-heading_ms xs:typo-heading_ss mb-2'>Manage Your Item</h1>
-                <p className='typo-body_mr text-text_four'>View details and manage offers for your listing</p>
+            <div className='mb-6 xs:px-4 flex justify-between items-start'>
+                <div>
+                    <h1 className='typo-heading_ms xs:typo-heading_ss mb-2'>Manage Your Item</h1>
+                    <p className='typo-body_mr text-text_four'>View details and manage offers for your listing</p>
+                </div>
+                <button
+                    onClick={handleMarkAsSold}
+                    disabled={isMarkingAsSold}
+                    className='px-4 py-2 bg-success hover:bg-success/90 text-white rounded-lg typo-body_mm transition-colors disabled:opacity-50 disabled:cursor-not-allowed xs:hidden'
+                >
+                    {isMarkingAsSold ? 'Marking...' : 'Mark as Sold'}
+                </button>
+            </div>
+
+            {/* Mobile Mark as Sold Button */}
+            <div className='hidden xs:block px-4 mb-4'>
+                <button
+                    onClick={handleMarkAsSold}
+                    disabled={isMarkingAsSold}
+                    className='w-full px-4 py-3 bg-success hover:bg-success/90 text-white rounded-lg typo-body_mm transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+                >
+                    {isMarkingAsSold ? 'Marking...' : 'Mark as Sold'}
+                </button>
             </div>
 
             {/* Mobile Tabs */}

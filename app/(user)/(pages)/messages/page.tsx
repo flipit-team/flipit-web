@@ -8,7 +8,7 @@ const page = async () => {
     const data: {buyer: Chat[]; seller: Chat[]} = {buyer: [], seller: []};
     
     return (
-        <Suspense fallback={<div>Loading messages...</div>}>
+        <Suspense>
             <MainChats chatData={data} />
         </Suspense>
     );

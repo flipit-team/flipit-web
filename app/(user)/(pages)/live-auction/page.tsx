@@ -68,14 +68,14 @@ export default async function Page({searchParams}: {searchParams?: Promise<Searc
 
 
         return (
-            <Suspense fallback={<div>Loading auctions...</div>}>
+            <Suspense>
                 <LiveAuctionClient items={transformedItems} defaultCategories={categories} />
             </Suspense>
         );
     } catch (error) {
         // Fallback to empty data if there's an error
         return (
-            <Suspense fallback={<div>Loading auctions...</div>}>
+            <Suspense>
                 <LiveAuctionClient items={[]} defaultCategories={[]} />
             </Suspense>
         );

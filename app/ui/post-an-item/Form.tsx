@@ -607,7 +607,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
             />
 
             <div className='flex gap-4'>
-                <Suspense fallback={<Loading size='sm' text='Loading...' />}>
+                <Suspense fallback={<Loading size='sm' />}>
                     <RegularButton
                         isLight
                         text='Cancel'

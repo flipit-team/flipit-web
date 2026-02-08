@@ -21,12 +21,12 @@ export default function SettingsPage() {
                     
                     {/* Settings Layout */}
                     <div className='flex flex-col md:flex-row md:gap-6 w-full'>
-                        <Suspense fallback={<Loading size="md" text="Loading..." />}>
+                        <Suspense fallback={<Loading size="md" />}>
                             <SettingsSidebar />
                         </Suspense>
-                        
+
                         <div className='flex-1 w-full'>
-                            <Suspense fallback={<Loading size="md" text="Loading..." />}>
+                            <Suspense fallback={<Loading size="md" />}>
                                 <SettingsContent />
                             </Suspense>
                         </div>
