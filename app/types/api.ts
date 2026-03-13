@@ -467,3 +467,75 @@ export type ItemCondition = 'NEW' | 'LIKE_NEW' | 'GOOD' | 'FAIR' | 'POOR';
 export type OfferStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'WITHDRAWN';
 export type AuctionStatus = 'DRAFT' | 'ACTIVE' | 'ENDED' | 'CANCELLED';
 export type NotificationType = 'BID' | 'OFFER' | 'CHAT' | 'AUCTION' | 'SYSTEM';
+
+// Admin Types
+export interface DashboardSummaryDTO {
+  totalListings: number;
+  totalListingsChangePercent: number;
+  customers: number;
+  customersChangePercent: number;
+  totalBids: number;
+  totalBidsChangePercent: number;
+}
+
+export interface ListingsSummaryDTO {
+  activeListings: number;
+  activeListingsChangePercent: number;
+  soldListings: number;
+  soldListingsChangePercent: number;
+  pendingListings: number;
+  pendingListingsChangePercent: number;
+}
+
+export interface ListingDTO {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  status: string;
+  createdAt: string;
+}
+
+export interface CustomersSummaryDTO {
+  totalCustomers: number;
+  totalCustomersChangePercent: number;
+  activeCustomers: number;
+  activeCustomersChangePercent: number;
+  blacklistedCustomers: number;
+  blacklistedCustomersChangePercent: number;
+}
+
+export interface BidsSummaryDTO {
+  totalBids: number;
+  totalBidsChangePercent: number;
+  pendingBids: number;
+  pendingBidsChangePercent: number;
+  acceptedBids: number;
+  acceptedBidsChangePercent: number;
+}
+
+export interface AdminActivityDTO {
+  id: string;
+  timestamp: string;
+  activity: string;
+  userId: string;
+  action: string;
+}
+
+export interface AdminCustomerDTO {
+  custId: string;
+  name: string;
+  email: string;
+  regDate: string;
+  status: string;
+  listingsBids: string;
+}
+
+export interface AdminBidDTO {
+  bidId: string;
+  listingId: string;
+  customerId: string;
+  bidAmount: string;
+  bidDate: string;
+  status: string;
+}
