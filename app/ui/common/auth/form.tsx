@@ -151,7 +151,7 @@ const Form = () => {
         : !!email && !!fullName && !!phone && isStrong;
 
     return (
-        <div className='flex flex-col justify-between min-h-[calc(100vh-200px)] xs:min-h-0 xs:pb-8'>
+        <div className='flex flex-col xs:pb-8'>
             <div className='w-full mt-[32px]'>
                 {errorMessage && (
                     <ErrorDisplay

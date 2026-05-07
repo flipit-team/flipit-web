@@ -11,41 +11,45 @@ const Login = async ({searchParams}: {searchParams: Promise<{[key: string]: stri
         const authValue = resolvedSearchParams.auth;
 
         return (
-            <div className='flex-1 grid grid-cols-2 xs:grid-cols-1 w-full xs:grid-sizes'>
-                <div className='w-[468px] xs:w-full xs:px-6 mx-auto overflow-y-auto no-scrollbar py-[37px]'>
-                    <div className='flex items-center gap-0 xs:justify-center'>
-                        <Image
-                            src={'/images/auth/logo-icon.png'}
-                            height={80}
-                            width={159}
-                            alt='Flipit Logo'
-                            className='h-[80px] w-[159px] -ml-[43px] xs:ml-0'
-                            priority
-                        />
-                    </div>
-                    <div className='-mt-[12px] -ml-[26px] xs:ml-0 xs:flex xs:justify-center'>
-                        <Image
-                            src={'/images/auth/brand-name-tag.png'}
-                            height={55}
-                            width={130}
-                            alt='Flipit'
-                            className='h-[55px] w-[130px] object-contain'
-                            priority
-                        />
-                    </div>
+            <div className='flex-1 grid grid-cols-2 xs:grid-cols-1 w-full xs:grid-sizes h-screen'>
+                <div className='xs:w-full xs:px-6 overflow-y-auto no-scrollbar flex flex-col items-center justify-center h-full'>
+                    <div className='w-[468px] xs:w-full'>
+                        {/* Logo */}
+                        <div className='flex items-center gap-0 xs:justify-center'>
+                            <Image
+                                src={'/images/auth/logo-icon.png'}
+                                height={80}
+                                width={159}
+                                alt='Flipit Logo'
+                                className='h-[80px] w-[159px] -ml-[43px] xs:ml-0'
+                                priority
+                            />
+                        </div>
+                        <div className='-mt-[12px] -ml-[26px] xs:ml-0 xs:flex xs:justify-center'>
+                            <Image
+                                src={'/images/auth/brand-name-tag.png'}
+                                height={55}
+                                width={130}
+                                alt='Flipit'
+                                className='h-[55px] w-[130px] object-contain'
+                                priority
+                            />
+                        </div>
 
-                    {authValue === 'verify' ? (
-                        <VerifyProfile forVerify={true} />
-                    ) : authValue === 'code' ? (
-                        <VerifyProfile forVerify={false} />
-                    ) : authValue === 'reset' ? (
-                        <ResetPassword />
-                    ) : (
-                        <Form />
-                    )}
+                        {/* Form */}
+                        {authValue === 'verify' ? (
+                            <VerifyProfile forVerify={true} />
+                        ) : authValue === 'code' ? (
+                            <VerifyProfile forVerify={false} />
+                        ) : authValue === 'reset' ? (
+                            <ResetPassword />
+                        ) : (
+                            <Form />
+                        )}
+                    </div>
                 </div>
-                <div className='h-full bg-primary text-white flex flex-col items-center rounded-l-[70px] overflow-hidden xs:hidden'>
-                    <div className='mt-[42px]'>
+                <div className='h-full bg-primary text-white flex flex-col items-center justify-center rounded-l-[70px] overflow-hidden xs:hidden'>
+                    <div>
                         <Image
                             src={'/images/auth/auth-illustration.svg'}
                             height={700}
