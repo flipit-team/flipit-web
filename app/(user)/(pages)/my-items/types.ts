@@ -7,6 +7,11 @@ export interface MyItem {
     type: 'auction' | 'listed' | 'deactivated';
     isAuction?: boolean;
     auctionActive?: boolean;
+    auctionStatus?: 'active' | 'closed_successful' | 'closed_failed';
+    auctionEndDate?: string;
+    currentBid?: number;
+    tradeType?: 'cash' | 'swap' | 'mixed';
+    swapCategory?: string;
 }
 
 export type TabType = 'auction' | 'listed' | 'deactivated';

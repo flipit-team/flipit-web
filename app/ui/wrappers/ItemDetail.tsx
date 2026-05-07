@@ -7,6 +7,7 @@ import {createMessage, formatToNaira, timeAgo} from '~/utils/helpers';
 import {ChatService} from '~/services/chat.service';
 import {formatErrorForDisplay} from '~/utils/error-messages';
 import UsedBadge from '../common/badges/UsedBadge';
+import TransactionTypeBadge from '../common/badges/TransactionTypeBadge';
 import {Item} from '~/utils/interface';
 import PopupSheet from '../common/popup-sheet/PopupSheet';
 import ProfilePopup from '../homepage/profile-popup';
@@ -17,6 +18,7 @@ import ReportModalContent from '../homepage/report-issue';
 import CallbackRequest from '../homepage/callback-request';
 import Link from 'next/link';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
+import {ChevronLeft} from 'lucide-react';
 import {useAppContext} from '~/contexts/AppContext';
 import StarRating from '../common/star-rating/StarRating';
 import SendMessage from '../homepage/send-message';
@@ -155,7 +157,14 @@ const ItemDetail = (props: Props) => {
 
     return (
         <>
-            <div className='grid-sizes grid grid-cols-[712px_1fr] xs:grid-cols-1 gap-6 h-full mt-10 xs:mb-6'>
+            <button
+                onClick={() => router.back()}
+                className='flex items-center gap-1 text-text_one typo-body_mr mt-6 mb-4 ml-6 xs:ml-4 cursor-pointer hover:text-primary transition-colors'
+            >
+                <ChevronLeft size={20} />
+                <span>Go Back</span>
+            </button>
+            <div className='grid-sizes grid grid-cols-[712px_1fr] xs:grid-cols-1 gap-6 h-full xs:mb-6'>
                 <div className='p-6 xs:p-0 shadow-lg xs:shadow-none'>
                     <ImageGallery
                         images={item?.imageUrls || []}
@@ -254,59 +263,107 @@ const ItemDetail = (props: Props) => {
                         </table>
                     </div>
                 </div>
-                <div className='p-6 xs:p-0 shadow-lg xs:shadow-none'>
-                    <UsedBadge text={item?.condition} />
-                    <div className='typo-heading_ms xs:typo-heading_ss text-text_one mt-[10px] capitalize'>
-                        {item?.title}
-                    </div>
-                    <p className='typo-heading_sm text-primary xs:typo-body_mm xs:mb-1'>
-                        {formatToNaira(item?.cashAmount ?? 0)}
-                    </p>
-                    <p className='typo-body_mr text-text_four mb-[42px]'>{timeAgo(item?.dateCreated)}</p>
-                    <RegularButton text='Make an offer' slug='make-an-offer' usePopup />
-                    <div className='h-6'></div>
-                    <RegularButton text='Buy right away' isLight action={() => router.push('/transaction/1')} />
+                <div className='xs:p-0'>
+                    {/* Item info box */}
+                    <div className='border border-border_gray rounded-lg p-6 mb-6'>
+                        {/* Trade type badge + description */}
+                        <div className='mb-3'>
+                            {/* Swap only */}
+                            {!item?.acceptCash && !!(item?.flipForImgUrls && item.flipForImgUrls.length > 0) && (
+                                <>
+                                    <div className='flex items-center gap-3 mb-2'>
+                                        <div className='w-fit'>
+                                            <TransactionTypeBadge acceptCash={false} hasSwapItems={true} />
+                                        </div>
+                                        <span className='font-poppins text-[14px] text-text_one'>Seller accepts item trades</span>
+                                    </div>
+                                    <p className='font-poppins text-[14px] text-text_one'>
+                                        Interested in trading? Seller is trading for <span className='font-semibold'>{item?.itemCategory?.name?.toLowerCase() || 'items'}</span>
+                                    </p>
+                                </>
+                            )}
+                            {/* Cash + Swap */}
+                            {item?.acceptCash && !!(item?.flipForImgUrls && item.flipForImgUrls.length > 0) && (
+                                <>
+                                    <div className='flex items-center gap-3 mb-2'>
+                                        <div className='w-fit'>
+                                            <TransactionTypeBadge acceptCash={true} hasSwapItems={true} />
+                                        </div>
+                                        <span className='font-poppins text-[14px] text-text_one'>Seller accepts item trades plus cash</span>
+                                    </div>
+                                    <p className='font-poppins text-[14px] text-text_one'>
+                                        Interested in trading? Seller is trading for <span className='font-semibold'>{item?.itemCategory?.name?.toLowerCase() || 'items'}</span>
+                                    </p>
+                                </>
+                            )}
+                            {/* Cash only */}
+                            {item?.acceptCash && !(item?.flipForImgUrls && item.flipForImgUrls.length > 0) && (
+                                <div className='w-fit'>
+                                    <TransactionTypeBadge acceptCash={true} hasSwapItems={false} />
+                                </div>
+                            )}
+                        </div>
 
-                    <div className='typo-body_mm text-text_one mt-6'>Location</div>
-                    <div className='typo-body_mr text-text_four mb-8'>{item?.location}</div>
-                    <SellersInfo />
-                    <div className='flex mb-4'>
-                        <Image
-                            src={item?.seller?.avatar || '/placeholder-avatar.svg'}
-                            height={52}
-                            width={52}
-                            sizes="52px"
-                            quality={70}
-                            alt={`${item?.seller.firstName} ${item?.seller.lastName}`}
-                            className='h-[52px] w-[52px] rounded-full object-cover'
-                        />
-                        <div className='w-full ml-2'>
-                            <div className='typo-body_lm'>{item?.seller.firstName + ' ' + item?.seller.lastName}</div>
-                            <div className='h-[23px] w-max px-[2px] bg-surface-primary-16 text-primary  flex items-center justify-center rounded typo-body_sr'>
-                                {item?.seller.dateVerified ? 'Verified profile' : 'Unverified profile'}
+                        {/* Title */}
+                        <h2 className='font-poppins font-semibold text-[18px] text-text_one capitalize mt-2'>
+                            {item?.title}
+                        </h2>
+
+                        {/* Price - only show for cash and mixed trade */}
+                        {item?.acceptCash && (
+                            <p className='font-poppins font-semibold text-[16px] text-primary mt-1'>
+                                {formatToNaira(item?.cashAmount ?? 0)}
+                            </p>
+                        )}
+
+                        <p className='font-poppins text-[13px] text-text_four mt-1 mb-4'>{timeAgo(item?.dateCreated)}</p>
+
+                        {/* Action button */}
+                        {item?.acceptCash && !(item?.flipForImgUrls && item.flipForImgUrls.length > 0) ? (
+                            <RegularButton text='Buy Right Away' slug='make-an-offer' usePopup />
+                        ) : !item?.acceptCash && !!(item?.flipForImgUrls && item.flipForImgUrls.length > 0) ? (
+                            <RegularButton text='Make a Barter Offer' slug='make-an-offer' usePopup />
+                        ) : (
+                            <RegularButton text='Make an Offer' slug='make-an-offer' usePopup />
+                        )}
+                    </div>
+
+                    {/* Seller information section */}
+                    <div className='border border-border_gray rounded-lg p-6 mt-8'>
+                        <SellersInfo />
+                        <div className='flex mb-4'>
+                            <Image
+                                src={item?.seller?.avatar || '/placeholder-avatar.svg'}
+                                height={52}
+                                width={52}
+                                sizes="52px"
+                                quality={70}
+                                alt={`${item?.seller.firstName} ${item?.seller.lastName}`}
+                                className='h-[52px] w-[52px] rounded-full object-cover'
+                            />
+                            <div className='w-full ml-2'>
+                                <div className='typo-body_lm'>{item?.seller.firstName + ' ' + item?.seller.lastName}</div>
+                                <div className='h-[23px] w-max px-[2px] bg-surface-primary-16 text-primary flex items-center justify-center rounded typo-body_sr'>
+                                    {item?.seller.dateVerified ? 'Verified profile' : 'Unverified profile'}
+                                </div>
+                                <div className='flex my-1'>
+                                    <StarRating rating={item?.seller.avgRating || item?.seller.avg_rating || 0} size={20} />
+                                </div>
+                                <p className='typo-body_sr text-text_four'>Lagos, Nigeria</p>
                             </div>
-                            <div className='flex my-1'>
-                                <StarRating rating={item?.seller.avgRating || item?.seller.avg_rating || 0} size={20} />
+                        </div>
+                        <div className='flex gap-4'>
+                            <div
+                                onClick={() => pushParam('send-message')}
+                                className='flex-1 border border-primary flex items-center justify-center h-[44px] bg-surface-primary-16 rounded-lg text-primary typo-body_ls cursor-pointer hover:text-primary-light hover:border-primary-light transition-colors'
+                            >
+                                Send a Message
                             </div>
-                            <p className='typo-body_sr text-text_four'>Responds within minutes</p>
-                            <p className='typo-body_sr text-text_four'>Joined Flipit in 2024</p>
                         </div>
                     </div>
-                    <div className='flex gap-6 mb-6'>
-                        <div
-                            onClick={() => pushParam('send-message')}
-                            className={`w-[232px] border border-primary flex items-center justify-center h-[51px] bg-surface-primary-16 rounded-lg text-primary typo-body_ls cursor-pointer hover:text-primary-light hover:border-primary-light transition-colors`}
-                        >
-                            {'Send Message'}
-                        </div>
-                        <div
-                            onClick={() => pushParam('callback-request')}
-                            className={`w-[232px] text-text_four border border-text_four flex items-center justify-center h-[51px] rounded-lg typo-body_ls cursor-pointer`}
-                        >
-                            {'Request Callback'}
-                        </div>
+                    <div className='mt-8'>
+                        <SafetyTips />
                     </div>
-                    <SafetyTips />
                     <div className='flex items-center gap-4 mt-6 justify-self-center'>
                         <div className='typo-body_lm'>{item?.seller.reviewCount || 0} Feedback</div>
                         {(item?.seller.reviewCount || 0) > 0 && (

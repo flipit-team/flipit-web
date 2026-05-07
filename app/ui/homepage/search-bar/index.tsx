@@ -2,8 +2,14 @@
 import Image from 'next/image';
 import React, {useEffect, useState, useTransition, useRef} from 'react';
 import {useSearchParams, useRouter, usePathname} from 'next/navigation';
+import { MapPin, ChevronDown } from 'lucide-react';
 
-const SearchBar = () => {
+interface SearchBarProps {
+    onLocationChange?: (location: string) => void;
+    currentLocation?: string;
+}
+
+const SearchBar = ({ onLocationChange, currentLocation = '' }: SearchBarProps) => {
     const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
@@ -14,25 +20,21 @@ const SearchBar = () => {
     const [isInitialMount, setIsInitialMount] = useState(true);
     const [isPending, startTransition] = useTransition();
 
-    // Skip the initial mount to prevent redirect on page load
     useEffect(() => {
         setIsInitialMount(false);
     }, []);
 
     useEffect(() => {
-        // Don't navigate on initial mount
         if (isInitialMount) return;
 
         const timeout = setTimeout(() => {
             if (query.length >= 1) {
-                // Add search query to current URL using startTransition for non-blocking update
                 const params = new URLSearchParams(searchParams.toString());
                 params.set('q', query);
                 startTransition(() => {
                     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
                 });
             } else if (query.length === 0 && initialQuery) {
-                // Only clear search if there was a previous query
                 const params = new URLSearchParams(searchParams.toString());
                 params.delete('q');
                 const queryString = params.toString();
@@ -40,43 +42,38 @@ const SearchBar = () => {
                     router.replace(`${pathname}${queryString ? '?' + queryString : ''}`, { scroll: false });
                 });
             }
-        }, 500); // debounce delay
+        }, 500);
 
         return () => clearTimeout(timeout);
     }, [query, router, pathname, isInitialMount, searchParams, initialQuery]);
 
     return (
-        <div className='relative h-[49px] w-[586px] xs:w-full xs:flex-none mx-auto my-auto outline-none border-none'>
-            <input
-                ref={inputRef}
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                type='text'
-                placeholder='Search...'
-                style={{ 
-                    width: '100%',
-                    height: '49px',
-                    paddingLeft: '24px',
-                    paddingRight: '16px',
-                    paddingTop: '8px',
-                    paddingBottom: '8px',
-                    backgroundColor: '#ffffff',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '6px',
-                    outline: 'none',
-                    color: '#111827 !important', 
-                    fontSize: '16px !important', 
-                    WebkitTextFillColor: '#111827 !important',
-                    fontFamily: 'system-ui, -apple-system, sans-serif !important',
-                    fontWeight: '400 !important',
-                    textShadow: 'none !important',
-                    opacity: '1 !important',
-                    WebkitAppearance: 'none' as any,
-                    MozAppearance: 'textfield' as any
-                }}
-            />
-            <div className='h-[49px] w-[49px] absolute top-[0px] right-0 bg-background-tinted rounded-r-md flex items-center justify-center'>
-                <Image className='h-6 w-6 cursor-pointer' src={'/search.svg'} alt='search' height={24} width={24} />
+        <div className='w-full h-[116px] xs:h-auto bg-primary flex flex-col items-center justify-center gap-[7px] xs:gap-3 xs:px-4 xs:py-4'>
+            <div className='flex items-center gap-4 xs:flex-col xs:gap-2 xs:w-full'>
+                <span className='font-poppins text-[12px] leading-[1.6] text-white'>Items near me</span>
+                <button
+                    onClick={() => onLocationChange?.('')}
+                    className='flex items-center gap-2 border border-white/30 rounded px-3 py-1.5 text-white hover:bg-white/10 transition-colors'
+                >
+                    <MapPin size={16} className='text-white' />
+                    <span className='font-poppins text-[12px] leading-[1.5] font-medium text-white'>
+                        {currentLocation || 'Select location'}
+                    </span>
+                    <ChevronDown size={14} className='text-white' />
+                </button>
+            </div>
+            <div className='relative h-[49px] w-[586px] xs:w-full'>
+                <input
+                    ref={inputRef}
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    type='text'
+                    placeholder='Search for items'
+                    className='w-full h-[49px] pl-6 pr-[50px] bg-white border border-gray-300 rounded-md outline-none text-[14px] text-gray-900 font-poppins placeholder:text-gray-500'
+                />
+                <div className='h-[49px] w-[49px] absolute top-0 right-0 bg-background-tinted rounded-r-md flex items-center justify-center'>
+                    <Image className='h-6 w-6 cursor-pointer' src={'/search.svg'} alt='search' height={24} width={24} />
+                </div>
             </div>
         </div>
     );

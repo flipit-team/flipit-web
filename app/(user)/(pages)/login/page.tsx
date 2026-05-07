@@ -7,20 +7,29 @@ import ResetPassword from '~/ui/common/auth/ResetPassword';
 
 const Login = async ({searchParams}: {searchParams: Promise<{[key: string]: string | undefined}>}) => {
     try {
-        const resolvedSearchParams = await searchParams; // Await the searchParams
-
-        const authValue = resolvedSearchParams.auth; // Now you can access `auth`
+        const resolvedSearchParams = await searchParams;
+        const authValue = resolvedSearchParams.auth;
 
         return (
             <div className='flex-1 grid grid-cols-2 xs:grid-cols-1 w-full xs:grid-sizes'>
-                <div className='w-[454px] xs:w-full mx-auto overflow-y-auto no-scrollbar'>
-                    <div className='flex w-full mt-[46px] xs:justify-center'>
+                <div className='w-[468px] xs:w-full xs:px-6 mx-auto overflow-y-auto no-scrollbar py-[37px]'>
+                    <div className='flex items-center gap-0 xs:justify-center'>
                         <Image
-                            src={'/logos/logo-text-cropped.png'}
-                            height={35}
-                            width={89}
+                            src={'/images/auth/logo-icon.png'}
+                            height={80}
+                            width={159}
+                            alt='Flipit Logo'
+                            className='h-[80px] w-[159px] -ml-[43px] xs:ml-0'
+                            priority
+                        />
+                    </div>
+                    <div className='-mt-[12px] -ml-[26px] xs:ml-0 xs:flex xs:justify-center'>
+                        <Image
+                            src={'/images/auth/brand-name-tag.png'}
+                            height={55}
+                            width={130}
                             alt='Flipit'
-                            className='h-[35px] w-[89px]'
+                            className='h-[55px] w-[130px] object-contain'
                             priority
                         />
                     </div>
@@ -35,21 +44,25 @@ const Login = async ({searchParams}: {searchParams: Promise<{[key: string]: stri
                         <Form />
                     )}
                 </div>
-                <div className='h-full bg-primary text-white flex items-center justify-center flex-col xs:hidden'>
-                    <Image
-                        src={'/auth-banner.png'}
-                        height={365}
-                        width={365}
-                        sizes="365px"
-                        priority
-                        quality={85}
-                        alt='banner'
-                        className='h-[365px] w-[365px]'
-                    />
-                    <h2 className='typo-heading_lb mt-[31px]'>Trade smart, swap easy</h2>
-                    <p className='w-[492px] typo-heading_sr text-center  mt-2'>
-                        Turn the items you have into the ones you need. Start trading today!
-                    </p>
+                <div className='h-full bg-primary text-white flex flex-col items-center rounded-l-[70px] overflow-hidden xs:hidden'>
+                    <div className='mt-[42px]'>
+                        <Image
+                            src={'/images/auth/auth-illustration.svg'}
+                            height={700}
+                            width={500}
+                            priority
+                            alt='E-commerce illustration'
+                            className='w-[500px] h-[700px]'
+                        />
+                    </div>
+                    <div className='w-[492px] mt-[4px]'>
+                        <h2 className='font-poppins font-bold text-[32px] leading-[1.6] text-right'>
+                            Trade Freely. Connect Simply
+                        </h2>
+                        <p className='font-poppins font-normal text-[20px] leading-[1.6] text-center mt-1'>
+                            Turn the items you have into the ones you need. Start trading today!
+                        </p>
+                    </div>
                 </div>
             </div>
         );

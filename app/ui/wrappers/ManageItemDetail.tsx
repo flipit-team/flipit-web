@@ -2,6 +2,7 @@
 import Image from 'next/image';
 import React, {useState} from 'react';
 import {useRouter} from 'next/navigation';
+import {ChevronLeft} from 'lucide-react';
 import {formatToNaira, timeAgo} from '~/utils/helpers';
 import {useAppContext} from '~/contexts/AppContext';
 import UsedBadge from '../common/badges/UsedBadge';
@@ -204,8 +205,9 @@ interface Props {
 const ManageItemDetail = ({item: propItem, offers: propOffers, isAuction = false}: Props) => {
     // Use provided data or fall back to dummy data
     const item = propItem || (isAuction ? dummyAuctionItem : dummyItem);
-    // Use dummy data if no offers provided or if the array is empty
-    const [offers, setOffers] = useState<Offer[]>(propOffers && propOffers.length > 0 ? propOffers : dummyOffers);
+    // TODO: Replace with real API data once offer endpoints return matching shape
+    // Currently using dummy data so the UI can be previewed
+    const [offers, setOffers] = useState<Offer[]>(dummyOffers);
     const [hasAcceptedOffer, setHasAcceptedOffer] = useState(false);
     const [activeTab, setActiveTab] = useState<'details' | 'offers'>(isAuction ? 'details' : 'offers');
     const [isCreatingTransaction, setIsCreatingTransaction] = useState(false);
@@ -314,32 +316,28 @@ const ManageItemDetail = ({item: propItem, offers: propOffers, isAuction = false
     const declinedOffers = offers.filter((o) => o.status === 'declined');
 
     return (
-        <div className='mx-[120px] xs:mx-0 mb-10 mt-10 xs:mt-8 xs:mb-6'>
-            {/* Header */}
-            <div className='mb-6 xs:px-4 flex justify-between items-start'>
-                <div>
-                    <h1 className='typo-heading_ms xs:typo-heading_ss mb-2'>Manage Your Item</h1>
-                    <p className='typo-body_mr text-text_four'>View details and manage offers for your listing</p>
-                </div>
-                <button
-                    onClick={handleMarkAsSold}
-                    disabled={isMarkingAsSold}
-                    className='px-4 py-2 bg-success hover:bg-success/90 text-white rounded-lg typo-body_mm transition-colors disabled:opacity-50 disabled:cursor-not-allowed xs:hidden'
-                >
-                    {isMarkingAsSold ? 'Marking...' : 'Mark as Sold'}
-                </button>
-            </div>
+        <div className='mx-[120px] xs:mx-0 mb-10 mt-6 xs:mt-4 xs:mb-6'>
+            {/* Go Back */}
+            <button
+                onClick={() => router.back()}
+                className='flex items-center gap-1 text-primary font-poppins text-[14px] mb-6 xs:px-4 cursor-pointer hover:opacity-80 transition-opacity'
+            >
+                <ChevronLeft size={18} />
+                <span>Go Back</span>
+            </button>
 
-            {/* Mobile Mark as Sold Button */}
-            <div className='hidden xs:block px-4 mb-4'>
+            {/* Header */}
+            <div className='mb-2 xs:px-4 flex justify-between items-center'>
+                <h1 className='font-poppins font-semibold text-[20px] text-text_one'>Manage your Listed Items</h1>
                 <button
                     onClick={handleMarkAsSold}
                     disabled={isMarkingAsSold}
-                    className='w-full px-4 py-3 bg-success hover:bg-success/90 text-white rounded-lg typo-body_mm transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+                    className='px-4 py-2 border border-text_one text-text_one rounded-lg font-poppins text-[13px] font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed xs:hidden'
                 >
-                    {isMarkingAsSold ? 'Marking...' : 'Mark as Sold'}
+                    {isMarkingAsSold ? 'Marking...' : 'Mark as sold'}
                 </button>
             </div>
+            <p className='font-poppins text-[14px] text-text_four mb-6 xs:px-4'>View details and manage offers for your listing</p>
 
             {/* Mobile Tabs */}
             <div className='hidden xs:flex border-b border-border_gray mb-4 px-4'>
@@ -479,23 +477,27 @@ const ManageItemDetail = ({item: propItem, offers: propOffers, isAuction = false
                                 <tbody>
                                     <tr>
                                         <td className='pr-8 py-1 text-text_four'>Category</td>
-                                        <td className='text-text_one'>{item.category}</td>
+                                        <td className='text-text_one text-right'>{item.category}</td>
                                     </tr>
                                     <tr>
-                                        <td className='pr-8 py-1 text-text_four'>Subcategory</td>
-                                        <td className='text-text_one'>{item.subcategory}</td>
+                                        <td className='pr-8 py-1 text-text_four'>SubCategory</td>
+                                        <td className='text-text_one text-right'>{item.subcategory}</td>
                                     </tr>
                                     <tr>
                                         <td className='pr-8 py-1 text-text_four'>Brand</td>
-                                        <td className='text-text_one'>{item.brand}</td>
+                                        <td className='text-text_one text-right'>{item.brand}</td>
                                     </tr>
                                     <tr>
                                         <td className='pr-8 py-1 text-text_four'>Condition</td>
-                                        <td className='text-text_one'>{item.condition}</td>
+                                        <td className='text-text_one text-right'>{item.condition}</td>
                                     </tr>
                                     <tr>
                                         <td className='pr-8 py-1 text-text_four'>Location</td>
-                                        <td className='text-text_one'>{item.location}</td>
+                                        <td className='text-text_one text-right'>{item.location}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className='pr-8 py-1 text-text_four'>Trade Type</td>
+                                        <td className='text-text_one text-right'>Swap only</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -526,93 +528,83 @@ const ManageItemDetail = ({item: propItem, offers: propOffers, isAuction = false
                         {/* Pending Offers */}
                         {pendingOffers.length > 0 && (
                             <div className='mb-6'>
-                                <h3 className='typo-body_lm text-text_one mb-4'>Pending ({pendingOffers.length})</h3>
+                                <div className='flex items-center justify-between mb-4'>
+                                    <h3 className='font-poppins text-[14px] text-text_four'>Pending ({pendingOffers.length})</h3>
+                                    <span className='font-poppins text-[13px] text-text_one cursor-pointer hover:text-primary'>View All</span>
+                                </div>
                                 <div className='space-y-4'>
                                     {pendingOffers.map((offer) => (
                                         <div
                                             key={offer.id}
-                                            className='border border-primary/30 rounded-lg p-4 bg-surface-primary-10'
+                                            className='border-2 border-primary rounded-[20px] bg-[#C9EBF4] px-[40px] py-[18px] flex flex-col items-end gap-3'
                                         >
-                                            {/* Bidder Info */}
-                                            <div className='flex items-start gap-3 mb-4'>
-                                                <Image
-                                                    src={offer.bidder.avatar}
-                                                    alt={offer.bidder.name}
-                                                    width={48}
-                                                    height={48}
-                                                    sizes='48px'
-                                                    quality={70}
-                                                    className='rounded-full object-cover'
-                                                />
-                                                <div className='flex-1'>
-                                                    <div className='flex items-center gap-2'>
-                                                        <span className='typo-body_lm text-text_one'>
+                                            {/* Posted time */}
+                                            <p className='font-poppins text-[16px] text-[#A49E9E]'>
+                                                {timeAgo(offer.dateCreated)}
+                                            </p>
+
+                                            {/* Bidder Info row */}
+                                            <div className='flex items-center w-full'>
+                                                <div className='flex items-center gap-2'>
+                                                    <Image
+                                                        src={offer.bidder.avatar}
+                                                        alt={offer.bidder.name}
+                                                        width={40}
+                                                        height={40}
+                                                        sizes='40px'
+                                                        quality={70}
+                                                        className='rounded-full w-[40px] h-[40px] object-cover'
+                                                    />
+                                                    <div>
+                                                        <span className='font-poppins text-[16px] text-[#333333]'>
                                                             {offer.bidder.name}
                                                         </span>
-                                                        {offer.bidder.verified && (
-                                                            <div className='h-[18px] px-1 bg-surface-primary-16 text-primary flex items-center justify-center rounded typo-body_xs'>
-                                                                Verified
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                    <div className='flex items-center gap-2 mt-1'>
-                                                        <StarRating rating={offer.bidder.rating} size={16} />
-                                                        <span className='typo-body_sr text-text_four'>
-                                                            {timeAgo(offer.dateCreated)}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Offer Details */}
-                                            <div className='bg-white rounded-lg p-3 mb-4'>
-                                                {offer.withCash && offer.cashAmount && (
-                                                    <div className='mb-2'>
-                                                        <span className='typo-body_sr text-text_four'>Cash Offer:</span>
-                                                        <p className='typo-heading_sm text-primary'>
-                                                            {formatToNaira(offer.cashAmount)}
-                                                        </p>
-                                                    </div>
-                                                )}
-                                                {offer.offeredItem && (
-                                                    <div className='flex items-center gap-3 pt-2 border-t border-border_gray'>
-                                                        <Image
-                                                            src={offer.offeredItem.image}
-                                                            alt={offer.offeredItem.title}
-                                                            width={48}
-                                                            height={48}
-                                                            sizes='48px'
-                                                            quality={70}
-                                                            className='rounded object-cover'
-                                                        />
-                                                        <div>
-                                                            <p className='typo-body_mr text-text_one'>
-                                                                {offer.offeredItem.title}
-                                                            </p>
-                                                            <p className='typo-body_sr text-text_four'>
-                                                                Value: {formatToNaira(offer.offeredItem.value)}
-                                                            </p>
+                                                        <div className='flex items-center gap-1'>
+                                                            <Image src='/star.svg' alt='star' width={16} height={16} className='w-4 h-4' />
+                                                            <span className='font-poppins font-semibold text-[16px] text-[#4D4D4D]'>{offer.bidder.rating}</span>
                                                         </div>
                                                     </div>
+                                                </div>
+                                                {offer.bidder.verified && (
+                                                    <span className='font-poppins text-[16px] text-primary ml-8'>Verified profile</span>
                                                 )}
+                                            </div>
+
+                                            {/* Offer Details Box */}
+                                            <div className='bg-white rounded-lg w-full py-3 px-4'>
+                                                {offer.offeredItem ? (
+                                                    <>
+                                                        <p className='font-poppins font-semibold text-[16px] text-[#333333]'>Swap Offer</p>
+                                                        <p className='font-poppins font-semibold text-[16px] text-primary'>
+                                                            {offer.offeredItem.title}
+                                                        </p>
+                                                    </>
+                                                ) : offer.withCash && offer.cashAmount ? (
+                                                    <>
+                                                        <p className='font-poppins font-semibold text-[16px] text-[#333333]'>Cash Offer</p>
+                                                        <p className='font-poppins font-semibold text-[16px] text-primary'>
+                                                            {formatToNaira(offer.cashAmount)}
+                                                        </p>
+                                                    </>
+                                                ) : null}
                                             </div>
 
                                             {/* Actions */}
-                                            <div className='flex gap-3'>
+                                            <div className='flex gap-6 justify-end w-full'>
                                                 <button
                                                     onClick={() => handleAcceptOfferClick(offer.id)}
                                                     disabled={hasAcceptedOffer || isCreatingTransaction}
-                                                    className={`flex-1 h-[42px] rounded-lg typo-body_lr ${
+                                                    className={`px-10 py-2.5 rounded-lg font-poppins text-[16px] ${
                                                         hasAcceptedOffer || isCreatingTransaction
                                                             ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                                                             : 'bg-primary text-white hover:bg-primary/90'
                                                     }`}
                                                 >
-                                                    {isCreatingTransaction ? 'Accepting...' : 'Accept Offer'}
+                                                    Accept
                                                 </button>
                                                 <button
                                                     onClick={() => handleDeclineOfferClick(offer.id)}
-                                                    className='flex-1 h-[42px] border border-text_four text-text_four rounded-lg typo-body_lr hover:bg-gray-50 hover:text-primary-light hover:border-primary-light transition-colors'
+                                                    className='px-10 py-2.5 border border-primary text-primary rounded-lg font-poppins text-[16px] hover:bg-white/50 transition-colors'
                                                 >
                                                     Decline
                                                 </button>
@@ -626,35 +618,59 @@ const ManageItemDetail = ({item: propItem, offers: propOffers, isAuction = false
                         {/* Accepted Offers */}
                         {acceptedOffers.length > 0 && (
                             <div className='mb-6'>
-                                <h3 className='typo-body_lm text-text_one mb-4'>Accepted ({acceptedOffers.length})</h3>
+                                <h3 className='font-poppins text-[14px] text-text_four mb-4'>Accepted</h3>
                                 <div className='space-y-4'>
                                     {acceptedOffers.map((offer) => (
                                         <div
                                             key={offer.id}
-                                            className='border border-green-200 rounded-lg p-4 bg-green-50'
+                                            className='border-2 border-[#08973F] rounded-[20px] bg-[#C9FFDF] px-[40px] py-[18px] flex flex-col gap-3'
                                         >
-                                            <div className='flex items-start gap-3 mb-3'>
-                                                <Image
-                                                    src={offer.bidder.avatar}
-                                                    alt={offer.bidder.name}
-                                                    width={40}
-                                                    height={40}
-                                                    sizes='40px'
-                                                    quality={70}
-                                                    className='rounded-full object-cover'
-                                                />
-                                                <div className='flex-1'>
-                                                    <span className='typo-body_lm text-text_one'>
-                                                        {offer.bidder.name}
-                                                    </span>
-                                                    <p className='typo-body_sr text-text_four'>
-                                                        {timeAgo(offer.dateCreated)}
-                                                    </p>
+                                            {/* Top row: posted time + accepted badge */}
+                                            <div className='flex items-center justify-between'>
+                                                <p className='font-poppins text-[16px] text-[#A49E9E]'>
+                                                    {timeAgo(offer.dateCreated)}
+                                                </p>
+                                                <div className='flex items-center gap-1 text-[#08973F]'>
+                                                    <svg className='w-5 h-5' fill='currentColor' viewBox='0 0 20 20'><path fillRule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clipRule='evenodd' /></svg>
+                                                    <span className='font-poppins text-[16px]'>Accepted</span>
                                                 </div>
-                                                <div className='text-green-600 typo-body_sr'>✓ Accepted</div>
                                             </div>
-                                            {offer.withCash && offer.cashAmount && (
-                                                <p className='typo-body_mm text-green-800'>
+
+                                            {/* Bidder info */}
+                                            <div className='flex items-center w-full'>
+                                                <div className='flex items-center gap-2'>
+                                                    <Image
+                                                        src={offer.bidder.avatar}
+                                                        alt={offer.bidder.name}
+                                                        width={40}
+                                                        height={40}
+                                                        sizes='40px'
+                                                        quality={70}
+                                                        className='rounded-full w-[40px] h-[40px] object-cover'
+                                                    />
+                                                    <div>
+                                                        <span className='font-poppins text-[16px] text-[#333333]'>
+                                                            {offer.bidder.name}
+                                                        </span>
+                                                        <div className='flex items-center gap-1'>
+                                                            <Image src='/star.svg' alt='star' width={16} height={16} className='w-4 h-4' />
+                                                            <span className='font-poppins font-semibold text-[16px] text-[#4D4D4D]'>{offer.bidder.rating}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {offer.bidder.verified && (
+                                                    <span className='font-poppins text-[16px] text-primary ml-8'>Verified profile</span>
+                                                )}
+                                            </div>
+
+                                            {/* Offered item */}
+                                            {offer.offeredItem && (
+                                                <p className='font-poppins text-[16px] text-[#08973F]'>
+                                                    {offer.offeredItem.title}
+                                                </p>
+                                            )}
+                                            {offer.withCash && offer.cashAmount && !offer.offeredItem && (
+                                                <p className='font-poppins text-[16px] text-[#08973F]'>
                                                     {formatToNaira(offer.cashAmount)}
                                                 </p>
                                             )}
@@ -667,38 +683,36 @@ const ManageItemDetail = ({item: propItem, offers: propOffers, isAuction = false
                         {/* Declined Offers */}
                         {declinedOffers.length > 0 && (
                             <div>
-                                <h3 className='typo-body_lm text-text_four mb-4'>Declined ({declinedOffers.length})</h3>
-                                <div className='space-y-4'>
+                                <h3 className='font-poppins text-[14px] text-text_four mb-4'>Declined ({declinedOffers.length})</h3>
+                                <div className='space-y-3'>
                                     {declinedOffers.map((offer) => (
                                         <div
                                             key={offer.id}
-                                            className='border border-border_gray rounded-lg p-4 bg-gray-50 opacity-60'
+                                            className='border border-[#E8E8E8] rounded-2xl p-4'
                                         >
-                                            <div className='flex items-start gap-3'>
+                                            <div className='flex items-center gap-3'>
                                                 <Image
                                                     src={offer.bidder.avatar}
                                                     alt={offer.bidder.name}
-                                                    width={40}
-                                                    height={40}
-                                                    sizes='40px'
+                                                    width={44}
+                                                    height={44}
+                                                    sizes='44px'
                                                     quality={70}
-                                                    className='rounded-full object-cover'
+                                                    className='rounded-full w-[44px] h-[44px] object-cover'
                                                 />
                                                 <div className='flex-1'>
-                                                    <span className='typo-body_lr text-text_four'>
+                                                    <p className='font-poppins font-semibold text-[14px] text-text_one'>
                                                         {offer.bidder.name}
-                                                    </span>
-                                                    <p className='typo-body_sr text-text_four'>
+                                                    </p>
+                                                    <p className='font-poppins text-[12px] text-text_four'>
+                                                        {offer.offeredItem ? offer.offeredItem.title : offer.cashAmount ? formatToNaira(offer.cashAmount) : ''}
+                                                    </p>
+                                                    <p className='font-poppins text-[11px] text-text_four'>
                                                         {timeAgo(offer.dateCreated)}
                                                     </p>
                                                 </div>
-                                                <div className='text-text_four typo-body_sr'>Declined</div>
+                                                <span className='font-poppins text-[13px] text-text_four'>Declined</span>
                                             </div>
-                                            {offer.withCash && offer.cashAmount && (
-                                                <p className='typo-body_mr text-text_four mt-2'>
-                                                    {formatToNaira(offer.cashAmount)}
-                                                </p>
-                                            )}
                                         </div>
                                     ))}
                                 </div>

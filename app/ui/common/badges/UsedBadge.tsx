@@ -1,16 +1,28 @@
 import React from 'react';
 
 const UsedBadge = ({text}: {text?: string | null}) => {
+    const normalized = text?.toLowerCase() || '';
+
     const getVal = () => {
-        if (text?.toLowerCase() === 'new') {
-            return 'Brand New';
+        if (normalized === 'new' || normalized === 'brand new') return 'Brand new';
+        if (normalized === 'used') return 'Used';
+        return 'Fairly used';
+    };
+
+    const getStyles = () => {
+        if (normalized === 'new' || normalized === 'brand new') {
+            return 'bg-[#BEDAFF] text-[#00BBFF]';
         }
-        return 'Fairly Used';
+        if (normalized === 'used') {
+            return 'bg-[#F2CAC2] text-[#FF674B]';
+        }
+        // Fairly used (default)
+        return 'bg-[#FFF4EE] text-[#E46A2D]';
     };
 
     return (
         <span
-            className={`flex items-center px-2 h-[26px] w-max xs:h-[18px] typo-body_sr ${text?.toLowerCase() === 'new' ? 'bg-surface-light text-primary' : 'bg-surface-cream text-warning'} capitalize`}
+            className={`flex items-center px-4 py-2 w-max rounded-lg font-poppins text-[12px] leading-[1.6] ${getStyles()}`}
         >
             {getVal()}
         </span>

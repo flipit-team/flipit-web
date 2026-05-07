@@ -15,10 +15,7 @@ const Form = () => {
     const { login, signup } = useAuth();
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
-    const [firstname, setFirstname] = useState('');
-    const [lastname, setLastname] = useState('');
-    const [username, setUsername] = useState('');
-    const [dateOfBirth, setDateOfBirth] = useState('');
+    const [fullName, setFullName] = useState('');
     const [password, setPassword] = useState('');
     const [phone, setPhone] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -32,10 +29,7 @@ const Form = () => {
         setEmail('');
         setPassword('');
         setPhone('');
-        setUsername(''); // Clear username when switching modes
-        setFirstname('');
-        setLastname('');
-        setDateOfBirth('');
+        setFullName('');
     }, [isLogin]);
 
     const loginWithGoogle = () => {
@@ -43,7 +37,6 @@ const Form = () => {
     };
 
     const pushParam = (param: string) => {
-        // Push new URL param without full page reload
         const newParams = new URLSearchParams(searchParams.toString());
         newParams.set('auth', param);
         setTimeout(() => {
@@ -51,126 +44,44 @@ const Form = () => {
         }, 0);
     };
 
-    const formInputs = isLogin
-        ? [
-              {
-                  label: 'Email/Username',
-                  placeholder: 'Enter email or username',
-                  type: 'text',
-                  name: 'username'
-              },
-              {
-                  label: 'Password',
-                  placeholder: 'Enter password',
-                  type: 'password',
-                  name: 'password'
-              }
-          ]
-        : [
-              {
-                  label: 'First name',
-                  placeholder: 'Enter first name',
-                  type: 'text',
-                  name: 'firstname'
-              },
-              {
-                  label: 'Last name',
-                  placeholder: 'Enter last name',
-                  type: 'text',
-                  name: 'lastname'
-              },
-              {
-                  label: 'Email address',
-                  placeholder: 'Enter email address',
-                  type: 'email',
-                  name: 'email'
-              },
-              {
-                  label: 'Phone number',
-                  placeholder: '08012345678',
-                  type: 'tel',
-                  name: 'phone'
-              },
-              {
-                  label: 'Date of Birth',
-                  placeholder: 'YYYY-MM-DD',
-                  type: 'date',
-                  name: 'dateOfBirth'
-              },
-              {
-                  label: 'Password',
-                  placeholder: 'Enter password',
-                  type: 'password',
-                  name: 'password'
-              }
-          ];
-
-    const handleInput = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
+    const clearErrors = () => {
         setErrorMessage('');
         setErrorTitle('');
         setErrorAction('');
+    };
+
+    const handleInput = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
+        clearErrors();
         const value = e.target.value;
-        
+
         switch (type) {
             case 'email':
                 setEmail(value);
                 break;
-            case 'username':
-                setUsername(value);
+            case 'fullName':
+                setFullName(value);
                 break;
             case 'password':
                 setPassword(value);
                 break;
-            case 'firstname':
-                setFirstname(value);
-                break;
-            case 'lastname':
-                setLastname(value);
-                break;
             case 'phone':
                 setPhone(value);
-                break;
-            case 'dateOfBirth':
-                setDateOfBirth(value);
                 break;
         }
     };
 
-    const handleValue = (input: {label: string; placeholder: string; type: string; name: string}) => {
-        switch (input.name) {
-            case 'email':
-                return email;
-            case 'username':
-                return username;
-            case 'password':
-                return password;
-            case 'firstname':
-                return firstname;
-            case 'lastname':
-                return lastname;
-            case 'phone':
-                return phone;
-            case 'dateOfBirth':
-                return dateOfBirth;
-            default:
-                return '';
-        }
-    };
     const handleAuth = async () => {
         setIsLoading(true);
-        setErrorMessage('');
-        setErrorTitle('');
-        setErrorAction('');
+        clearErrors();
 
         try {
             if (isLogin) {
                 const result = await login({
-                    username: username || email,
+                    username: email,
                     password: password
                 });
 
                 if (result.success) {
-                    // Redirect to intended page or home
                     const redirectTo = searchParams.get('redirectTo') || '/';
                     router.push(redirectTo);
                 } else {
@@ -180,8 +91,7 @@ const Form = () => {
                     setErrorAction(errorDetails.action || '');
                 }
             } else {
-                // Additional validation for signup
-                if (!phone?.trim() || phone.length < 10) { // Minimum international format (e.g., +1XXXXXXXXXX)
+                if (!phone?.trim() || phone.length < 10) {
                     const errorDetails = formatErrorForDisplay('Phone number is required');
                     setErrorTitle(errorDetails.title);
                     setErrorMessage(errorDetails.message);
@@ -189,14 +99,18 @@ const Form = () => {
                     return;
                 }
 
+                // Split full name into first and last name for API
+                const nameParts = fullName.trim().split(/\s+/);
+                const firstName = nameParts[0] || '';
+                const lastName = nameParts.slice(1).join(' ') || '';
+
                 const result = await signup({
-                    username: email, // Use email as username for signup
-                    firstName: firstname,
-                    lastName: lastname,
+                    username: email,
+                    firstName: firstName,
+                    lastName: lastName,
                     email: email,
-                    phone: phone, // PhoneInput already provides formatted phone with +234
+                    phone: phone,
                     password: password,
-                    dateOfBirth: dateOfBirth
                 });
 
                 if (result.success) {
@@ -232,136 +146,154 @@ const Form = () => {
     const specialCharValid = /[^A-Za-z0-9]/.test(password);
     const isStrong = lengthValid && letterValid && numberValid && specialCharValid;
 
-    const btnActive = isLogin 
-        ? !!(username || email) && !!password 
-        : !!email && !!firstname && !!lastname && !!phone && !!dateOfBirth && isStrong;
-    
+    const btnActive = isLogin
+        ? !!email && !!password
+        : !!email && !!fullName && !!phone && isStrong;
 
     return (
-        <div className='flex items-center h-full xs:pb-0'>
-            <div className='w-full'>
+        <div className='flex flex-col justify-between min-h-[calc(100vh-200px)] xs:min-h-0 xs:pb-8'>
+            <div className='w-full mt-[32px]'>
                 {errorMessage && (
-                    <ErrorDisplay 
+                    <ErrorDisplay
                         error={{
                             title: errorTitle,
                             message: errorMessage,
                             action: errorAction
-                        }} 
+                        }}
                         className="mb-4"
                     />
                 )}
 
-                <h1 className='typo-heading_lb text-primary mb-2 xs:mb-4  xs:text-center'>
-                    {isLogin ? 'Sign In' : 'Create an Account'}
+                <h1 className='font-poppins font-bold text-[24px] leading-[1.6] text-primary mb-1 xs:text-center'>
+                    {isLogin ? 'Welcome Back !' : 'Create an account'}
                 </h1>
-                <div className='flex items-center gap-1 mb-[38px] xs:justify-center'>
-                    <p className='text-text_one typo-body_lr'>
-                        {isLogin ? `Don't have an account?` : 'Already have an account?'}
+
+                {isLogin && (
+                    <p className='font-poppins font-medium text-[16px] leading-[1.4] text-text_two mb-[32px] xs:text-center'>
+                        Log in to continue shopping for items
                     </p>
-                    <p
-                        onClick={() => setIsLogin(!isLogin)}
-                        className='text-primary typo-body_ls underline cursor-pointer'
-                    >
-                        {isLogin ? 'Create one' : 'Sign In'}
-                    </p>
-                </div>
+                )}
+
+                {!isLogin && (
+                    <div className='flex items-center gap-1 mb-[32px] xs:justify-center'>
+                        <p className='font-poppins text-[16px] leading-[1.2] text-text_one'>
+                            Already have an account?
+                        </p>
+                        <p
+                            onClick={() => setIsLogin(true)}
+                            className='font-poppins font-bold text-[16px] leading-[1.2] text-primary cursor-pointer'
+                        >
+                            Sign In
+                        </p>
+                    </div>
+                )}
 
                 <form
-                    className='typo-body_mr text-text_one flex flex-col gap-[26px]'
+                    className='typo-body_mr text-text_one flex flex-col gap-[24px]'
                     onSubmit={(e) => {
                         e.preventDefault();
-                        if (btnActive) {
-                            handleAuth();
-                        }
+                        if (btnActive) handleAuth();
                     }}
                 >
-                    {formInputs.map((item, i) => {
-                        if (item.name === 'password') {
-                            return (
-                                <div key={i}>
-                                    <InputBox
-                                        value={handleValue(item)}
-                                        setValue={handleInput}
-                                        key={i}
-                                        label={item.label}
-                                        name={item.name}
-                                        placeholder={item.placeholder}
-                                        type={item.type}
-                                    />
-                                    {!isLogin && (
-                                        <div className='space-y-2 text-text-tertiary typo-label_xsr mt-7'>
-                                            <div className='flex items-center gap-2'>
-                                                {getIcon(lengthValid)}
-                                                <span>8 characters (20 max)</span>
-                                            </div>
-                                            <div className='flex items-center gap-2'>
-                                                {getIcon(letterValid && numberValid && specialCharValid)}
-                                                <span>1 letter, 1 number, 1 special character (# ? ! @)</span>
-                                            </div>
-
-                                            <div className='flex items-center gap-2'>
-                                                {getIcon(lengthValid && letterValid && numberValid && specialCharValid)}
-                                                <span>Strong password</span>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            );
-                        }
-                        // Special handling for phone input
-                        if (item.name === 'phone') {
-                            return (
-                                <PhoneInput
-                                    key={i}
-                                    label={item.label}
-                                    name={item.name}
-                                    value={phone}
-                                    setValue={handleInput}
-                                    placeholder="801 234 5678"
-                                />
-                            );
-                        }
-                        
-                        return (
-                            <InputBox
-                                value={handleValue(item)}
-                                setValue={handleInput}
-                                key={i}
-                                label={item.label}
-                                name={item.name}
-                                placeholder={item.placeholder}
-                                type={item.type}
-                            />
-                        );
-                    })}
                     {isLogin ? (
-                        <h5
-                            className='ml-auto underline text-primary typo-body_ls -mt-[18px] cursor-pointer'
-                            onClick={() => pushParam('reset')}
-                        >
-                            Forgot Password?
-                        </h5>
+                        <>
+                            <InputBox
+                                value={email}
+                                setValue={handleInput}
+                                label='Email'
+                                name='email'
+                                placeholder='Enter email address'
+                                type='email'
+                            />
+                            <div>
+                                <InputBox
+                                    value={password}
+                                    setValue={handleInput}
+                                    label='Password'
+                                    name='password'
+                                    placeholder='Enter Password'
+                                    type='password'
+                                />
+                                <div className='flex justify-end mt-[10px]'>
+                                    <span
+                                        className='font-poppins font-semibold text-[16px] leading-[1.6] text-primary cursor-pointer'
+                                        onClick={() => pushParam('reset')}
+                                    >
+                                        Forgot Password
+                                    </span>
+                                </div>
+                            </div>
+                        </>
                     ) : (
-                        <></>
+                        <>
+                            <InputBox
+                                value={fullName}
+                                setValue={handleInput}
+                                label='Full Name'
+                                name='fullName'
+                                placeholder='Enter Full Name'
+                                type='text'
+                            />
+                            <InputBox
+                                value={email}
+                                setValue={handleInput}
+                                label='Email Address'
+                                name='email'
+                                placeholder='Enter email address'
+                                type='email'
+                            />
+                            <div>
+                                <InputBox
+                                    value={password}
+                                    setValue={handleInput}
+                                    label='Password'
+                                    name='password'
+                                    placeholder='Enter password'
+                                    type='password'
+                                />
+                                {password && (
+                                    <div className='space-y-2 text-text-tertiary typo-label_xsr mt-4'>
+                                        <div className='flex items-center gap-2'>
+                                            {getIcon(lengthValid)}
+                                            <span>8 characters (20 max)</span>
+                                        </div>
+                                        <div className='flex items-center gap-2'>
+                                            {getIcon(letterValid && numberValid && specialCharValid)}
+                                            <span>1 letter, 1 number, 1 special character (# ? ! @)</span>
+                                        </div>
+                                        <div className='flex items-center gap-2'>
+                                            {getIcon(isStrong)}
+                                            <span>Strong password</span>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                            <PhoneInput
+                                label='Phone Number'
+                                name='phone'
+                                value={phone}
+                                setValue={handleInput}
+                                placeholder="Enter digits only"
+                            />
+                        </>
                     )}
-                    <div className='xs:mt-[24px]'>
+
+                    <div>
                         <AuthButton
                             bg={btnActive}
-                            title={isLogin ? 'Sign In' : 'Sign Up'}
+                            title={isLogin ? 'Sign In' : 'Sign up'}
                             onClick={() => {
-                                if (btnActive) {
-                                    handleAuth();
-                                }
+                                if (btnActive) handleAuth();
                             }}
                             isLoading={isLoading}
                         />
                     </div>
                 </form>
 
-                <div className='flex items-center justify-between my-[18px]'>
-                    <hr className='w-full border-border_gray' />
-                    <span className='px-2 typo-body_mr text-text_four'>OR</span>
-                    <hr className='w-full border-border_gray' />
+                <div className='flex items-center gap-[10px] my-[18px]'>
+                    <hr className='flex-1 border-border_gray' />
+                    <span className='font-poppins text-[16px] text-black'>OR</span>
+                    <hr className='flex-1 border-border_gray' />
                 </div>
 
                 <div className='flex flex-col gap-4'>
@@ -369,6 +301,20 @@ const Form = () => {
                     <AuthButton title='Continue with Facebook' icon='/facebook-icon.svg' border link='/' />
                 </div>
             </div>
+
+            {isLogin && (
+                <div className='flex items-center justify-center gap-1 mt-[40px] xs:mt-[24px]'>
+                    <p className='font-poppins text-[16px] leading-[1.2] text-text_one'>
+                        Dont have an account?
+                    </p>
+                    <p
+                        onClick={() => setIsLogin(false)}
+                        className='font-poppins font-bold text-[16px] leading-[1.2] text-primary cursor-pointer'
+                    >
+                        Create one
+                    </p>
+                </div>
+            )}
         </div>
     );
 };

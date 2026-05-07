@@ -4,6 +4,7 @@ import Link from 'next/link';
 import {formatToNaira} from '~/utils/helpers';
 import UsedBadge from '../badges/UsedBadge';
 import AuctionCountdown from '../badges/AuctionCountdown';
+import TransactionTypeBadge from '../badges/TransactionTypeBadge';
 import {Item} from '~/utils/interface';
 import {useItemLike} from '~/hooks/useLikes';
 import RemoveItemConfirmation from '../modals/RemoveItemConfirmation';
@@ -30,9 +31,9 @@ const ItemCard: React.FC<ItemCardProps> = memo(
         item,
         forEdit = false,
         forLiveAuction = false,
-        className = 'h-[400px] w-full xs:h-[280px] border border-border_gray rounded-md xs:border-none xs:rounded-lg xs:overflow-hidden',
-        imageClassName = 'h-[302px] w-full xs:h-[180px] cursor-pointer object-cover',
-        contentClassName = 'p-4 xs:p-3 h-[98px] xs:h-[100px] xs:flex xs:flex-col xs:justify-between',
+        className = 'w-full rounded-3xl xs:rounded-2xl',
+        imageClassName = 'h-[302px] w-full xs:h-[180px] cursor-pointer object-cover rounded-xl',
+        contentClassName = 'p-4 xs:p-3 xs:flex xs:flex-col xs:justify-between',
         showSaveButton = true,
         showPromotedBadge = true,
         showVerifiedBadge = true,
@@ -139,9 +140,17 @@ const ItemCard: React.FC<ItemCardProps> = memo(
                             </div>
                         )}
 
+                        {/* Transaction Type Badge - Top Left */}
+                        <div className='absolute top-3 left-3 xs:top-2 xs:left-2'>
+                            <TransactionTypeBadge
+                                acceptCash={item.acceptCash}
+                                hasSwapItems={!!(item.flipForImgUrls && item.flipForImgUrls.length > 0)}
+                            />
+                        </div>
+
                         {/* Verified ID badge */}
                         {showVerifiedBadge && item.seller.idVerified && (
-                            <div className='h-[26px] px-[6px] xs:h-[22px] xs:px-1 typo-body_sr xs:typo-caption text-primary bg-white absolute top-4 left-3 xs:top-2 xs:left-2 xs:bg-white/95 xs:backdrop-blur-sm flex items-center justify-center gap-1 rounded xs:rounded-md xs:shadow-sm'>
+                            <div className='h-[26px] px-[6px] xs:h-[22px] xs:px-1 typo-body_sr xs:typo-caption text-primary bg-white absolute top-[46px] left-3 xs:top-[30px] xs:left-2 xs:bg-white/95 xs:backdrop-blur-sm flex items-center justify-center gap-1 rounded xs:rounded-md xs:shadow-sm'>
                                 <Image
                                     className='h-4 w-4 xs:h-3 xs:w-3'
                                     src={'/verified.svg'}
@@ -206,16 +215,11 @@ const ItemCard: React.FC<ItemCardProps> = memo(
                         ) : (
                             <>
                                 {/* Regular item display */}
-                                <p className='typo-body_lm xs:typo-body_sm xs:font-semibold xs:text-gray-900 xs:mb-1'>
+                                <p className='typo-body_lm xs:typo-body_sm xs:font-semibold xs:text-gray-900'>
                                     {formatToNaira(item.cashAmount)}
                                 </p>
-                                <div className='flex justify-between items-center xs:items-center rounded'>
-                                    <p className='typo-body_sr xs:typo-caption xs:text-gray-500 capitalize'>
-                                        {item.acceptCash ? 'cash' : 'item'} offers
-                                    </p>
-                                    <div className='xs:flex-shrink-0'>
-                                        {customFooter || <UsedBadge text={item.condition} />}
-                                    </div>
+                                <div className='flex items-center mt-1'>
+                                    {customFooter || <UsedBadge text={item.condition} />}
                                 </div>
                             </>
                         )}

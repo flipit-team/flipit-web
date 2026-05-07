@@ -191,7 +191,7 @@ export function useAuth() {
     firstName: string;
     lastName: string;
     phone: string;
-    dateOfBirth: string;
+    dateOfBirth?: string;
     roleIds?: number[];
   }) => {
     try {

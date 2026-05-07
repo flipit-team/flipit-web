@@ -44,29 +44,15 @@ export default function ItemsContainer({initialItems, onRefreshItems}: ItemsCont
             <TabNavigation tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
             {currentItems.length > 0 ? (
-                <div className='mb-8'>
-                    <div className='hidden sm:block shadow-lg drop-shadow-lg rounded-lg p-[18px] bg-white border border-gray-100'>
-                        <div className='space-y-4'>
-                            {currentItems.map((item) => (
-                                <ItemCard
-                                    key={item.id}
-                                    item={item}
-                                    onItemDeleted={handleItemDeleted}
-                                    onItemUpdated={handleItemUpdated}
-                                />
-                            ))}
-                        </div>
-                    </div>
-                    <div className='block sm:hidden space-y-4'>
-                        {currentItems.map((item) => (
-                            <ItemCard
-                                key={item.id}
-                                item={item}
-                                onItemDeleted={handleItemDeleted}
-                                onItemUpdated={handleItemUpdated}
-                            />
-                        ))}
-                    </div>
+                <div className='mb-8 space-y-4'>
+                    {currentItems.map((item) => (
+                        <ItemCard
+                            key={item.id}
+                            item={item}
+                            onItemDeleted={handleItemDeleted}
+                            onItemUpdated={handleItemUpdated}
+                        />
+                    ))}
                 </div>
             ) : (
                 <NoData text={`No ${activeTab} items found`} />

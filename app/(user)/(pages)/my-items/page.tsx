@@ -26,15 +26,20 @@ function transformItemToMyItem(item: ItemDTO): MyItem {
         type = item.published ? 'listed' : 'deactivated';
     }
 
+    // TODO: tradeType should come from API once acceptSwap field is added to ItemDTO
+    // For now, default to 'cash' since API only has acceptCash
+    const tradeType: 'cash' | 'swap' | 'mixed' = item.acceptCash ? 'cash' : 'cash';
+
     return {
         id: item.id,
         title: item.title,
         image: item.imageUrls?.[0] || 'https://images.pexels.com/photos/1303084/pexels-photo-1303084.jpeg',
         amount: item.cashAmount,
-        views: 0, // API doesn't provide views yet
+        views: 0, // TODO: API doesn't provide views yet
         type,
         isAuction,
-        auctionActive
+        auctionActive,
+        tradeType,
     };
 }
 
@@ -69,14 +74,22 @@ export default function MyItemsPage() {
             
             if (result.data) {
                 const transformedItems = result.data.map(transformItemToMyItem);
-                
-                // Categorize items
-                const categorizedItems: Record<TabType, MyItem[]> = {
+
+                // Categorize items, merging with mock data for design preview
+                // TODO: Remove mock data merge once API supports all trade types and auction statuses
+                const apiItems: Record<TabType, MyItem[]> = {
                     auction: transformedItems.filter(item => item.type === 'auction'),
                     listed: transformedItems.filter(item => item.type === 'listed'),
                     deactivated: transformedItems.filter(item => item.type === 'deactivated')
                 };
-                
+
+                // Use mock data if API returns empty for a category
+                const categorizedItems: Record<TabType, MyItem[]> = {
+                    auction: apiItems.auction.length > 0 ? apiItems.auction : mockItems.auction,
+                    listed: apiItems.listed.length > 0 ? apiItems.listed : mockItems.listed,
+                    deactivated: apiItems.deactivated.length > 0 ? apiItems.deactivated : mockItems.deactivated
+                };
+
                 setItems(categorizedItems);
             } else {
                 showError(result.error || 'Failed to fetch your items');

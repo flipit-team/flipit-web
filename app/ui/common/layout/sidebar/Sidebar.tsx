@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { User, ShoppingBag, Megaphone, BarChart3, Settings, LogOut } from 'lucide-react';
+import { User, ShoppingBag, Megaphone, BarChart3, Settings, Headphones, LogOut } from 'lucide-react';
 
 interface SidebarProps {
     username?: string;
@@ -30,6 +30,11 @@ const Sidebar = ({ username = 'User' }: SidebarProps) => {
             href: '/settings',
             label: 'Settings',
             icon: Settings,
+        },
+        {
+            href: '/support',
+            label: 'Support',
+            icon: Headphones,
         }
     ];
 

@@ -58,7 +58,7 @@ export interface SignupRequest {
   firstName: string;
   lastName: string;
   phone: string;
-  dateOfBirth: string;
+  dateOfBirth?: string;
   roleIds?: number[];
 }
 
@@ -69,7 +69,7 @@ export interface SignupRequestBackend {
   firstName: string;
   lastName: string;
   phoneNumber: string;
-  dateOfBirth: string;
+  dateOfBirth?: string;
   roleIds?: number[];
 }
 

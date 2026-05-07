@@ -1,6 +1,8 @@
 'use client';
 import React, {useState, useEffect} from 'react';
 import Image from 'next/image';
+import {useRouter} from 'next/navigation';
+import {ChevronLeft, ShieldCheck, CheckCircle, Lock} from 'lucide-react';
 import {TransactionDTO, TransactionStatus} from '~/types/transaction';
 import {useAppContext} from '~/contexts/AppContext';
 import {formatToNaira, formatMessageTime} from '~/utils/helpers';
@@ -18,6 +20,7 @@ interface Props {
 
 const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
     const {user} = useAppContext();
+    const router = useRouter();
     const [transaction, setTransaction] = useState<TransactionDTO>(initialTransaction);
     const [activeSection, setActiveSection] = useState<'overview' | 'payment' | 'shipping'>('overview');
     const [showReviewModal, setShowReviewModal] = useState(false);
@@ -38,11 +41,11 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
             return {
                 title: 'Direct Purchase',
                 steps: [
-                    {label: 'Offer Accepted', sublabel: 'Transaction created'},
-                    {label: 'Payment', sublabel: 'Buyer pays'},
-                    {label: 'Shipping', sublabel: 'Seller ships'},
-                    {label: 'Delivery', sublabel: 'Item delivered'},
-                    {label: 'Complete', sublabel: 'Transaction complete'}
+                    {label: 'Order Review'},
+                    {label: 'Payment'},
+                    {label: 'Exchange'},
+                    {label: 'Delivery'},
+                    {label: 'Rate Trade'}
                 ],
                 statusMap: {
                     OFFER_ACCEPTED: 0,
@@ -285,216 +288,238 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
 
     const nextActionInfo = getNextActionInfo();
 
-    return (
-        <div className='mx-[120px] xs:mx-0 mb-10 mt-10 xs:mt-8 xs:mb-6'>
-            {/* Header */}
-            <div className='mb-6 xs:px-4'>
-                <div className='flex items-center justify-between flex-wrap gap-4 mb-4'>
-                    <div>
-                        <h1 className='typo-heading_ms xs:typo-heading_ss mb-1'>{flowConfig.title}</h1>
-                        <p className='typo-body_mr text-text_four'>Transaction #{transaction.id}</p>
-                    </div>
-                    <div
-                        className={`px-4 py-2 rounded-lg typo-body_lm font-medium ${
-                            transaction.status === 'COMPLETED'
-                                ? 'bg-surface-primary text-primary'
-                                : ['CANCELLED', 'DISPUTED'].includes(transaction.status)
-                                  ? 'bg-surface-error text-error'
-                                  : ['PAYMENT_PENDING', 'SHIPPING_PENDING'].includes(transaction.status)
-                                    ? 'bg-surface-secondary text-warning'
-                                    : 'bg-accent-navy/5 text-accent-navy'
-                        }`}
-                    >
-                        {transaction.status.replace(/_/g, ' ')}
-                    </div>
-                </div>
+    // Dummy order data for display
+    // TODO: Replace with real transaction data from API
+    const orderNumber = `#${45887}`;
+    const transactionId = `FLPT #${34567890}`;
+    const agreedPrice = transaction.cashAmount || 1100000;
+    const shippingFee = 6000;
+    const platformFee = 5000;
+    const totalAmount = agreedPrice + shippingFee + platformFee;
 
-                {/* Progress Tracker */}
-                <div className='bg-white shadow-lg rounded-lg p-6 xs:p-4'>
-                    <ProgressTracker
-                        steps={flowConfig.steps}
-                        currentStep={currentStepIndex}
-                        status={getProgressStatus()}
-                    />
-                </div>
+    return (
+        <div className='mx-[120px] xs:mx-4 mb-10 mt-6 xs:mt-4 xs:mb-6'>
+            {/* Go Back */}
+            <button
+                onClick={() => router.back()}
+                className='flex items-center gap-1 text-primary font-poppins text-[14px] mb-6 cursor-pointer hover:opacity-80 transition-opacity'
+            >
+                <ChevronLeft size={18} />
+                <span>Go Back</span>
+            </button>
+
+            {/* Breadcrumb */}
+            <div className='flex items-center gap-1 font-poppins text-[14px] mb-6'>
+                <span className='text-[#A49E9E]'>Home</span>
+                <span className='text-[#A49E9E]'>/</span>
+                <span className='text-[#A49E9E]'>Item details</span>
+                <span className='text-[#A49E9E]'>/</span>
+                <span className='text-text_one font-semibold'>
+                    {currentStepIndex === 0 ? 'Order summary' : currentStepIndex === 1 ? 'Payment' : 'Transaction'}
+                </span>
             </div>
 
-            {/* Main Content */}
-            <div className='grid grid-cols-[1fr_380px] xs:grid-cols-1 gap-6'>
-                {/* Left Column */}
-                <div className='space-y-6'>
-                    {/* Next Action Card */}
-                    {nextActionInfo && !['COMPLETED', 'CANCELLED', 'DISPUTED'].includes(transaction.status) && (
-                        <div className='xs:px-4'>
-                            <InfoCard
-                                title={nextActionInfo.title}
-                                message={nextActionInfo.message}
-                                variant={nextActionInfo.variant}
-                                action={nextActionInfo.action}
-                            />
-                        </div>
-                    )}
+            {/* Main container */}
+            <div className='bg-[#FAFAFA] rounded-xl p-8 xs:p-4'>
+                {/* Transaction Timeline heading */}
+                <h2 className='font-poppins font-semibold text-[18px] text-text_one mb-4'>Transaction Timeline</h2>
 
-                    {/* Item Display */}
-                    <DualItemDisplay
-                        sellerItem={transaction.sellerItem}
-                        buyerItem={transaction.buyerItem}
-                        seller={transaction.seller}
-                        buyer={transaction.buyer}
-                        cashAmount={transaction.cashAmount}
-                        userRole={userRole}
-                    />
+                {/* Progress Tracker */}
+                <ProgressTracker
+                    steps={flowConfig.steps}
+                    currentStep={currentStepIndex}
+                    status={getProgressStatus()}
+                />
 
-                    {/* Tabs for Payment/Shipping */}
-                    {(transaction.cashAmount || transaction.sellerShipping) && (
-                        <div className='shadow-lg rounded-lg bg-white overflow-hidden'>
-                            {/* Tab Headers */}
-                            <div className='flex border-b border-border_gray'>
-                                {transaction.cashAmount && (
+                {/* ============ STEP 0: ORDER REVIEW ============ */}
+                {currentStepIndex === 0 && (
+                    <>
+                        <h3 className='font-poppins font-semibold text-[16px] text-text_one mt-8 mb-2'>Review Order</h3>
+                        <p className='font-poppins text-[14px] text-text_one mb-6'>
+                            Order {orderNumber}  Transaction ID : <span className='font-semibold'>{transactionId}</span>
+                        </p>
+
+                        <div className='grid grid-cols-2 xs:grid-cols-1 gap-8'>
+                            {/* Left — Item + Payment Details */}
+                            <div className='space-y-6'>
+                                <div className='border border-[#E8E8E8] rounded-xl p-4 flex gap-4'>
+                                    <Image
+                                        src={transaction.sellerItem?.imageUrls?.[0] || '/placeholder-product.svg'}
+                                        alt={transaction.sellerItem?.title || 'Item'}
+                                        width={120}
+                                        height={120}
+                                        className='rounded-lg object-cover w-[120px] h-[120px] flex-shrink-0'
+                                    />
+                                    <div className='flex flex-col justify-center'>
+                                        <h4 className='font-poppins text-[14px] text-text_one'>
+                                            {transaction.sellerItem?.title || 'Canon EOS RP Camera +Small Rig | Clean U...'}
+                                        </h4>
+                                        <p className='font-poppins text-[13px] text-text_four mt-2'>
+                                            Condition : {transaction.sellerItem?.condition || 'Brand new'}
+                                        </p>
+                                        <p className='font-poppins text-[13px] text-text_four mt-1'>
+                                            Trade type: Cash only
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className='border border-[#E8E8E8] rounded-xl p-6'>
+                                    <h4 className='font-poppins font-semibold text-[16px] text-text_one mb-4'>Payment Details</h4>
+                                    <div className='space-y-3'>
+                                        <div className='flex justify-between'>
+                                            <span className='font-poppins text-[14px] text-[#A49E9E]'>Agreed Price</span>
+                                            <span className='font-poppins text-[14px] text-text_one'>{formatToNaira(agreedPrice)}.00</span>
+                                        </div>
+                                        <div className='flex justify-between'>
+                                            <span className='font-poppins text-[14px] text-[#A49E9E]'>Shipping Fee</span>
+                                            <span className='font-poppins text-[14px] text-text_one'>{formatToNaira(shippingFee)}.00</span>
+                                        </div>
+                                        <div className='flex justify-between'>
+                                            <span className='font-poppins text-[14px] text-[#A49E9E]'>Platform Service Fee</span>
+                                            <span className='font-poppins text-[14px] text-text_one'>{formatToNaira(platformFee)}.00</span>
+                                        </div>
+                                        <hr className='border-[#E8E8E8]' />
+                                        <div className='flex justify-between'>
+                                            <span className='font-poppins font-bold text-[16px] text-text_one'>Total Amount</span>
+                                            <span className='font-poppins font-bold text-[16px] text-primary'>{formatToNaira(totalAmount)}.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Right — Escrow Protection */}
+                            <div className='space-y-6'>
+                                <div>
+                                    <div className='flex items-center gap-3 mb-4'>
+                                        <ShieldCheck size={32} className='text-primary' />
+                                        <h4 className='font-poppins font-bold text-[18px] text-text_one'>Escrow Protection</h4>
+                                    </div>
+                                    <p className='font-poppins text-[14px] text-text_four leading-[1.6] mb-6'>
+                                        Your funds are held securely by our platform&apos;s escrow service. The seller will only receive payment once you confirm the receipt of item in the described condition.
+                                    </p>
+                                    <div className='space-y-3 mb-8'>
+                                        <div className='flex items-center gap-3'>
+                                            <CheckCircle size={20} className='text-[#08973F] flex-shrink-0' />
+                                            <span className='font-poppins text-[14px] text-text_one'>Securely encrypted payment</span>
+                                        </div>
+                                        <div className='flex items-center gap-3'>
+                                            <CheckCircle size={20} className='text-[#08973F] flex-shrink-0' />
+                                            <span className='font-poppins text-[14px] text-text_one'>100% money-back guarantee</span>
+                                        </div>
+                                        <div className='flex items-center gap-3'>
+                                            <CheckCircle size={20} className='text-[#08973F] flex-shrink-0' />
+                                            <span className='font-poppins text-[14px] text-text_one'>24/7 Dispute resolution support</span>
+                                        </div>
+                                    </div>
                                     <button
-                                        onClick={() => setActiveSection('payment')}
-                                        className={`flex-1 px-6 py-4 typo-body_lr font-medium transition-colors ${
-                                            activeSection === 'payment'
-                                                ? 'text-primary border-b-2 border-primary bg-surface-primary-10'
-                                                : 'text-text_four hover:text-text_one'
-                                        }`}
+                                        onClick={() => setTransaction({...transaction, status: 'PAYMENT_PENDING'})}
+                                        className='w-full h-[48px] bg-primary text-white rounded-lg font-poppins text-[14px] font-medium hover:bg-primary/90 transition-colors mb-3'
                                     >
-                                        Payment
+                                        Proceed to Checkout
                                     </button>
-                                )}
-                                <button
-                                    onClick={() => setActiveSection('shipping')}
-                                    className={`flex-1 px-6 py-4 typo-body_lr font-medium transition-colors ${
-                                        activeSection === 'shipping'
-                                            ? 'text-primary border-b-2 border-primary bg-surface-primary-10'
-                                            : 'text-text_four hover:text-text_one'
-                                    }`}
-                                >
-                                    Shipping
-                                </button>
-                            </div>
-
-                            {/* Tab Content */}
-                            <div className='p-6'>
-                                {activeSection === 'payment' && transaction.cashAmount && (
-                                    <PaymentSection
-                                        transaction={transaction}
-                                        userRole={userRole}
-                                        onPaymentComplete={() => {}}
-                                    />
-                                )}
-                                {activeSection === 'shipping' && (
-                                    <ShippingSection
-                                        transaction={transaction}
-                                        userRole={userRole}
-                                        onShippingUpdate={() => {}}
-                                    />
-                                )}
+                                    <button
+                                        onClick={handleCancelTransaction}
+                                        disabled={isLoading}
+                                        className='w-full h-[48px] border border-primary text-primary rounded-lg font-poppins text-[14px] font-medium hover:bg-gray-50 transition-colors disabled:opacity-50'
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                                <div className='border border-[#E8E8E8] rounded-xl p-4 flex items-center gap-3'>
+                                    <Lock size={20} className='text-[#A49E9E] flex-shrink-0' />
+                                    <div>
+                                        <p className='font-poppins font-bold text-[12px] text-text_one uppercase'>SAFE CHECKOUT</p>
+                                        <p className='font-poppins text-[12px] text-[#A49E9E]'>
+                                            All data is encrypted and protected by industrial grade security standard
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    )}
-                </div>
+                    </>
+                )}
 
-                {/* Right Sidebar */}
-                <div className='space-y-6 xs:px-4'>
-                    {/* Quick Summary */}
-                    <div className='shadow-lg rounded-lg bg-white p-6'>
-                        <h3 className='typo-body_lm text-text_one mb-4 font-semibold'>Quick Summary</h3>
-                        <div className='space-y-3'>
-                            <div>
-                                <p className='typo-body_sr text-text_four mb-1'>Your Role</p>
-                                <p className='typo-body_lr text-text_one capitalize'>{userRole}</p>
-                            </div>
-
-                            {transaction.cashAmount && (
-                                <div>
-                                    <p className='typo-body_sr text-text_four mb-1'>Cash Amount</p>
-                                    <p className='typo-body_lm text-primary font-semibold'>
-                                        {formatToNaira(transaction.cashAmount)}
-                                    </p>
-                                </div>
-                            )}
-
-                            <div>
-                                <p className='typo-body_sr text-text_four mb-1'>Created</p>
-                                <p className='typo-body_mr text-text_one'>{formatMessageTime(transaction.dateCreated)}</p>
-                            </div>
-
-                            {transaction.dateCompleted && (
-                                <div>
-                                    <p className='typo-body_sr text-text_four mb-1'>Completed</p>
-                                    <p className='typo-body_mr text-text_one'>
-                                        {formatMessageTime(transaction.dateCompleted)}
-                                    </p>
-                                </div>
-                            )}
+                {/* ============ STEP 1: PAYMENT ============ */}
+                {currentStepIndex === 1 && (
+                    <div className='mt-8'>
+                        {/* Amount + Name */}
+                        <div className='text-right mb-8'>
+                            <p className='font-poppins font-bold text-[22px] text-text_one'>
+                                NGN {totalAmount.toLocaleString()}.00
+                            </p>
+                            <p className='font-poppins text-[14px] text-text_four mt-1'>
+                                {transaction.buyer?.firstName || 'John'}  {transaction.buyer?.lastName || 'Doe'}
+                            </p>
                         </div>
-                    </div>
 
-                    {/* Transaction Protection */}
-                    <div className='shadow-lg rounded-lg bg-white p-6'>
-                        <h3 className='typo-body_lm text-text_one mb-4 font-semibold'>Protected Transaction</h3>
-                        <div className='space-y-4'>
-                            <div className='flex items-start gap-3'>
-                                <div className='w-8 h-8 rounded-full bg-surface-primary flex items-center justify-center flex-shrink-0'>
-                                    <svg className='w-4 h-4 text-primary' fill='currentColor' viewBox='0 0 20 20'>
-                                        <path
-                                            fillRule='evenodd'
-                                            d='M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z'
-                                            clipRule='evenodd'
-                                        />
-                                    </svg>
+                        {/* Transfer instructions */}
+                        <p className='font-poppins text-[14px] text-text_one leading-[1.6] mb-4'>
+                            Transfer exactly ₦{totalAmount.toLocaleString()}.00 (including the decimal) to the account below. You will be redirected after a successful payment.
+                        </p>
+
+                        {/* Warning box */}
+                        <div className='bg-[#FFF4EE] border border-[#FF674B]/20 rounded-xl p-5 mb-6'>
+                            <p className='font-poppins text-[14px] text-[#FF674B]'>
+                                Do NOT transfer more than once to the account below or save it for later use.
+                            </p>
+                        </div>
+
+                        {/* Bank details box */}
+                        {/* TODO: Replace with real bank details from Credo payment initialization API */}
+                        <div className='bg-[#C9EBF4] rounded-xl p-6 mb-8'>
+                            <div className='space-y-4'>
+                                <div className='flex justify-between'>
+                                    <span className='font-poppins text-[14px] text-text_one'>Bank Name</span>
+                                    <span className='font-poppins font-semibold text-[14px] text-text_one'>Zenith Bank</span>
                                 </div>
-                                <div>
-                                    <p className='typo-body_mr text-text_one font-medium mb-1'>Escrow Protection</p>
-                                    <p className='typo-body_sr text-text_four'>
-                                        Payments held securely until delivery confirmed
-                                    </p>
+                                <div className='flex justify-between items-center'>
+                                    <span className='font-poppins text-[14px] text-text_one'>Account Number</span>
+                                    <div className='flex items-center gap-2'>
+                                        <span className='font-poppins font-semibold text-[14px] text-text_one'>4432890753</span>
+                                        <button
+                                            onClick={() => {
+                                                navigator.clipboard.writeText('4432890753');
+                                            }}
+                                            className='text-primary hover:opacity-70 transition-opacity'
+                                            title='Copy account number'
+                                        >
+                                            <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z' />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className='flex justify-between'>
+                                    <span className='font-poppins text-[14px] text-text_one'>Account Name</span>
+                                    <span className='font-poppins font-semibold text-[14px] text-text_one'>CREDO( Flipit MarketPlace)</span>
+                                </div>
+                                <div className='flex justify-between'>
+                                    <span className='font-poppins text-[14px] text-text_one'>Account expires in</span>
+                                    <span className='font-poppins font-semibold text-[14px] text-text_one'>29m 54s</span>
                                 </div>
                             </div>
+                        </div>
 
-                            <div className='flex items-start gap-3'>
-                                <div className='w-8 h-8 rounded-full bg-accent-navy/10 flex items-center justify-center flex-shrink-0'>
-                                    <svg className='w-4 h-4 text-accent-navy' fill='currentColor' viewBox='0 0 20 20'>
-                                        <path d='M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z' />
-                                        <path d='M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z' />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <p className='typo-body_mr text-text_one font-medium mb-1'>Tracked Shipping</p>
-                                    <p className='typo-body_sr text-text_four'>All shipments require tracking numbers</p>
-                                </div>
-                            </div>
-
-                            <div className='flex items-start gap-3'>
-                                <div className='w-8 h-8 rounded-full bg-surface-secondary flex items-center justify-center flex-shrink-0'>
-                                    <svg className='w-4 h-4 text-warning' fill='currentColor' viewBox='0 0 20 20'>
-                                        <path
-                                            fillRule='evenodd'
-                                            d='M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z'
-                                            clipRule='evenodd'
-                                        />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <p className='typo-body_mr text-text_one font-medium mb-1'>Dispute Resolution</p>
-                                    <p className='typo-body_sr text-text_four'>Platform mediation available if needed</p>
-                                </div>
-                            </div>
+                        {/* Confirm button */}
+                        <div className='flex justify-center'>
+                            <button
+                                onClick={() => setTransaction({...transaction, status: 'PAYMENT_RECEIVED'})}
+                                className='px-16 py-3 bg-primary text-white rounded-lg font-poppins text-[14px] font-medium hover:bg-primary/90 transition-colors'
+                            >
+                                I have deposited the money
+                            </button>
                         </div>
                     </div>
+                )}
 
-                    {/* Cancel Button */}
-                    {['OFFER_ACCEPTED', 'PAYMENT_PENDING'].includes(transaction.status) && (
-                        <button
-                            onClick={handleCancelTransaction}
-                            disabled={isLoading}
-                            className='w-full h-[48px] border-2 border-error text-error rounded-lg typo-body_lr font-medium hover:bg-surface-error disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
-                        >
-                            {isLoading ? 'Cancelling...' : 'Cancel Transaction'}
-                        </button>
-                    )}
-                </div>
+                {/* ============ STEP 2+: PLACEHOLDER ============ */}
+                {currentStepIndex >= 2 && (
+                    <div className='mt-8 text-center py-12'>
+                        <p className='font-poppins text-[16px] text-text_four'>
+                            {flowConfig.steps[currentStepIndex]?.label || 'Transaction'} — Coming soon
+                        </p>
+                    </div>
+                )}
             </div>
 
             {/* Review Modal */}

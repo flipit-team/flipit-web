@@ -2,12 +2,12 @@
 import Image from 'next/image';
 import {useRouter} from 'next/navigation';
 import {useState, useRef, useEffect} from 'react';
-import Button from '~/ui/common/button';
 import {MyItem} from '../types';
 import {ItemsService} from '~/services/items.service';
 import {useToast} from '~/contexts/ToastContext';
 import DeleteConfirmationModal from '~/ui/common/delete-confirmation-modal/DeleteConfirmationModal';
-import {MoreVertical, Edit, Trash2, CheckCircle, Play, Square} from 'lucide-react';
+import TransactionTypeBadge from '~/ui/common/badges/TransactionTypeBadge';
+import {MoreVertical} from 'lucide-react';
 
 interface ItemCardProps {
     item: MyItem;
@@ -23,76 +23,57 @@ const formatAmount = (amount: number): string => {
     }).format(amount);
 };
 
+// Countdown helper
+function getCountdown(endDate?: string): string {
+    if (!endDate) return '';
+    const diff = new Date(endDate).getTime() - Date.now();
+    if (diff <= 0) return 'Ended';
+    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const s = Math.floor((diff % (1000 * 60)) / 1000);
+    return `Closes in ${d}d ${h}h ${String(m).padStart(2, '0')}m ${String(s).padStart(2, '0')}s`;
+}
+
 export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardProps) {
     const router = useRouter();
     const {showSuccess, showError} = useToast();
     const [isDeleting, setIsDeleting] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [isMarkingSold, setIsMarkingSold] = useState(false);
     const [isUpdatingAuction, setIsUpdatingAuction] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
                 setShowDropdown(false);
             }
         };
-
         document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
+        return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    const handleEditItem = () => {
-        setShowDropdown(false);
-        router.push(`/edit-item/${item.id}`);
-    };
-
-    const handleMarkAsSold = async () => {
-        setShowDropdown(false);
-        setIsMarkingSold(true);
-
-        try {
-            // Placeholder - will be replaced with actual API call
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            showSuccess('Item marked as sold successfully!');
-            onItemUpdated?.(item.id);
-        } catch (error) {
-            showError('Failed to mark item as sold. Please try again.');
-        } finally {
-            setIsMarkingSold(false);
-        }
+    const handleCardClick = () => {
+        router.push(`/manage-item/${item.id}`);
     };
 
     const handleDeleteItem = () => {
         setShowDropdown(false);
-        console.log('Delete button clicked for item:', item.id);
         setShowDeleteModal(true);
-        console.log('showDeleteModal set to true');
     };
 
     const handleConfirmDelete = async () => {
         setIsDeleting(true);
-        console.log('Starting delete process for item:', item.id);
-
         try {
             const result = await ItemsService.deleteItem(item.id);
-            console.log('Delete result:', result);
-
             if (result.data) {
-                console.log('Delete successful');
                 showSuccess('Item deleted successfully!');
                 onItemDeleted?.(item.id);
             } else {
-                console.log('Delete failed with error:', result.error);
                 showError(result.error || 'Failed to delete item');
             }
-        } catch (error) {
-            console.error('Delete exception:', error);
+        } catch {
             showError('An error occurred while deleting the item');
         } finally {
             setIsDeleting(false);
@@ -100,150 +81,218 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
         }
     };
 
-    const handleCancelDelete = () => {
-        setShowDeleteModal(false);
-    };
-
     const handleToggleAuction = async () => {
         if (!item.isAuction) return;
-
         setShowDropdown(false);
         setIsUpdatingAuction(true);
-
         try {
-            // TODO: Replace with actual API call when auction endpoints are available
-            const action = item.auctionActive ? 'deactivate' : 'activate';
-
-            // Placeholder - will be replaced with actual API call
+            // TODO: Replace with actual API call
             await new Promise((resolve) => setTimeout(resolve, 1000));
-
-            showSuccess(`Auction ${action}d successfully!`);
+            showSuccess(`Auction ${item.auctionActive ? 'deactivated' : 'activated'} successfully!`);
             onItemUpdated?.(item.id);
-        } catch (error) {
-            showError(`Failed to ${item.auctionActive ? 'deactivate' : 'activate'} auction. Please try again.`);
+        } catch {
+            showError('Failed to update auction. Please try again.');
         } finally {
             setIsUpdatingAuction(false);
         }
     };
 
-    const handleCardClick = () => {
-        router.push(`/manage-item-demo?id=${item.id}`);
-    };
+    // Determine auction state for display
+    const isAuctionClosed = item.isAuction && !item.auctionActive;
+    const isAuctionFailed = item.auctionStatus === 'closed_failed';
+    const isAuctionSuccessful = item.auctionStatus === 'closed_successful';
+    const isAuctionActive = item.auctionStatus === 'active';
 
     return (
-        <div className='w-full sm:border sm:border-border_gray sm:rounded-md flex flex-col sm:flex-row sm:p-4 sm:h-[179px]'>
+        <div className='border border-[#E8E8E8] rounded-2xl flex xs:flex-col overflow-hidden'>
+            {/* Image */}
             <div
-                className='w-full h-48 sm:w-[157px] sm:h-full bg-gray-200 rounded-t-md sm:rounded-md overflow-hidden flex-shrink-0 relative mb-2 sm:mb-0 cursor-pointer'
+                className='p-4 xs:p-3 flex-shrink-0 cursor-pointer'
                 onClick={handleCardClick}
             >
                 <Image
                     src={item.image}
                     alt={item.title}
-                    fill
-                    sizes="(max-width: 640px) 100vw, 157px"
-                    quality={75}
-                    className='object-cover'
+                    width={140}
+                    height={140}
+                    className='rounded-xl object-cover w-[140px] h-[140px] xs:w-full xs:h-[180px]'
                 />
             </div>
 
-            <div className='flex-1 sm:ml-[22px] flex flex-col justify-between'>
-                <div className='flex justify-between items-start'>
-                    <div className='flex-1 cursor-pointer' onClick={handleCardClick}>
-                        <h3 className='text-gray-700 typo-body-lg-regular mb-1 sm:mb-2'>{item.title}</h3>
-                        <div className='text-text_one typo-heading-md-medium mb-0.5 sm:mb-1'>
-                            {formatAmount(item.amount)}
-                        </div>
-                        <div className='text-gray-700 typo-body-md-regular mb-2 sm:mb-0'>Views: {item.views}</div>
-                    </div>
+            {/* Content */}
+            <div className='py-4 pr-4 xs:px-3 xs:pb-3 xs:pt-0 flex-1 flex flex-col justify-between min-w-0'>
+                <div className='flex items-start justify-between'>
+                    <div className='flex-1 min-w-0 cursor-pointer' onClick={handleCardClick}>
+                        <h3 className='font-poppins text-[14px] text-[#4D4D4D] leading-[1.4]'>
+                            {item.title}
+                        </h3>
 
-                    {/* Mobile dropdown menu */}
-                    <div className='sm:hidden relative' ref={dropdownRef}>
-                        <button
-                            onClick={() => setShowDropdown(!showDropdown)}
-                            className='p-2 text-gray-500 hover:text-gray-700 transition-colors'
-                        >
-                            <MoreVertical className='w-5 h-5' />
-                        </button>
-
-                        {showDropdown && (
-                            <div className='absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10'>
-                                <button
-                                    onClick={handleEditItem}
-                                    className='w-full flex items-center gap-3 px-4 py-2 text-left text-gray-700 hover:bg-gray-50 transition-colors'
-                                >
-                                    <Edit className='w-4 h-4' />
-                                    Edit Item
-                                </button>
-
-                                {item.isAuction ? (
-                                    <button
-                                        onClick={handleToggleAuction}
-                                        disabled={isUpdatingAuction}
-                                        className='w-full flex items-center gap-3 px-4 py-2 text-left text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50'
-                                    >
-                                        {item.auctionActive ? (
+                        {/* Auction items */}
+                        {item.isAuction && (
+                            <>
+                                <p className='font-poppins font-bold text-[16px] text-text_one mt-1'>
+                                    Current bid: {formatAmount(item.currentBid || item.amount)}
+                                </p>
+                                {item.type !== 'deactivated' && (
+                                    <div className='flex items-center gap-2 mt-1'>
+                                        {isAuctionClosed && (
                                             <>
-                                                <Square className='w-4 h-4' />
-                                                {isUpdatingAuction ? 'Deactivating...' : 'Cancel Auction'}
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Play className='w-4 h-4' />
-                                                {isUpdatingAuction ? 'Activating...' : 'Activate Auction'}
+                                                <span className='font-poppins text-[13px] text-[#FF674B]'>Auction Closed</span>
+                                                <span className='text-[#A49E9E]'>|</span>
                                             </>
                                         )}
-                                    </button>
-                                ) : (
-                                    <button
-                                        onClick={handleMarkAsSold}
-                                        disabled={isMarkingSold}
-                                        className='w-full flex items-center gap-3 px-4 py-2 text-left text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50'
-                                    >
-                                        <CheckCircle className='w-4 h-4' />
-                                        {isMarkingSold ? 'Marking...' : 'Mark as Sold'}
-                                    </button>
+                                        {isAuctionActive && (
+                                            <>
+                                                <span className='font-poppins text-[13px] text-primary'>
+                                                    {getCountdown(item.auctionEndDate)}
+                                                </span>
+                                                <span className='text-[#A49E9E]'>|</span>
+                                            </>
+                                        )}
+                                        <span className='font-poppins text-[13px] text-[#4D4D4D]'>Views : {item.views}</span>
+                                    </div>
                                 )}
+                                {item.type === 'deactivated' && (
+                                    <p className='font-poppins text-[13px] text-[#4D4D4D] mt-1'>Views : {item.views}</p>
+                                )}
+                                {isAuctionFailed && (
+                                    <span className='inline-block mt-2 px-3 py-0.5 bg-[#FF674B]/10 text-[#FF674B] rounded font-poppins text-[12px] font-medium border border-[#FF674B]/20'>
+                                        Failed
+                                    </span>
+                                )}
+                                {isAuctionSuccessful && (
+                                    <span className='inline-block mt-2 px-3 py-0.5 bg-[#08973F]/10 text-[#08973F] rounded font-poppins text-[12px] font-medium border border-[#08973F]/20'>
+                                        Successful
+                                    </span>
+                                )}
+                            </>
+                        )}
 
-                                <div className='border-t border-gray-100 my-1' />
+                        {/* Listed / Deactivated items */}
+                        {!item.isAuction && (
+                            <>
+                                {(item.tradeType === 'cash' || item.tradeType === 'mixed') && item.amount > 0 && (
+                                    <p className='font-poppins font-bold text-[16px] text-text_one mt-1'>
+                                        Price: {formatAmount(item.amount)}
+                                    </p>
+                                )}
+                                {(item.tradeType === 'swap' || item.tradeType === 'mixed') && item.swapCategory && (
+                                    <p className='font-poppins font-bold text-[16px] text-text_one mt-1'>
+                                        Swap category: {item.swapCategory}
+                                    </p>
+                                )}
+                                <p className='font-poppins text-[13px] text-[#4D4D4D] mt-1'>Views : {item.views}</p>
+                            </>
+                        )}
+                    </div>
 
+                    {/* Trade type badge + Three-dot menu */}
+                    <div className='flex items-center gap-3 flex-shrink-0'>
+                        {!item.isAuction && item.tradeType && (
+                            <div className='w-fit'>
+                                <TransactionTypeBadge
+                                    acceptCash={item.tradeType === 'cash' || item.tradeType === 'mixed'}
+                                    hasSwapItems={item.tradeType === 'swap' || item.tradeType === 'mixed'}
+                                />
+                            </div>
+                        )}
+
+                        {/* Three-dot menu — hidden for deactivated items */}
+                        {item.type !== 'deactivated' && (
+                            <div className='relative' ref={dropdownRef}>
                                 <button
-                                    onClick={handleDeleteItem}
-                                    disabled={isDeleting}
-                                    className='w-full flex items-center gap-3 px-4 py-2 text-left text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50'
+                                    onClick={() => setShowDropdown(!showDropdown)}
+                                    className='p-1 text-[#A49E9E] hover:text-text_one transition-colors'
                                 >
-                                    <Trash2 className='w-4 h-4' />
-                                    Delete Item
+                                    <MoreVertical className='w-5 h-5' />
                                 </button>
+
+                                {showDropdown && (
+                                    <div className='absolute right-0 top-full mt-1 w-44 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10'>
+                                        <button
+                                            onClick={() => { setShowDropdown(false); router.push(`/edit-item/${item.id}`); }}
+                                            className='w-full px-4 py-2 text-left font-poppins text-[13px] text-text_one hover:bg-gray-50'
+                                        >
+                                            Edit Item
+                                        </button>
+                                        {item.isAuction && (
+                                            <button
+                                                onClick={handleToggleAuction}
+                                                disabled={isUpdatingAuction}
+                                                className='w-full px-4 py-2 text-left font-poppins text-[13px] text-text_one hover:bg-gray-50 disabled:opacity-50'
+                                            >
+                                                {item.auctionActive ? 'Deactivate Auction' : 'Activate Auction'}
+                                            </button>
+                                        )}
+                                        <button
+                                            onClick={handleDeleteItem}
+                                            disabled={isDeleting}
+                                            className='w-full px-4 py-2 text-left font-poppins text-[13px] text-[#FF674B] hover:bg-red-50 disabled:opacity-50'
+                                        >
+                                            Delete Item
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
                 </div>
 
-                {/* Desktop buttons */}
-                <div className='hidden sm:flex gap-3 mt-[21px]'>
-                    <Button variant='outline' size='sm' onClick={handleEditItem}>
-                        Edit Item
-                    </Button>
-
-                    {/* Show auction controls for auction items */}
-                    {item.isAuction ? (
-                        <Button
-                            variant={item.auctionActive ? 'danger' : 'primary'}
-                            size='sm'
-                            onClick={handleToggleAuction}
-                            loading={isUpdatingAuction}
-                        >
-                            {item.auctionActive ? 'Cancel Auction' : 'Activate Auction'}
-                        </Button>
-                    ) : (
-                        <Button variant='outline' size='sm' onClick={handleMarkAsSold} loading={isMarkingSold}>
-                            Mark as Sold
-                        </Button>
+                {/* Action buttons */}
+                <div className='flex items-center gap-3 mt-3'>
+                    {isAuctionFailed && (
+                        <>
+                            <button
+                                onClick={() => router.push(`/post-an-item/form?from=${item.id}`)}
+                                className='px-4 py-1.5 border border-[#A49E9E] rounded-lg font-poppins text-[12px] text-[#A49E9E] hover:border-primary hover:text-primary transition-colors'
+                            >
+                                List Item
+                            </button>
+                            <button
+                                className='px-4 py-1.5 border border-[#A49E9E] rounded-lg font-poppins text-[12px] text-[#A49E9E] hover:border-primary hover:text-primary transition-colors'
+                            >
+                                Post auction again
+                            </button>
+                        </>
                     )}
-
-                    <Button variant='danger' size='sm' onClick={handleDeleteItem} loading={isDeleting}>
-                        Delete Item
-                    </Button>
+                    {isAuctionActive && (
+                        <>
+                            <button
+                                onClick={() => router.push(`/post-an-item/form?from=${item.id}`)}
+                                className='px-4 py-1.5 border border-[#A49E9E] rounded-lg font-poppins text-[12px] text-[#A49E9E] hover:border-primary hover:text-primary transition-colors'
+                            >
+                                List Item
+                            </button>
+                            <button
+                                onClick={handleToggleAuction}
+                                disabled={isUpdatingAuction}
+                                className='px-4 py-1.5 border border-[#A49E9E] rounded-lg font-poppins text-[12px] text-[#A49E9E] hover:border-primary hover:text-primary transition-colors disabled:opacity-50'
+                            >
+                                Deactivate Item
+                            </button>
+                        </>
+                    )}
+                    {!item.isAuction && item.type === 'listed' && (
+                        <>
+                            <button
+                                className='px-4 py-1.5 border border-[#A49E9E] rounded-lg font-poppins text-[12px] text-[#A49E9E] hover:border-primary hover:text-primary transition-colors'
+                            >
+                                Post as Auction
+                            </button>
+                            <button
+                                className='px-4 py-1.5 border border-[#A49E9E] rounded-lg font-poppins text-[12px] text-[#A49E9E] hover:border-primary hover:text-primary transition-colors'
+                            >
+                                Deactivate Item
+                            </button>
+                        </>
+                    )}
+                    {item.type === 'deactivated' && (
+                        <button
+                            className='px-4 py-1.5 border border-[#A49E9E] rounded-lg font-poppins text-[12px] text-[#A49E9E] hover:border-primary hover:text-primary transition-colors'
+                        >
+                            Reactivate
+                        </button>
+                    )}
                 </div>
             </div>
 
@@ -252,10 +301,9 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
                 title='Delete Item'
                 message={`Are you sure you want to delete "${item.title}"? This action cannot be undone.`}
                 onConfirm={handleConfirmDelete}
-                onCancel={handleCancelDelete}
+                onCancel={() => setShowDeleteModal(false)}
                 isDeleting={isDeleting}
             />
-            {/* Debug: showDeleteModal is {showDeleteModal ? 'true' : 'false'} */}
         </div>
     );
 }

@@ -60,14 +60,7 @@ const MainHomeServer = ({ items, auctionItems, defaultCategories, loadMoreRef, l
 
     return (
         <div className='flex flex-col relative no-scrollbar'>
-            <div className='xs:px-4 h-[206px] xs:h-[184px] bg-surface-primary-95 flex flex-col gap-7 xs:gap-6 py-11 xs:pt-[36px] xs:pb-[29px]'>
-                <div className='flex items-center gap-4 mx-auto text-white xs:flex-col xs:gap-3'>
-                    <p className='typo-body_lr xs:typo-body_sr capitalize'>
-                        {filters.category ? `${filters.category} Items` : 'All Items'}
-                    </p>
-                </div>
-                <SearchBar />
-            </div>
+            <SearchBar />
             <div className={`grid ${defaultCategories.length > 0 ? 'grid-cols-[260px_1fr]' : 'grid-cols-1'} xs:grid-cols-1 gap-6 xs:gap-0 overflow-hidden max-w-full`}>
                 {defaultCategories.length > 0 && (
                     <FilterSidebar
@@ -85,9 +78,9 @@ const MainHomeServer = ({ items, auctionItems, defaultCategories, loadMoreRef, l
                     />
                     {!hasActiveFilters && auctionItems.length > 0 && (
                         <>
-                            <div className='py-9 xs:py-4 xs:mb-4 flex items-center justify-between overflow-hidden'>
-                                <div className='typo-heading_ms xs:typo-heading_sr'>Live Auction</div>
-                                <Link href='/live-auction' className='flex items-center typo-body_mm xs:typo-body_sr text-text_four border border-border_gray rounded-md h-[31px] xs:h-[28px] px-4 xs:px-3 hover:bg-gray-50 hover:text-primary-light hover:border-primary-light transition-colors cursor-pointer'>
+                            <div className='py-9 xs:py-4 xs:mb-4 flex items-center justify-between overflow-hidden px-4 xs:px-0'>
+                                <div className='font-poppins font-semibold text-[20px] leading-[1.6] text-text_one xs:text-[16px]'>Live Auction</div>
+                                <Link href='/live-auction' className='flex items-center font-inter font-medium text-[16px] text-text_four border border-text_four rounded-lg h-[31px] xs:h-[28px] px-4 xs:px-3 hover:bg-gray-50 hover:text-primary-light hover:border-primary-light transition-colors cursor-pointer'>
                                     View all
                                 </Link>
                             </div>
@@ -98,8 +91,8 @@ const MainHomeServer = ({ items, auctionItems, defaultCategories, loadMoreRef, l
                     )}
                     {items.length > 0 ? (
                         <>
-                            <div className='py-9 xs:py-4 xs:mb-4 flex items-center justify-between'>
-                                <div className='typo-heading_ms xs:typo-heading_sr'>Listed Items</div>
+                            <div className='py-9 xs:py-4 xs:mb-4 flex items-center justify-between px-2 xs:px-0'>
+                                <div className='font-poppins font-semibold text-[24px] leading-[1.6] text-text_one xs:text-[18px]'>Listed Items</div>
                                 <div className='xs:hidden'>
                                     <SortDropdown
                                         options={sortOptions}
