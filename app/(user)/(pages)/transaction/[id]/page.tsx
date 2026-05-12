@@ -5,7 +5,7 @@ import {TransactionDTO} from '~/types/transaction';
 
 interface PageProps {
     params: Promise<{id: string}>;
-    searchParams: Promise<{type?: string}>;
+    searchParams: Promise<{type?: string; step?: string; role?: string}>;
 }
 
 async function getTransactionData(transactionId: string, type?: string): Promise<TransactionDTO> {
@@ -228,7 +228,7 @@ async function getTransactionData(transactionId: string, type?: string): Promise
 
 export default async function TransactionPage({params, searchParams}: PageProps) {
     const {id} = await params;
-    const {type} = await searchParams;
+    const {type, step, role} = await searchParams;
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
 
@@ -238,6 +238,40 @@ export default async function TransactionPage({params, searchParams}: PageProps)
 
     // Get dummy data based on type parameter
     const transactionData = await getTransactionData(id, type);
+
+    // Allow step override for testing each transaction step
+    // TODO: Remove this when real API is integrated
+    if (step) {
+        const isSwap = type === 'exchange';
+        const stepStatusMap: Record<string, string> = isSwap
+            ? {
+                '0': 'OFFER_ACCEPTED',
+                '1': 'SHIPPING_PENDING',
+                '2': 'IN_TRANSIT',
+                '3': 'DELIVERED',
+                '4': 'REVIEW_PENDING',
+            }
+            : {
+                '0': 'OFFER_ACCEPTED',
+                '1': 'PAYMENT_PENDING',
+                '2': 'SHIPPING_PENDING',
+                '3': 'DELIVERED',
+                '4': 'REVIEW_PENDING',
+            };
+        if (stepStatusMap[step]) {
+            transactionData.status = stepStatusMap[step] as any;
+        }
+    }
+
+    // Allow role override for testing seller vs buyer views
+    // TODO: Remove this when real API is integrated
+    if (role === 'seller') {
+        // Swap seller ID to match current user so they appear as seller
+        const cookieUserId = cookieStore.get('userId')?.value;
+        if (cookieUserId) {
+            transactionData.seller = {...transactionData.seller, id: parseInt(cookieUserId)};
+        }
+    }
 
     return (
         <div className='min-h-screen bg-gray-50'>

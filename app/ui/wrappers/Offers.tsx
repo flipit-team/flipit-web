@@ -2,9 +2,17 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import {useState} from 'react';
+import {useRouter} from 'next/navigation';
 import NoData from '../common/no-data/NoData';
 import TransactionTypeBadge from '../common/badges/TransactionTypeBadge';
 import {Check} from 'lucide-react';
+
+// Helper to get transaction URL based on trade type and role
+const getTransactionUrl = (id: number, tradeType: string, role: 'buyer' | 'seller' = 'buyer') => {
+    const typeParam = tradeType === 'swap' ? '?type=exchange' : tradeType === 'mixed' ? '?type=exchange-cash' : '';
+    const roleParam = role === 'seller' ? (typeParam ? '&role=seller' : '?role=seller') : '';
+    return `/transaction/${id}${typeParam}${roleParam}`;
+};
 
 // Types
 interface OfferItem {
@@ -96,6 +104,20 @@ const dummyReceivedOffers: ReceivedOffer[] = [
     },
 ];
 
+interface MyBid {
+    id: number;
+    item: {
+        title: string;
+        imageUrl: string;
+    };
+    currentPrice: number;
+    myMaxBid: number;
+    status: 'Out Bid' | 'Pending' | 'Won';
+    timeRemaining?: string;
+    auctionEnded?: boolean;
+    actions: string[];
+}
+
 const dummyStats: OffersStats = {
     acceptedOffers: 12,
     rejectedOffers: 4,
@@ -103,10 +125,42 @@ const dummyStats: OffersStats = {
     currentAuctions: 3,
 };
 
+// TODO: Replace with real API data from GET /api/v1/bidding/user/me
+const dummyMyBids: MyBid[] = [
+    {
+        id: 301,
+        item: {title: 'Canon EOS RP Camera +Small Rig', imageUrl: '/placeholder-product.svg'},
+        currentPrice: 1400000,
+        myMaxBid: 1100000,
+        status: 'Out Bid',
+        timeRemaining: '14m 50s remaining',
+        actions: [],
+    },
+    {
+        id: 302,
+        item: {title: 'Coach Shoulder Bag', imageUrl: '/placeholder-product.svg'},
+        currentPrice: 150000,
+        myMaxBid: 170000,
+        status: 'Pending',
+        timeRemaining: '1d 20h remaining',
+        actions: ['Delete Bid'],
+    },
+    {
+        id: 303,
+        item: {title: 'MacBook Pro 2017', imageUrl: '/placeholder-product.svg'},
+        currentPrice: 900000,
+        myMaxBid: 1100000,
+        status: 'Won',
+        auctionEnded: true,
+        actions: ['Proceed to checkout', 'Cancel Transaction'],
+    },
+];
+
 interface Props {
     myOffers?: MyOffer[];
     receivedOffers?: ReceivedOffer[];
     stats?: OffersStats;
+    myBids?: MyBid[];
 }
 
 const getStatusStyle = (status: string) => {
@@ -127,14 +181,24 @@ const getTradeTypeProps = (type: string) => {
     }
 };
 
-const Offers = ({myOffers = dummyMyOffers, receivedOffers = dummyReceivedOffers, stats = dummyStats}: Props) => {
-    const [activeTab, setActiveTab] = useState<'my-offers' | 'offers-on-items'>('my-offers');
+const getBidStatusStyle = (status: string) => {
+    switch (status) {
+        case 'Out Bid': return 'bg-[#FF674B]/10 text-[#FF674B] border-[#FF674B]/20';
+        case 'Pending': return 'bg-[#E8E8E8] text-text_one border-[#E8E8E8]';
+        case 'Won': return 'bg-[#08973F]/10 text-[#08973F] border-[#08973F]/20';
+        default: return 'bg-[#E8E8E8] text-text_four border-[#E8E8E8]';
+    }
+};
+
+const Offers = ({myOffers = dummyMyOffers, receivedOffers = dummyReceivedOffers, stats = dummyStats, myBids = dummyMyBids}: Props) => {
+    const router = useRouter();
+    const [activeTab, setActiveTab] = useState<'my-offers' | 'offers-on-items' | 'my-bids'>('my-offers');
 
     return (
         <div className='mx-[120px] xs:mx-4 my-6'>
             {/* Page Title */}
             <h1 className='font-poppins font-semibold text-[24px] leading-[1.6] text-text_one mb-4'>
-                Offers Dashboard
+                {activeTab === 'my-bids' ? 'My Bids' : 'Offers Dashboard'}
             </h1>
 
             {/* Tab Navigation */}
@@ -157,7 +221,17 @@ const Offers = ({myOffers = dummyMyOffers, receivedOffers = dummyReceivedOffers,
                             : 'text-text_four hover:text-text_one'
                     }`}
                 >
-                    Offers on My Items
+                    Offers On My Items
+                </button>
+                <button
+                    onClick={() => setActiveTab('my-bids')}
+                    className={`px-6 py-3 font-poppins font-semibold text-[14px] leading-[1.5] transition-all ${
+                        activeTab === 'my-bids'
+                            ? 'text-primary border-b-2 border-primary -mb-[1px]'
+                            : 'text-text_four hover:text-text_one'
+                    }`}
+                >
+                    My Bids
                 </button>
             </div>
 
@@ -205,6 +279,11 @@ const Offers = ({myOffers = dummyMyOffers, receivedOffers = dummyReceivedOffers,
                                                 {offer.actions.map((action, idx) => (
                                                     <button
                                                         key={idx}
+                                                        onClick={() => {
+                                                            if (action === 'Proceed to checkout') {
+                                                                router.push(getTransactionUrl(offer.id, offer.tradeType, 'buyer'));
+                                                            }
+                                                        }}
                                                         className='px-4 py-2 border-2 border-[#A49E9E] rounded-lg font-poppins text-[13px] font-medium text-[#A49E9E] hover:border-primary hover:text-primary transition-colors'
                                                     >
                                                         {action}
@@ -320,7 +399,10 @@ const Offers = ({myOffers = dummyMyOffers, receivedOffers = dummyReceivedOffers,
 
                                                 {/* Accept / Decline buttons */}
                                                 <div className='flex gap-4 mt-4'>
-                                                    <button className='px-8 py-2.5 bg-primary text-white rounded-lg font-poppins text-[14px] font-medium hover:bg-primary/90 transition-colors'>
+                                                    <button
+                                                        onClick={() => router.push(getTransactionUrl(offer.id, offer.tradeType, 'seller'))}
+                                                        className='px-8 py-2.5 bg-primary text-white rounded-lg font-poppins text-[14px] font-medium hover:bg-primary/90 transition-colors'
+                                                    >
                                                         Accept
                                                     </button>
                                                     <button className='px-8 py-2.5 border-2 border-primary text-primary rounded-lg font-poppins text-[14px] font-medium hover:bg-gray-50 transition-colors'>
@@ -347,6 +429,88 @@ const Offers = ({myOffers = dummyMyOffers, receivedOffers = dummyReceivedOffers,
                         )}
                     </div>
                 </>
+            )}
+
+            {/* MY BIDS TAB */}
+            {activeTab === 'my-bids' && (
+                <div className='space-y-4'>
+                    {myBids.length > 0 ? (
+                        myBids.map((bid) => (
+                            <div
+                                key={bid.id}
+                                className='border border-[#E8E8E8] rounded-2xl overflow-hidden flex xs:flex-col'
+                            >
+                                <div className='flex flex-1 xs:flex-col'>
+                                    {/* Image */}
+                                    <div className='p-4 xs:p-3 flex-shrink-0'>
+                                        <Image
+                                            src={bid.item.imageUrl}
+                                            alt={bid.item.title}
+                                            width={100}
+                                            height={100}
+                                            className='rounded-xl object-cover w-[100px] h-[100px] xs:w-full xs:h-[160px]'
+                                        />
+                                    </div>
+
+                                    {/* Middle — title, prices, actions */}
+                                    <div className='py-4 xs:px-3 xs:py-0 xs:pb-3 flex flex-col justify-between flex-1 min-w-0'>
+                                        <div>
+                                            <h3 className='font-poppins font-semibold text-[14px] text-primary'>
+                                                {bid.item.title}
+                                            </h3>
+                                            <div className='flex items-center gap-6 mt-2'>
+                                                <div>
+                                                    <p className='font-poppins font-semibold text-[10px] text-[#A49E9E] uppercase tracking-wider'>CURRENT PRICE</p>
+                                                    <p className='font-poppins font-bold text-[14px] text-text_one'>₦{bid.currentPrice.toLocaleString()}</p>
+                                                </div>
+                                                <div>
+                                                    <p className='font-poppins font-semibold text-[10px] text-[#A49E9E] uppercase tracking-wider'>MY MAXIMUM BID</p>
+                                                    <p className='font-poppins font-bold text-[14px] text-text_one'>₦{bid.myMaxBid.toLocaleString()}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Action buttons */}
+                                        {bid.actions.length > 0 && (
+                                            <div className='flex items-center gap-3 mt-3'>
+                                                {bid.actions.map((action, idx) => (
+                                                    <button
+                                                        key={idx}
+                                                        onClick={() => {
+                                                            if (action === 'Proceed to checkout') {
+                                                                router.push(`/transaction/${bid.id}`);
+                                                            }
+                                                        }}
+                                                        className='px-4 py-1.5 border border-[#A49E9E] rounded-lg font-poppins text-[12px] text-[#A49E9E] hover:border-primary hover:text-primary transition-colors'
+                                                    >
+                                                        {action}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Right — time remaining + status */}
+                                    <div className='py-4 pr-6 xs:px-3 xs:py-3 flex flex-col items-end justify-between flex-shrink-0'>
+                                        <div className='flex items-center gap-1.5'>
+                                            <svg className={`w-[18px] h-[18px] ${bid.auctionEnded ? 'text-text_four' : bid.timeRemaining?.includes('d') ? 'text-text_one' : 'text-[#FF674B]'}`} fill='currentColor' viewBox='0 0 24 24'>
+                                                <path d='M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm3.5 13.5l-4.5-3V7h2v4.67l3.5 2.33-1 1.5z' />
+                                            </svg>
+                                            <span className={`font-poppins text-[13px] font-medium ${bid.auctionEnded ? 'text-text_four' : bid.timeRemaining?.includes('d') ? 'text-text_one' : 'text-[#FF674B]'}`}>
+                                                {bid.auctionEnded ? 'Auction Ended' : bid.timeRemaining}
+                                            </span>
+                                        </div>
+                                        <span className={`px-3 py-1 rounded font-poppins text-[12px] font-medium border ${getBidStatusStyle(bid.status)}`}>
+                                            {bid.status}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <NoData text='No bids placed yet' />
+                    )}
+                </div>
             )}
         </div>
     );

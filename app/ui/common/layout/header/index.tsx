@@ -181,15 +181,14 @@ function HeaderContent(props: Props) {
 
                 <div className='flex xs:hidden gap-[42px] typo-body_ls ml-[70px]'>
                     <Link
-                        href={'/live-auction'}
+                        href={'/'}
                         className={`relative transition-colors duration-200 ${
-                            pathname === '/live-auction'
+                            pathname === '/'
                                 ? 'text-secondary'
                                 : 'text-white hover:text-white/80'
                         }`}
                     >
-                        Live Auction
-                        <CountBadge count={counts.auctionsCount} />
+                        Home
                     </Link>
                     <Link
                         href={'/messages'}
@@ -210,8 +209,19 @@ function HeaderContent(props: Props) {
                                 : 'text-white hover:text-white/80'
                         }`}
                     >
-                        Offers
+                        Offers & Bids
                         <CountBadge count={counts.biddingCount} />
+                    </Link>
+                    <Link
+                        href={'/live-auction'}
+                        className={`relative transition-colors duration-200 ${
+                            pathname === '/live-auction'
+                                ? 'text-secondary'
+                                : 'text-white hover:text-white/80'
+                        }`}
+                    >
+                        Live Auction
+                        <CountBadge count={counts.auctionsCount} />
                     </Link>
                 </div>
                 {user ? (
