@@ -5,14 +5,14 @@ export class ChatService {
   // Get user's chats
   static async getUserChats() {
     return handleApiCall(() =>
-      apiClient.get<ChatDTO[]>('/v1/chats', { requireAuth: true })
+      apiClient.get<any>('/v1/chats', { requireAuth: true })
     );
   }
 
   // Create new chat
   static async createChat(chatData: CreateChatRequest) {
     return handleApiCall(() =>
-      apiClient.post<ChatDTO>('/chats/create', chatData, { requireAuth: true })
+      apiClient.post<ChatDTO>('/v1/chats', chatData, { requireAuth: true })
     );
   }
 
@@ -37,26 +37,6 @@ export class ChatService {
     );
   }
 
-  // Mark messages as read (if endpoint exists)
-  static async markMessagesAsRead(chatId: string) {
-    return handleApiCall(() =>
-      apiClient.put<{ message: string }>(`/chats/${chatId}/read`, {}, { requireAuth: true })
-    );
-  }
-
-  // Get unread message count (if endpoint exists)
-  static async getUnreadCount() {
-    return handleApiCall(() =>
-      apiClient.get<{ count: number }>('/chats/unread-count', { requireAuth: true })
-    );
-  }
-
-  // Search chats (if endpoint exists)
-  static async searchChats(query: string) {
-    return handleApiCall(() =>
-      apiClient.get<ChatDTO[]>(`/chats/search?q=${encodeURIComponent(query)}`, { requireAuth: true })
-    );
-  }
 }
 
 export default ChatService;

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { NIGERIAN_LOCATIONS } from '~/data/nigerianLocations';
+import { ChevronDownIcon, CloseIcon } from '~/ui/icons';
 
 interface LocationFilterProps {
   selectedState?: string;
@@ -57,14 +58,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
         <span className={`typo-body_mr ${selectedOption ? 'text-gray-900' : 'text-gray-500'}`}>
           {selectedOption ? selectedOption.name : placeholder}
         </span>
-        <svg
-          className={`w-5 h-5 text-gray-400 transform transition-transform ${isOpen ? 'rotate-180' : ''}`}
-          fill='none'
-          stroke='currentColor'
-          viewBox='0 0 24 24'
-        >
-          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
-        </svg>
+        <ChevronDownIcon className={`w-5 h-5 text-gray-400 transform transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
@@ -152,7 +146,7 @@ const LocationFilter: React.FC<LocationFilterProps> = ({
 
   // Mobile Modal Component
   const MobileModal = () => (
-    <div className='fixed inset-0 z-50 flex items-end'>
+    <div className='fixed inset-0 z-dropdown flex items-end'>
       {/* Backdrop */}
       <div
         className='absolute inset-0 bg-black bg-opacity-50'
@@ -168,9 +162,7 @@ const LocationFilter: React.FC<LocationFilterProps> = ({
             onClick={handleClose}
             className='p-2 hover:bg-gray-100 rounded-full transition-colors'
           >
-            <svg className='w-5 h-5 text-gray-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
-            </svg>
+            <CloseIcon className='w-5 h-5 text-gray-600' />
           </button>
         </div>
 
@@ -221,7 +213,7 @@ const LocationFilter: React.FC<LocationFilterProps> = ({
 
   // Desktop Dropdown Component
   const DesktopDropdown = () => (
-    <div className='absolute top-full right-0 mt-2 w-96 bg-white border border-gray-200 rounded-xl shadow-2xl z-50 overflow-hidden'>
+    <div className='absolute top-full right-0 mt-2 w-96 bg-white border border-gray-200 rounded-xl shadow-2xl z-dropdown overflow-hidden'>
       {/* Header */}
       <div className='px-6 py-4 bg-gradient-to-r from-primary/5 to-primary/10 border-b border-gray-100'>
         <h3 className='typo-body_lm text-gray-900 font-semibold'>Filter by Location</h3>
@@ -279,10 +271,10 @@ const LocationFilter: React.FC<LocationFilterProps> = ({
         onClick={() => setIsOpen(!isOpen)}
         className='border border-border_gray h-[37px] xs:h-[34px] px-4 xs:px-3 flex items-center rounded-md hover:bg-white/10 transition-colors'
       >
-        <Image src={'/location.svg'} height={24} width={24} alt='location' className='h-6 w-6 xs:h-5 xs:w-5 mr-2 brightness-0 invert' />
+        <Image src={'/icons/ui/location.svg'} height={24} width={24} alt='location' className='h-6 w-6 xs:h-5 xs:w-5 mr-2 brightness-0 invert' />
         <p className='typo-body_mr xs:typo-body_sr text-white truncate max-w-[200px]'>{displayLocation}</p>
         <Image
-          src={'/arrow-down.svg'}
+          src={'/icons/ui/arrow-down.svg'}
           height={16}
           width={16}
           alt='dropdown'

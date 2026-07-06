@@ -1,6 +1,8 @@
 'use client';
 import {useState} from 'react';
-import {ChevronDown, ChevronUp} from 'lucide-react';
+import {useRouter} from 'next/navigation';
+import {ChevronDown, ChevronUp, ChevronLeft, Search} from 'lucide-react';
+import Link from 'next/link';
 
 interface FAQItem {
     id: string;
@@ -14,6 +16,7 @@ interface FAQSection {
 }
 
 const FAQPage = () => {
+    const router = useRouter();
     const [openItems, setOpenItems] = useState<Set<string>>(new Set(['marketplace-1']));
 
     const faqData: FAQSection[] = [
@@ -95,20 +98,44 @@ const FAQPage = () => {
     };
 
     return (
-        <div className='w-full max-w-[672px] mx-auto p-6 xs:px-4 xs:py-6 bg-gray-50 min-h-screen xs:pb-24'>
-            <div className='bg-white rounded-lg shadow-sm'>
+        <div className='w-full max-w-[672px] mx-auto p-6 xs:px-0 xs:py-0 bg-gray-50 xs:bg-[#FFFFF0] min-h-screen xs:pb-24'>
+            {/* Mobile Header */}
+            <div className='hidden xs:block bg-primary rounded-b-[32px] px-6 pt-4 pb-8 fixed top-0 left-0 right-0 z-20'>
+                <div className='flex items-center gap-3'>
+                    <button onClick={() => router.back()} className='w-10 h-10 rounded-full bg-white/20 flex items-center justify-center'>
+                        <ChevronLeft size={20} className='text-white' />
+                    </button>
+                    <h1 className='font-poppins typo-heading-lg-bold text-white flex-1 text-center pr-10'>FAQ</h1>
+                </div>
+            </div>
+
+            {/* Spacer for fixed mobile header */}
+            <div className='hidden xs:block h-[88px]' />
+
+            {/* Desktop heading */}
+            <h1 className='typo-heading-lg-bold text-text_one text-center mb-6 xs:hidden'>Frequently Asked Questions</h1>
+
+            {/* Search bar */}
+            <div className='max-w-[500px] mx-auto mb-8 xs:hidden'>
+                <div className='relative'>
+                    <input type='text' placeholder='Search FAQs' className='w-full h-[48px] px-4 pr-10 border border-border-DEFAULT rounded-lg font-poppins typo-body-md-regular outline-none focus:border-primary' />
+                    <Search size={20} className='absolute right-3 top-1/2 -translate-y-1/2 text-text_four' />
+                </div>
+            </div>
+
+            <div className='bg-white rounded-lg shadow-sm xs:shadow-none xs:bg-transparent'>
                 {faqData.map((section, sectionIndex) => (
                     <div key={section.title} className={sectionIndex > 0 ? 'mt-8 xs:mt-6' : ''}>
-                        <div className='px-6 xs:px-4 py-4 xs:py-3 border-b border-gray-100'>
+                        <div className='px-6 xs:px-4 py-4 xs:py-3 border-b border-gray-100 xs:border-b-0'>
                             <h2 className='typo-heading-md-semibold xs:typo-heading_ss text-gray-800'>{section.title}</h2>
                         </div>
 
-                        <div className='divide-y divide-gray-100'>
+                        <div className='divide-y divide-gray-100 xs:space-y-3 xs:divide-y-0 xs:px-4'>
                             {section.items.map((item) => {
                                 const isOpen = openItems.has(item.id);
 
                                 return (
-                                    <div key={item.id} className='px-6 xs:px-4 py-4 xs:py-3'>
+                                    <div key={item.id} className='px-6 xs:px-4 py-4 xs:py-3 xs:border xs:border-gray-200 xs:rounded-xl xs:bg-white'>
                                         <button
                                             onClick={() => toggleItem(item.id)}
                                             className='w-full flex items-center justify-between text-left focus:outline-none rounded-lg p-2 -m-2 transition-colors hover:bg-gray-50 active:bg-gray-100'
@@ -132,6 +159,16 @@ const FAQPage = () => {
                         </div>
                     </div>
                 ))}
+            </div>
+
+            {/* Mobile "Ask a Question" button */}
+            <div className='hidden xs:block px-4 mt-6'>
+                <Link
+                    href='/support'
+                    className='block w-full py-3 bg-primary text-white text-center rounded-xl font-poppins typo-body_lm hover:bg-primary/90 transition-colors'
+                >
+                    Ask a Question
+                </Link>
             </div>
         </div>
     );

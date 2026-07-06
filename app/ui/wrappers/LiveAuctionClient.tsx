@@ -13,6 +13,8 @@ interface Props {
         name: string;
         description: string | null;
     }[];
+    userName?: string;
+    userAvatar?: string;
 }
 
 // Transform AuctionDTO to Item
@@ -66,7 +68,7 @@ function transformAuctionToItem(auction: AuctionDTO): Item {
     };
 }
 
-const LiveAuctionClient = ({ items: serverItems, defaultCategories }: Props) => {
+const LiveAuctionClient = ({ items: serverItems, defaultCategories, userName = '', userAvatar = '' }: Props) => {
     const searchParams = useSearchParams();
     const searchQuery = searchParams.get('q') || '';
 
@@ -172,6 +174,8 @@ const LiveAuctionClient = ({ items: serverItems, defaultCategories }: Props) => 
             onFilterChange={handleFilterChange}
             searchQuery={searchQuery}
             loading={loading}
+            userName={userName}
+            userAvatar={userAvatar}
         />
     );
 };

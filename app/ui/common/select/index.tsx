@@ -67,7 +67,7 @@ const Select = (props: Props) => {
                     <div className='flex items-center gap-2'>
                         {isOpen && !disabled ? (
                             <Image
-                                src={'/cancel-circle.svg'}
+                                src={'/icons/ui/cancel-circle.svg'}
                                 height={20}
                                 width={20}
                                 alt='close'
@@ -77,13 +77,13 @@ const Select = (props: Props) => {
                                 }}
                             />
                         ) : (
-                            <Image src={'/chevron-down.svg'} height={14} width={14} alt='chevron down' />
+                            <Image src={'/icons/ui/chevron-down.svg'} height={14} width={14} alt='chevron down' />
                         )}
                     </div>
                 </button>
 
                 {isOpen && !disabled && (
-                    <div className='absolute left-0 mt-1 p-2 w-full bg-white border rounded-lg shadow-lg z-50 max-h-60 overflow-auto'>
+                    <div className='absolute left-0 mt-1 p-2 w-full bg-white border rounded-lg shadow-lg z-dropdown max-h-60 overflow-auto'>
                         <ul>
                             {options.map((option) => (
                                 <li

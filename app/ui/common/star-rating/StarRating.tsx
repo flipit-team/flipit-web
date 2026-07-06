@@ -34,7 +34,7 @@ const StarRating: React.FC<StarRatingProps> = ({
         stars.push(
             <Image
                 key={i}
-                src={isFilled ? '/full-star.svg' : '/empty-star.svg'}
+                src={isFilled ? '/icons/action/full-star.svg' : '/icons/action/empty-star.svg'}
                 height={size}
                 width={size}
                 alt={isFilled ? 'filled star' : 'empty star'}

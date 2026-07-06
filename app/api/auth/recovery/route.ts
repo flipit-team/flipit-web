@@ -13,7 +13,13 @@ export async function POST(req: NextRequest) {
     const data = await response.text();
 
     if (!response.ok) {
-        return NextResponse.json({apierror: data}, {status: response.status});
+        let apierror;
+        try {
+            apierror = JSON.parse(data);
+        } catch {
+            apierror = { message: data };
+        }
+        return NextResponse.json({apierror}, {status: response.status});
     }
 
     const res = NextResponse.json({message: data}, {status: 200});

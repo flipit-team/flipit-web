@@ -7,7 +7,7 @@ import Pagination from '../components/Pagination';
 import StatusBadge from '../components/StatusBadge';
 import {AdminService} from '~/services';
 import {DashboardSummaryDTO} from '~/types/api';
-import {ListBulletIcon, UsersIcon, CursorArrowRaysIcon, ClockIcon, EyeIcon} from '@heroicons/react/24/outline';
+import {List, Users, MousePointerClick, Clock, Eye} from 'lucide-react';
 
 const columns = [
     {key: 'no', label: 'No'},
@@ -43,7 +43,7 @@ const actions = [
 export default function AdminOverview() {
     const [currentPage, setCurrentPage] = useState(1);
     const [dashboardData, setDashboardData] = useState<DashboardSummaryDTO | null>(null);
-    const [recentActivities, setRecentActivities] = useState<string[]>([]);
+    const [recentActivities, setRecentActivities] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -84,7 +84,7 @@ export default function AdminOverview() {
               {
                   title: 'Total Listings',
                   amount: dashboardData.totalListings.toLocaleString(),
-                  icon: <ListBulletIcon className='h-6 w-6 text-primary' />,
+                  icon: <List className='h-6 w-6 text-primary' />,
                   trend: {
                       value: Math.abs(dashboardData.totalListingsChangePercent),
                       isPositive: dashboardData.totalListingsChangePercent >= 0
@@ -93,7 +93,7 @@ export default function AdminOverview() {
               {
                   title: 'Customers',
                   amount: dashboardData.customers.toLocaleString(),
-                  icon: <UsersIcon className='h-6 w-6 text-primary' />,
+                  icon: <Users className='h-6 w-6 text-primary' />,
                   trend: {
                       value: Math.abs(dashboardData.customersChangePercent),
                       isPositive: dashboardData.customersChangePercent >= 0
@@ -102,7 +102,7 @@ export default function AdminOverview() {
               {
                   title: 'Total Bids',
                   amount: dashboardData.totalBids.toLocaleString(),
-                  icon: <CursorArrowRaysIcon className='h-6 w-6 text-primary' />,
+                  icon: <MousePointerClick className='h-6 w-6 text-primary' />,
                   trend: {
                       value: Math.abs(dashboardData.totalBidsChangePercent),
                       isPositive: dashboardData.totalBidsChangePercent >= 0
@@ -114,10 +114,10 @@ export default function AdminOverview() {
     // Transform activities data for table display
     const activitiesData = recentActivities.map((activity, index) => ({
         no: index + 1,
-        timestamp: activity,
-        activity: activity,
-        userId: '-',
-        action: 'view'
+        timestamp: activity.timestamp,
+        activity: activity.activity,
+        userId: activity.userId,
+        action: activity.action || 'view'
     }));
 
     const totalItems = activitiesData.length;

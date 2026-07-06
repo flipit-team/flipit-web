@@ -11,18 +11,18 @@ const UsedBadge = ({text}: {text?: string | null}) => {
 
     const getStyles = () => {
         if (normalized === 'new' || normalized === 'brand new') {
-            return 'bg-[#BEDAFF] text-[#00BBFF]';
+            return 'bg-surface-blue text-info-light';
         }
         if (normalized === 'used') {
-            return 'bg-[#F2CAC2] text-[#FF674B]';
+            return 'bg-surface-coral-dark text-accent-coral';
         }
         // Fairly used (default)
-        return 'bg-[#FFF4EE] text-[#E46A2D]';
+        return 'bg-surface-coral text-warning-dark';
     };
 
     return (
         <span
-            className={`flex items-center px-4 py-2 w-max rounded-lg font-poppins text-[12px] leading-[1.6] ${getStyles()}`}
+            className={`flex items-center px-4 py-2 w-max rounded-lg typo-body-sm-regular ${getStyles()}`}
         >
             {getVal()}
         </span>

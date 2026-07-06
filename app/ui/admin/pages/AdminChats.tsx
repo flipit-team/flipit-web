@@ -2,7 +2,7 @@
 import {useState} from 'react';
 import Image from 'next/image';
 import PageHeader from '../components/PageHeader';
-import {MagnifyingGlassIcon, PaperAirplaneIcon, FaceSmileIcon, PaperClipIcon} from '@heroicons/react/24/outline';
+import {Search, Send, Smile, Paperclip} from 'lucide-react';
 
 // Mock chat data
 const chatsList = [
@@ -13,7 +13,7 @@ const chatsList = [
         lastMessage: 'Is the iPhone still available for auction?',
         timestamp: '2 mins ago',
         unreadCount: 3,
-        avatar: '/camera-large.png',
+        avatar: '/icons/action/camera.png',
         isOnline: true
     },
     {
@@ -23,7 +23,7 @@ const chatsList = [
         lastMessage: 'Thank you for the quick response!',
         timestamp: '15 mins ago',
         unreadCount: 0,
-        avatar: '/camera-large.png',
+        avatar: '/icons/action/camera.png',
         isOnline: true
     },
     {
@@ -33,7 +33,7 @@ const chatsList = [
         lastMessage: 'I need help with my payment',
         timestamp: '1 hour ago',
         unreadCount: 1,
-        avatar: '/camera-large.png',
+        avatar: '/icons/action/camera.png',
         isOnline: false
     },
     {
@@ -43,7 +43,7 @@ const chatsList = [
         lastMessage: 'When will the auction start?',
         timestamp: '2 hours ago',
         unreadCount: 0,
-        avatar: '/camera-large.png',
+        avatar: '/icons/action/camera.png',
         isOnline: true
     },
     {
@@ -53,7 +53,7 @@ const chatsList = [
         lastMessage: 'Can you provide more details about the item?',
         timestamp: '3 hours ago',
         unreadCount: 2,
-        avatar: '/camera-large.png',
+        avatar: '/icons/action/camera.png',
         isOnline: false
     }
 ];
@@ -142,7 +142,7 @@ export default function AdminChats() {
                         <div className='p-4 border-b border-gray-200'>
                             <div className='relative'>
                                 <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                                    <MagnifyingGlassIcon className='h-5 w-5 text-gray-400' />
+                                    <Search className='h-5 w-5 text-gray-400' />
                                 </div>
                                 <input
                                     type='text'
@@ -255,7 +255,7 @@ export default function AdminChats() {
                         <div className='p-4 border-t border-gray-200'>
                             <div className='flex items-center space-x-3'>
                                 <button className='p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100'>
-                                    <PaperClipIcon className='h-5 w-5' />
+                                    <Paperclip className='h-5 w-5' />
                                 </button>
                                 <div className='flex-1 relative'>
                                     <input
@@ -268,14 +268,14 @@ export default function AdminChats() {
                                     />
                                 </div>
                                 <button className='p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100'>
-                                    <FaceSmileIcon className='h-5 w-5' />
+                                    <Smile className='h-5 w-5' />
                                 </button>
                                 <button
                                     onClick={handleSendMessage}
                                     disabled={!newMessage.trim()}
                                     className='p-2 bg-primary text-white rounded-full hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed'
                                 >
-                                    <PaperAirplaneIcon className='h-5 w-5' />
+                                    <Send className='h-5 w-5' />
                                 </button>
                             </div>
                         </div>

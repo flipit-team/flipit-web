@@ -1,27 +1,27 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { 
-  HomeIcon,
-  ListBulletIcon,
-  UsersIcon,
-  CursorArrowRaysIcon,
-  ChatBubbleLeftRightIcon,
-  Cog6ToothIcon,
-  XMarkIcon
-} from '@heroicons/react/24/outline';
+import {
+  Home,
+  List,
+  Users,
+  MousePointerClick,
+  MessageCircle,
+  Settings,
+  X
+} from 'lucide-react';
 
 interface AdminSidebarProps {
   onClose?: () => void;
 }
 
 const navigation = [
-  { name: 'Overview', href: '/admin/overview', icon: HomeIcon },
-  { name: 'Listings', href: '/admin/listings', icon: ListBulletIcon },
-  { name: 'Customers', href: '/admin/customers', icon: UsersIcon },
-  { name: 'Bids', href: '/admin/bids', icon: CursorArrowRaysIcon },
-  { name: 'Chats', href: '/admin/chats', icon: ChatBubbleLeftRightIcon },
-  { name: 'Settings', href: '/admin/settings', icon: Cog6ToothIcon },
+  { name: 'Overview', href: '/admin/overview', icon: Home },
+  { name: 'Listings', href: '/admin/listings', icon: List },
+  { name: 'Customers', href: '/admin/customers', icon: Users },
+  { name: 'Bids', href: '/admin/bids', icon: MousePointerClick },
+  { name: 'Chats', href: '/admin/chats', icon: MessageCircle },
+  { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 
 export default function AdminSidebar({ onClose }: AdminSidebarProps) {
@@ -48,7 +48,7 @@ export default function AdminSidebar({ onClose }: AdminSidebarProps) {
             onClick={onClose}
           >
             <span className="sr-only">Close sidebar</span>
-            <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+            <X className="h-6 w-6" aria-hidden="true" />
           </button>
         )}
       </div>

@@ -1,20 +1,18 @@
 import {NextRequest, NextResponse} from 'next/server';
-
-const API_BASE_URL = process.env.API_BASE_PATH || 'https://api.flipit.ng/api/v1';
+import { API_BASE_PATH } from '~/lib/config';
 
 export async function GET(request: NextRequest) {
     try {
         // Get auth token from request cookies or headers
         const token =
-            request.cookies.get('auth_token')?.value ||
-            request.cookies.get('jwt')?.value ||
+            request.cookies.get('token')?.value ||
             request.headers.get('authorization')?.replace('Bearer ', '');
 
         if (!token) {
             return NextResponse.json({error: 'Unauthorized', message: 'Authentication required'}, {status: 401});
         }
 
-        const response = await fetch(`${API_BASE_URL}/admin/dashboard/summary`, {
+        const response = await fetch(`${API_BASE_PATH}/admin/dashboard/summary`, {
             method: 'GET',
             headers: {
                 Authorization: `Bearer ${token}`,

@@ -185,13 +185,11 @@ export function useAuth() {
   }, [setUser]);
 
   const signup = useCallback(async (userData: {
-    username: string;
     email: string;
     password: string;
     firstName: string;
     lastName: string;
     phone: string;
-    dateOfBirth?: string;
     roleIds?: number[];
   }) => {
     try {

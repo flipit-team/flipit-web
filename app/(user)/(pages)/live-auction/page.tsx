@@ -1,6 +1,6 @@
 import LiveAuctionClient from '~/ui/wrappers/LiveAuctionClient';
 import {Item} from '~/utils/interface';
-import { getActiveAuctionsServerSide, getCategoriesServerSide } from '~/lib/server-api';
+import { getActiveAuctionsServerSide, getCategoriesServerSide, checkAuthServerSide } from '~/lib/server-api';
 import { AuctionDTO } from '~/types/api';
 import { Suspense } from 'react';
 
@@ -48,11 +48,14 @@ export default async function Page({searchParams}: {searchParams?: Promise<Searc
         const page = parseInt(resolvedSearchParams?.page || '0');
         
 
-        // Fetch active auctions and categories in parallel
-        const [auctionsResult, categoriesResult] = await Promise.all([
+        // Fetch active auctions, categories, and auth in parallel
+        const [auctionsResult, categoriesResult, authStatus] = await Promise.all([
             getActiveAuctionsServerSide(page, 15),
-            getCategoriesServerSide()
+            getCategoriesServerSide(),
+            checkAuthServerSide()
         ]);
+        const userName = authStatus?.user?.firstName || authStatus?.user?.username || '';
+        const userAvatar = authStatus?.user?.avatar || '';
 
         if (auctionsResult.error) {
         }
@@ -68,16 +71,20 @@ export default async function Page({searchParams}: {searchParams?: Promise<Searc
 
 
         return (
-            <Suspense>
-                <LiveAuctionClient items={transformedItems} defaultCategories={categories} />
-            </Suspense>
+            <div className='xs:bg-[#FFFFF0]'>
+                <Suspense>
+                    <LiveAuctionClient items={transformedItems} defaultCategories={categories} userName={userName} userAvatar={userAvatar} />
+                </Suspense>
+            </div>
         );
     } catch (error) {
         // Fallback to empty data if there's an error
         return (
-            <Suspense>
-                <LiveAuctionClient items={[]} defaultCategories={[]} />
-            </Suspense>
+            <div className='xs:bg-[#FFFFF0]'>
+                <Suspense>
+                    <LiveAuctionClient items={[]} defaultCategories={[]} userName='' userAvatar='' />
+                </Suspense>
+            </div>
         );
     }
 }

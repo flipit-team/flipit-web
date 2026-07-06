@@ -12,7 +12,7 @@ const Login = async ({searchParams}: {searchParams: Promise<{[key: string]: stri
 
         return (
             <div className='flex-1 grid grid-cols-2 xs:grid-cols-1 w-full xs:grid-sizes h-screen'>
-                <div className='xs:w-full xs:px-6 overflow-y-auto no-scrollbar flex flex-col items-center justify-center h-full'>
+                <div className='xs:w-full xs:px-6 xs:bg-[#FFFFF0] overflow-y-auto no-scrollbar flex flex-col items-center justify-center h-full'>
                     <div className='w-[468px] xs:w-full'>
                         {/* Logo */}
                         <div className='flex items-center gap-0 xs:justify-center'>
@@ -60,10 +60,10 @@ const Login = async ({searchParams}: {searchParams: Promise<{[key: string]: stri
                         />
                     </div>
                     <div className='w-[492px] mt-[4px]'>
-                        <h2 className='font-poppins font-bold text-[32px] leading-[1.6] text-right'>
+                        <h2 className='font-poppins typo-heading-xl-bold leading-[1.6] text-right'>
                             Trade Freely. Connect Simply
                         </h2>
-                        <p className='font-poppins font-normal text-[20px] leading-[1.6] text-center mt-1'>
+                        <p className='font-poppins typo-heading-md-semibold leading-[1.6] text-center mt-1'>
                             Turn the items you have into the ones you need. Start trading today!
                         </p>
                     </div>

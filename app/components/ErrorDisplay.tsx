@@ -21,7 +21,7 @@ export function ErrorDisplay({
   fullScreen = false,
 }: ErrorDisplayProps) {
   const containerClasses = fullScreen
-    ? 'fixed inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm z-50'
+    ? 'fixed inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm z-dropdown'
     : `flex flex-col items-center justify-center py-8 ${className}`;
 
   return (
@@ -29,7 +29,7 @@ export function ErrorDisplay({
       <div className="text-center max-w-md mx-auto">
         <div className="mb-4">
           <Image
-            src="/error-icon.svg"
+            src="/icons/status/error-icon.svg"
             alt="Error"
             width={48}
             height={48}

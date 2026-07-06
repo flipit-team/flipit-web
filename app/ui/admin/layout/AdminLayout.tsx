@@ -18,7 +18,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     name: 'John Admin',
     email: 'john@flipauction.com',
     role: 'Super Admin',
-    avatar: '/camera-large.png'
+    avatar: '/icons/action/camera.png'
   };
 
   // Check if user is authenticated (mock authentication)

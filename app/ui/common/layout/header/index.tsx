@@ -6,7 +6,7 @@ import React, {useState, useEffect, Suspense} from 'react';
 import {useAppContext} from '~/contexts/AppContext';
 import {useUnreadCount} from '~/contexts/UnreadCountContext';
 import Notifications from '../../modals/Notifications';
-import {ShoppingBag, Megaphone, BarChart3, Settings, LogOut} from 'lucide-react';
+import {ShoppingBag, Megaphone, BarChart3, Settings, Headphones, LogOut, Bell} from 'lucide-react';
 import ProfileDropdown from './ProfileDropdown';
 import HomeService from '~/services/home.service';
 import {TopNavDTO} from '~/types/api';
@@ -115,6 +115,11 @@ function HeaderContent(props: Props) {
             href: '/settings',
             label: 'Settings',
             icon: Settings,
+        },
+        {
+            href: '/support',
+            label: 'Support',
+            icon: Headphones,
         }
     ];
 
@@ -145,11 +150,11 @@ function HeaderContent(props: Props) {
 
     return (
         <>
-            <div className='xs:grid-sizes bg-primary h-[102px] xs:h-[56px] flex items-center xs:justify-between px-[120px] xs:px-0 text-white sticky top-0 z-50'>
+            <div className={`bg-primary h-[102px] flex items-center px-[120px] xs:px-4 text-white sticky top-0 z-dropdown ${pathname !== '/' && pathname !== '/live-auction' ? 'xs:hidden' : 'xs:h-[56px]'}`}>
                 <div className='flex items-center'>
                     {pathname.includes('messages/m') ? (
                         <Image
-                            src={'/back-white.svg'}
+                            src={'/icons/ui/back-white.svg'}
                             height={24}
                             width={24}
                             alt='bell'
@@ -158,7 +163,7 @@ function HeaderContent(props: Props) {
                         />
                     ) : (
                         <Image
-                            src={'/mobile-nav.svg'}
+                            src={'/icons/ui/mobile-nav.svg'}
                             height={24}
                             width={24}
                             alt='bell'
@@ -226,24 +231,25 @@ function HeaderContent(props: Props) {
                 </div>
                 {user ? (
                     <div className='flex items-center ml-auto'>
-                        {/* FAQ Icon */}
-                        <div className='relative group'>
+                        {/* FAQ Icon — desktop only */}
+                        <div className='relative group xs:hidden'>
                             <Link href={'/faq'}>
                                 <Image
-                                    src={pathname === '/faq' ? '/help-yellow.svg' : '/help.svg'}
+                                    src={pathname === '/faq' ? '/icons/action/help.svg' : '/icons/action/help.svg'}
                                     height={32}
                                     width={32}
                                     alt='help'
-                                    className='h-7 w-7 mr-[27px] xs:h-6 xs:w-6 xs:mr-[16px]'
+                                    className='h-7 w-7 mr-[27px]'
                                 />
                             </Link>
                         </div>
+
                         
                         {/* Saved Items - Hidden on mobile */}
                         <div className='relative group xs:hidden'>
                             <Link href={'/saved-items'}>
                                 <Image
-                                    src={pathname === '/saved-items' ? '/save-yellow.svg' : '/save.svg'}
+                                    src={pathname === '/saved-items' ? '/icons/action/save.svg' : '/icons/action/save.svg'}
                                     height={32}
                                     width={32}
                                     alt='saved items'
@@ -254,18 +260,21 @@ function HeaderContent(props: Props) {
                         
                         {/* Notifications Icon */}
                         <div
-                            className='relative mr-[27px] xs:mr-[16px]'
+                            className='relative mr-[27px] xs:mr-0'
                             onMouseEnter={handleNotificationsMouseEnter}
                             onMouseLeave={handleNotificationsMouseLeave}
                         >
                             <Link href={'/notifications'} className='relative inline-block'>
+                                {/* Desktop: image icon */}
                                 <Image
-                                    src={pathname === '/notifications' ? '/bell-yellow.svg' : '/bell.svg'}
+                                    src={pathname === '/notifications' ? '/icons/action/bell.svg' : '/icons/action/bell.svg'}
                                     height={32}
                                     width={32}
                                     alt='notifications'
-                                    className='h-6 w-6'
+                                    className='h-6 w-6 xs:hidden'
                                 />
+                                {/* Mobile: lucide Bell */}
+                                <Bell size={22} className='hidden xs:block text-white' />
                                 <CountBadge count={counts.notificationsCount} />
                             </Link>
                             {showNotificationsDropdown && (
@@ -279,8 +288,8 @@ function HeaderContent(props: Props) {
                             )}
                         </div>
                         
-                        {/* Profile Icon */}
-                        <div className='relative'>
+                        {/* Profile Icon — hidden on mobile (shown in bottom nav + greeting) */}
+                        <div className='relative xs:hidden'>
                             <div
                                 className='flex items-center gap-2 cursor-pointer p-2 rounded-full transition hover:bg-white/10'
                                 onMouseEnter={handleProfileMouseEnter}
@@ -288,17 +297,17 @@ function HeaderContent(props: Props) {
                                 onClick={handleProfileClick}
                             >
                                 <Image
-                                    src={profile?.avatar || '/placeholder-avatar.svg'}
+                                    src={profile?.avatar || '/images/placeholders/placeholder-avatar.svg'}
                                     height={32}
                                     width={32}
                                     alt='profile'
                                     className='h-7 w-7 xs:h-[30px] xs:w-[30px] rounded-full object-cover'
                                 />
                                 {/* Username - Hidden on mobile */}
-                                <div className='typo-body_ls capitalize xs:hidden'>{user.userName ?? 'John Doe'}</div>
+                                <div className='typo-body_ls capitalize xs:hidden'>{user.userName ?? 'User'}</div>
                                 {/* Dropdown Arrow - Hidden on mobile */}
                                 <Image
-                                    src={'/arrow-down.svg'}
+                                    src={'/icons/ui/arrow-down.svg'}
                                     height={32}
                                     width={32}
                                     alt='dropdown'
@@ -322,13 +331,13 @@ function HeaderContent(props: Props) {
                             href={user ? '/post-an-item/entry' : '/'}
                             className='flex items-center justify-center bg-secondary xs:hidden typo-body_ms h-[45px] w-[145px] text-white rounded-lg ml-[43px]'
                         >
-                            Post Item
+                            Post an Item
                         </Link>
                     </div>
                 ) : (
                     <div className='flex items-center ml-auto'>
                         <Image
-                            src={'/help.svg'}
+                            src={'/icons/action/help.svg'}
                             height={32}
                             width={32}
                             alt='bell'
@@ -344,7 +353,7 @@ function HeaderContent(props: Props) {
                             href='/login'
                             className='flex items-center justify-center bg-secondary xs:hidden typo-body_ms h-[45px] w-[145px] text-white rounded-lg ml-[43px]'
                         >
-                            Post Item
+                            Post an Item
                         </Link>
                     </div>
                 )}
@@ -352,7 +361,7 @@ function HeaderContent(props: Props) {
             
             {/* Mobile Hamburger Menu - Slides in from right */}
             <div
-                className={`hidden xs:block fixed w-full bg-white shadow-lg z-[50] transition-transform transform duration-300 ${
+                className={`hidden xs:block fixed w-full bg-white shadow-lg z-dropdown transition-transform transform duration-300 ${
                     showFlyout ? 'translate-x-0' : 'translate-x-full'
                 }`}
                 style={{
@@ -364,7 +373,7 @@ function HeaderContent(props: Props) {
                     <div className='mb-6 w-full flex items-center justify-between'>
                         <p className='text-text_one typo-heading_ss'>Menu</p>
                         <Image
-                            src={'/cancel.svg'}
+                            src={'/icons/ui/cancel.svg'}
                             height={13}
                             width={13}
                             alt='close'

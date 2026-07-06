@@ -75,7 +75,7 @@ export default async function ManageItemPage({params}: PageProps) {
     }
 
     return (
-        <div className='min-h-screen bg-gray-50'>
+        <div className='min-h-screen bg-gray-50 xs:bg-transparent'>
             <ManageItemDetail item={itemData} offers={offersData} />
         </div>
     );

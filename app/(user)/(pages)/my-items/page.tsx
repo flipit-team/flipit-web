@@ -3,7 +3,6 @@ import React, {useState, useEffect} from 'react';
 import Sidebar from '~/ui/common/layout/sidebar';
 import GoBack from '~/ui/common/go-back';
 import ItemsContainer from './components/ItemsContainer';
-import {mockItems} from './data/mockItems';
 import {ItemsService} from '~/services/items.service';
 import {useAuth} from '~/hooks/useAuth';
 import {useAppContext} from '~/contexts/AppContext';
@@ -28,7 +27,7 @@ function transformItemToMyItem(item: ItemDTO): MyItem {
 
     // TODO: tradeType should come from API once acceptSwap field is added to ItemDTO
     // For now, default to 'cash' since API only has acceptCash
-    const tradeType: 'cash' | 'swap' | 'mixed' = item.acceptCash ? 'cash' : 'cash';
+    const tradeType: 'cash' | 'swap' | 'mixed' = item.acceptCash ? 'cash' : 'swap';
 
     return {
         id: item.id,
@@ -83,23 +82,12 @@ export default function MyItemsPage() {
                     deactivated: transformedItems.filter(item => item.type === 'deactivated')
                 };
 
-                // Use mock data if API returns empty for a category
-                const categorizedItems: Record<TabType, MyItem[]> = {
-                    auction: apiItems.auction.length > 0 ? apiItems.auction : mockItems.auction,
-                    listed: apiItems.listed.length > 0 ? apiItems.listed : mockItems.listed,
-                    deactivated: apiItems.deactivated.length > 0 ? apiItems.deactivated : mockItems.deactivated
-                };
-
-                setItems(categorizedItems);
+                setItems(apiItems);
             } else {
                 showError(result.error || 'Failed to fetch your items');
-                // Fall back to mock items on error
-                setItems(mockItems);
             }
         } catch {
             showError('An error occurred while fetching your items');
-            // Fall back to mock items on error
-            setItems(mockItems);
         } finally {
             setLoading(false);
         }
@@ -111,11 +99,11 @@ export default function MyItemsPage() {
 
     if (loading) {
         return (
-            <div className='flex min-h-screen bg-gray-50'>
-                <div className='hidden lg:block'>
+            <div className='flex min-h-screen bg-white xs:bg-background'>
+                <div className='hidden lg:block xs:hidden'>
                     <Sidebar username={(authenticatedUser as any)?.userName || (authenticatedUser as any)?.firstName || "User"} />
                 </div>
-                <div className='flex-1 p-4 md:p-6 lg:p-8 overflow-x-hidden'>
+                <div className='flex-1 p-4 md:p-6 lg:p-8 xs:p-4 overflow-x-hidden'>
                     <div className='max-w-6xl mx-auto'>
                         <div className='flex items-center justify-center h-64'>
                             <Loading size='lg' text='Loading your items...' />
@@ -127,18 +115,26 @@ export default function MyItemsPage() {
     }
 
     return (
-        <div className='flex min-h-screen bg-gray-50 no-scrollbar'>
-            {/* Desktop Sidebar - hidden on mobile/tablet */}
+        <div className='flex min-h-screen bg-white xs:bg-background no-scrollbar xs:pb-24'>
+            {/* Desktop Sidebar - hidden on mobile */}
             <div className='hidden lg:block'>
                 <Sidebar username={(authenticatedUser as any)?.userName || (authenticatedUser as any)?.firstName || "User"} />
             </div>
-            
-            {/* Main Content Area */}
-            <div className='flex-1 p-4 md:p-6 lg:p-8 overflow-x-hidden no-scrollbar'>
-                <div className='max-w-6xl mx-auto'>
-                    <GoBack />
 
-                    <div className='py-6 md:py-9 xs:pt-6 xs:py-0 xs:mb-4 typo-heading-lg-bold md:typo-display-lg text-gray-900'>My Items</div>
+            {/* Main Content Area */}
+            <div className='flex-1 p-4 md:p-6 lg:p-8 xs:p-0 xs:px-4 xs:pt-4 overflow-x-hidden no-scrollbar'>
+                <div className='max-w-6xl mx-auto'>
+                    <div className='xs:hidden'><GoBack /></div>
+
+                    {/* Mobile header */}
+                    <div className='hidden xs:flex items-center gap-3 mb-4'>
+                        <button onClick={() => window.history.back()} className='w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0'>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                        </button>
+                        <h1 className='font-poppins typo-heading-md-semibold text-text_one'>My Items</h1>
+                    </div>
+
+                    <div className='py-6 md:py-9 xs:hidden typo-heading-lg-bold text-gray-900'>My Items</div>
 
                     <ItemsContainer 
                         initialItems={items} 

@@ -1,9 +1,10 @@
 'use client';
 import { useState } from 'react';
 import { X, AlertTriangle } from 'lucide-react';
-import Button from '../button';
+import Button from '../buttons/Button';
 import SupportService from '~/services/support.service';
 import { AbuseReportRequest } from '~/utils/interface';
+import { CheckIcon } from '~/ui/icons';
 
 interface ReportAbuseModalProps {
     isOpen: boolean;
@@ -64,8 +65,6 @@ const ReportAbuseModal = ({ isOpen, onClose, reportType, targetId, targetName }:
         setError(null);
 
         const reportData: AbuseReportRequest = {
-            reportType,
-            targetId,
             reason: selectedReason,
             description: description.trim()
         };
@@ -99,7 +98,7 @@ const ReportAbuseModal = ({ isOpen, onClose, reportType, targetId, targetName }:
     if (!isOpen) return null;
 
     return (
-        <div className='fixed inset-0 z-50 flex items-center justify-center p-4'>
+        <div className='fixed inset-0 z-dropdown flex items-center justify-center p-4'>
             {/* Backdrop */}
             <div className='absolute inset-0 bg-background-overlay' onClick={handleClose} />
 
@@ -109,9 +108,7 @@ const ReportAbuseModal = ({ isOpen, onClose, reportType, targetId, targetName }:
                     /* Success State */
                     <div className='p-6 text-center'>
                         <div className='w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4'>
-                            <svg className='w-8 h-8 text-success' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M5 13l4 4L19 7' />
-                            </svg>
+                            <CheckIcon className='w-8 h-8 text-success' />
                         </div>
                         <h3 className='typo-heading-md-semibold text-text_one mb-2'>Report Submitted</h3>
                         <p className='typo-body-md-regular text-text_four'>

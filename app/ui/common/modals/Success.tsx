@@ -10,7 +10,7 @@ const Success = ({onClose, message}: SuccessProps) => {
     return (
         <div className=''>
             <Image
-                src={'/success-icon.svg'}
+                src={'/icons/status/success-icon.svg'}
                 height={117}
                 width={117}
                 alt='logo'

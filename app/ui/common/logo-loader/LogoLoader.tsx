@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 const LogoLoader = () => {
     return (
-        <div className='fixed inset-0 flex items-center justify-center bg-white z-50'>
+        <div className='fixed inset-0 flex items-center justify-center bg-white z-40'>
             <div className='flex flex-col items-center gap-4'>
                 <div className='animate-pulse-smooth'>
                     <Image

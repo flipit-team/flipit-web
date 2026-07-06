@@ -58,13 +58,6 @@ export class FilesService {
     }
   }
 
-  // Delete file (if endpoint exists)
-  static async deleteFile(key: string) {
-    return handleApiCall(() =>
-      apiClient.delete<{ message: string }>(`/files/${encodeURIComponent(key)}`, { requireAuth: true })
-    );
-  }
-
   // Generate unique file key
   static generateFileKey(fileName: string, prefix?: string): string {
     const timestamp = Date.now();

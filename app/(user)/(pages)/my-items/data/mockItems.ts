@@ -5,7 +5,7 @@ export const mockItems: Record<TabType, MyItem[]> = {
         {
             id: 1,
             title: 'Canon EOS RP Camera +Small Rig | Clean U...',
-            image: '/placeholder-product.svg',
+            image: '/images/placeholders/placeholder-product.svg',
             amount: 1300000,
             views: 30,
             type: 'auction',
@@ -17,7 +17,7 @@ export const mockItems: Record<TabType, MyItem[]> = {
         {
             id: 2,
             title: 'Canon EOS RP Camera +Small Rig | Clean U...',
-            image: '/placeholder-product.svg',
+            image: '/images/placeholders/placeholder-product.svg',
             amount: 1300000,
             views: 30,
             type: 'auction',
@@ -30,7 +30,7 @@ export const mockItems: Record<TabType, MyItem[]> = {
         {
             id: 3,
             title: 'Canon EOS RP Camera +Small Rig | Clean U...',
-            image: '/placeholder-product.svg',
+            image: '/images/placeholders/placeholder-product.svg',
             amount: 1300000,
             views: 30,
             type: 'auction',
@@ -44,7 +44,7 @@ export const mockItems: Record<TabType, MyItem[]> = {
         {
             id: 4,
             title: 'Canon EOS RP Camera +Small Rig | Clean U...',
-            image: '/placeholder-product.svg',
+            image: '/images/placeholders/placeholder-product.svg',
             amount: 1300000,
             views: 30,
             type: 'listed',
@@ -53,7 +53,7 @@ export const mockItems: Record<TabType, MyItem[]> = {
         {
             id: 5,
             title: 'Canon EOS RP Camera +Small Rig | Clean U...',
-            image: '/placeholder-product.svg',
+            image: '/images/placeholders/placeholder-product.svg',
             amount: 0,
             views: 30,
             type: 'listed',
@@ -63,7 +63,7 @@ export const mockItems: Record<TabType, MyItem[]> = {
         {
             id: 6,
             title: 'Canon EOS RP Camera +Small Rig | Clean U...',
-            image: '/placeholder-product.svg',
+            image: '/images/placeholders/placeholder-product.svg',
             amount: 600000,
             views: 30,
             type: 'listed',
@@ -75,7 +75,7 @@ export const mockItems: Record<TabType, MyItem[]> = {
         {
             id: 7,
             title: 'Canon EOS RP Camera +Small Rig | Clean U...',
-            image: '/placeholder-product.svg',
+            image: '/images/placeholders/placeholder-product.svg',
             amount: 1300000,
             views: 30,
             type: 'deactivated',
@@ -85,7 +85,7 @@ export const mockItems: Record<TabType, MyItem[]> = {
         {
             id: 8,
             title: 'Canon EOS RP Camera +Small Rig | Clean U...',
-            image: '/placeholder-product.svg',
+            image: '/images/placeholders/placeholder-product.svg',
             amount: 0,
             views: 30,
             type: 'deactivated',

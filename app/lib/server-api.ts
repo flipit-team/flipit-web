@@ -1,7 +1,10 @@
 import { cookies } from 'next/headers';
 import { ItemDTO, CategoryDTO, ItemsQueryParams, PaginatedResponse, AuctionDTO } from '~/types/api';
+import { API_BASE_URL as CONFIG_BASE_URL } from '~/lib/config';
 
-const API_BASE_URL = 'https://api.flipit.ng';
+// CONFIG_BASE_URL includes /api/v1 suffix, but server-api URLs already include /api/v1 in paths
+const API_BASE_URL = CONFIG_BASE_URL.replace(/\/api\/v1$/, '');
+
 
 
 // Helper function to build query string
@@ -392,7 +395,8 @@ export async function getActiveAuctionsServerSide(page = 0, size = 15): Promise<
       }
 
       const data = await retryResponse.json();
-      return { data: Array.isArray(data) ? data : [], error: null };
+      const auctions = Array.isArray(data) ? data : data?.content || [];
+      return { data: auctions, error: null };
     }
 
     if (!response.ok) {
@@ -404,8 +408,9 @@ export async function getActiveAuctionsServerSide(page = 0, size = 15): Promise<
     }
 
     const data = await response.json();
+    const auctions = Array.isArray(data) ? data : data?.content || [];
 
-    return { data: Array.isArray(data) ? data : [], error: null };
+    return { data: auctions, error: null };
   } catch (error) {
     return {
       data: null,

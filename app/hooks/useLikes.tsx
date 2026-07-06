@@ -180,23 +180,25 @@ export function useLikedItems() {
   };
 }
 
-// Utility hook for checking liked status of multiple items (for item lists)
+// Utility hook for checking liked status of multiple items (uses getLikedItems to build a set)
 export function useBulkLikedStatus(itemIds: number[]) {
   const [likedStatus, setLikedStatus] = useState<Record<number, boolean>>({});
   const { user } = useAppContext();
 
-  const checkLikedStatus = useCallback(async () => {
+  const fetchLikedStatus = useCallback(async () => {
     if (!itemIds.length || !user?.token) {
       setLikedStatus({});
       return;
     }
-    
+
     try {
-      const result = await LikesService.checkLikedStatus(itemIds);
-      if ('success' in result && result.success && result.data) {
-        setLikedStatus(result.data);
-      } else if ('data' in result && result.data) {
-        setLikedStatus(result.data);
+      const result = await LikesService.getLikedItems();
+      if (result.data) {
+        const likedItems = Array.isArray(result.data) ? result.data : [];
+        const likedIds = new Set(likedItems.map((item: any) => item.id));
+        const status: Record<number, boolean> = {};
+        itemIds.forEach(id => { status[id] = likedIds.has(id); });
+        setLikedStatus(status);
       }
     } catch (error) {
       console.error('Failed to check liked status:', error);
@@ -204,12 +206,12 @@ export function useBulkLikedStatus(itemIds: number[]) {
   }, [itemIds, user?.token]);
 
   useEffect(() => {
-    checkLikedStatus();
-  }, [checkLikedStatus]);
+    fetchLikedStatus();
+  }, [fetchLikedStatus]);
 
   return {
     likedStatus,
     isLiked: useCallback((itemId: number) => likedStatus[itemId] || false, [likedStatus]),
-    refresh: checkLikedStatus,
+    refresh: fetchLikedStatus,
   };
 }

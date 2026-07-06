@@ -18,11 +18,10 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
     onCancel,
     isDeleting = false
 }) => {
-    console.log('DeleteConfirmationModal render - isOpen:', isOpen);
     if (!isOpen) return null;
 
     return (
-        <div className='fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50'>
+        <div className='fixed inset-0 z-toast flex items-center justify-center bg-black bg-opacity-50'>
             <div className='bg-white rounded-lg p-6 w-full max-w-md mx-4 shadow-lg'>
                 <div className='mb-4'>
                     <h3 className='typo-heading-md-semibold text-gray-900 mb-2'>{title}</h3>

@@ -39,7 +39,7 @@ const Categories = (props: Props) => {
                     <>
                         <Image
                             className='h-5 w-5 cursor-pointer'
-                            src={'/shop.svg'}
+                            src={'/icons/action/shop.svg'}
                             alt='search'
                             height={20}
                             width={20}

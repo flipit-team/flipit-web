@@ -12,13 +12,12 @@ import {Item} from '~/utils/interface';
 import PopupSheet from '../common/popup-sheet/PopupSheet';
 import ProfilePopup from '../homepage/profile-popup';
 import MakeAnOffer from '../homepage/make-an-offer';
-import {Loader} from 'lucide-react';
+import {Loader, ChevronLeft, Bookmark, ChevronRight} from 'lucide-react';
 import SafetyTips from '../common/safety-tips/SafetyTips';
 import ReportModalContent from '../homepage/report-issue';
 import CallbackRequest from '../homepage/callback-request';
 import Link from 'next/link';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
-import {ChevronLeft} from 'lucide-react';
 import {useAppContext} from '~/contexts/AppContext';
 import StarRating from '../common/star-rating/StarRating';
 import SendMessage from '../homepage/send-message';
@@ -43,6 +42,7 @@ const ItemDetail = (props: Props) => {
     const [messageError, setMessageError] = useState<string>('');
     const [messageSent, setMessageSent] = useState(false);
     const [showUnlikeModal, setShowUnlikeModal] = useState(false);
+    const [expandedSection, setExpandedSection] = useState<string | null>(null);
     const router = useRouter();
     const pathname = usePathname();
 
@@ -155,27 +155,48 @@ const ItemDetail = (props: Props) => {
         }
     }, [toggleLike]);
 
+    // Determine CTA text
+    const ctaText = item?.acceptCash && !(item?.flipForImgUrls && item.flipForImgUrls.length > 0)
+        ? 'Buy Right Away'
+        : !item?.acceptCash && !!(item?.flipForImgUrls && item.flipForImgUrls.length > 0)
+        ? 'Make a Barter Offer'
+        : 'Make an Offer';
+
     return (
         <>
+            {/* Desktop back button */}
             <button
                 onClick={() => router.back()}
-                className='flex items-center gap-1 text-text_one typo-body_mr mt-6 mb-4 ml-6 xs:ml-4 cursor-pointer hover:text-primary transition-colors'
+                className='flex items-center gap-1 text-text_one typo-body_mr mt-6 mb-4 ml-6 xs:hidden cursor-pointer hover:text-primary transition-colors'
             >
                 <ChevronLeft size={20} />
                 <span>Go Back</span>
             </button>
-            <div className='grid-sizes grid grid-cols-[712px_1fr] xs:grid-cols-1 gap-6 h-full xs:mb-6'>
+
+            {/* Mobile header */}
+            <div className='hidden xs:flex items-center gap-3 px-4 pt-4 pb-2 mb-2'>
+                <button onClick={() => router.back()} className='w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center'>
+                    <ChevronLeft size={20} className='text-text_one' />
+                </button>
+                <h1 className='font-poppins typo-heading-md-semibold text-text_one'>Item Details</h1>
+            </div>
+
+            <div className='grid-sizes grid grid-cols-[2fr_1fr] xs:grid-cols-1 gap-6 xs:gap-0 h-full xs:mb-6 xs:pb-24'>
                 <div className='p-6 xs:p-0 shadow-lg xs:shadow-none'>
                     <ImageGallery
                         images={item?.imageUrls || []}
                         overlayElements={
                             <>
                                 {item?.promoted && (
-                                    <div className='w-[76px] h-[26px] typo-body_sr text-white bg-primary absolute top-7 left-3 flex items-center justify-center rounded'>
+                                    <div className='w-[76px] h-[26px] typo-body_sr text-white bg-primary absolute top-7 left-3 xs:top-2 xs:left-2 flex items-center justify-center rounded'>
                                         Promoted
                                     </div>
                                 )}
-                                <div className='absolute bottom-4 right-3'>
+                                {/* Trade type badge on image — hidden on mobile (shown in content below) */}
+                                <div className='absolute top-3 left-3 xs:hidden'>
+                                    <TransactionTypeBadge acceptCash={item?.acceptCash ?? true} hasSwapItems={false} />
+                                </div>
+                                <div className='absolute bottom-4 right-3 xs:hidden'>
                                     <button
                                         onClick={handleLikeClick}
                                         disabled={likeLoading}
@@ -185,7 +206,7 @@ const ItemDetail = (props: Props) => {
                                         title={isLiked ? 'Remove from saved items' : 'Save item'}
                                     >
                                         <Image
-                                            src={isLiked ? '/liked.svg' : '/save-item.svg'}
+                                            src={isLiked ? '/icons/action/liked.svg' : '/icons/action/save.svg'}
                                             alt={isLiked ? 'liked item' : 'save item'}
                                             height={46}
                                             width={43}
@@ -196,74 +217,171 @@ const ItemDetail = (props: Props) => {
                             </>
                         }
                     />
-                    <div className='flex items-center justify-between mt-4'>
+                    <div className='flex items-center justify-between mt-4 xs:mt-2'>
                         <div className='flex items-center gap-1'>
                             <Image
-                                onClick={handleCreate}
-                                src={'/eye.svg'}
+                                src={'/icons/ui/eye.svg'}
                                 height={22}
                                 width={22}
-                                alt='mic'
-                                className='h-[22px] w-[22px]'
+                                alt='views'
+                                className='h-[22px] w-[22px] xs:h-[16px] xs:w-[16px]'
                             />
-                            <p className='typo-body_mr text-text_four'>250 views</p>
+                            <p className='typo-body_mr xs:typo-body_sr text-text_four'>
+                                <span className='xs:hidden'>{timeAgo(item?.dateCreated)}</span>
+                                <span className='hidden xs:inline'>{(item as any)?.views || 0} views</span>
+                            </p>
                         </div>
                         <div className='flex items-center gap-3'>
                             <p className='typo-body_mr text-text_one'>Share with friends</p>
                             <div className='flex items-center gap-3'>
                                 <Image
-                                    onClick={handleCreate}
-                                    src={'/facebook.svg'}
+                                    onClick={() => window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(window.location.href))}
+                                    src={'/icons/social/facebook.svg'}
                                     height={24}
                                     width={24}
-                                    alt='mic'
-                                    className='h-[24px] w-[24px]'
+                                    alt='share on facebook'
+                                    className='h-[24px] w-[24px] cursor-pointer'
                                 />
                                 <Image
-                                    onClick={handleCreate}
-                                    src={'/whatsapp.svg'}
+                                    onClick={() => window.open('https://wa.me/?text=' + encodeURIComponent(item?.title + ' ' + window.location.href))}
+                                    src={'/icons/social/whatsapp.svg'}
                                     height={24}
                                     width={24}
-                                    alt='mic'
-                                    className='h-[24px] w-[24px]'
+                                    alt='share on whatsapp'
+                                    className='h-[24px] w-[24px] cursor-pointer'
                                 />
                                 <Image
-                                    onClick={handleCreate}
-                                    src={'/x.svg'}
+                                    onClick={() => window.open('https://twitter.com/intent/tweet?url=' + encodeURIComponent(window.location.href) + '&text=' + encodeURIComponent(item?.title || ''))}
+                                    src={'/icons/social/x.svg'}
                                     height={24}
                                     width={24}
-                                    alt='mic'
-                                    className='h-[24px] w-[24px]'
+                                    alt='share on x'
+                                    className='h-[24px] w-[24px] cursor-pointer'
                                 />
                             </div>
                         </div>
                     </div>
-                    <div className='mt-6 mb-4'>
+
+                    {/* Mobile: trade badge + title + price + posted time */}
+                    <div className='hidden xs:block mt-3'>
+                        <div className='mb-2'>
+                            <div className='w-fit'><TransactionTypeBadge acceptCash={item?.acceptCash ?? true} hasSwapItems={false} /></div>
+                        </div>
+                        <h2 className='font-poppins font-semibold text-[20px] text-text_one capitalize'>{item?.title}</h2>
+                        {item?.acceptCash && (
+                            <p className='font-poppins typo-body-lg-semibold text-primary mt-1'>
+                                {formatToNaira(item?.cashAmount ?? 0)}
+                            </p>
+                        )}
+                        <p className='font-poppins typo-body-xs-regular text-text_four mt-1'>{timeAgo(item?.dateCreated)}</p>
+                    </div>
+
+                    {/* Desktop: Details section (always visible) */}
+                    <div className='mt-6 mb-4 xs:hidden'>
                         <div className='typo-body_lm text-text_one'>Details</div>
                         <p className='typo-body_mr text-text_one mt-2'>{item?.description}</p>
                     </div>
 
-                    <div>
+                    {/* Desktop: Specifications section (always visible) */}
+                    <div className='xs:hidden'>
                         <div className='typo-body_lm'>Specifications</div>
                         <table className='w-full mt-2 typo-body_sr'>
                             <tbody>
                                 <tr>
                                     <td className='pr-8 py-1'>Type</td>
-                                    <td>Camera</td>
+                                    <td>{item?.itemCategory?.name || 'N/A'}</td>
                                 </tr>
                                 <tr>
                                     <td className='pr-8 py-1'>Brand</td>
-                                    <td>Canon</td>
+                                    <td>{item?.brand || 'N/A'}</td>
                                 </tr>
                                 <tr>
                                     <td className='pr-8 py-1'>Condition</td>
-                                    <td>Fairly used</td>
+                                    <td>{item?.condition || 'N/A'}</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
+
+                    {/* Mobile: Collapsible sections */}
+                    <div className='hidden xs:flex flex-col gap-2 mt-4'>
+                        {/* Description */}
+                        <button
+                            onClick={() => setExpandedSection(expandedSection === 'description' ? null : 'description')}
+                            className='w-full flex items-center justify-between bg-surface-primary rounded-lg px-4 py-3'
+                        >
+                            <span className='font-poppins typo-body-md-medium text-text_one'>Description</span>
+                            <ChevronRight size={18} className={`text-primary transition-transform ${expandedSection === 'description' ? 'rotate-90' : ''}`} />
+                        </button>
+                        {expandedSection === 'description' && (
+                            <div className='px-4 pb-3'>
+                                <p className='typo-body_mr text-text_one'>{item?.description}</p>
+                            </div>
+                        )}
+
+                        {/* Specification */}
+                        <button
+                            onClick={() => setExpandedSection(expandedSection === 'specification' ? null : 'specification')}
+                            className='w-full flex items-center justify-between bg-surface-primary rounded-lg px-4 py-3'
+                        >
+                            <span className='font-poppins typo-body-md-medium text-text_one'>Specification</span>
+                            <ChevronRight size={18} className={`text-primary transition-transform ${expandedSection === 'specification' ? 'rotate-90' : ''}`} />
+                        </button>
+                        {expandedSection === 'specification' && (
+                            <div className='px-4 pb-3'>
+                                <table className='w-full typo-body_sr'>
+                                    <tbody>
+                                        <tr>
+                                            <td className='pr-8 py-1'>Type</td>
+                                            <td>{item?.itemCategory?.name || 'N/A'}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className='pr-8 py-1'>Brand</td>
+                                            <td>{item?.brand || 'N/A'}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className='pr-8 py-1'>Condition</td>
+                                            <td>{item?.condition || 'N/A'}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+
+                        {/* Seller Information */}
+                        <button
+                            onClick={() => setExpandedSection(expandedSection === 'seller' ? null : 'seller')}
+                            className='w-full flex items-center justify-between bg-surface-primary rounded-lg px-4 py-3'
+                        >
+                            <span className='font-poppins typo-body-md-medium text-text_one'>Seller Information</span>
+                            <ChevronRight size={18} className={`text-primary transition-transform ${expandedSection === 'seller' ? 'rotate-90' : ''}`} />
+                        </button>
+                        {expandedSection === 'seller' && (
+                            <div className='px-4 pb-3'>
+                                <div className='flex mb-3'>
+                                    <Image
+                                        src={item?.seller?.avatar || '/images/placeholders/placeholder-avatar.svg'}
+                                        height={44}
+                                        width={44}
+                                        sizes="44px"
+                                        quality={70}
+                                        alt={`${item?.seller.firstName} ${item?.seller.lastName}`}
+                                        className='h-[44px] w-[44px] rounded-full object-cover'
+                                    />
+                                    <div className='ml-2'>
+                                        <div className='typo-body_lm'>{item?.seller.firstName + ' ' + item?.seller.lastName}</div>
+                                        <div className='flex items-center gap-1'>
+                                            <StarRating rating={item?.seller.avgRating || item?.seller.avg_rating || 0} size={16} />
+                                            <span className='typo-body_sr text-text_four'>{item?.seller.reviewCount || 0} reviews</span>
+                                        </div>
+                                        <p className='typo-body_sr text-text_four'>{item?.location || 'Nigeria'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
-                <div className='xs:p-0'>
+                <div className='xs:hidden'>
                     {/* Item info box */}
                     <div className='border border-border_gray rounded-lg p-6 mb-6'>
                         {/* Trade type badge + description */}
@@ -275,9 +393,9 @@ const ItemDetail = (props: Props) => {
                                         <div className='w-fit'>
                                             <TransactionTypeBadge acceptCash={false} hasSwapItems={true} />
                                         </div>
-                                        <span className='font-poppins text-[14px] text-text_one'>Seller accepts item trades</span>
+                                        <span className='font-poppins typo-body-md-regular text-text_one'>Seller accepts item trades</span>
                                     </div>
-                                    <p className='font-poppins text-[14px] text-text_one'>
+                                    <p className='font-poppins typo-body-md-regular text-text_one'>
                                         Interested in trading? Seller is trading for <span className='font-semibold'>{item?.itemCategory?.name?.toLowerCase() || 'items'}</span>
                                     </p>
                                 </>
@@ -289,9 +407,9 @@ const ItemDetail = (props: Props) => {
                                         <div className='w-fit'>
                                             <TransactionTypeBadge acceptCash={true} hasSwapItems={true} />
                                         </div>
-                                        <span className='font-poppins text-[14px] text-text_one'>Seller accepts item trades plus cash</span>
+                                        <span className='font-poppins typo-body-md-regular text-text_one'>Seller accepts item trades plus cash</span>
                                     </div>
-                                    <p className='font-poppins text-[14px] text-text_one'>
+                                    <p className='font-poppins typo-body-md-regular text-text_one'>
                                         Interested in trading? Seller is trading for <span className='font-semibold'>{item?.itemCategory?.name?.toLowerCase() || 'items'}</span>
                                     </p>
                                 </>
@@ -311,12 +429,12 @@ const ItemDetail = (props: Props) => {
 
                         {/* Price - only show for cash and mixed trade */}
                         {item?.acceptCash && (
-                            <p className='font-poppins font-semibold text-[16px] text-primary mt-1'>
+                            <p className='font-poppins typo-body-lg-semibold text-primary mt-1'>
                                 {formatToNaira(item?.cashAmount ?? 0)}
                             </p>
                         )}
 
-                        <p className='font-poppins text-[13px] text-text_four mt-1 mb-4'>{timeAgo(item?.dateCreated)}</p>
+                        <p className='font-poppins typo-body-xs-regular text-text_four mt-1 mb-4'>{timeAgo(item?.dateCreated)}</p>
 
                         {/* Action button */}
                         {item?.acceptCash && !(item?.flipForImgUrls && item.flipForImgUrls.length > 0) ? (
@@ -333,7 +451,7 @@ const ItemDetail = (props: Props) => {
                         <SellersInfo />
                         <div className='flex mb-4'>
                             <Image
-                                src={item?.seller?.avatar || '/placeholder-avatar.svg'}
+                                src={item?.seller?.avatar || '/images/placeholders/placeholder-avatar.svg'}
                                 height={52}
                                 width={52}
                                 sizes="52px"
@@ -349,7 +467,7 @@ const ItemDetail = (props: Props) => {
                                 <div className='flex my-1'>
                                     <StarRating rating={item?.seller.avgRating || item?.seller.avg_rating || 0} size={20} />
                                 </div>
-                                <p className='typo-body_sr text-text_four'>Lagos, Nigeria</p>
+                                <p className='typo-body_sr text-text_four'>{item?.location || 'Nigeria'}</p>
                             </div>
                         </div>
                         <div className='flex gap-4'>
@@ -377,6 +495,23 @@ const ItemDetail = (props: Props) => {
                     </div>
                 </div>
             </div>
+            {/* Mobile fixed bottom action bar */}
+            <div className='hidden xs:flex items-center fixed bottom-0 left-0 right-0 bg-white px-4 py-3 z-[9999] gap-6'>
+                <button
+                    onClick={handleLikeClick}
+                    disabled={likeLoading}
+                    className='w-11 h-11 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0'
+                >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill={isLiked ? '#025F73' : 'none'} stroke="#025F73" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+                </button>
+                <button
+                    onClick={() => pushParam('make-an-offer')}
+                    className='flex-1 h-[48px] bg-primary text-white rounded-xl font-poppins typo-body-md-semibold'
+                >
+                    {ctaText}
+                </button>
+            </div>
+
             <PopupSheet>
                 <ProfilePopup
                     seller={
@@ -402,9 +537,9 @@ const ItemDetail = (props: Props) => {
                     onClose={() => removeParam()}
                     onSubmit={() => removeParam()}
                 />
-                <MakeAnOffer item={item} onClose={() => removeParam()} onSubmit={() => removeParam()} />
+                <MakeAnOffer item={item} onClose={() => removeParam()} />
                 <ReportModalContent
-                    title='Report Canon EOS RP Camera +Small Rig'
+                    title={`Report ${item?.title || 'this item'}`}
                     onClose={() => removeParam()}
                     onSubmit={() => removeParam()}
                 />

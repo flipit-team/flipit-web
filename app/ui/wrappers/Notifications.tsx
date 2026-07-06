@@ -6,6 +6,7 @@ import {formatToMonthDay} from '~/utils/helpers';
 import NoData from '../common/no-data/NoData';
 import NotificationsService from '~/services/notifications.service';
 import {useRouter} from 'next/navigation';
+import {ChevronLeft, X} from 'lucide-react';
 
 const Notifications = () => {
     const {notifications, refreshNotifications} = useAppContext();
@@ -16,20 +17,10 @@ const Notifications = () => {
         setLocalNotifications(notifications?.content || []);
     }, [notifications]);
 
-    // Mark all as seen when component mounts
+    // Refresh notifications on mount
     useEffect(() => {
-        const markAllAsSeen = async () => {
-            try {
-                await NotificationsService.markAllAsSeen();
-                // Refresh notifications to update counts
-                await refreshNotifications();
-            } catch (error) {
-                console.error('Failed to mark notifications as seen:', error);
-            }
-        };
-
         if (notifications?.content && notifications.content.length > 0) {
-            markAllAsSeen();
+            refreshNotifications();
         }
         // Only run on mount
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -59,47 +50,91 @@ const Notifications = () => {
         }
     };
 
+    const handleDismiss = (e: React.MouseEvent, index: number) => {
+        e.stopPropagation();
+        setLocalNotifications(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const handleClearAll = () => {
+        setLocalNotifications([]);
+    };
+
     if (!localNotifications.length) {
         return (
-            <div className='h-full my-auto'>
-                <NoData text='No Notifications Available' />;
+            <div className='h-full my-auto xs:bg-[#FFFFF0] xs:min-h-screen'>
+                {/* Mobile header */}
+                <div className='hidden xs:flex items-center justify-between px-4 py-3 bg-[#FFFFF0]'>
+                    <button onClick={() => router.back()} className='w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center'>
+                        <ChevronLeft size={20} />
+                    </button>
+                    <h1 className='typo-body_lb'>Notification</h1>
+                    <div className='w-10' />
+                </div>
+                <NoData text='No Notifications Available' />
             </div>
         );
     }
     return (
-        <div className='mx-[120px] xs:mx-0 my-6 xs:my-0'>
-            <h1 className='typo-heading_ms my-6 xs:mx-4'>Notifications</h1>
-            <div className='shadow-lg xs:shadow-transparent flex flex-col gap-6'>
+        <div className='mx-[120px] xs:mx-0 my-6 xs:my-0 xs:bg-[#FFFFF0] xs:min-h-screen'>
+            {/* Mobile header */}
+            <div className='hidden xs:flex items-center justify-between px-4 py-3 bg-[#FFFFF0]'>
+                <button onClick={() => router.back()} className='w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center'>
+                    <ChevronLeft size={20} />
+                </button>
+                <h1 className='typo-body_lb'>Notification</h1>
+                <button onClick={handleClearAll} className='typo-body_mr text-primary-light'>
+                    Clear All
+                </button>
+            </div>
+
+            {/* Desktop heading */}
+            <div className='flex items-center justify-between my-6 xs:hidden'>
+                <h1 className='typo-heading_ms'>Notifications</h1>
+                <button onClick={handleClearAll} className='typo-body_mr text-primary cursor-pointer'>
+                    Clear all
+                </button>
+            </div>
+
+            <div className='bg-white rounded-lg shadow-sm xs:bg-transparent xs:rounded-none xs:shadow-none flex flex-col xs:gap-0 gap-6'>
                 {localNotifications.map((item, i) => {
                     return (
                         <div
                             key={i}
                             onClick={() => handleNotificationClick(item.id, item.resourceLink)}
-                            className={`flex items-center border-b border-border_gray w-full p-6 cursor-pointer hover:bg-gray-50 transition-colors ${
-                                !item.read ? 'bg-surface-primary-10 border-l-4 border-l-secondary' : ''
+                            className={`flex items-center border-b border-border_gray w-full p-6 xs:px-4 xs:py-4 cursor-pointer hover:bg-gray-50 transition-colors ${
+                                !item.read ? 'bg-surface-primary-10 border-l-4 border-l-secondary xs:border-l-0' : ''
                             }`}
                         >
                             <Image
-                                src={'/speaker.svg'}
+                                src={item.avatar || '/icons/ui/speaker.svg'}
                                 height={24}
                                 width={24}
                                 alt='notification'
-                                className='mr-[18px] rounded h-[24px] w-[24px]'
+                                className='mr-[18px] xs:mr-3 rounded h-[24px] w-[24px] xs:h-[32px] xs:w-[32px] xs:self-start xs:mt-0.5'
                             />
-                            <div className='flex-1'>
+                            <div className='flex-1 min-w-0'>
                                 <p className={`typo-body_lr xs:typo-body_mr ${!item.read ? 'font-semibold' : ''}`}>
                                     {item.title}
                                 </p>
-                                <p className='typo-body_mr text-text_four'>
+                                <p className='typo-body_mr xs:typo-body_sr text-text_four'>
                                     {item.message}
                                 </p>
                                 <p className='typo-body_sr text-text_four mt-1'>
                                     {formatToMonthDay(item.dateCreated)}
                                 </p>
                             </div>
+                            {/* Desktop: unread dot */}
                             {!item.read && (
-                                <div className='h-2 w-2 rounded-full bg-secondary ml-4' title='Unread' />
+                                <div className='h-2 w-2 rounded-full bg-secondary ml-4 xs:hidden' title='Unread' />
                             )}
+                            {/* Dismiss button */}
+                            <button
+                                onClick={(e) => handleDismiss(e, i)}
+                                className='flex items-center justify-center ml-3 text-text_four hover:text-text_two flex-shrink-0'
+                                aria-label='Dismiss notification'
+                            >
+                                <X size={18} />
+                            </button>
                         </div>
                     );
                 })}

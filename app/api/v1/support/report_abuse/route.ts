@@ -20,20 +20,11 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
 
-        // Validate required fields
-        const { reportType, reason, description } = body;
-        if (!reportType || !reason || !description) {
+        // Validate required fields per AbuseRequest schema
+        const { reason, description } = body;
+        if (!reason || !description) {
             return NextResponse.json(
-                { apierror: { message: 'Missing required fields: reportType, reason, description' } },
-                { status: 400 }
-            );
-        }
-
-        // Validate reportType
-        const validReportTypes = ['USER', 'ITEM', 'OTHER'];
-        if (!validReportTypes.includes(reportType)) {
-            return NextResponse.json(
-                { apierror: { message: 'Invalid reportType. Must be one of: USER, ITEM, OTHER' } },
+                { apierror: { message: 'Missing required fields: reason, description' } },
                 { status: 400 }
             );
         }

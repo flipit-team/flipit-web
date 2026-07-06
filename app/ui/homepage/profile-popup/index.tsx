@@ -37,7 +37,7 @@ const ProfilePopup = (props: Props) => {
             <div className='w-full flex flex-col justify-center items-center xs:px-4'>
                 <div className='w-[708px] xs:hidden'>
                     <Image
-                        src={'/close-white.svg'}
+                        src={'/icons/ui/close-white.svg'}
                         height={45}
                         width={45}
                         alt='bell'
@@ -48,7 +48,7 @@ const ProfilePopup = (props: Props) => {
                 <div className='h-[648px] w-[708px] bg-white rounded-lg p-[30px] xs:p-0 xs:h-max xs:w-full xs:py-[32px]'>
                     <div className='hidden xs:block'>
                         <Image
-                            src={'/cancel.svg'}
+                            src={'/icons/ui/cancel.svg'}
                             height={16}
                             width={16}
                             alt='bell'
@@ -58,7 +58,7 @@ const ProfilePopup = (props: Props) => {
                     </div>
                     <div className='flex xs:flex-col xs:items-center mb-4 border-b border-border_gray pb-[20px] xs:px-4'>
                         <Image
-                            src={seller?.avatar || '/placeholder-avatar.svg'}
+                            src={seller?.avatar || '/images/placeholders/placeholder-avatar.svg'}
                             height={194}
                             width={194}
                             alt={`${seller?.firstName} ${seller?.lastName}`}

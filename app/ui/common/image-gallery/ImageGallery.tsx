@@ -1,6 +1,7 @@
 'use client';
 import Image from 'next/image';
 import React, { ReactNode, useState } from 'react';
+import { ChevronLeftIcon, ChevronRightIcon, CloseIcon } from '~/ui/icons';
 
 interface ImageGalleryProps {
     images: string[];
@@ -24,7 +25,7 @@ const ImageGallery = ({
     const [thumbnailStartIndex, setThumbnailStartIndex] = useState(0);
     
     // Fallback to placeholder if no images
-    const imageList = images.length > 0 ? images : ['/placeholder-product.svg'];
+    const imageList = images.length > 0 ? images : ['/images/placeholders/placeholder-product.svg'];
     const currentImage = imageList[currentImageIndex];
     
     // Number of thumbnails to show at once
@@ -67,7 +68,7 @@ const ImageGallery = ({
             <div className={`${className}`}>
                 <div className="flex flex-col">
                     {/* Main Image */}
-                    <div className="relative mb-6 w-full max-w-[712px] h-[443px] xs:w-full xs:h-auto overflow-hidden">
+                    <div className="relative mb-6 xs:mb-0 w-full max-w-[712px] h-[443px] xs:w-full xs:h-auto overflow-hidden">
                         <Image
                             src={currentImage}
                             height={443}
@@ -92,9 +93,7 @@ const ImageGallery = ({
                                         className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
                                         aria-label="Previous thumbnails"
                                     >
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                                        </svg>
+                                        <ChevronLeftIcon className="w-4 h-4" />
                                     </button>
                                 )}
                                 
@@ -132,9 +131,7 @@ const ImageGallery = ({
                                         className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
                                         aria-label="Next thumbnails"
                                     >
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                        </svg>
+                                        <ChevronRightIcon className="w-4 h-4" />
                                     </button>
                                 )}
                             </div>
@@ -145,7 +142,7 @@ const ImageGallery = ({
             
             {/* Fullscreen Modal */}
             {showFullscreen && (
-                <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center">
+                <div className="fixed inset-0 bg-black bg-opacity-90 z-dropdown flex items-center justify-center">
                     <div className="relative max-w-screen-lg max-h-screen p-4">
                         {/* Close Button */}
                         <button
@@ -153,9 +150,7 @@ const ImageGallery = ({
                             className="absolute top-4 right-4 z-60 w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full text-white transition-colors"
                             aria-label="Close fullscreen"
                         >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
+                            <CloseIcon className="w-6 h-6" />
                         </button>
                         
                         {/* Navigation Arrows */}
@@ -166,9 +161,7 @@ const ImageGallery = ({
                                     className="absolute left-4 top-1/2 transform -translate-y-1/2 z-60 w-12 h-12 flex items-center justify-center bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full text-white transition-colors"
                                     aria-label="Previous image"
                                 >
-                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                                    </svg>
+                                    <ChevronLeftIcon className="w-6 h-6" />
                                 </button>
                                 
                                 <button
@@ -176,9 +169,7 @@ const ImageGallery = ({
                                     className="absolute right-4 top-1/2 transform -translate-y-1/2 z-60 w-12 h-12 flex items-center justify-center bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full text-white transition-colors"
                                     aria-label="Next image"
                                 >
-                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                    </svg>
+                                    <ChevronRightIcon className="w-6 h-6" />
                                 </button>
                             </>
                         )}

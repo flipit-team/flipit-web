@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useState, useRef } from 'react';
 import InputBox from '~/ui/common/input-box';
 import RadioButtons from '~/ui/common/radio-buttons';
-import Button from '~/ui/common/button';
+import Button from '~/ui/common/buttons/Button';
 import UserService from '~/services/user.service';
 import { useAppContext } from '~/contexts/AppContext';
 
@@ -67,9 +67,34 @@ const ProfileVerificationStep = ({ onNext }: ProfileVerificationStepProps) => {
         setError(null);
 
         try {
-            // TODO: Upload document file to get file path
-            // For now, we'll pass the file name as placeholder
-            const idFilePath = documentFile?.name || '';
+            // Upload document file to get file key
+            let idFilePath = '';
+            if (documentFile) {
+                const formData = new FormData();
+                formData.append('file', documentFile);
+                const uploadRes = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                if (!uploadRes.ok) {
+                    setError('Failed to upload document. Please try again.');
+                    setIsSubmitting(false);
+                    return;
+                }
+                const contentType = uploadRes.headers.get('content-type');
+                let uploadData;
+                if (contentType?.includes('application/json')) {
+                    uploadData = await uploadRes.json();
+                } else {
+                    uploadData = await uploadRes.text();
+                }
+                idFilePath = uploadData?.key || '';
+                if (!idFilePath) {
+                    setError('Upload failed - no file key returned.');
+                    setIsSubmitting(false);
+                    return;
+                }
+            }
 
             const verificationData = {
                 idType: getIdType(),

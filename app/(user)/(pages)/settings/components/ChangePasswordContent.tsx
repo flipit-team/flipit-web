@@ -47,7 +47,6 @@ const ChangePasswordContent = () => {
         try {
             setLoading(true);
             const result = await UserService.changePassword({
-                currentPassword: currentPassword.trim(),
                 newPassword: newPassword.trim(),
                 confirmPassword: confirmPassword.trim(),
             });
@@ -71,7 +70,7 @@ const ChangePasswordContent = () => {
         <div>
             {/* Success Modal */}
             {showSuccessModal && (
-                <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+                <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-dropdown'>
                     <div className='bg-white rounded-lg p-6 max-w-sm mx-4 text-center'>
                         <div className='w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4'>
                             <svg className='w-6 h-6 text-green-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
@@ -90,10 +89,10 @@ const ChangePasswordContent = () => {
                 </div>
             )}
             
-            <h2 className='typo-heading-md-medium md:typo-heading-md-medium text-gray-900 mb-4'>Change Password</h2>
-            <div className='h-px bg-border_gray mb-6 md:mb-8 w-full'></div>
+            <h2 className='typo-heading-md-medium md:typo-heading-md-medium text-gray-900 mb-4 xs:hidden'>Change Password</h2>
+            <div className='h-px bg-border_gray mb-6 md:mb-8 w-full xs:hidden'></div>
 
-            <div className='space-y-6'>
+            <div className='space-y-6 xs:space-y-4 xs:px-4'>
                 {/* Current Password */}
                 <InputBox
                     label='Current Password'
@@ -104,8 +103,8 @@ const ChangePasswordContent = () => {
                     setValue={(e) => handleInputChange(e, 'current-password')}
                 />
 
-                {/* New Password and Confirm Password side by side */}
-                <div className='flex flex-col md:flex-row gap-4'>
+                {/* New Password and Confirm Password side by side on desktop, stacked on mobile */}
+                <div className='flex flex-col md:flex-row gap-4 xs:gap-4'>
                     <div className='flex-1'>
                         <InputBox
                             label='New Password'
@@ -130,9 +129,9 @@ const ChangePasswordContent = () => {
                 </div>
 
                 {/* Change Password Button */}
-                <div className='w-[194px]'>
-                    <RegularButton 
-                        text={loading ? 'Changing...' : 'Change Password'} 
+                <div className='w-[194px] xs:w-full'>
+                    <RegularButton
+                        text={loading ? 'Changing...' : 'Change Password'}
                         action={handleChangePassword}
                         isLoading={loading}
                         disabled={loading}

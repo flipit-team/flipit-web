@@ -11,7 +11,7 @@ export default function GoogleCallbackHandler() {
         const login = async () => {
             if (!code) return;
 
-            const res = await fetch(`/api/v1/auth/google/callback?code=${code}`);
+            const res = await fetch(`/api/auth/callback?code=${code}`);
             if (res.ok) {
                 router.push('/');
             } else {

@@ -20,7 +20,6 @@ export async function GET(req: NextRequest) {
         const maxAmount = searchParams.get('maxAmount');
         const isVerifiedSeller = searchParams.get('isVerifiedSeller');
         const hasDiscount = searchParams.get('hasDiscount');
-        const categories = searchParams.getAll('categories[]');
 
         // Build query string for backend
         const backendParams = new URLSearchParams();
@@ -36,7 +35,6 @@ export async function GET(req: NextRequest) {
         if (maxAmount) backendParams.set('maxAmount', maxAmount);
         if (isVerifiedSeller) backendParams.set('isVerifiedSeller', isVerifiedSeller);
         if (hasDiscount) backendParams.set('hasDiscount', hasDiscount);
-        categories.forEach(cat => backendParams.append('categories[]', cat));
 
         const apiUrl = `${API_BASE_PATH}/items?${backendParams.toString()}`;
 

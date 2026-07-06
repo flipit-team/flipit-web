@@ -7,8 +7,17 @@ import Loading from '~/ui/common/loading/Loading';
 const ConditionalBottomNav: React.FC = () => {
     const pathname: string = usePathname();
 
-    // Hide bottom nav on login/signup page
-    const shouldHideBottomNav: boolean = useMemo(() => pathname === '/login', [pathname]);
+    // Hide bottom nav on login, item detail, and manage pages
+    const shouldHideBottomNav: boolean = useMemo(() => {
+        if (pathname === '/login') return true;
+        // Item detail pages (viewing someone else's item: /123, /456 etc)
+        if (/^\/\d+$/.test(pathname)) return true;
+        // Manage item/auction pages (viewing your own item)
+        if (pathname.startsWith('/manage-item/') || pathname.startsWith('/manage-auction/')) return true;
+        // Live auction detail
+        if (/^\/live-auction\/.+$/.test(pathname)) return true;
+        return false;
+    }, [pathname]);
 
     if (shouldHideBottomNav) {
         return null;

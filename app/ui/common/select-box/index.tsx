@@ -4,8 +4,8 @@ import {useSearchParams} from 'next/navigation';
 import React, {useState} from 'react';
 
 const options = [
-    {id: 1, title: 'iPhone 12 Promax', img: '/camera.png'},
-    {id: 2, title: 'Sony Camera', img: '/camera.png'}
+    {id: 1, title: 'iPhone 12 Promax', img: '/icons/action/camera.png'},
+    {id: 2, title: 'Sony Camera', img: '/icons/action/camera.png'}
 ];
 
 const SelectBox = () => {
@@ -57,13 +57,13 @@ const SelectBox = () => {
                                     setSelectedOption(options[0]);
                                     setIsOpen(false);
                                 }}
-                                src={'/cancel-circle.svg'}
+                                src={'/icons/ui/cancel-circle.svg'}
                                 height={20}
                                 width={20}
                                 alt='cancel'
                             />
                         ) : (
-                            <Image src={'/chevron-down.svg'} height={14} width={14} alt='chevron down' />
+                            <Image src={'/icons/ui/chevron-down.svg'} height={14} width={14} alt='chevron down' />
                         )}
                     </div>
                 </div>

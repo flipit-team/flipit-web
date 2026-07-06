@@ -20,7 +20,9 @@ export const fetcherGET = (url: string) => fetch(url).then((res) => res.json());
 export function formatToNaira(amount: number): string {
     return new Intl.NumberFormat('en-NG', {
         style: 'currency',
-        currency: 'NGN'
+        currency: 'NGN',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
     }).format(amount);
 }
 
@@ -115,7 +117,7 @@ export function transformChatsResponse(response: import('./interface').ChatsResp
 }
 
 export async function createMessage(receiverId: string, title: string, itemId: string) {
-    const res = await fetch('/api/chats/create', {
+    const res = await fetch('/api/v1/chats', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

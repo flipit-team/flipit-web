@@ -38,7 +38,52 @@ export async function GET() {
         return NextResponse.json(apiData);
     } catch (error) {
         return NextResponse.json(
-            {apierror: {message: 'Internal server error'}}, 
+            {apierror: {message: 'Internal server error'}},
+            {status: 500}
+        );
+    }
+}
+
+export async function POST(request: Request) {
+
+    const apiUrl = `${API_BASE_PATH}/chats`;
+
+    // Get token from cookies
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token')?.value;
+
+    if (!token) {
+        return NextResponse.json(
+            {apierror: {message: 'Authentication required'}},
+            {status: 401}
+        );
+    }
+
+    try {
+        const body = await request.json();
+
+        const apiRes = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify(body)
+        });
+
+        const apiData = await apiRes.json();
+
+        if (!apiRes.ok) {
+            return NextResponse.json(
+                {apierror: apiData.apierror ?? {message: 'Failed to create chat'}},
+                {status: apiRes.status}
+            );
+        }
+
+        return NextResponse.json(apiData);
+    } catch (error) {
+        return NextResponse.json(
+            {apierror: {message: 'Internal server error'}},
             {status: 500}
         );
     }

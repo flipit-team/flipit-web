@@ -144,7 +144,7 @@ const VerifyProfile = ({forVerify}: {forVerify: boolean}) => {
                                     <p className='typo-body_sr text-text-gray'>{fileInfo.size}</p>
                                 </div>
                                 <Image
-                                    src={'/cancel-circle.svg'}
+                                    src={'/icons/ui/cancel-circle.svg'}
                                     height={24}
                                     width={24}
                                     className='h-6 w-6 ml-auto'

@@ -9,6 +9,7 @@ import {Item} from '~/utils/interface';
 import {useItemLike} from '~/hooks/useLikes';
 import RemoveItemConfirmation from '../modals/RemoveItemConfirmation';
 import {useAppContext} from '~/contexts/AppContext';
+import {Bookmark} from 'lucide-react';
 
 interface ItemCardProps {
     item: Item;
@@ -21,6 +22,7 @@ interface ItemCardProps {
     showPromotedBadge?: boolean;
     showVerifiedBadge?: boolean;
     showAuctionBadge?: boolean;
+    showTradeBadge?: boolean;
     auctionBidCount?: number;
     customFooter?: React.ReactNode;
     priority?: boolean;
@@ -38,12 +40,16 @@ const ItemCard: React.FC<ItemCardProps> = memo(
         showPromotedBadge = true,
         showVerifiedBadge = true,
         showAuctionBadge = false,
+        showTradeBadge = true,
         auctionBidCount = 0,
         customFooter,
         priority = false
     }: ItemCardProps) => {
         const {user} = useAppContext();
-        const url = useMemo(() => item.imageUrls?.[0] || 'https://images.pexels.com/photos/1303084/pexels-photo-1303084.jpeg', [item.imageUrls]);
+        const url = useMemo(
+            () => item.imageUrls?.[0] || 'https://images.pexels.com/photos/1303084/pexels-photo-1303084.jpeg',
+            [item.imageUrls]
+        );
 
         // Like functionality
         const {isLiked, toggleLike, loading} = useItemLike(item.id);
@@ -96,7 +102,7 @@ const ItemCard: React.FC<ItemCardProps> = memo(
         return (
             <>
                 <Link href={href} className={`${className} card-hover block`}>
-                    <div className='relative h-[302px] w-full xs:h-max xs:bg-gray-100'>
+                    <div className='relative h-[302px] w-full xs:h-[180px] xs:bg-gray-100'>
                         <Image
                             className={imageClassName}
                             src={url}
@@ -115,19 +121,23 @@ const ItemCard: React.FC<ItemCardProps> = memo(
                                 <button
                                     onClick={handleLikeClick}
                                     disabled={loading}
-                                    className={`h-[46px] w-[43px] xs:h-[36px] xs:w-[36px] xs:bg-white/95 xs:backdrop-blur-sm xs:rounded-full xs:shadow-lg xs:flex xs:items-center xs:justify-center cursor-pointer transition-opacity duration-200 ${
-                                        loading
-                                            ? 'opacity-50'
-                                            : 'hover:opacity-80 xs:hover:bg-white xs:hover:scale-105 xs:active:scale-95'
+                                    className={`cursor-pointer transition-opacity duration-200 ${
+                                        loading ? 'opacity-50' : 'hover:opacity-80'
                                     }`}
                                     title={isLiked ? 'Remove from saved items' : 'Save item'}
                                 >
+                                    {/* Desktop: image icon */}
                                     <Image
-                                        src={isLiked ? '/liked.svg' : '/save-item.svg'}
+                                        src={isLiked ? '/icons/action/liked.svg' : '/icons/action/save.svg'}
                                         alt={isLiked ? 'liked item' : 'save item'}
                                         height={46}
                                         width={43}
-                                        className='w-full h-full xs:h-5 xs:w-5'
+                                        className='h-[46px] w-[43px] xs:hidden'
+                                    />
+                                    {/* Mobile: bookmark */}
+                                    <Bookmark
+                                        size={20}
+                                        className={`hidden xs:block ${isLiked ? 'text-primary fill-primary' : forLiveAuction ? 'text-white' : 'text-primary'}`}
                                     />
                                 </button>
                             </div>
@@ -140,20 +150,27 @@ const ItemCard: React.FC<ItemCardProps> = memo(
                             </div>
                         )}
 
-                        {/* Transaction Type Badge - Top Left */}
+                        {/* Top Left Badge */}
                         <div className='absolute top-3 left-3 xs:top-2 xs:left-2'>
-                            <TransactionTypeBadge
-                                acceptCash={item.acceptCash}
-                                hasSwapItems={!!(item.flipForImgUrls && item.flipForImgUrls.length > 0)}
-                            />
+                            {showTradeBadge ? (
+                                <TransactionTypeBadge
+                                    acceptCash={item.acceptCash}
+                                    hasSwapItems={!!(item.flipForImgUrls && item.flipForImgUrls.length > 0)}
+                                />
+                            ) : showAuctionBadge ? (
+                                <div className='flex items-center gap-1 px-2 py-1 xs:px-1.5 xs:py-0.5 bg-white/95 backdrop-blur-sm rounded-md text-text_one typo-body_sr xs:typo-caption'>
+                                    <svg className='w-4 h-4 xs:w-3 xs:h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M15 12a3 3 0 11-6 0 3 3 0 016 0z' /><path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z' /></svg>
+                                    <span>{(item as any).views || 0}</span>
+                                </div>
+                            ) : null}
                         </div>
 
                         {/* Verified ID badge */}
                         {showVerifiedBadge && item.seller.idVerified && (
-                            <div className='h-[26px] px-[6px] xs:h-[22px] xs:px-1 typo-body_sr xs:typo-caption text-primary bg-white absolute top-[46px] left-3 xs:top-[30px] xs:left-2 xs:bg-white/95 xs:backdrop-blur-sm flex items-center justify-center gap-1 rounded xs:rounded-md xs:shadow-sm'>
+                            <div className='h-[26px] px-[6px] xs:h-[20px] xs:px-1.5 typo-body_sr xs:text-[10px] text-primary bg-white absolute top-[46px] left-3 xs:top-2 xs:left-auto xs:right-2 xs:bg-white/95 xs:backdrop-blur-sm flex items-center justify-center gap-1 rounded xs:rounded-md xs:shadow-sm'>
                                 <Image
-                                    className='h-4 w-4 xs:h-3 xs:w-3'
-                                    src={'/verified.svg'}
+                                    className='h-4 w-4 xs:h-2.5 xs:w-2.5'
+                                    src={'/icons/status/verified.svg'}
                                     alt='verified'
                                     height={16}
                                     width={16}
@@ -164,10 +181,10 @@ const ItemCard: React.FC<ItemCardProps> = memo(
 
                         {/* Auction badge */}
                         {showAuctionBadge && (
-                            <div className='h-[44px] w-[88px] xs:h-[30px] xs:px-2 typo-body_ls xs:typo-caption rounded-[35px] xs:rounded-full text-primary bg-white absolute top-4 right-3 xs:top-2 xs:right-2 xs:bg-white/95 xs:backdrop-blur-sm flex items-center justify-center gap-2 xs:shadow-sm'>
+                            <div className='h-[44px] w-[88px] xs:h-auto xs:w-auto xs:px-2 xs:py-1 typo-body_ls xs:typo-caption rounded-[35px] xs:rounded-full text-primary bg-white absolute top-4 right-3 xs:top-2 xs:right-2 xs:bg-white/95 xs:backdrop-blur-sm flex items-center justify-center gap-2 xs:gap-1 xs:shadow-sm'>
                                 <Image
                                     className='h-5 w-5 xs:h-3 xs:w-3'
-                                    src={'/gavel.svg'}
+                                    src={'/icons/action/gavel.svg'}
                                     alt='auction'
                                     height={20}
                                     width={20}
@@ -179,7 +196,7 @@ const ItemCard: React.FC<ItemCardProps> = memo(
 
                     <div className={contentClassName}>
                         {forLiveAuction ? (
-                            <p className='typo-body_mr xs:typo-body_sr xs:mb-0 xs:font-medium xs:text-gray-900 capitalize xs:line-clamp-2 xs:leading-tight'>
+                            <p className='typo-body_mr xs:typo-body_sr xs:mb-0 xs:font-medium xs:text-gray-900 capitalize truncate'>
                                 {item.title}
                             </p>
                         ) : (
@@ -189,27 +206,26 @@ const ItemCard: React.FC<ItemCardProps> = memo(
                         )}
 
                         {forLiveAuction ? (
-                            <div className='flex justify-between items-end'>
-                                <div className=''>
-                                    <p className='typo-body-sm-regular text-text_four'>Current bid</p>
-                                    <p className='typo-body_lm xs:typo-body_mm'>
-                                        {formatToNaira(item.currentBid || item.startingBid || item.cashAmount)}
-                                    </p>
-                                </div>
-
-                                <div className='xs:flex-shrink-0 flex items-end pb-1 xs:pb-0'>
-                                    {item.endDate ? (
-                                        <AuctionCountdown
-                                            endTime={item.endDate}
-                                            startTime={item.startDate}
-                                            className='xs:text-xs xs:px-1.5 xs:h-[16px]'
-                                        />
-                                    ) : (
-                                        <span className='flex items-center px-2 h-[26px] w-max xs:h-[16px] xs:px-1.5 xs:text-xs typo-body_sr bg-surface-light text-primary capitalize'>
-                                            Live auction
-                                        </span>
-                                    )}
-                                    {customFooter}
+                            <div>
+                                <p className='typo-body-sm-regular text-text_four'>Current bid</p>
+                                <p className='typo-body_lm xs:typo-body_mm'>
+                                    {formatToNaira(item.currentBid || item.startingBid || item.cashAmount)}
+                                </p>
+                                <div className='flex justify-between items-center mt-1'>
+                                    <UsedBadge text={item.condition} />
+                                    <div className='flex-shrink-0 max-w-[50%] truncate'>
+                                        {item.endDate ? (
+                                            <AuctionCountdown
+                                                endTime={item.endDate}
+                                                startTime={item.startDate}
+                                                className='xs:text-xs xs:px-1.5 xs:h-[16px]'
+                                            />
+                                        ) : (
+                                            <span className='flex items-center px-2 h-[26px] w-max xs:h-[16px] xs:px-1.5 xs:text-xs typo-body_sr bg-surface-light text-primary capitalize'>
+                                                Live auction
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         ) : (
@@ -219,7 +235,7 @@ const ItemCard: React.FC<ItemCardProps> = memo(
                                     {formatToNaira(item.cashAmount)}
                                 </p>
                                 <div className='flex items-center mt-1'>
-                                    {customFooter || <UsedBadge text={item.condition} />}
+                                    <div>{customFooter || <UsedBadge text={item.condition} />}</div>
                                 </div>
                             </>
                         )}

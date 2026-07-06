@@ -10,7 +10,7 @@ const CheckInbox = ({onClose, message}: CheckInboxProps) => {
     return (
         <div className=''>
             <Image
-                src={'/email-sent.svg'}
+                src={'/images/decorative/email-sent.svg'}
                 height={72}
                 width={105}
                 alt='logo'

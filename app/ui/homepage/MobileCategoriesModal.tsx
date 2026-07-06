@@ -17,7 +17,7 @@ const MobileCategoriesModal: React.FC<Props> = ({ isOpen, onClose, categories })
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
-    const currentCategory = searchParams.get('categories');
+    const currentCategory = searchParams.get('category');
 
     useEffect(() => {
         if (isOpen) {
@@ -33,14 +33,14 @@ const MobileCategoriesModal: React.FC<Props> = ({ isOpen, onClose, categories })
 
     const selectCategory = (categoryName: string) => {
         const params = new URLSearchParams(searchParams.toString());
-        params.set('categories', categoryName);
+        params.set('category', categoryName);
         router.push(`${pathname}?${params.toString()}`);
         onClose();
     };
 
     const clearFilter = () => {
         const params = new URLSearchParams(searchParams.toString());
-        params.delete('categories');
+        params.delete('category');
         router.push(`${pathname}?${params.toString()}`);
         onClose();
     };
@@ -58,7 +58,7 @@ const MobileCategoriesModal: React.FC<Props> = ({ isOpen, onClose, categories })
             />
 
             {/* Modal */}
-            <div className={`fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl z-50 max-h-[70vh] overflow-hidden transform transition-transform duration-300 ease-out ${
+            <div className={`fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl z-dropdown max-h-[70vh] overflow-hidden transform transition-transform duration-300 ease-out ${
                 isAnimating ? 'translate-y-0' : 'translate-y-full'
             }`}>
                 <div className="p-4 border-b">

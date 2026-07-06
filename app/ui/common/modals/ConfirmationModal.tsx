@@ -23,7 +23,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     isLoading = false
 }) => {
     return (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50'>
+        <div className='fixed inset-0 z-dropdown flex items-center justify-center bg-black bg-opacity-50'>
             <div className='bg-white rounded-lg p-6 max-w-md w-full mx-4'>
                 {/* Header */}
                 <div className='flex items-center justify-between mb-4'>

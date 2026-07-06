@@ -1,6 +1,7 @@
 import {useSearchParams} from 'next/navigation';
 import React from 'react';
 import Image from 'next/image';
+import {CheckIcon} from '~/ui/icons';
 
 interface MessageSentProps {
     title: string;
@@ -28,19 +29,7 @@ const MessageSent = ({title, onClose}: MessageSentProps) => {
 
                 <div className='mb-6'>
                     <div className='w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4'>
-                        <svg 
-                            className='w-8 h-8 text-green-600' 
-                            fill='none' 
-                            stroke='currentColor' 
-                            viewBox='0 0 24 24'
-                        >
-                            <path 
-                                strokeLinecap='round' 
-                                strokeLinejoin='round' 
-                                strokeWidth={2} 
-                                d='M5 13l4 4L19 7' 
-                            />
-                        </svg>
+                        <CheckIcon className='w-8 h-8 text-green-600' />
                     </div>
                     <h3 className='typo-heading_sm text-text_one mb-2'>Message Sent Successfully!</h3>
                     <p className='typo-body_mr text-text_four'>

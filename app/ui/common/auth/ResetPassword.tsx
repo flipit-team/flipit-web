@@ -27,14 +27,14 @@ const ResetPassword = () => {
                 headers: {'Content-Type': 'application/json'}
             });
 
-            // if (!res.ok) {
-            //     // const message = handleApiError(data);
-            //     // setErrorMessage(message);
-            //     setIsLoading(false);
-
-            //     return;
-            // }
-            setSuccessMessage('Password changed successfully');
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({ apierror: { message: 'Request failed' } }));
+                const message = data?.apierror?.message || 'Request failed';
+                setErrorMessage(message);
+                setIsLoading(false);
+                return;
+            }
+            setSuccessMessage('Password reset link sent');
             // Push new URL param without full page reload
             const newParams = new URLSearchParams(searchParams.toString());
             newParams.set('modal', 'check-inbox');

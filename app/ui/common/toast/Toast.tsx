@@ -94,7 +94,7 @@ export const Toast: React.FC<ToastProps> = ({
   const { title, message: displayMessage, action } = formatMessage();
 
   return (
-    <div className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 p-4 rounded-lg border shadow-lg max-w-md ${getTypeStyles()}`}>
+    <div className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-dropdown p-4 rounded-lg border shadow-lg max-w-md ${getTypeStyles()}`}>
       <div className="flex items-start gap-3">
         <div className={`w-4 h-4 rounded-full flex-shrink-0 mt-1 ${getIconColor()}`}></div>
         <div className="flex-1">

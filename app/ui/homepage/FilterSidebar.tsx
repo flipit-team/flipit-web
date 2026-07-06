@@ -50,7 +50,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
                     {selectedOption ? selectedOption.label : placeholder}
                 </span>
                 <Image
-                    src='/arrow-down-gray.svg'
+                    src='/icons/ui/arrow-down.svg'
                     height={16}
                     width={16}
                     alt='dropdown'
@@ -61,7 +61,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
             {isOpen && (
                 <>
                     <div className='fixed inset-0 z-40' onClick={() => setIsOpen(false)} />
-                    <div className='absolute z-50 w-full mt-1 bg-white border border-border_gray rounded-md shadow-lg max-h-48 overflow-auto'>
+                    <div className='absolute z-dropdown w-full mt-1 bg-white border border-border_gray rounded-md shadow-lg max-h-48 overflow-auto'>
                         <button
                             type="button"
                             onClick={() => {
@@ -192,7 +192,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
             <div className='h-[58px] flex items-center justify-center gap-2 bg-surface-primary'>
                 <Image
                     className='h-5 w-5 cursor-pointer'
-                    src={'/shop.svg'}
+                    src={'/icons/action/shop.svg'}
                     alt='shop'
                     height={20}
                     width={20}

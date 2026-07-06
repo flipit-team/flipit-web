@@ -10,7 +10,7 @@ const Error = ({onClose, message}: ErrorProps) => {
     return (
         <div className=''>
             <Image
-                src={'/error-icon.svg'}
+                src={'/icons/status/error-icon.svg'}
                 height={117}
                 width={117}
                 alt='logo'

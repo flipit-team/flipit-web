@@ -2,6 +2,7 @@
 import React, {createContext, ReactNode, useContext, useEffect, useState, useCallback} from 'react';
 import {Notification, Profile} from '~/utils/interface';
 import NotificationsService from '~/services/notifications.service';
+import {UserService} from '~/services/user.service';
 import {PaginatedResponse, NotificationDTO} from '~/types/api';
 
 interface AppContextProps {
@@ -89,10 +90,20 @@ export const AppProvider = ({children, initialUser}: AppProviderProps) => {
         }
     }, [user]);
 
-    // Fetch notifications when user is available
+    // Fetch profile and notifications when user is available
     useEffect(() => {
         if (user) {
             refreshNotifications();
+
+            // Fetch user profile once
+            if (!profile) {
+                UserService.getProfile().then(result => {
+                    if (result.data) {
+                        const data = result.data as any;
+                        setProfile(data.user || data);
+                    }
+                }).catch(() => {});
+            }
 
             // Poll for new notifications every 30 seconds
             const interval = setInterval(refreshNotifications, 30000);

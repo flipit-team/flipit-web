@@ -76,7 +76,7 @@ export class ItemsService {
   // Mark item as sold - NEW
   static async markAsSold(itemId: number) {
     return handleApiCall(() =>
-      apiClient.put<ItemDTO>(`/v1/items/${itemId}/markAsSold`, {}, { requireAuth: true })
+      apiClient.put<ItemDTO>(`/items/${itemId}/markAsSold`, {}, { requireAuth: true })
     );
   }
 }

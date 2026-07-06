@@ -36,7 +36,6 @@ const CallbackRequest: React.FC<CallbackRequestProps> = ({title, onClose, onSubm
                     phoneNumber,
                     email,
                     message,
-                    preferredCallTime: preferredCallTime || undefined
                 });
 
                 if (result.data && !result.error) {

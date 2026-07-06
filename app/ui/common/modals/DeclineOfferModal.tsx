@@ -14,14 +14,14 @@ const DeclineOfferModal: React.FC<DeclineOfferModalProps> = ({isOpen, onClose, o
     if (!isOpen) return null;
 
     return (
-        <div className='fixed inset-0 bg-black bg-opacity-50 h-screen flex justify-center items-center z-[1001]'>
+        <div className='fixed inset-0 bg-black bg-opacity-50 h-screen flex justify-center items-center z-modal'>
             <div
                 className='relative bg-white rounded-2xl w-[558px] h-max xs:w-full py-[48px] px-[56px] xs:px-8 xs:py-8 mx-6 text-text-primary'
                 onClick={(e) => e.stopPropagation()}
             >
                 <button onClick={onClose} className='absolute top-6 right-6'>
                     <Image
-                        src={'/cancel-grey.svg'}
+                        src={'/icons/ui/close.svg'}
                         height={30}
                         width={30}
                         alt='close'

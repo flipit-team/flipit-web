@@ -33,7 +33,7 @@ export default async function UserLayout({
             <UnreadCountProvider>
                 <ToastProvider>
                     <LikesProvider>
-                        <main className='flex flex-col flex-1 xs:pb-[100px]'>
+                        <main className='flex flex-col flex-1 xs:pb-[100px] xs:bg-[#FFFFF0]'>
                             <Header user={user} />
                             <Overlay />
                             <ErrorBoundary>{children}</ErrorBoundary>

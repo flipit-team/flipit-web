@@ -22,13 +22,14 @@ const GridItems = (props: Props) => {
                         forLiveAuction={forLiveAuction}
                         contentClassName={
                             forLiveAuction
-                                ? 'p-4 xs:py-3 xs:px-1 h-[120px] xs:h-[100px] xs:flex xs:flex-col xs:gap-2 xs:overflow-hidden'
+                                ? 'p-4 xs:py-3 xs:px-1 h-[120px] xs:h-auto xs:flex xs:flex-col xs:gap-1 xs:overflow-hidden'
                                 : 'p-4 xs:py-3 xs:px-0 h-[98px] xs:h-[100px] xs:flex xs:flex-col xs:overflow-hidden'
                         }
-                        showSaveButton={forLiveAuction ? false : true}
+                        showSaveButton={true}
                         showPromotedBadge={forLiveAuction ? false : true}
                         showVerifiedBadge={forLiveAuction ? false : true}
                         showAuctionBadge={forLiveAuction ? true : false}
+                        showTradeBadge={!forLiveAuction}
                     />
                 ))
             ) : (

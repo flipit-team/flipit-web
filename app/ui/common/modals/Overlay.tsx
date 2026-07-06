@@ -97,7 +97,7 @@ function OverlayContent() {
 
     return (
         <div className=''>
-            <div className={`fixed inset-0 bg-black bg-opacity-50 h-screen flex justify-center items-center z-[1001]`}>
+            <div className={`fixed inset-0 bg-black bg-opacity-50 h-screen flex justify-center items-center z-modal`}>
                 <div
                     className={`relative bg-white rounded-2xl w-[558px] h-max xs:w-full ${
                         showCancel() ? 'py-0 px-0' : 'py-[48px] px-[56px]'
@@ -106,7 +106,7 @@ function OverlayContent() {
                 >
                     <div onClick={removeParam} className={`${showCancel() ? 'hidden' : ''}`}>
                         <Image
-                            src={'/cancel-grey.svg'}
+                            src={'/icons/ui/close.svg'}
                             height={30}
                             width={30}
                             alt='cancel'

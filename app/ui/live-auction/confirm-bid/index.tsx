@@ -45,7 +45,7 @@ const ConfirmBid = (props: Props) => {
             <div className='w-[572px] flex flex-col justify-center items-center xs:w-full xs:px-4'>
                 {/* <div className='w-full xs:hidden'>
                     <Image
-                        src={'/close-white.svg'}
+                        src={'/icons/ui/close-white.svg'}
                         height={45}
                         width={45}
                         alt='close'
@@ -56,7 +56,7 @@ const ConfirmBid = (props: Props) => {
                 <div className='w-full bg-white rounded-lg p-[32px] xs:p-0 xs:py-[32px]'>
                     <div className='hidden xs:block'>
                         <Image
-                            src={'/cancel.svg'}
+                            src={'/icons/ui/cancel.svg'}
                             height={16}
                             width={16}
                             alt='close'
@@ -70,7 +70,7 @@ const ConfirmBid = (props: Props) => {
                         <div className='flex justify-between items-center mb-6 xs:hidden'>
                             <h2 className='typo-heading_ms text-text_one'>Confirm your bid</h2>
                             <Image
-                                src={'/cancel.svg'}
+                                src={'/icons/ui/cancel.svg'}
                                 height={13}
                                 width={13}
                                 alt='close'
@@ -87,7 +87,7 @@ const ConfirmBid = (props: Props) => {
                         {/* Item Image */}
                         <div className='flex justify-center mb-6'>
                             <Image
-                                src={item?.imageUrls?.[0] || '/placeholder-product.svg'}
+                                src={item?.imageUrls?.[0] || '/images/placeholders/placeholder-product.svg'}
                                 height={99}
                                 width={128}
                                 alt='item'

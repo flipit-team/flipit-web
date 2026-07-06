@@ -4,6 +4,7 @@ import path from 'path';
 const nextConfig = {
     output: 'standalone',
     reactStrictMode: false,
+    devIndicators: false,
     experimental: {
         webpackBuildWorker: true
     },
@@ -27,6 +28,11 @@ const nextConfig = {
             {
                 protocol: 'https',
                 hostname: 'images.unsplash.com',
+                pathname: '/**',
+            },
+            {
+                protocol: 'https',
+                hostname: 'picsum.photos',
                 pathname: '/**',
             }
         ]

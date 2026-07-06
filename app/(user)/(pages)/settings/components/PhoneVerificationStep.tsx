@@ -1,7 +1,7 @@
 'use client';
 import { useState, useRef } from 'react';
 import { RefreshCcw } from 'lucide-react';
-import Button from '~/ui/common/button';
+import Button from '~/ui/common/buttons/Button';
 import UserService from '~/services/user.service';
 import { useAppContext } from '~/contexts/AppContext';
 

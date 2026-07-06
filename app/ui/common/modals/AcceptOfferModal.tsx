@@ -3,6 +3,7 @@ import Image from 'next/image';
 import React from 'react';
 import {formatToNaira} from '~/utils/helpers';
 import RegularButton from '../buttons/RegularButton';
+import {CheckIcon} from '~/ui/icons';
 
 interface AcceptOfferModalProps {
     isOpen: boolean;
@@ -32,14 +33,14 @@ const AcceptOfferModal: React.FC<AcceptOfferModalProps> = ({
     if (!isOpen) return null;
 
     return (
-        <div className='fixed inset-0 bg-black bg-opacity-50 h-screen flex justify-center items-center z-[1001]'>
+        <div className='fixed inset-0 bg-black bg-opacity-50 h-screen flex justify-center items-center z-modal'>
             <div
                 className='relative bg-white rounded-2xl w-[558px] h-max xs:w-full py-[48px] px-[56px] xs:px-8 xs:py-8 mx-6 text-text-primary'
                 onClick={(e) => e.stopPropagation()}
             >
                 <button onClick={onClose} className='absolute top-6 right-6' disabled={isLoading}>
                     <Image
-                        src={'/cancel-grey.svg'}
+                        src={'/icons/ui/close.svg'}
                         height={30}
                         width={30}
                         alt='close'
@@ -50,14 +51,7 @@ const AcceptOfferModal: React.FC<AcceptOfferModalProps> = ({
                 {/* Success Check Icon */}
                 <div className='flex justify-center mb-6'>
                     <div className='w-[72px] h-[72px] bg-green-100 rounded-full flex items-center justify-center'>
-                        <svg className='w-10 h-10 text-green-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                            <path
-                                strokeLinecap='round'
-                                strokeLinejoin='round'
-                                strokeWidth={2}
-                                d='M5 13l4 4L19 7'
-                            />
-                        </svg>
+                        <CheckIcon className='w-10 h-10 text-green-600' />
                     </div>
                 </div>
 

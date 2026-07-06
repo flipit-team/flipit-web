@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import {CheckmarkIcon} from '../icons';
 
 interface Step {
     label: string;
@@ -22,8 +23,9 @@ const ProgressTracker: React.FC<Props> = ({steps, currentStep, status = 'active'
     };
 
     return (
-        <div className='border border-[#E8E8E8] rounded-xl p-6 xs:p-4'>
-            <div className='flex items-start justify-between xs:gap-2'>
+        <div className='border border-border-DEFAULT rounded-xl p-6 xs:p-4'>
+            {/* Desktop: horizontal layout */}
+            <div className='flex items-start justify-between xs:hidden'>
                 {steps.map((step, index) => {
                     const stepStatus = getStepStatus(index);
                     const isCurrent = stepStatus === 'current';
@@ -33,26 +35,70 @@ const ProgressTracker: React.FC<Props> = ({steps, currentStep, status = 'active'
                         <div key={index} className='flex flex-col items-center flex-1'>
                             {/* Numbered circle */}
                             <div
-                                className={`w-[36px] h-[36px] xs:w-[28px] xs:h-[28px] rounded-full flex items-center justify-center font-poppins font-semibold text-[14px] xs:text-[12px] ${
+                                className={`w-[36px] h-[36px] rounded-full flex items-center justify-center typo-body-md-semibold ${
                                     isCurrent
                                         ? 'bg-primary text-white'
                                         : isCompleted
                                           ? 'bg-primary text-white'
-                                          : 'border-2 border-[#A49E9E] text-[#A49E9E]'
+                                          : 'border-2 border-border-muted-alt text-text-muted-alt'
                                 }`}
                             >
                                 {isCompleted ? (
-                                    <svg className='w-4 h-4' fill='currentColor' viewBox='0 0 20 20'>
-                                        <path fillRule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clipRule='evenodd' />
-                                    </svg>
+                                    <CheckmarkIcon className='w-4 h-4' />
                                 ) : (
                                     index + 1
                                 )}
                             </div>
 
                             {/* Label */}
-                            <p className={`mt-2 font-poppins text-[13px] xs:text-[11px] text-center ${
-                                isCurrent || isCompleted ? 'text-text_one font-semibold' : 'text-[#A49E9E]'
+                            <p className={`mt-2 typo-body-xs-regular text-center ${
+                                isCurrent || isCompleted ? 'text-text_one font-semibold' : 'text-text-muted-alt'
+                            }`}>
+                                {step.label}
+                            </p>
+                        </div>
+                    );
+                })}
+            </div>
+
+            {/* Mobile: vertical stepper layout */}
+            <div className='hidden xs:flex flex-col'>
+                {steps.map((step, index) => {
+                    const stepStatus = getStepStatus(index);
+                    const isCurrent = stepStatus === 'current';
+                    const isCompleted = stepStatus === 'completed';
+                    const isLast = index === steps.length - 1;
+
+                    return (
+                        <div key={index} className='flex items-start gap-3'>
+                            {/* Circle + connecting line column */}
+                            <div className='flex flex-col items-center'>
+                                <div
+                                    className={`w-[32px] h-[32px] rounded-full flex items-center justify-center text-[13px] font-semibold flex-shrink-0 ${
+                                        isCurrent
+                                            ? 'bg-primary text-white'
+                                            : isCompleted
+                                              ? 'bg-primary text-white'
+                                              : 'border-2 border-border-muted-alt text-text-muted-alt'
+                                    }`}
+                                >
+                                    {isCompleted ? (
+                                        <CheckmarkIcon className='w-3.5 h-3.5' />
+                                    ) : (
+                                        index + 1
+                                    )}
+                                </div>
+                                {/* Vertical connecting line */}
+                                {!isLast && (
+                                    <div className={`w-[2px] h-6 my-1 ${
+                                        isCompleted ? 'bg-primary' : 'bg-border-muted-alt'
+                                    }`} />
+                                )}
+                            </div>
+
+                            {/* Label */}
+                            <p className={`pt-1.5 typo-body-sm-regular ${
+                                isCurrent || isCompleted ? 'text-text_one font-semibold' : 'text-text-muted-alt'
                             }`}>
                                 {step.label}
                             </p>

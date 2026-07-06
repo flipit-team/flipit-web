@@ -7,14 +7,14 @@ import {useUnreadCount} from '~/contexts/UnreadCountContext';
 import {Chat} from '~/utils/interface';
 import dynamic from 'next/dynamic';
 import {formatTimeTo12Hour, formatMessageTime, sendMessage, transformChatsResponse} from '~/utils/helpers';
-import { ChatService } from '~/services/chat.service';
+import {ChatService} from '~/services/chat.service';
 import NoData from '../common/no-data/NoData';
 import DeleteConfirmationModal from '../common/delete-confirmation-modal/DeleteConfirmationModal';
 import CountBadge from '../common/count-badge/CountBadge';
+import {TrashIcon} from '../icons';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {useChatMessages, useUserMessages} from '~/hooks/useChatMessages';
 import {Loader} from 'lucide-react';
-import {dummyChats} from '~/utils/dummy';
 const LoaderMain = dynamic(() => import('../common/loader/Loader'), {ssr: false});
 
 interface Props {
@@ -98,7 +98,14 @@ const MainChats = (props: Props) => {
     const {decrementMessageCount} = useUnreadCount();
     const chatId = searchParams.get('chatId');
     const [activeTab, setActiveTab] = useState<'seller' | 'buyer'>('buyer');
+    const [mobileTab, setMobileTab] = useState<'all' | 'purchases' | 'sales'>('all');
     const displayedChat = activeTab === 'buyer' ? chatData.buyer : chatData.seller;
+    const mobileDisplayedChats =
+        mobileTab === 'all'
+            ? [...chatData.buyer, ...chatData.seller]
+            : mobileTab === 'purchases'
+              ? chatData.buyer
+              : chatData.seller;
     const [activeChat, setActiveChat] = useState<Chat | null>(null);
     const markedAsReadRef = useRef<Set<string>>(new Set());
 
@@ -159,15 +166,12 @@ const MainChats = (props: Props) => {
             markedAsReadRef.current.add(chat.chatId);
 
             // Mark chat as read in the UI immediately
-            setApiChatData(prev => ({
-                buyer: prev.buyer.map(c => c.chatId === chat.chatId ? {...c, unreadCount: 0} : c),
-                seller: prev.seller.map(c => c.chatId === chat.chatId ? {...c, unreadCount: 0} : c)
+            setApiChatData((prev) => ({
+                buyer: prev.buyer.map((c) => (c.chatId === chat.chatId ? {...c, unreadCount: 0} : c)),
+                seller: prev.seller.map((c) => (c.chatId === chat.chatId ? {...c, unreadCount: 0} : c))
             }));
 
-            // Call backend to mark as read (fire and forget)
-            ChatService.markMessagesAsRead(chat.chatId).catch(err => {
-                console.error('Failed to mark messages as read:', err);
-            });
+            // Note: markMessagesAsRead endpoint not available
         }
     };
 
@@ -210,19 +214,19 @@ const MainChats = (props: Props) => {
 
         try {
             await ChatService.deleteChat(chatToDelete.chatId);
-            
+
             // Remove from local state
-            setApiChatData(prev => ({
-                buyer: prev.buyer.filter(chat => chat.chatId !== chatToDelete.chatId),
-                seller: prev.seller.filter(chat => chat.chatId !== chatToDelete.chatId)
+            setApiChatData((prev) => ({
+                buyer: prev.buyer.filter((chat) => chat.chatId !== chatToDelete.chatId),
+                seller: prev.seller.filter((chat) => chat.chatId !== chatToDelete.chatId)
             }));
-            
+
             // Clear active chat if it was deleted
             if (activeChat?.chatId === chatToDelete.chatId) {
                 setActiveChat(null);
                 router.push('/messages');
             }
-            
+
             // Close modal
             setShowDeleteModal(false);
             setChatToDelete(null);
@@ -247,43 +251,39 @@ const MainChats = (props: Props) => {
     if (!chatData.seller?.length && !chatData.buyer?.length) {
         return (
             <div className='h-full my-auto'>
-                <NoData text='No Chats Available' />;
+                <NoData text='No Chats Available' />
             </div>
         );
     }
 
     return (
         <div className='mx-[120px] xs:mx-0 my-6 xs:my-0'>
-            <h1 className='typo-heading_ms my-6 xs:hidden'>My Messages</h1>
+            <h1 className='typo-heading_ms my-6 xs:hidden'>Messages</h1>
             <div className='grid grid-cols-[424px_1fr] xs:grid-cols-1 gap-6'>
                 <div className='shadow-lg xs:shadow-transparent xs:hidden'>
                     <div className='px-6 flex items-center gap-[34px] typo-body_lm'>
-                        {chatData.seller.length > 0 && (
-                            <div
-                                className={`py-6 cursor-pointer flex items-center gap-2 ${activeTab === 'seller' ? ' border-b border-primary text-primary' : 'text-text_four'}`}
-                                onClick={() => setActiveTab('seller')}
-                            >
-                                My Sales
-                                {sellerUnreadCount > 0 && (
-                                    <span className='bg-secondary text-white text-[10px] font-bold rounded-full h-[18px] min-w-[18px] flex items-center justify-center px-1'>
-                                        {sellerUnreadCount > 99 ? '99+' : sellerUnreadCount}
-                                    </span>
-                                )}
-                            </div>
-                        )}
-                        {chatData.buyer.length > 0 && (
-                            <div
-                                className={`py-6 cursor-pointer flex items-center gap-2 ${activeTab === 'buyer' ? ' border-b border-primary text-primary' : 'text-text_four'}`}
-                                onClick={() => setActiveTab('buyer')}
-                            >
-                                My Purchases
-                                {buyerUnreadCount > 0 && (
-                                    <span className='bg-secondary text-white text-[10px] font-bold rounded-full h-[18px] min-w-[18px] flex items-center justify-center px-1'>
-                                        {buyerUnreadCount > 99 ? '99+' : buyerUnreadCount}
-                                    </span>
-                                )}
-                            </div>
-                        )}
+                        <div
+                            className={`py-6 cursor-pointer flex items-center gap-2 ${activeTab === 'seller' ? ' border-b border-primary text-primary' : 'text-text_four'}`}
+                            onClick={() => setActiveTab('seller')}
+                        >
+                            My Sales
+                            {sellerUnreadCount > 0 && (
+                                <span className='bg-secondary text-white typo-caption font-bold rounded-full h-[18px] min-w-[18px] flex items-center justify-center px-1'>
+                                    {sellerUnreadCount > 99 ? '99+' : sellerUnreadCount}
+                                </span>
+                            )}
+                        </div>
+                        <div
+                            className={`py-6 cursor-pointer flex items-center gap-2 ${activeTab === 'buyer' ? ' border-b border-primary text-primary' : 'text-text_four'}`}
+                            onClick={() => setActiveTab('buyer')}
+                        >
+                            My Purchases
+                            {buyerUnreadCount > 0 && (
+                                <span className='bg-secondary text-white typo-caption font-bold rounded-full h-[18px] min-w-[18px] flex items-center justify-center px-1'>
+                                    {buyerUnreadCount > 99 ? '99+' : buyerUnreadCount}
+                                </span>
+                            )}
+                        </div>
                     </div>
                     {displayedChat?.map((chat: any, i: number) => {
                         const otherPerson = getOtherPerson(chat);
@@ -295,7 +295,7 @@ const MainChats = (props: Props) => {
                                 className={`min-h-[130px] ${chat.chatId === activeChat?.chatId ? 'bg-surface-primary-10' : ''} flex p-6 border-b border-border-secondary cursor-pointer hover:bg-surface-primary-10 transition-colors`}
                             >
                                 <Image
-                                    src={otherPerson.avatar || '/placeholder-avatar.svg'}
+                                    src={otherPerson.avatar || '/images/placeholders/placeholder-avatar.svg'}
                                     height={50}
                                     width={50}
                                     alt={otherPerson.name}
@@ -328,9 +328,7 @@ const MainChats = (props: Props) => {
                                         {deleteLoading === chat.chatId ? (
                                             <Loader className='h-4 w-4' />
                                         ) : (
-                                            <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16' />
-                                            </svg>
+                                            <TrashIcon className='h-4 w-4' />
                                         )}
                                     </button>
                                 </div>
@@ -338,66 +336,107 @@ const MainChats = (props: Props) => {
                         );
                     })}
                 </div>
-                <div className='shadow-lg xs:shadow-transparent hidden xs:block'>
-                    <div className='px-6 flex items-center gap-[34px] typo-body_lm'>
-                        {chatData.seller.length > 0 && (
-                            <div
-                                className={`text-primary py-6 cursor-pointer flex items-center gap-2 ${activeTab === 'seller' ? ' border-b border-primary' : ''}`}
-                                onClick={() => setActiveTab('seller')}
-                            >
-                                My Sales
-                                {sellerUnreadCount > 0 && (
-                                    <span className='bg-secondary text-white text-[10px] font-bold rounded-full h-[18px] min-w-[18px] flex items-center justify-center px-1'>
-                                        {sellerUnreadCount > 99 ? '99+' : sellerUnreadCount}
-                                    </span>
-                                )}
-                            </div>
-                        )}
-                        {chatData.buyer.length > 0 && (
-                            <div
-                                className={`text-text_four py-6 cursor-pointer flex items-center gap-2 ${activeTab === 'buyer' ? ' border-b border-primary' : ''}`}
-                                onClick={() => setActiveTab('buyer')}
-                            >
-                                My Purchases
-                                {buyerUnreadCount > 0 && (
-                                    <span className='bg-secondary text-white text-[10px] font-bold rounded-full h-[18px] min-w-[18px] flex items-center justify-center px-1'>
-                                        {buyerUnreadCount > 99 ? '99+' : buyerUnreadCount}
-                                    </span>
-                                )}
-                            </div>
-                        )}
+                <div className='hidden xs:block px-4 pt-6 pb-24'>
+                    {/* Mobile heading */}
+                    <h1 className='font-poppins typo-heading-lg-bold text-text_one mb-4'>Chats</h1>
+
+                    {/* Mobile search bar */}
+                    <div className='relative mb-4'>
+                        <input
+                            type='text'
+                            placeholder='Search chats'
+                            className='w-full h-[48px] px-4 pr-10 border border-border-DEFAULT rounded-lg font-poppins typo-body-md-regular outline-none focus:border-primary transition-colors bg-white'
+                        />
+                        <svg
+                            className='absolute right-3 top-1/2 -translate-y-1/2 text-text_four'
+                            width='20'
+                            height='20'
+                            viewBox='0 0 24 24'
+                            fill='none'
+                            stroke='currentColor'
+                            strokeWidth='2'
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                        >
+                            <circle cx='11' cy='11' r='8' />
+                            <path d='m21 21-4.3-4.3' />
+                        </svg>
                     </div>
-                    {displayedChat?.map((chat: any, i: number) => {
+
+                    {/* Mobile tab pills */}
+                    <div className='flex items-center gap-3 mb-6'>
+                        <button
+                            onClick={() => setMobileTab('all')}
+                            className={`px-4 py-1.5 rounded-full font-poppins typo-body-sm-medium border transition-colors ${
+                                mobileTab === 'all'
+                                    ? 'border-primary text-primary bg-white'
+                                    : 'border-border-DEFAULT text-text_four bg-white'
+                            }`}
+                        >
+                            All
+                        </button>
+                        <button
+                            onClick={() => {
+                                setMobileTab('purchases');
+                                setActiveTab('buyer');
+                            }}
+                            className={`px-4 py-1.5 rounded-full font-poppins typo-body-sm-medium border transition-colors ${
+                                mobileTab === 'purchases'
+                                    ? 'border-primary text-primary bg-white'
+                                    : 'border-border-DEFAULT text-text_four bg-white'
+                            }`}
+                        >
+                            My Purchases
+                        </button>
+                        <button
+                            onClick={() => {
+                                setMobileTab('sales');
+                                setActiveTab('seller');
+                            }}
+                            className={`px-4 py-1.5 rounded-full font-poppins typo-body-sm-medium border transition-colors ${
+                                mobileTab === 'sales'
+                                    ? 'border-primary text-primary bg-white'
+                                    : 'border-border-DEFAULT text-text_four bg-white'
+                            }`}
+                        >
+                            My Sales
+                        </button>
+                    </div>
+
+                    {/* Chat list */}
+                    <div className='bg-white rounded-xl overflow-hidden'>
+                    {mobileDisplayedChats?.map((chat: any, i: number) => {
                         const otherPerson = getOtherPerson(chat);
                         const lastMessage = lastMessages[chat.chatId];
                         return (
                             <Link
                                 key={i}
                                 href={`/messages/${chat.chatId}`}
-                                className={`min-h-[130px] ${chat.chatId === activeChat?.chatId ? 'bg-surface-primary-10' : ''} flex p-6 border-b border-border-secondary`}
+                                className='flex items-center gap-3 px-4 py-5 border-b border-border-DEFAULT last:border-b-0'
                             >
                                 <Image
-                                    src={otherPerson.avatar || '/placeholder-avatar.svg'}
-                                    height={50}
-                                    width={50}
+                                    src={otherPerson.avatar || '/images/placeholders/placeholder-avatar.svg'}
+                                    height={56}
+                                    width={56}
                                     alt={otherPerson.name}
-                                    className='h-[50px] w-[50px] mr-4 rounded-full object-cover flex-shrink-0'
+                                    className='h-[56px] w-[56px] rounded-full object-cover flex-shrink-0'
                                 />
                                 <div className='flex-1 min-w-0'>
-                                    <p className='text-primary typo-body_lm capitalize mb-1'>{otherPerson.name}</p>
-                                    <p className='typo-body_sm text-text_three mb-1'>
-                                        <span className='font-medium'>Product:</span> {chat.title}
+                                    <p className='font-poppins typo-body-lg-bold text-text_one capitalize'>
+                                        {otherPerson.name}
                                     </p>
                                     {lastMessage && (
-                                        <p className='typo-body_sr text-text_four truncate'>
-                                            <span className='font-medium'>Message:</span> {lastMessage}
+                                        <p className='font-poppins typo-body-sm-regular text-text_four truncate mt-1'>
+                                            {lastMessage}
                                         </p>
                                     )}
                                 </div>
                                 <div className='flex flex-col items-end gap-2 ml-2 flex-shrink-0'>
-                                    <p className='typo-body_sr'>{formatMessageTime(chat.dateCreated)}</p>
+                                    <p className='font-poppins typo-body-xs-regular text-text_four'>
+                                        {formatMessageTime(chat.dateCreated)}
+                                    </p>
                                     {chat.unreadCount > 0 && (
-                                        <div className='bg-secondary text-white rounded-full h-5 w-5 flex items-center justify-center text-xs font-medium'>
+                                        <div className='bg-primary text-white rounded-full h-[22px] min-w-[22px] flex items-center justify-center text-[11px] font-bold px-1'>
                                             {chat.unreadCount > 9 ? '9+' : chat.unreadCount}
                                         </div>
                                     )}
@@ -405,23 +444,25 @@ const MainChats = (props: Props) => {
                             </Link>
                         );
                     })}
+                    </div>
                 </div>
                 <div className='shadow-lg xs:shadow-transparent xs:hidden'>
-                    {activeChat && (() => {
-                        const otherPerson = getOtherPerson(activeChat);
-                        return (
-                            <div className='flex items-center p-6'>
-                                <Image
-                                    src={otherPerson.avatar || '/placeholder-avatar.svg'}
-                                    height={50}
-                                    width={50}
-                                    alt={otherPerson.name}
-                                    className='h-[50px] w-[50px] mr-4 rounded-full object-cover'
-                                />
-                                <p className='typo-body_lm capitalize'>{otherPerson.name}</p>
-                            </div>
-                        );
-                    })()}
+                    {activeChat &&
+                        (() => {
+                            const otherPerson = getOtherPerson(activeChat);
+                            return (
+                                <div className='flex items-center p-6'>
+                                    <Image
+                                        src={otherPerson.avatar || '/images/placeholders/placeholder-avatar.svg'}
+                                        height={50}
+                                        width={50}
+                                        alt={otherPerson.name}
+                                        className='h-[50px] w-[50px] mr-4 rounded-full object-cover'
+                                    />
+                                    <p className='typo-body_lm capitalize'>{otherPerson.name}</p>
+                                </div>
+                            );
+                        })()}
                     {activeChat && (
                         <div className='flex items-center justify-center typo-heading_sm text-primary bg-surface-primary-20 h-[42px]'>
                             {activeChat?.title}
@@ -430,7 +471,10 @@ const MainChats = (props: Props) => {
                     <div className='p-[40px] flex flex-col gap-2'>
                         {messages?.map((item, i) => {
                             return (
-                                <div key={i} className={`w-2/4 ${item.sentBy === Number(user?.userId) ? 'ml-auto' : 'mr-auto'}`}>
+                                <div
+                                    key={i}
+                                    className={`w-2/4 ${item.sentBy === Number(user?.userId) ? 'ml-auto' : 'mr-auto'}`}
+                                >
                                     <div
                                         className={`${item.sentBy === Number(user?.userId) ? 'bg-surface-primary-10' : 'bg-background-tertiary'} p-3 rounded-lg`}
                                     >
@@ -454,7 +498,7 @@ const MainChats = (props: Props) => {
                             )}
                             <div className='h-[96px] flex items-center px-[40px]'>
                                 <Image
-                                    src={'/microphone.svg'}
+                                    src={'/icons/ui/microphone.svg'}
                                     height={24}
                                     width={24}
                                     alt='mic'
@@ -474,7 +518,7 @@ const MainChats = (props: Props) => {
                                 ) : (
                                     <Image
                                         onClick={handleSend}
-                                        src={'/send.svg'}
+                                        src={'/icons/action/send.svg'}
                                         height={39}
                                         width={87}
                                         alt='send'
@@ -486,11 +530,11 @@ const MainChats = (props: Props) => {
                     )}
                 </div>
             </div>
-            
+
             <DeleteConfirmationModal
                 isOpen={showDeleteModal}
-                title="Delete Chat"
-                message={`Are you sure you want to delete this chat with ${chatToDelete?.initiatorName}? This action cannot be undone.`}
+                title='Delete Chat'
+                message={`Are you sure you want to delete this chat with ${chatToDelete ? (chatToDelete.initiatorId === Number(user?.userId) ? chatToDelete.receiverName : chatToDelete.initiatorName) : ''}? This action cannot be undone.`}
                 onConfirm={handleConfirmDelete}
                 onCancel={handleCancelDelete}
                 isDeleting={deleteLoading === chatToDelete?.chatId}

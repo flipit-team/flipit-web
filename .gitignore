@@ -39,3 +39,11 @@ storybook-static
 
 .env
 
+.mcp.json
+
+# figma cache
+/figma-cache
+
+# Local API data
+local-api/data.json
+local-api/node_modules/

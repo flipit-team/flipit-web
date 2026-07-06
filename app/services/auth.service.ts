@@ -6,7 +6,6 @@ import {
   SignupResponse,
   ForgotPasswordRequest,
   ResetPasswordRequest,
-  ChangePasswordRequest,
   UserDTO
 } from '~/types/api';
 import { debugLog, debugError, debugApiResponse } from '~/utils/debug';
@@ -82,12 +81,6 @@ export class AuthService {
     );
   }
 
-  // Change password
-  static async changePassword(passwordData: ChangePasswordRequest) {
-    return handleApiCall(() =>
-      apiClient.post<{ message: string }>('/profile/update-password', passwordData, { requireAuth: true })
-    );
-  }
 }
 
 export default AuthService;

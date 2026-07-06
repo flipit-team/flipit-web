@@ -72,12 +72,13 @@ const GridSwiper = (props: Props) => {
                             forEdit={props.forEdit}
                             forLiveAuction={props.forLiveAuction}
                             className='h-full w-full'
-                            imageClassName='h-[302px] w-full xs:h-[160px] cursor-pointer xs:object-cover'
-                            contentClassName={props.forLiveAuction ? 'p-4 xs:py-3 xs:px-0 h-[120px] xs:h-[100px] xs:flex xs:flex-col xs:justify-between xs:overflow-hidden' : 'p-4 xs:py-3 xs:px-0 h-[98px] xs:h-[100px] xs:flex xs:flex-col xs:justify-between xs:overflow-hidden'}
-                            showSaveButton={false}
+                            imageClassName='h-[302px] w-full xs:h-[180px] cursor-pointer object-cover'
+                            contentClassName={props.forLiveAuction ? 'p-4 xs:py-3 xs:px-0 h-[120px] xs:h-auto xs:flex xs:flex-col xs:gap-1 xs:overflow-hidden' : 'p-4 xs:py-3 xs:px-0 h-[98px] xs:h-[100px] xs:flex xs:flex-col xs:justify-between xs:overflow-hidden'}
+                            showSaveButton={true}
                             showPromotedBadge={false}
                             showVerifiedBadge={false}
                             showAuctionBadge={props.forLiveAuction}
+                            showTradeBadge={!props.forLiveAuction}
                             auctionBidCount={12}
                             customFooter={props.forLiveAuction ? undefined : <Countdown />}
                         />

@@ -2,11 +2,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { 
-  Bars3Icon,
-  BellIcon,
-  ChevronDownIcon 
-} from '@heroicons/react/24/outline';
+import {
+  Menu,
+  Bell,
+  ChevronDown
+} from 'lucide-react';
 
 interface AdminUser {
   name: string;
@@ -39,7 +39,7 @@ export default function AdminHeader({ user, onMenuClick }: AdminHeaderProps) {
           onClick={onMenuClick}
         >
           <span className="sr-only">Open sidebar</span>
-          <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+          <Menu className="h-6 w-6" aria-hidden="true" />
         </button>
 
         {/* Left side - empty for now, could add breadcrumbs */}
@@ -53,7 +53,7 @@ export default function AdminHeader({ user, onMenuClick }: AdminHeaderProps) {
             className="p-2 text-gray-400 rounded-full hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
           >
             <span className="sr-only">View notifications</span>
-            <BellIcon className="h-6 w-6" aria-hidden="true" />
+            <Bell className="h-6 w-6" aria-hidden="true" />
           </button>
 
           {/* Profile dropdown */}
@@ -76,7 +76,7 @@ export default function AdminHeader({ user, onMenuClick }: AdminHeaderProps) {
                   <p className="typo-body_ms text-text_one">{user.name}</p>
                   <p className="typo-body_sr text-text_four">{user.role}</p>
                 </div>
-                <ChevronDownIcon
+                <ChevronDown
                   className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${
                     dropdownOpen ? 'transform rotate-180' : ''
                   }`}

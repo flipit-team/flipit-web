@@ -22,15 +22,6 @@ export class LikesService {
       apiClient.get<ItemDTO[]>('/v1/likes/items', { requireAuth: true })
     );
   }
-
-  // Check if user has liked specific items (batch check)
-  static async checkLikedStatus(itemIds: number[]) {
-    if (!itemIds.length) return { success: true, data: {} };
-    
-    return handleApiCall(() =>
-      apiClient.post<Record<number, boolean>>('/v1/likes/items/check', { itemIds }, { requireAuth: true })
-    );
-  }
 }
 
 export default LikesService;

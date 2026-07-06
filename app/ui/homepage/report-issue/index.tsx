@@ -9,8 +9,6 @@ interface ReportModalContentProps {
     title: string;
     onClose: () => void;
     onSubmit?: (reason: string, description: string) => void;
-    targetId?: number;
-    reportType?: 'USER' | 'ITEM' | 'OTHER';
 }
 
 const reasons = ['Inappropriate content', 'Spam or scam', 'Incorrect information', 'Other'];
@@ -19,8 +17,6 @@ const ReportModalContent: React.FC<ReportModalContentProps> = ({
     title,
     onClose,
     onSubmit,
-    targetId,
-    reportType = 'OTHER'
 }) => {
     const [reason, setReason] = useState('');
     const [description, setDescription] = useState('');
@@ -42,10 +38,8 @@ const ReportModalContent: React.FC<ReportModalContentProps> = ({
             } else {
                 // Use new API service
                 const reportData: AbuseReportRequest = {
-                    reportType,
                     reason,
                     description,
-                    ...(targetId && { targetId })
                 };
 
                 const result = await SupportService.reportAbuse(reportData);
@@ -98,7 +92,7 @@ const ReportModalContent: React.FC<ReportModalContentProps> = ({
                                 {reason || 'Select reason'}
                             </span>
                             <Image 
-                                src='/arrow-down-gray.svg' 
+                                src='/icons/ui/arrow-down.svg' 
                                 height={16} 
                                 width={16} 
                                 alt='dropdown' 
@@ -106,7 +100,7 @@ const ReportModalContent: React.FC<ReportModalContentProps> = ({
                             />
                         </button>
                         {isDropdownOpen && (
-                            <div className='absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded shadow-lg z-50 max-h-48 overflow-auto'>
+                            <div className='absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded shadow-lg z-dropdown max-h-48 overflow-auto'>
                                 {reasons.map((r) => (
                                     <button
                                         key={r}

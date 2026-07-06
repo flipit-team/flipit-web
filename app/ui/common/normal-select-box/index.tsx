@@ -43,13 +43,13 @@ const NormalSelectBox = (props: Props) => {
                                     setSelectedOption(options[0].name);
                                     setIsOpen(false);
                                 }}
-                                src={'/cancel-circle.svg'}
+                                src={'/icons/ui/cancel-circle.svg'}
                                 height={20}
                                 width={20}
                                 alt='cancel'
                             />
                         ) : (
-                            <Image src={'/chevron-down.svg'} height={14} width={14} alt='chevron down' />
+                            <Image src={'/icons/ui/chevron-down.svg'} height={14} width={14} alt='chevron down' />
                         )}
                     </div>
                 </div>

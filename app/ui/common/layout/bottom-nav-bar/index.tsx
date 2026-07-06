@@ -7,6 +7,8 @@ import {MessagesIcon} from './tab-icons.tsx/MessagesIcon';
 import {PostItemIcon} from './tab-icons.tsx/PostItemIcon';
 import clsx from 'clsx';
 import {ProfileIcon} from './tab-icons.tsx/ProfileIcon';
+import {AuctionIcon} from './tab-icons.tsx/AuctionIcon';
+import {useUnreadCount} from '~/contexts/UnreadCountContext';
 
 interface Tab {
     id: number;
@@ -14,10 +16,12 @@ interface Tab {
     icon(isActive: boolean): React.ReactNode;
     label: string;
     listForActiveLink: string[];
+    badgeKey?: 'messagesCount' | 'notificationsCount';
 }
 
 const BottomNavBar: React.FC = () => {
     const pathName: string = usePathname();
+    const {counts} = useUnreadCount();
 
     const tabs: Tab[] = useMemo(() => [
         {
@@ -29,20 +33,28 @@ const BottomNavBar: React.FC = () => {
         },
         {
             id: 2,
+            link: '/live-auction',
+            icon: (isActive: boolean) => <AuctionIcon isActive={isActive} />,
+            label: 'Auction',
+            listForActiveLink: ['/live-auction']
+        },
+        {
+            id: 3,
             link: '/post-an-item/entry',
             icon: (isActive: boolean) => <PostItemIcon isActive={isActive} />,
             label: 'Post Item',
             listForActiveLink: ['/post-an-item']
         },
         {
-            id: 3,
+            id: 4,
             link: '/messages',
             icon: (isActive: boolean) => <MessagesIcon isActive={isActive} />,
             label: 'Messages',
-            listForActiveLink: ['/messages']
+            listForActiveLink: ['/messages'],
+            badgeKey: 'messagesCount' as const,
         },
         {
-            id: 4,
+            id: 5,
             link: '/profile',
             icon: (isActive: boolean) => <ProfileIcon isActive={isActive} />,
             label: 'Profile',
@@ -53,7 +65,7 @@ const BottomNavBar: React.FC = () => {
     return (
         <div
             className={clsx(
-                'fixed bottom-0 left-0 w-[100vw] bg-white border-t border-gray-200 shadow-lg p-2 z-[100] pb-7'
+                'fixed bottom-0 left-0 w-[100vw] bg-white border-t border-gray-200 shadow-lg p-2 z-popover pb-7'
             )}
         >
             <div className='flex justify-around items-center'>
@@ -69,6 +81,7 @@ const BottomNavBar: React.FC = () => {
                             icon={item.icon(activeTab)}
                             label={item.label}
                             activeTab={activeTab}
+                            badge={item.badgeKey ? counts[item.badgeKey] : undefined}
                         />
                     );
                 })}

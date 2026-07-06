@@ -38,13 +38,12 @@ export async function GET(req: NextRequest) {
         const text = await apiRes.text();
 
         if (!text) {
-            // Backend returns empty response - return dummy data for testing
-            // TODO: Backend needs to return proper JSON response
             return NextResponse.json({
-                auctionsCount: 5,
-                messagesCount: 12,
-                biddingCount: 3,
-                notificationsCount: 8
+                auctionsCount: 0,
+                messagesCount: 0,
+                biddingCount: 0,
+                notificationsCount: 0,
+                topNotifications: []
             });
         }
 

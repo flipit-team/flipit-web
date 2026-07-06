@@ -217,6 +217,8 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
             filters={filters}
             onFilterChange={handleFilterChange}
             searchQuery={searchQuery}
+            userName={authStatus?.user?.userName || authStatus?.user?.firstName || ''}
+            userAvatar={authStatus?.user?.avatar || ''}
         />
     );
 };

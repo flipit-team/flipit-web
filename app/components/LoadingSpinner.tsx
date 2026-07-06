@@ -19,7 +19,7 @@ export function LoadingSpinner({
   className = '',
 }: LoadingSpinnerProps) {
   const containerClasses = fullScreen
-    ? 'fixed inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm z-50'
+    ? 'fixed inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm z-dropdown'
     : `flex flex-col items-center justify-center ${className}`;
 
   const sizeClasses = {

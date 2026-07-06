@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { User, ShoppingBag, Megaphone, BarChart3, Settings, Headphones, LogOut } from 'lucide-react';
+import { User, ShoppingBag, BarChart3, Settings, Headphones, LogOut } from 'lucide-react';
 
 interface SidebarProps {
     username?: string;
@@ -15,11 +15,6 @@ const Sidebar = ({ username = 'User' }: SidebarProps) => {
             href: '/my-items',
             label: 'My Items',
             icon: ShoppingBag,
-        },
-        {
-            href: '/my-adverts',
-            label: 'My Adverts',
-            icon: Megaphone,
         },
         {
             href: '/performance',
@@ -42,8 +37,9 @@ const Sidebar = ({ username = 'User' }: SidebarProps) => {
         return pathname === href;
     };
 
-    const handleLogout = () => {
-        // TODO: Implement logout functionality
+    const handleLogout = async () => {
+        await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+        window.location.href = '/login';
     };
 
     return (

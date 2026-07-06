@@ -48,15 +48,15 @@ const SearchBar = ({ onLocationChange, currentLocation = '' }: SearchBarProps) =
     }, [query, router, pathname, isInitialMount, searchParams, initialQuery]);
 
     return (
-        <div className='w-full h-[116px] xs:h-auto bg-primary flex flex-col items-center justify-center gap-[7px] xs:gap-3 xs:px-4 xs:py-4'>
-            <div className='flex items-center gap-4 xs:flex-col xs:gap-2 xs:w-full'>
-                <span className='font-poppins text-[12px] leading-[1.6] text-white'>Items near me</span>
+        <div className='w-full h-[116px] xs:hidden bg-primary flex flex-col items-center justify-center gap-[7px]'>
+            <div className='flex items-center gap-4'>
+                <span className='font-poppins typo-body-sm-regular leading-[1.6] text-white'>Items near me</span>
                 <button
                     onClick={() => onLocationChange?.('')}
                     className='flex items-center gap-2 border border-white/30 rounded px-3 py-1.5 text-white hover:bg-white/10 transition-colors'
                 >
                     <MapPin size={16} className='text-white' />
-                    <span className='font-poppins text-[12px] leading-[1.5] font-medium text-white'>
+                    <span className='font-poppins typo-body-sm-medium leading-[1.5] text-white'>
                         {currentLocation || 'Select location'}
                     </span>
                     <ChevronDown size={14} className='text-white' />
@@ -69,10 +69,10 @@ const SearchBar = ({ onLocationChange, currentLocation = '' }: SearchBarProps) =
                     onChange={(e) => setQuery(e.target.value)}
                     type='text'
                     placeholder='Search for items'
-                    className='w-full h-[49px] pl-6 pr-[50px] bg-white border border-gray-300 rounded-md outline-none text-[14px] text-gray-900 font-poppins placeholder:text-gray-500'
+                    className='w-full h-[49px] pl-6 pr-[50px] bg-white border border-gray-300 rounded-md outline-none typo-body-md-regular text-gray-900 font-poppins placeholder:text-gray-500'
                 />
                 <div className='h-[49px] w-[49px] absolute top-0 right-0 bg-background-tinted rounded-r-md flex items-center justify-center'>
-                    <Image className='h-6 w-6 cursor-pointer' src={'/search.svg'} alt='search' height={24} width={24} />
+                    <Image className='h-6 w-6 cursor-pointer' src={'/icons/ui/search.svg'} alt='search' height={24} width={24} />
                 </div>
             </div>
         </div>

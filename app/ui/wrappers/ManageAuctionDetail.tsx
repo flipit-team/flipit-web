@@ -2,6 +2,7 @@
 import Image from 'next/image';
 import React, {useState, useEffect, useCallback} from 'react';
 import {useRouter} from 'next/navigation';
+import {ChevronLeft} from 'lucide-react';
 import {formatToNaira, timeAgo} from '~/utils/helpers';
 import {useAppContext} from '~/contexts/AppContext';
 import UsedBadge from '../common/badges/UsedBadge';
@@ -75,7 +76,7 @@ const dummyOwnerAuction: AuctionData = {
     title: 'MacBook Pro M2 16" - Space Gray',
     description:
         'Excellent condition MacBook Pro with M2 Max chip. Used for less than 6 months. Comes with original box, charger, and Apple Care+ valid until 2025. Perfect for professionals and creatives. No scratches or dents, battery health at 100%.',
-    imageUrls: ['/placeholder-product.svg', '/placeholder-product.svg', '/placeholder-product.svg'],
+    imageUrls: ['/images/placeholders/placeholder-product.svg', '/images/placeholders/placeholder-product.svg', '/images/placeholders/placeholder-product.svg'],
     condition: 'Like New',
     brand: 'Apple',
     location: 'LA-IKJ, LA',
@@ -98,7 +99,7 @@ const dummyOwnerAuction: AuctionData = {
     auctioneer: {
         id: 201,
         name: 'You',
-        avatar: '/placeholder-avatar.svg',
+        avatar: '/images/placeholders/placeholder-avatar.svg',
         rating: 4.8,
         verified: true,
         joinedDate: '2023-06-15',
@@ -113,7 +114,7 @@ const dummyBidderAuction: AuctionData = {
     auctioneer: {
         id: 202,
         name: 'Sarah Johnson',
-        avatar: '/placeholder-avatar.svg',
+        avatar: '/images/placeholders/placeholder-avatar.svg',
         rating: 4.9,
         verified: true,
         joinedDate: '2022-03-10',
@@ -129,7 +130,7 @@ const dummyBids: Bid[] = [
         bidder: {
             id: 301,
             name: 'John D.',
-            avatar: '/placeholder-avatar.svg',
+            avatar: '/images/placeholders/placeholder-avatar.svg',
             rating: 4.7,
             verified: true,
             joinedDate: '2023-01-15'
@@ -143,7 +144,7 @@ const dummyBids: Bid[] = [
         bidder: {
             id: 302,
             name: 'Emily S.',
-            avatar: '/placeholder-avatar.svg',
+            avatar: '/images/placeholders/placeholder-avatar.svg',
             rating: 4.5,
             verified: true,
             joinedDate: '2023-05-20'
@@ -157,7 +158,7 @@ const dummyBids: Bid[] = [
         bidder: {
             id: 303,
             name: 'Michael B.',
-            avatar: '/placeholder-avatar.svg',
+            avatar: '/images/placeholders/placeholder-avatar.svg',
             rating: 4.3,
             verified: false,
             joinedDate: '2024-01-10'
@@ -171,7 +172,7 @@ const dummyBids: Bid[] = [
         bidder: {
             id: 304,
             name: 'Lisa W.',
-            avatar: '/placeholder-avatar.svg',
+            avatar: '/images/placeholders/placeholder-avatar.svg',
             rating: 4.9,
             verified: true,
             joinedDate: '2022-11-05'
@@ -185,7 +186,7 @@ const dummyBids: Bid[] = [
         bidder: {
             id: 305,
             name: 'David K.',
-            avatar: '/placeholder-avatar.svg',
+            avatar: '/images/placeholders/placeholder-avatar.svg',
             rating: 4.6,
             verified: true,
             joinedDate: '2023-08-22'
@@ -223,7 +224,6 @@ const ManageAuctionDetail = ({auction: propAuction, bids: propBids, isOwner = tr
         if (auction.status === 'ACTIVE') {
             const interval = setInterval(() => {
                 // Simulate new bid coming in (in real app, this would be from WebSocket or polling)
-                console.log('Checking for new bids...');
                 // In production, you'd call: refetchBids()
             }, 10000);
 
@@ -252,7 +252,7 @@ const ManageAuctionDetail = ({auction: propAuction, bids: propBids, isOwner = tr
                 bidder: {
                     id: 999,
                     name: 'You',
-                    avatar: '/placeholder-avatar.svg',
+                    avatar: '/images/placeholders/placeholder-avatar.svg',
                     rating: 4.5,
                     verified: true,
                     joinedDate: '2023-01-01'
@@ -349,15 +349,13 @@ const ManageAuctionDetail = ({auction: propAuction, bids: propBids, isOwner = tr
             playNote(659.25, now + 0.15, 0.15); // E5
             playNote(783.99, now + 0.3, 0.3); // G5
         } catch (error) {
-            console.log('Could not play celebration sound:', error);
+            // Could not play celebration sound
         }
     }, []);
 
     // Navigate to transaction page when auction ends (for winner)
     const handleAuctionEnd = useCallback(() => {
         setAuctionEnded(true);
-        console.log('Auction ended! Reserve met:', reserveMet);
-
         // If bidder view and user is winning, celebrate!
         if (!isOwner && bids.length > 0 && bids[0].bidder.name === 'You') {
             setTimeout(() => {
@@ -408,7 +406,17 @@ const ManageAuctionDetail = ({auction: propAuction, bids: propBids, isOwner = tr
 
     return (
         <>
-            <div className='grid-sizes grid grid-cols-[712px_1fr] xs:grid-cols-1 gap-6 h-full mt-10 xs:mb-6 px-[120px] xs:px-4'>
+            {/* Mobile Header */}
+            <div className='hidden xs:flex items-center justify-between px-4 pt-4 pb-2'>
+                <div className='flex items-center gap-3'>
+                    <button onClick={() => router.back()} className='w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center'>
+                        <ChevronLeft size={20} className='text-text_one' />
+                    </button>
+                    <h1 className='font-poppins typo-heading-md-semibold text-text_one'>Manage your auction</h1>
+                </div>
+            </div>
+
+            <div className='grid-sizes grid grid-cols-[2fr_1fr] xs:grid-cols-1 gap-6 h-full mt-10 xs:mt-0 xs:mb-6 xs:pb-24 px-[120px] xs:px-4 xs:bg-[#FFFFF0]'>
                 {/* Left Column - Image and Details */}
                 <div className='p-6 xs:p-0 shadow-lg xs:shadow-none bg-white rounded-lg'>
                     <ImageGallery
@@ -427,15 +435,15 @@ const ManageAuctionDetail = ({auction: propAuction, bids: propBids, isOwner = tr
                     {/* View and Share Stats */}
                     <div className='flex items-center justify-between mt-4'>
                         <div className='flex items-center gap-1'>
-                            <Image src={'/eye.svg'} height={22} width={22} alt='views' className='h-[22px] w-[22px]' />
+                            <Image src={'/icons/ui/eye.svg'} height={22} width={22} alt='views' className='h-[22px] w-[22px]' />
                             <p className='typo-body_mr text-text_four'>{auction.views} views</p>
                         </div>
                         <div className='flex items-center gap-3'>
                             <p className='typo-body_mr text-text_one'>Share auction</p>
                             <div className='flex items-center gap-3'>
-                                <Image src={'/facebook.svg'} height={24} width={24} alt='facebook' className='h-[24px] w-[24px] cursor-pointer' />
-                                <Image src={'/whatsapp.svg'} height={24} width={24} alt='whatsapp' className='h-[24px] w-[24px] cursor-pointer' />
-                                <Image src={'/x.svg'} height={24} width={24} alt='twitter' className='h-[24px] w-[24px] cursor-pointer' />
+                                <Image src={'/icons/social/facebook.svg'} height={24} width={24} alt='facebook' className='h-[24px] w-[24px] cursor-pointer' />
+                                <Image src={'/icons/social/whatsapp.svg'} height={24} width={24} alt='whatsapp' className='h-[24px] w-[24px] cursor-pointer' />
+                                <Image src={'/icons/social/x.svg'} height={24} width={24} alt='twitter' className='h-[24px] w-[24px] cursor-pointer' />
                             </div>
                         </div>
                     </div>
@@ -472,28 +480,28 @@ const ManageAuctionDetail = ({auction: propAuction, bids: propBids, isOwner = tr
                                     No bids yet. Be the first to bid!
                                 </div>
                             ) : (
-                                <div className='space-y-4'>
+                                <div className='space-y-4 xs:space-y-3'>
                                     {bids.map((bid) => (
                                         <div
                                             key={bid.id}
-                                            className={`p-4 rounded-lg border ${
+                                            className={`p-4 xs:p-3 rounded-lg border ${
                                                 bid.isWinning ? 'border-primary bg-surface-primary-16' : 'border-border_gray'
                                             }`}
                                         >
                                             <div className='flex items-start justify-between'>
-                                                <div className='flex gap-3'>
+                                                <div className='flex gap-3 xs:gap-2'>
                                                     <Image
                                                         src={bid.bidder.avatar}
                                                         alt={bid.bidder.name}
                                                         width={48}
                                                         height={48}
-                                                        className='rounded-full w-12 h-12 object-cover'
+                                                        className='rounded-full w-12 h-12 xs:w-10 xs:h-10 object-cover'
                                                     />
                                                     <div>
                                                         <div className='flex items-center gap-2'>
                                                             <span className='typo-body_lm'>{bid.bidder.name}</span>
                                                             {bid.bidder.verified && (
-                                                                <Image src={'/verified.svg'} alt='verified' width={16} height={16} />
+                                                                <Image src={'/icons/status/verified.svg'} alt='verified' width={16} height={16} />
                                                             )}
                                                             {bid.isWinning && (
                                                                 <span className='px-2 py-0.5 bg-primary text-white rounded typo-body_sr'>
@@ -667,7 +675,7 @@ const ManageAuctionDetail = ({auction: propAuction, bids: propBids, isOwner = tr
 
                                             <RegularButton
                                                 text='Complete Transaction'
-                                                action={() => router.push(`/transaction/1?type=auction&auctionId=${auction.id}`)}
+                                                action={() => router.push('/offers')}
                                             />
                                         </div>
                                     ) : (
@@ -785,7 +793,7 @@ const ManageAuctionDetail = ({auction: propAuction, bids: propBids, isOwner = tr
 
                                                     <RegularButton
                                                         text='Proceed to Payment'
-                                                        action={() => router.push(`/transaction/1?type=auction&auctionId=${auction.id}`)}
+                                                        action={() => router.push('/offers')}
                                                     />
 
                                                     <div className='p-3 bg-surface-secondary rounded-lg'>
@@ -904,7 +912,7 @@ const ManageAuctionDetail = ({auction: propAuction, bids: propBids, isOwner = tr
 
             {/* Success Modal */}
             {showSuccessModal && (
-                <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50'>
+                <div className='fixed inset-0 z-dropdown flex items-center justify-center bg-black bg-opacity-50'>
                     <div className='bg-white rounded-lg p-6 max-w-md w-full mx-4'>
                         <Success
                             onClose={() => setShowSuccessModal(false)}
@@ -916,7 +924,7 @@ const ManageAuctionDetail = ({auction: propAuction, bids: propBids, isOwner = tr
 
             {/* Error Modal */}
             {showErrorModal && (
-                <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50'>
+                <div className='fixed inset-0 z-dropdown flex items-center justify-center bg-black bg-opacity-50'>
                     <div className='bg-white rounded-lg p-6 max-w-md w-full mx-4'>
                         <Error
                             onClose={() => setShowErrorModal(false)}

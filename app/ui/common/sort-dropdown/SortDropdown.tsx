@@ -34,7 +34,7 @@ const SortDropdown: React.FC<SortDropdownProps> = ({options, defaultSelection = 
                 >
                     <span>{selectedSort}</span>
                     <Image
-                        src='/arrow-down-gray.svg'
+                        src='/icons/ui/arrow-down.svg'
                         height={16}
                         width={16}
                         alt='dropdown'
@@ -42,7 +42,7 @@ const SortDropdown: React.FC<SortDropdownProps> = ({options, defaultSelection = 
                     />
                 </button>
                 {isDropdownOpen && (
-                    <div className='absolute top-full left-0 right-0 mt-1 bg-white border border-border_gray rounded shadow-lg z-50'>
+                    <div className='absolute top-full left-0 right-0 mt-1 bg-white border border-border_gray rounded shadow-lg z-dropdown'>
                         {options.map((option) => (
                             <button
                                 key={option.value}

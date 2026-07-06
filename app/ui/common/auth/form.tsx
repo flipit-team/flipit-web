@@ -40,7 +40,7 @@ const Form = () => {
         const newParams = new URLSearchParams(searchParams.toString());
         newParams.set('auth', param);
         setTimeout(() => {
-            router.replace(`/?${newParams.toString()}`);
+            router.replace(`/login?${newParams.toString()}`);
         }, 0);
     };
 
@@ -105,7 +105,6 @@ const Form = () => {
                 const lastName = nameParts.slice(1).join(' ') || '';
 
                 const result = await signup({
-                    username: email,
                     firstName: firstName,
                     lastName: lastName,
                     email: email,
@@ -134,9 +133,9 @@ const Form = () => {
 
     const getIcon = (condition?: boolean) => {
         return condition ? (
-            <Image src={'/green-check.svg'} height={20} width={20} alt='check' className='h-[20px] w-[20px]' />
+            <Image src={'/icons/status/green-check.svg'} height={20} width={20} alt='check' className='h-[20px] w-[20px]' />
         ) : (
-            <Image src={'/red-check.svg'} height={20} width={20} alt='check' className='h-[20px] w-[20px]' />
+            <Image src={'/icons/status/red-check.svg'} height={20} width={20} alt='check' className='h-[20px] w-[20px]' />
         );
     };
 
@@ -165,23 +164,37 @@ const Form = () => {
                 )}
 
                 <h1 className='font-poppins font-bold text-[24px] leading-[1.6] text-primary mb-1 xs:text-center'>
-                    {isLogin ? 'Welcome Back !' : 'Create an account'}
+                    <span className='xs:hidden'>{isLogin ? 'Welcome Back !' : 'Create an account'}</span>
+                    <span className='hidden xs:inline'>{isLogin ? 'Sign In' : 'Sign Up'}</span>
                 </h1>
 
                 {isLogin && (
-                    <p className='font-poppins font-medium text-[16px] leading-[1.4] text-text_two mb-[32px] xs:text-center'>
-                        Log in to continue shopping for items
-                    </p>
+                    <>
+                        <p className='font-poppins typo-body-lg-medium leading-[1.4] text-text_two mb-[32px] xs:hidden'>
+                            Log in to continue shopping for items
+                        </p>
+                        <div className='hidden xs:flex items-center justify-center gap-1 mb-[32px]'>
+                            <p className='font-poppins typo-body-lg-regular leading-[1.2] text-text_one'>
+                                Don&apos;t have an account?
+                            </p>
+                            <p
+                                onClick={() => setIsLogin(false)}
+                                className='font-poppins typo-body-lg-bold leading-[1.2] text-primary cursor-pointer'
+                            >
+                                Create one
+                            </p>
+                        </div>
+                    </>
                 )}
 
                 {!isLogin && (
                     <div className='flex items-center gap-1 mb-[32px] xs:justify-center'>
-                        <p className='font-poppins text-[16px] leading-[1.2] text-text_one'>
+                        <p className='font-poppins typo-body-lg-regular leading-[1.2] text-text_one'>
                             Already have an account?
                         </p>
                         <p
                             onClick={() => setIsLogin(true)}
-                            className='font-poppins font-bold text-[16px] leading-[1.2] text-primary cursor-pointer'
+                            className='font-poppins typo-body-lg-bold leading-[1.2] text-primary cursor-pointer'
                         >
                             Sign In
                         </p>
@@ -216,7 +229,7 @@ const Form = () => {
                                 />
                                 <div className='flex justify-end mt-[10px]'>
                                     <span
-                                        className='font-poppins font-semibold text-[16px] leading-[1.6] text-primary cursor-pointer'
+                                        className='font-poppins typo-body-lg-semibold leading-[1.6] text-primary cursor-pointer'
                                         onClick={() => pushParam('reset')}
                                     >
                                         Forgot Password
@@ -292,24 +305,40 @@ const Form = () => {
 
                 <div className='flex items-center gap-[10px] my-[18px]'>
                     <hr className='flex-1 border-border_gray' />
-                    <span className='font-poppins text-[16px] text-black'>OR</span>
+                    <span className='font-poppins typo-body-lg-regular text-black'>OR</span>
                     <hr className='flex-1 border-border_gray' />
                 </div>
 
-                <div className='flex flex-col gap-4'>
-                    <AuthButton title='Continue with Google' icon='/google-icon.svg' border onClick={loginWithGoogle} />
-                    <AuthButton title='Continue with Facebook' icon='/facebook-icon.svg' border link='/' />
+                {/* Desktop: full-width text buttons */}
+                <div className='flex flex-col gap-4 xs:hidden'>
+                    <AuthButton title='Continue with Google' icon='/icons/social/google-icon.svg' border onClick={loginWithGoogle} />
+                    <AuthButton title='Continue with Facebook' icon='/icons/social/facebook-icon.svg' border link='/' />
+                </div>
+                {/* Mobile: circular icon-only buttons */}
+                <div className='hidden xs:flex items-center justify-center gap-4'>
+                    <div
+                        onClick={loginWithGoogle}
+                        className='w-[48px] h-[48px] rounded-full border border-border_gray flex items-center justify-center cursor-pointer'
+                    >
+                        <Image src='/icons/social/google-icon.svg' alt='Google' height={24} width={24} className='h-6 w-6' />
+                    </div>
+                    <div
+                        onClick={() => { window.location.href = '/'; }}
+                        className='w-[48px] h-[48px] rounded-full border border-border_gray flex items-center justify-center cursor-pointer'
+                    >
+                        <Image src='/icons/social/facebook-icon.svg' alt='Facebook' height={24} width={24} className='h-6 w-6' />
+                    </div>
                 </div>
             </div>
 
             {isLogin && (
-                <div className='flex items-center justify-center gap-1 mt-[40px] xs:mt-[24px]'>
-                    <p className='font-poppins text-[16px] leading-[1.2] text-text_one'>
-                        Dont have an account?
+                <div className='flex items-center justify-center gap-1 mt-[40px] xs:hidden'>
+                    <p className='font-poppins typo-body-lg-regular leading-[1.2] text-text_one'>
+                        Don&apos;t have an account?
                     </p>
                     <p
                         onClick={() => setIsLogin(false)}
-                        className='font-poppins font-bold text-[16px] leading-[1.2] text-primary cursor-pointer'
+                        className='font-poppins typo-body-lg-bold leading-[1.2] text-primary cursor-pointer'
                     >
                         Create one
                     </p>

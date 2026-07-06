@@ -3,8 +3,7 @@ import {useSearchParams} from 'next/navigation';
 import React, {useState} from 'react';
 import Image from 'next/image';
 import StarRating from '../../common/star-rating/StarRating';
-// import {ReviewService} from '~/services/review.service';
-// import {ReviewRequest} from '~/utils/interface';
+import ReviewsService from '~/services/reviews.service';
 
 interface LeaveReviewModalProps {
     title: string;
@@ -12,7 +11,7 @@ interface LeaveReviewModalProps {
     onSubmit?: (rating: number, comment: string) => void;
     itemId?: number;
     sellerId?: number;
-    transactionType?: 'PURCHASE' | 'AUCTION_WIN';
+    transactionType?: 'PURCHASE' | 'CASH_ONLY';
 }
 
 const LeaveReviewModal: React.FC<LeaveReviewModalProps> = ({
@@ -44,23 +43,18 @@ const LeaveReviewModal: React.FC<LeaveReviewModalProps> = ({
                 // Use custom submit handler if provided
                 onSubmit(rating, comment);
             } else {
-                // Use new API service
-                // const reviewData: ReviewRequest = {
-                //     rating,
-                //     comment,
-                //     transactionType,
-                //     ...(itemId && { itemId }),
-                //     ...(sellerId && { sellerId })
-                // };
+                const {data, error} = await ReviewsService.createReview({
+                    rating,
+                    message: comment,
+                    userId: sellerId || 0,
+                    itemId: itemId || 0,
+                });
 
-                // const result = await ReviewService.createReview(reviewData);
-
-                // if (result.success) {
-                    alert('Review submitted successfully!');
+                if (!error && data) {
                     onClose();
-                // } else {
-                //     alert('Failed to submit review. Please try again.');
-                // }
+                } else {
+                    alert('Failed to submit review. Please try again.');
+                }
             }
         } catch (error) {
             console.error('Error submitting review:', error);

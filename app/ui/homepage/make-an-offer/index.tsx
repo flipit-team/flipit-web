@@ -8,20 +8,15 @@ import RegularButton from '~/ui/common/buttons/RegularButton';
 import {formatToNaira} from '~/utils/helpers';
 import {Item} from '~/utils/interface';
 import {useToast} from '~/contexts/ToastContext';
-
-const options = [
-    {id: 1, title: 'iPhone 12 Promax', img: '/camera.png'},
-    {id: 2, title: 'Sony Camera', img: '/camera.png'}
-];
+import {PlusIcon} from '~/ui/icons';
 
 interface Props {
     item?: Item | null;
     onClose: () => void;
-    onSubmit: (payload: any) => void;
 }
 
 const MakeAnOffer = (props: Props) => {
-    const {item, onClose, onSubmit} = props;
+    const {item, onClose} = props;
     const router = useRouter();
     const {user} = useAppContext();
     const {showError, showSuccess} = useToast();
@@ -50,7 +45,7 @@ const MakeAnOffer = (props: Props) => {
             }
 
             try {
-                const res = await fetch(`/api/items/get-user-items?userId=${user.userId}`, {
+                const res = await fetch(`/api/items/user/${user.userId}`, {
                     cache: 'no-store'
                 });
 
@@ -102,8 +97,8 @@ const MakeAnOffer = (props: Props) => {
         // Build payload based on selections
         const payload: any = {
             itemId: item?.id,
-            userId: user?.userId,
-            withCash: withCash
+            withCash: withCash,
+            offerValid: true
         };
 
         if (withCash) {
@@ -122,7 +117,7 @@ const MakeAnOffer = (props: Props) => {
         }
 
         try {
-            const res = await fetch('/api/bids/create', {
+            const res = await fetch('/api/v1/offer', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -170,7 +165,7 @@ const MakeAnOffer = (props: Props) => {
             <div className='w-[1096px] flex flex-col justify-center items-center xs:w-full xs:px-4'>
                 <div className='w-full xs:hidden'>
                     <Image
-                        src={'/close-white.svg'}
+                        src={'/icons/ui/close-white.svg'}
                         height={45}
                         width={45}
                         alt='bell'
@@ -181,7 +176,7 @@ const MakeAnOffer = (props: Props) => {
                 <div className='h-[625px] w-full bg-white rounded-lg p-[50px] xs:p-0 xs:h-max xs:w-full xs:py-[32px]'>
                     <div className='hidden xs:block'>
                         <Image
-                            src={'/cancel.svg'}
+                            src={'/icons/ui/cancel.svg'}
                             height={16}
                             width={16}
                             alt='bell'
@@ -198,7 +193,7 @@ const MakeAnOffer = (props: Props) => {
                         </div>
                         <div className='grid grid-cols-[443px_1fr] xs:flex xs:flex-col gap-[44px] xs:gap-[22px] '>
                             <Image
-                                src={item?.imageUrls?.[0] || '/placeholder-product.svg'}
+                                src={item?.imageUrls?.[0] || '/images/placeholders/placeholder-product.svg'}
                                 height={439}
                                 width={443}
                                 alt='picture'
@@ -272,17 +267,17 @@ const MakeAnOffer = (props: Props) => {
                                                         <Image
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
-                                                                setSelectedOption(options[0]);
+                                                                setSelectedOption(undefined);
                                                                 setIsOpen(false);
                                                             }}
-                                                            src={'/cancel-circle.svg'}
+                                                            src={'/icons/ui/cancel-circle.svg'}
                                                             height={20}
                                                             width={20}
                                                             alt='cancel'
                                                         />
                                                     ) : (
                                                         <Image
-                                                            src={'/chevron-down.svg'}
+                                                            src={'/icons/ui/chevron-down.svg'}
                                                             height={14}
                                                             width={14}
                                                             alt='chevron down'
@@ -303,7 +298,7 @@ const MakeAnOffer = (props: Props) => {
                                                                         id: option.id,
                                                                         img:
                                                                             option.imageUrls?.[0] ||
-                                                                            '/placeholder-product.svg',
+                                                                            '/images/placeholders/placeholder-product.svg',
                                                                         title: option.title
                                                                     });
                                                                     setIsOpen(false);
@@ -312,7 +307,7 @@ const MakeAnOffer = (props: Props) => {
                                                                 <Image
                                                                     src={
                                                                         option.imageUrls?.[0] ||
-                                                                        '/placeholder-product.svg'
+                                                                        '/images/placeholders/placeholder-product.svg'
                                                                     }
                                                                     alt={option.title}
                                                                     width={54}
@@ -329,19 +324,7 @@ const MakeAnOffer = (props: Props) => {
                                                         href={'/post-an-item/entry'}
                                                         className='flex items-center justify-center gap-2 w-full mt-4 px-4 py-2 rounded-lg border-2 border-primary bg-white hover:bg-primary hover:text-white transition-colors typo-body_lm text-primary sticky bottom-0'
                                                     >
-                                                        <svg
-                                                            className='w-5 h-5'
-                                                            fill='none'
-                                                            stroke='currentColor'
-                                                            viewBox='0 0 24 24'
-                                                        >
-                                                            <path
-                                                                strokeLinecap='round'
-                                                                strokeLinejoin='round'
-                                                                strokeWidth={2}
-                                                                d='M12 4v16m8-8H4'
-                                                            />
-                                                        </svg>
+                                                        <PlusIcon className='w-5 h-5' />
                                                         Add New Item
                                                     </Link>
                                                 </div>

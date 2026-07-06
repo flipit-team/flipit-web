@@ -23,14 +23,7 @@ export class OffersService {
     );
   }
 
-  // Get user's offers (DEPRECATED - use getUserOffersSent or getUserOffersReceived)
-  static async getUserOffers(userId: number) {
-    return handleApiCall(() =>
-      apiClient.get<OfferDTO[]>(`/v1/offer/user/${userId}/offers`, { requireAuth: true })
-    );
-  }
-
-  // Get offers sent by user - NEW
+  // Get offers sent by user
   static async getUserOffersSent(userId: number) {
     return handleApiCall(() =>
       apiClient.get<OfferDTO[]>(`/v1/offer/user/${userId}/sent`, { requireAuth: true })
@@ -51,17 +44,17 @@ export class OffersService {
     );
   }
 
-  // Accept offer (if endpoint exists)
+  // Accept offer
   static async acceptOffer(offerId: number) {
     return handleApiCall(() =>
-      apiClient.put<OfferDTO>(`/offer/${offerId}/accept`, {}, { requireAuth: true })
+      apiClient.post<OfferDTO>(`/v1/offer/${offerId}/accept`, {}, { requireAuth: true })
     );
   }
 
-  // Reject offer (if endpoint exists)
+  // Reject offer
   static async rejectOffer(offerId: number) {
     return handleApiCall(() =>
-      apiClient.put<OfferDTO>(`/offer/${offerId}/reject`, {}, { requireAuth: true })
+      apiClient.post<OfferDTO>(`/v1/offer/${offerId}/reject`, {}, { requireAuth: true })
     );
   }
 }

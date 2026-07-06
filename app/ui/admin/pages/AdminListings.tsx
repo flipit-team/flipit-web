@@ -7,7 +7,7 @@ import Pagination from '../components/Pagination';
 import StatusBadge from '../components/StatusBadge';
 import {AdminService} from '~/services';
 import {ListingsSummaryDTO, ListingDTO} from '~/types/api';
-import {ListBulletIcon, PlayIcon, PauseIcon, ClockIcon} from '@heroicons/react/24/outline';
+import {List, Play, Pause, Clock} from 'lucide-react';
 
 const columns = [
     {key: 'listingId', label: 'Listing ID'},
@@ -74,7 +74,7 @@ export default function AdminListings() {
               {
                   title: 'Active Listings',
                   amount: summaryData.activeListings.toLocaleString(),
-                  icon: <PlayIcon className='h-6 w-6 text-primary' />,
+                  icon: <Play className='h-6 w-6 text-primary' />,
                   trend: {
                       value: Math.abs(summaryData.activeListingsChangePercent),
                       isPositive: summaryData.activeListingsChangePercent >= 0
@@ -83,7 +83,7 @@ export default function AdminListings() {
               {
                   title: 'Sold Listings',
                   amount: summaryData.soldListings.toLocaleString(),
-                  icon: <PauseIcon className='h-6 w-6 text-primary' />,
+                  icon: <Pause className='h-6 w-6 text-primary' />,
                   trend: {
                       value: Math.abs(summaryData.soldListingsChangePercent),
                       isPositive: summaryData.soldListingsChangePercent >= 0
@@ -92,7 +92,7 @@ export default function AdminListings() {
               {
                   title: 'Pending Listings',
                   amount: summaryData.pendingListings.toLocaleString(),
-                  icon: <ClockIcon className='h-6 w-6 text-primary' />,
+                  icon: <Clock className='h-6 w-6 text-primary' />,
                   trend: {
                       value: Math.abs(summaryData.pendingListingsChangePercent),
                       isPositive: summaryData.pendingListingsChangePercent >= 0

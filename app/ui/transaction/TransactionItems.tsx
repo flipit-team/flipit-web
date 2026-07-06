@@ -5,6 +5,7 @@ import {TransactionDTO} from '~/types/transaction';
 import {formatToNaira} from '~/utils/helpers';
 import UsedBadge from '../common/badges/UsedBadge';
 import StarRating from '../common/star-rating/StarRating';
+import {SwapVerticalIcon} from '../icons';
 
 interface Props {
     transaction: TransactionDTO;
@@ -12,9 +13,10 @@ interface Props {
 }
 
 const TransactionItems = ({transaction, userRole}: Props) => {
-    const sellerItem = transaction.sellerItem;
-    const buyerItem = transaction.buyerItem;
-    const showBuyerItem = transaction.transactionType === 'ITEM_EXCHANGE' || transaction.transactionType === 'ITEM_PLUS_CASH';
+    // Item details removed from TransactionDTO — use placeholder data
+    const sellerItem = {title: 'Item', description: transaction.description || '', imageUrls: [] as string[], cashAmount: transaction.amount || 0, condition: '', brand: ''};
+    const buyerItem = {title: 'Item', description: '', imageUrls: [] as string[], cashAmount: 0, condition: '', brand: ''};
+    const showBuyerItem = transaction.type === 'SWAP' || transaction.type === 'SWAP_WITH_CASH';
 
     return (
         <div className='shadow-lg rounded-lg bg-white overflow-hidden'>
@@ -34,7 +36,7 @@ const TransactionItems = ({transaction, userRole}: Props) => {
                         <div className='border border-border_gray rounded-lg overflow-hidden'>
                             <div className='relative w-full h-[200px] xs:h-[180px]'>
                                 <Image
-                                    src={sellerItem.imageUrls?.[0] || '/placeholder-product.svg'}
+                                    src={sellerItem.imageUrls?.[0] || '/images/placeholders/placeholder-product.svg'}
                                     alt={sellerItem.title}
                                     fill
                                     className='object-cover'
@@ -63,7 +65,7 @@ const TransactionItems = ({transaction, userRole}: Props) => {
                             </p>
                             <div className='flex items-center gap-3'>
                                 <Image
-                                    src={transaction.seller.profileImageUrl || '/placeholder-avatar.svg'}
+                                    src={transaction.seller.profileImageUrl || '/images/placeholders/placeholder-avatar.svg'}
                                     alt={transaction.seller.firstName}
                                     width={40}
                                     height={40}
@@ -96,38 +98,14 @@ const TransactionItems = ({transaction, userRole}: Props) => {
                                 <div className='flex items-center gap-2'>
                                     <div className='h-[1px] w-12 bg-border_gray'></div>
                                     <div className='w-8 h-8 rounded-full bg-surface-primary-10 flex items-center justify-center'>
-                                        <svg
-                                            className='w-5 h-5 text-primary'
-                                            fill='none'
-                                            stroke='currentColor'
-                                            viewBox='0 0 24 24'
-                                        >
-                                            <path
-                                                strokeLinecap='round'
-                                                strokeLinejoin='round'
-                                                strokeWidth={2}
-                                                d='M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4'
-                                            />
-                                        </svg>
+                                        <SwapVerticalIcon className='w-5 h-5 text-primary' />
                                     </div>
                                     <div className='h-[1px] w-12 bg-border_gray'></div>
                                 </div>
                             </div>
                             <div className='xs:hidden flex items-center justify-center'>
                                 <div className='w-12 h-12 rounded-full bg-surface-primary-10 flex items-center justify-center'>
-                                    <svg
-                                        className='w-6 h-6 text-primary'
-                                        fill='none'
-                                        stroke='currentColor'
-                                        viewBox='0 0 24 24'
-                                    >
-                                        <path
-                                            strokeLinecap='round'
-                                            strokeLinejoin='round'
-                                            strokeWidth={2}
-                                            d='M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4'
-                                        />
-                                    </svg>
+                                    <SwapVerticalIcon className='w-6 h-6 text-primary' />
                                 </div>
                             </div>
 
@@ -143,7 +121,7 @@ const TransactionItems = ({transaction, userRole}: Props) => {
                                 <div className='border border-border_gray rounded-lg overflow-hidden'>
                                     <div className='relative w-full h-[200px] xs:h-[180px]'>
                                         <Image
-                                            src={buyerItem.imageUrls?.[0] || '/placeholder-product.svg'}
+                                            src={buyerItem.imageUrls?.[0] || '/images/placeholders/placeholder-product.svg'}
                                             alt={buyerItem.title}
                                             fill
                                             className='object-cover'
@@ -174,7 +152,7 @@ const TransactionItems = ({transaction, userRole}: Props) => {
                                     </p>
                                     <div className='flex items-center gap-3'>
                                         <Image
-                                            src={transaction.buyer.profileImageUrl || '/placeholder-avatar.svg'}
+                                            src={transaction.buyer.profileImageUrl || '/images/placeholders/placeholder-avatar.svg'}
                                             alt={transaction.buyer.firstName}
                                             width={40}
                                             height={40}
@@ -203,7 +181,7 @@ const TransactionItems = ({transaction, userRole}: Props) => {
                     )}
 
                     {/* Cash Only Purchase - Show Buyer Info */}
-                    {transaction.transactionType === 'CASH_ONLY' && (
+                    {transaction.type === 'CASH_ONLY' && (
                         <div className='space-y-4'>
                             <h3 className='typo-body_lm text-text_one'>
                                 {userRole === 'buyer' ? 'You' : 'Buyer'}
@@ -212,7 +190,7 @@ const TransactionItems = ({transaction, userRole}: Props) => {
                             <div className='border border-border_gray rounded-lg p-4'>
                                 <div className='flex items-center gap-3 mb-4'>
                                     <Image
-                                        src={transaction.buyer.profileImageUrl || '/placeholder-avatar.svg'}
+                                        src={transaction.buyer.profileImageUrl || '/images/placeholders/placeholder-avatar.svg'}
                                         alt={transaction.buyer.firstName}
                                         width={48}
                                         height={48}
@@ -236,11 +214,11 @@ const TransactionItems = ({transaction, userRole}: Props) => {
                                     )}
                                 </div>
 
-                                {transaction.cashAmount && (
+                                {transaction.amount && (
                                     <div className='bg-surface-primary-10 rounded-lg p-4'>
                                         <p className='typo-body_sr text-text_four mb-1'>Purchase Amount</p>
                                         <p className='typo-heading_sm text-primary'>
-                                            {formatToNaira(transaction.cashAmount)}
+                                            {formatToNaira(transaction.amount)}
                                         </p>
                                     </div>
                                 )}
@@ -250,7 +228,7 @@ const TransactionItems = ({transaction, userRole}: Props) => {
                 </div>
 
                 {/* Cash Amount for Item + Cash Exchange */}
-                {transaction.transactionType === 'ITEM_PLUS_CASH' && transaction.cashAmount && (
+                {transaction.type === 'SWAP_WITH_CASH' && transaction.amount && (
                     <div className='mt-6 bg-surface-primary-10 rounded-lg p-4'>
                         <div className='flex items-center justify-between'>
                             <div>
@@ -259,7 +237,7 @@ const TransactionItems = ({transaction, userRole}: Props) => {
                                     {userRole === 'buyer' ? 'You are paying' : 'Buyer is paying'}
                                 </p>
                             </div>
-                            <p className='typo-heading_sm text-primary'>{formatToNaira(transaction.cashAmount)}</p>
+                            <p className='typo-heading_sm text-primary'>{formatToNaira(transaction.amount)}</p>
                         </div>
                     </div>
                 )}

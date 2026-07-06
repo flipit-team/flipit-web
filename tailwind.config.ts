@@ -27,7 +27,7 @@ const config: Config = {
                     coral: '#FF674B',
                     navy: '#092446',
                 },
-                
+
                 // Legacy text colors (kept for backward compatibility)
                 text_one: '#333333',
                 text_two: '#4D4D4D',
@@ -35,25 +35,31 @@ const config: Config = {
                 text_four: '#999999',
                 white: '#ffffff',
                 border_gray: '#e6e6e6',
-                
+
                 // New semantic text colors
                 text: {
                     primary: '#333333',
                     secondary: '#4D4D4D',
                     tertiary: '#666666',
                     muted: '#999999',
+                    'muted-alt': '#A49E9E',
                     disabled: '#B6B9C8',
                     accent: '#87928A',
                     pink: '#d7b0b0',
                     gray: '#6d6d6d',
                 },
-                
+
                 // Status colors
                 success: '#04A204',
+                'success-dark': '#08973F',
                 warning: '#e47208',
+                'warning-dark': '#E46A2D',
                 error: '#e40808',
+                'error-dark': '#DC2626',
                 info: '#007aff',
-                
+                'info-light': '#00BBFF',
+                'rating': '#E4A300',
+
                 // Background colors
                 background: {
                     primary: '#ffffff',
@@ -62,7 +68,7 @@ const config: Config = {
                     overlay: 'rgba(0, 0, 0, 0.7)',
                     tinted: '#e0f0f0',
                 },
-                
+
                 // Surface colors for components
                 surface: {
                     primary: 'rgba(0, 95, 115, 0.05)',
@@ -76,29 +82,50 @@ const config: Config = {
                     secondary: 'rgba(228, 180, 8, 0.06)',
                     light: '#D4E4E7',
                     cream: '#FAE6D3',
+                    teal: '#C9EBF4',
+                    'teal-light': '#E0F4FA',
+                    success: '#C9FFDF',
+                    'success-light': '#E8F4E8',
+                    coral: '#FFF4EE',
+                    yellow: '#FFEDB5',
+                    blue: '#BEDAFF',
+                    'coral-dark': '#F2CAC2',
                 },
-                
+
                 // Border colors
                 border: {
                     primary: '#e6e6e6',
+                    DEFAULT: '#E8E8E8',
                     secondary: '#EEEEE9',
                     light: '#f4f4f9',
                     muted: '#999999',
+                    'muted-alt': '#A49E9E',
+                    'teal-muted': '#B8C9CE',
                 },
-                
+
                 // Tab colors
                 tab: {
                     default: '#7e919a',
                     active: '#005F73',
                     background: 'var(--neutral-50)',
                 },
-                
+
                 // Legacy tab-bar (kept for backward compatibility)
                 'tab-bar': {
                     'bg-primary-color': 'var(--neutral-50)',
                     default: '#7e919a',
                     active: '#005F73'
                 }
+            },
+            // Z-index scale — use these instead of arbitrary z-[N] values
+            zIndex: {
+                'nav': '20',
+                'header': '30',
+                'dropdown': '40',
+                'popover': '50',
+                'overlay': '60',
+                'modal': '70',
+                'toast': '80',
             },
             typography: {
                 // New semantic typography names
@@ -318,12 +345,66 @@ const config: Config = {
                         fontStyle: 'normal'
                     }
                 },
+                'body-xs-bold': {
+                    css: {
+                        fontSize: '13px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 700,
+                        fontStyle: 'normal'
+                    }
+                },
+                'body-xs-semibold': {
+                    css: {
+                        fontSize: '13px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 600,
+                        fontStyle: 'normal'
+                    }
+                },
+                'body-xs-medium': {
+                    css: {
+                        fontSize: '13px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 500,
+                        fontStyle: 'normal'
+                    }
+                },
+                'body-xs-regular': {
+                    css: {
+                        fontSize: '13px',
+                        lineHeight: '160%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 400,
+                        fontStyle: 'normal'
+                    }
+                },
                 'caption': {
                     css: {
                         fontSize: '11px',
                         lineHeight: '140%',
                         fontFamily: 'var(--font-poppins)',
                         fontWeight: 400,
+                        fontStyle: 'normal'
+                    }
+                },
+                'caption-medium': {
+                    css: {
+                        fontSize: '11px',
+                        lineHeight: '140%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 500,
+                        fontStyle: 'normal'
+                    }
+                },
+                'caption-semibold': {
+                    css: {
+                        fontSize: '11px',
+                        lineHeight: '140%',
+                        fontFamily: 'var(--font-poppins)',
+                        fontWeight: 600,
                         fontStyle: 'normal'
                     }
                 },

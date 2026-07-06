@@ -52,24 +52,21 @@ export interface LoginResponse {
 }
 
 export interface SignupRequest {
-  username: string;
   email: string;
   password: string;
   firstName: string;
   lastName: string;
   phone: string;
-  dateOfBirth?: string;
   roleIds?: number[];
 }
 
+// Matches backend UserRequest schema
 export interface SignupRequestBackend {
-  username: string;
   email: string;
   password: string;
   firstName: string;
   lastName: string;
   phoneNumber: string;
-  dateOfBirth?: string;
   roleIds?: number[];
 }
 
@@ -91,10 +88,10 @@ export interface ForgotPasswordRequest {
 export interface ResetPasswordRequest {
   token: string;
   newPassword: string;
+  confirmPassword: string;
 }
 
 export interface ChangePasswordRequest {
-  currentPassword: string;
   newPassword: string;
   confirmPassword: string;
 }
@@ -124,11 +121,9 @@ export interface UserDTO {
   profileImageUrl?: string;
 }
 
+// Matches backend ProfileRequest — only phoneNumber and avatar are updatable
 export interface UpdateProfileRequest {
-  firstName: string;
-  lastName: string;
   phoneNumber: string;
-  bio?: string;
   avatar?: string;
 }
 
@@ -139,9 +134,9 @@ export interface PhoneVerificationRequest {
 }
 
 export interface ProfileVerificationRequest {
-  documentType: string;
-  documentImages: string[];
-  additionalInfo?: string;
+  idType: string;
+  bvn: string;
+  idFilePath: string;
 }
 
 export interface UserStatusUpdate {
@@ -228,15 +223,13 @@ export interface ItemsQueryParams {
 // Offer Types
 export interface OfferDTO {
   id: number;
-  itemId: number;
   withCash: boolean;
   cashAmount?: number;
-  offeredItemId?: number;
   status: string;
-  dateCreated: string;
-  offeredBy: UserDTO;
+  sentBy: UserDTO;
   item: ItemDTO;
   offeredItem?: ItemDTO;
+  dateCreated: string;
 }
 
 export interface CreateOfferRequest {
@@ -244,6 +237,7 @@ export interface CreateOfferRequest {
   withCash: boolean;
   cashAmount?: number;
   offeredItemId?: number;
+  offerValid?: boolean;
 }
 
 // Auction Types
@@ -297,10 +291,14 @@ export interface UpdateAuctionRequest {
   title: string;
   description: string;
   imageKeys: string[];
-  location: string;
+  acceptCash?: boolean;
+  cashAmount?: number;
+  stateCode: string;
+  lgaCode: string;
   condition: string;
   brand: string;
-  itemCategories: string[];
+  itemCategory: string;
+  subcategory?: string;
 }
 
 // Bidding Types
@@ -313,9 +311,9 @@ export interface BidDTO {
   status: string;
 }
 
+// Matches backend BiddingRequest — bidder inferred from JWT
 export interface CreateBidRequest {
   auctionId: number;
-  bidderId: number;
   amount: number;
 }
 
@@ -327,20 +325,20 @@ export interface BidHistoryDTO extends BidDTO {
 
 export type BidStatus = 'ACTIVE' | 'OUTBID' | 'WINNING' | 'WON' | 'LOST';
 
-// Review Types
+// Review Types — matches API ReviewDTO
 export interface ReviewDTO {
-  id: number;
   rating: number;
-  comment: string;
-  reviewer: UserDTO;
-  reviewedUser: UserDTO;
-  dateCreated: string;
+  message: string;
+  userId: number;
+  postedById: number;
+  createdDate: string;
 }
 
 export interface CreateReviewRequest {
+  userId: number;
+  itemId: number;
   rating: number;
-  comment: string;
-  reviewedUserId: number;
+  message: string;
 }
 
 // Home Types
@@ -371,36 +369,37 @@ export interface ChatDTO {
   dateUpdated?: string;
 }
 
+// Matches backend ChatMessageDTO
 export interface MessageDTO {
-  id: string;
-  chatId: string;
-  senderId: number;
   message: string;
+  sentBy: number;
+  chatId: string;
+  readByReceiver?: boolean;
   dateCreated: string;
-  read: boolean;
 }
 
+// Matches backend StartChatRequest
 export interface CreateChatRequest {
   receiverId: number;
+  title: string;
   itemId?: number;
-  title?: string;
 }
 
+// Matches backend CreateMessageRequest
 export interface SendMessageRequest {
   chatId: string;
-  content: string;
-  itemId?: string;
+  message: string;
 }
 
 // Notification Types
 export interface NotificationDTO {
   id: number;
   type: string;
+  avatar: string;
   title: string;
   message: string;
   resourceLink: string;
   read: boolean;
-  seen: boolean;              // Tracks if notification was viewed
   dateCreated: string;
 }
 

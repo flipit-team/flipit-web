@@ -9,7 +9,7 @@ const Index = () => {
             lg:mb-[100px] xs:mt-[24px] xs:mb-[32px] md:mt-[40px] md:mb-[40px] lg:gap-[58px] md:gap-[25px] xs:gap-[32px]'
             >
                 <Image
-                    src='/500.svg'
+                    src='/images/placeholders/500.svg'
                     alt='500'
                     height={314}
                     width={350}

@@ -33,7 +33,7 @@ export class UserService {
   // Get users (admin only) - NEW
   static async getUsers(page = 0, size = 15) {
     return handleApiCall(() =>
-      apiClient.get<UserDTO[]>(`/users/findAll?page=${page}&size=${size}`, { requireAuth: true })
+      apiClient.get<UserDTO[]>(`/user/findAll?page=${page}&size=${size}`, { requireAuth: true })
     );
   }
 
@@ -47,7 +47,7 @@ export class UserService {
   // Verify phone number - NEW
   static async verifyPhoneNumber(userId: number, verificationData: any) {
     return handleApiCall(() =>
-      apiClient.post<{ message: string }>(`/user/${userId}/verify-phoneNumber`, verificationData, { requireAuth: true })
+      apiClient.post<{ message: string }>(`/user/${userId}/verify-phoneNumber?code=${verificationData.code}`, {}, { requireAuth: true })
     );
   }
 
@@ -87,14 +87,14 @@ export class UserService {
         visitorsCount: number;
         phoneViewsCount: number;
         chatRequestsCount: number;
-      }>('/v1/user/performance', { requireAuth: true })
+      }>('/user/performance', { requireAuth: true })
     );
   }
 
   // Verify email - NEW
   static async verifyEmail(userId: number, code: string) {
     return handleApiCall(() =>
-      apiClient.get<string>(`/v1/user/${userId}/verify-email?code=${code}`, { requireAuth: true })
+      apiClient.get<string>(`/user/${userId}/verify-email?code=${encodeURIComponent(code)}`, { requireAuth: true })
     );
   }
 }

@@ -1,10 +1,10 @@
 'use client';
 import { ReactNode, useState } from 'react';
-import { 
-  EllipsisVerticalIcon,
-  MagnifyingGlassIcon,
-  AdjustmentsHorizontalIcon
-} from '@heroicons/react/24/outline';
+import {
+  MoreVertical,
+  Search,
+  SlidersHorizontal
+} from 'lucide-react';
 
 interface Column {
   key: string;
@@ -54,7 +54,7 @@ export default function DataTable({
             {showSearch && (
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+                  <Search className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
                   type="text"
@@ -67,7 +67,7 @@ export default function DataTable({
             )}
             {showFilters && (
               <button className="flex items-center px-3 py-2 border border-gray-300 rounded-lg typo-body_sr text-text_two hover:bg-gray-50 focus:ring-2 focus:ring-primary focus:border-primary outline-none">
-                <AdjustmentsHorizontalIcon className="h-4 w-4 mr-2" />
+                <SlidersHorizontal className="h-4 w-4 mr-2" />
                 Filters
               </button>
             )}
@@ -113,7 +113,7 @@ export default function DataTable({
                         onClick={() => setOpenDropdown(openDropdown === rowIndex ? null : rowIndex)}
                         className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
                       >
-                        <EllipsisVerticalIcon className="h-5 w-5" />
+                        <MoreVertical className="h-5 w-5" />
                       </button>
                       {openDropdown === rowIndex && (
                         <>

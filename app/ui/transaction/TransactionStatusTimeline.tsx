@@ -11,56 +11,30 @@ const TransactionStatusTimeline = ({transaction}: Props) => {
     const getStatusConfig = (
         status: TransactionStatus
     ): {icon: string; color: string; bgColor: string; label: string} => {
-        const configs = {
-            OFFER_ACCEPTED: {icon: '✓', color: 'text-primary', bgColor: 'bg-surface-primary', label: 'Offer Accepted'},
-            PAYMENT_PENDING: {
-                icon: '⏳',
-                color: 'text-warning',
-                bgColor: 'bg-surface-secondary',
-                label: 'Payment Pending'
-            },
-            PAYMENT_RECEIVED: {
-                icon: '💰',
-                color: 'text-primary',
-                bgColor: 'bg-surface-primary',
-                label: 'Payment Received'
-            },
-            SHIPPING_PENDING: {
-                icon: '📦',
-                color: 'text-warning',
-                bgColor: 'bg-surface-secondary',
-                label: 'Shipping Pending'
-            },
-            SELLER_SHIPPED: {icon: '🚚', color: 'text-accent-navy', bgColor: 'bg-accent-navy/5', label: 'Seller Shipped'},
-            BUYER_SHIPPED: {icon: '🚚', color: 'text-accent-navy', bgColor: 'bg-accent-navy/5', label: 'Buyer Shipped'},
-            IN_TRANSIT: {icon: '🚛', color: 'text-accent-navy', bgColor: 'bg-accent-navy/5', label: 'In Transit'},
-            DELIVERED: {icon: '✓', color: 'text-primary', bgColor: 'bg-surface-primary', label: 'Delivered'},
-            REVIEW_PENDING: {icon: '⭐', color: 'text-warning', bgColor: 'bg-surface-secondary', label: 'Review Pending'},
-            COMPLETED: {icon: '✅', color: 'text-primary', bgColor: 'bg-surface-primary', label: 'Completed'},
+        const configs: Record<string, {icon: string; color: string; bgColor: string; label: string}> = {
+            PENDING: {icon: '⏳', color: 'text-warning', bgColor: 'bg-surface-secondary', label: 'Pending'},
+            SUCCESS: {icon: '💰', color: 'text-primary', bgColor: 'bg-surface-primary', label: 'Success'},
+            FAILED: {icon: '❌', color: 'text-error', bgColor: 'bg-surface-error', label: 'Failed'},
             CANCELLED: {icon: '❌', color: 'text-error', bgColor: 'bg-surface-error', label: 'Cancelled'},
-            DISPUTED: {icon: '⚠️', color: 'text-error', bgColor: 'bg-surface-error', label: 'Disputed'}
+            DELIVERED: {icon: '✓', color: 'text-primary', bgColor: 'bg-surface-primary', label: 'Delivered'},
+            VERIFIED: {icon: '⭐', color: 'text-warning', bgColor: 'bg-surface-secondary', label: 'Verified'},
+            COMPLETED: {icon: '✅', color: 'text-primary', bgColor: 'bg-surface-primary', label: 'Completed'},
+            RELEASED: {icon: '✓', color: 'text-primary', bgColor: 'bg-surface-primary', label: 'Released'}
         };
 
         return configs[status] || {icon: '•', color: 'text-gray-600', bgColor: 'bg-gray-100', label: status};
     };
 
     const getExpectedStatuses = (): TransactionStatus[] => {
-        const baseStatuses: TransactionStatus[] = ['OFFER_ACCEPTED'];
+        const baseStatuses: TransactionStatus[] = ['PENDING'];
 
-        // Add payment statuses if cash is involved
-        if ((transaction.cashAmount ?? 0) > 0) {
-            baseStatuses.push('PAYMENT_PENDING', 'PAYMENT_RECEIVED');
+        // Add payment status if cash is involved
+        if ((transaction.amount ?? 0) > 0) {
+            baseStatuses.push('SUCCESS');
         }
 
-        // Add shipping statuses
-        if (transaction.transactionType === 'ITEM_EXCHANGE') {
-            baseStatuses.push('SHIPPING_PENDING', 'SELLER_SHIPPED', 'BUYER_SHIPPED', 'IN_TRANSIT');
-        } else {
-            baseStatuses.push('SHIPPING_PENDING', 'SELLER_SHIPPED', 'IN_TRANSIT');
-        }
-
-        // Add completion statuses
-        baseStatuses.push('DELIVERED', 'REVIEW_PENDING', 'COMPLETED');
+        // Add delivery and completion statuses
+        baseStatuses.push('DELIVERED', 'VERIFIED', 'COMPLETED', 'RELEASED');
 
         return baseStatuses;
     };
@@ -69,7 +43,7 @@ const TransactionStatusTimeline = ({transaction}: Props) => {
     const currentStatusIndex = expectedStatuses.indexOf(transaction.status);
 
     const getStepState = (index: number): 'completed' | 'current' | 'pending' | 'cancelled' => {
-        if (['CANCELLED', 'DISPUTED'].includes(transaction.status)) {
+        if (['CANCELLED', 'FAILED'].includes(transaction.status)) {
             return index <= currentStatusIndex ? 'cancelled' : 'pending';
         }
         if (index < currentStatusIndex) return 'completed';
@@ -86,7 +60,8 @@ const TransactionStatusTimeline = ({transaction}: Props) => {
                 {expectedStatuses.map((status, index) => {
                     const config = getStatusConfig(status);
                     const state = getStepState(index);
-                    const event = transaction.timeline?.find((e) => e.status === status);
+                    // Timeline removed from TransactionDTO
+                    const event = null as any;
 
                     const isCompleted = state === 'completed';
                     const isCurrent = state === 'current';
@@ -183,25 +158,11 @@ const TransactionStatusTimeline = ({transaction}: Props) => {
                 })}
             </div>
 
-            {/* Transaction Notes */}
-            {transaction.notes && (
+            {/* Transaction Description */}
+            {transaction.description && (
                 <div className='mt-6 pt-6 border-t border-border_gray'>
                     <h3 className='typo-body_lm text-text_one mb-2'>Notes</h3>
-                    <p className='typo-body_mr text-text_four'>{transaction.notes}</p>
-                </div>
-            )}
-
-            {/* Cancellation/Dispute Reason */}
-            {(transaction.cancellationReason || transaction.disputeReason) && (
-                <div className='mt-6 pt-6 border-t border-border_gray'>
-                    <div className='bg-surface-error border border-error/20 rounded-lg p-4'>
-                        <h3 className='typo-body_lm text-error mb-2'>
-                            {transaction.cancellationReason ? 'Cancellation Reason' : 'Dispute Reason'}
-                        </h3>
-                        <p className='typo-body_mr text-error'>
-                            {transaction.cancellationReason || transaction.disputeReason}
-                        </p>
-                    </div>
+                    <p className='typo-body_mr text-text_four'>{transaction.description}</p>
                 </div>
             )}
         </div>

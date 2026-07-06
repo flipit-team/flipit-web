@@ -8,7 +8,7 @@ const VerifyToggle = (props: Props) => {
     const {isVerify, setIsVerify} = props;
     return (
         <div className='xs:hidden'>
-            <Image src={'/back-dark.svg'} height={24} width={24} alt='back' className='h-6 w-6 my-[40px]' />
+            <Image src={'/icons/ui/back-dark.svg'} height={24} width={24} alt='back' className='h-6 w-6 my-[40px]' />
             <div className='flex items-center gap-[14px] typo-body_sm mb-[44px]'>
                 <div
                     onClick={() => setIsVerify(true)}

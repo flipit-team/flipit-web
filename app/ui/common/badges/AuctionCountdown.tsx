@@ -111,7 +111,7 @@ const AuctionCountdown = ({endTime, startTime, className = ''}: AuctionCountdown
 
     return (
         <span
-            className={`flex items-center px-2 h-[26px] w-max xs:h-[18px] typo-body_sr capitalize ${getStyleClass()} ${className}`}
+            className={`flex items-center px-2 h-[26px] w-max xs:h-[18px] xs:px-0 xs:bg-transparent typo-body_sr xs:font-semibold capitalize ${getStyleClass()} ${className}`}
         >
             {getDisplayText()}
         </span>

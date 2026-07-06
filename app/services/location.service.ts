@@ -1,5 +1,5 @@
 import { apiClient, handleApiCall } from '~/lib/api-client';
-import { StateDTO, LGADTO } from '~/types/api';
+import { StateDTO } from '~/types/api';
 
 export class LocationService {
   // Get all states
@@ -9,25 +9,9 @@ export class LocationService {
     );
   }
 
-  // Get a specific state by code
-  static async getStateByCode(code: string) {
-    return handleApiCall(() =>
-      apiClient.get<StateDTO>(`/states/${code}`)
-    );
-  }
-
-  // Get all LGAs
-  static async getAllLGAs() {
-    return handleApiCall(() =>
-      apiClient.get<LGADTO[]>('/lgas')
-    );
-  }
-
-  // Get LGAs for a specific state
-  static async getLGAsByState(stateCode: string) {
-    return handleApiCall(() =>
-      apiClient.get<LGADTO[]>(`/lgas/state/${stateCode}`)
-    );
+  // Get states with LGAs (states already include LGAs inline)
+  static async getStatesWithLGAs() {
+    return this.getStates();
   }
 }
 

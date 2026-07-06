@@ -7,7 +7,7 @@ import Pagination from '../components/Pagination';
 import StatusBadge from '../components/StatusBadge';
 import {AdminService} from '~/services';
 import {CustomersSummaryDTO} from '~/types/api';
-import {UsersIcon, UserIcon, MinusCircleIcon} from '@heroicons/react/24/outline';
+import {Users, User, MinusCircle} from 'lucide-react';
 
 const columns = [
     {key: 'custId', label: 'Cust ID'},
@@ -25,7 +25,7 @@ const columns = [
 export default function AdminCustomers() {
     const [currentPage, setCurrentPage] = useState(1);
     const [summaryData, setSummaryData] = useState<CustomersSummaryDTO | null>(null);
-    const [customers, setCustomers] = useState<string[]>([]);
+    const [customers, setCustomers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -66,7 +66,7 @@ export default function AdminCustomers() {
               {
                   title: 'Total Customers',
                   amount: summaryData.totalCustomers.toLocaleString(),
-                  icon: <UsersIcon className='h-6 w-6 text-primary' />,
+                  icon: <Users className='h-6 w-6 text-primary' />,
                   trend: {
                       value: Math.abs(summaryData.totalCustomersChangePercent),
                       isPositive: summaryData.totalCustomersChangePercent >= 0
@@ -75,7 +75,7 @@ export default function AdminCustomers() {
               {
                   title: 'Active Customers',
                   amount: summaryData.activeCustomers.toLocaleString(),
-                  icon: <UserIcon className='h-6 w-6 text-primary' />,
+                  icon: <User className='h-6 w-6 text-primary' />,
                   trend: {
                       value: Math.abs(summaryData.activeCustomersChangePercent),
                       isPositive: summaryData.activeCustomersChangePercent >= 0
@@ -84,7 +84,7 @@ export default function AdminCustomers() {
               {
                   title: 'Blacklisted Customers',
                   amount: summaryData.blacklistedCustomers.toLocaleString(),
-                  icon: <MinusCircleIcon className='h-6 w-6 text-primary' />,
+                  icon: <MinusCircle className='h-6 w-6 text-primary' />,
                   trend: {
                       value: Math.abs(summaryData.blacklistedCustomersChangePercent),
                       isPositive: summaryData.blacklistedCustomersChangePercent < 0
@@ -94,13 +94,13 @@ export default function AdminCustomers() {
         : [];
 
     // Transform customers data for table display
-    const customersData = customers.map((customer, index) => ({
-        custId: `CUST-${String(index + 1).padStart(3, '0')}`,
-        name: customer,
-        email: '-',
-        regDate: '-',
-        status: 'active',
-        listingsBids: '-'
+    const customersData = customers.map((customer) => ({
+        custId: customer.custId,
+        name: customer.name,
+        email: customer.email,
+        regDate: customer.regDate,
+        status: customer.status,
+        listingsBids: customer.listingsBids
     }));
 
     const totalItems = customersData.length;

@@ -6,13 +6,11 @@ export async function POST(req: Request) {
     
     // Map frontend fields to backend fields
     const backendBody = {
-        username: body.username,
         email: body.email,
         password: body.password,
         firstName: body.firstName,
         lastName: body.lastName,
         phoneNumber: body.phoneNumber || body.phone, // Handle both phoneNumber and phone
-        dateOfBirth: body.dateOfBirth
     };
 
 

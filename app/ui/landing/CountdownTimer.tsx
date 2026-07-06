@@ -40,10 +40,10 @@ export default function CountdownTimer({targetDate}: CountdownTimerProps) {
             <div className='flex items-center gap-3'>
                 {['DAYS', 'HOURS', 'MINS'].map((label) => (
                     <div key={label} className='flex flex-col items-center gap-1'>
-                        <div className='w-[52px] h-[52px] rounded-lg bg-[#025F7333] border border-[#025F73] flex items-center justify-center'>
-                            <span className='font-poppins text-xl font-bold text-[#025F73]'>--</span>
+                        <div className='w-[52px] h-[52px] rounded-lg bg-primary/20 border border-primary flex items-center justify-center'>
+                            <span className='font-poppins text-xl font-bold text-primary'>--</span>
                         </div>
-                        <span className='font-poppins text-xl font-bold text-[#A49E9E]'>{label}</span>
+                        <span className='font-poppins text-xl font-bold text-text-muted-alt'>{label}</span>
                     </div>
                 ))}
             </div>
@@ -60,12 +60,12 @@ export default function CountdownTimer({targetDate}: CountdownTimerProps) {
         <div className='flex items-center gap-3'>
             {blocks.map((block) => (
                 <div key={block.label} className='flex flex-col items-center gap-1'>
-                    <div className='w-[52px] h-[52px] rounded-lg bg-[#025F7333] border border-[#025F73] flex items-center justify-center'>
-                        <span className='font-poppins text-xl font-bold text-[#025F73]'>
+                    <div className='w-[52px] h-[52px] rounded-lg bg-primary/20 border border-primary flex items-center justify-center'>
+                        <span className='font-poppins text-xl font-bold text-primary'>
                             {String(block.value).padStart(2, '0')}
                         </span>
                     </div>
-                    <span className='font-poppins text-xl font-bold text-[#A49E9E]'>{block.label}</span>
+                    <span className='font-poppins text-xl font-bold text-text-muted-alt'>{block.label}</span>
                 </div>
             ))}
         </div>

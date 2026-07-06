@@ -66,7 +66,7 @@ export default function LandingPage() {
             }}
         >
             {/* Header */}
-            <header className='sticky top-0 z-50 bg-primary'>
+            <header className='sticky top-0 z-dropdown bg-primary'>
                 <div className='grid-sizes flex items-center justify-between h-16'>
                     <Image
                         src='/logos/logo-transparent-cropped.png'
@@ -99,7 +99,7 @@ export default function LandingPage() {
             {/* Hero Section */}
             <section className='grid-sizes pt-12 md:pt-20 pb-10'>
                 <div className='max-w-xl'>
-                    <span className='inline-flex items-center border border-[#025F73] rounded-full px-4 h-[50px] font-poppins text-xl font-bold text-[#025F73] mb-6'>
+                    <span className='inline-flex items-center border border-primary rounded-full px-4 h-[50px] font-poppins text-xl font-bold text-primary mb-6'>
                         COMING SOON 2026
                     </span>
 
@@ -123,9 +123,9 @@ export default function LandingPage() {
                         <input
                             type='email'
                             placeholder='Enter your email  address'
-                            className='w-[520px] px-4 h-[86px] rounded-xl border border-[#A49E9E] bg-transparent font-poppins text-xl text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all'
+                            className='w-[520px] px-4 h-[86px] rounded-xl border border-border-muted-alt bg-transparent font-poppins text-xl text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all'
                         />
-                        <button className='bg-[#025F73] text-white font-poppins text-xl font-semibold px-6 h-[86px] rounded-xl hover:bg-[#025F73]/90 transition-colors whitespace-nowrap'>
+                        <button className='bg-primary text-white font-poppins text-xl font-semibold px-6 h-[86px] rounded-xl hover:bg-primary/90 transition-colors whitespace-nowrap'>
                             Get Early Access
                         </button>
                     </div>
@@ -159,7 +159,7 @@ export default function LandingPage() {
                                                     +
                                                 </span>
                                             )}
-                                            <div className='w-[50px] h-[50px] rounded-lg bg-[#C9EBF4] flex items-center justify-center text-primary'>
+                                            <div className='w-[50px] h-[50px] rounded-lg bg-surface-teal flex items-center justify-center text-primary'>
                                                 {icon}
                                             </div>
                                         </div>

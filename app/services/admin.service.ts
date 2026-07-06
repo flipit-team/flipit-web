@@ -11,7 +11,7 @@ export class AdminService {
 
     static async getRecentActivities() {
         return handleApiCall(() =>
-            apiClient.get<string[]>('/v1/admin/dashboard/recent_activities', {requireAuth: true})
+            apiClient.get<any[]>('/v1/admin/dashboard/recent_activities', {requireAuth: true})
         );
     }
 
@@ -34,7 +34,7 @@ export class AdminService {
     }
 
     static async getAllCustomers() {
-        return handleApiCall(() => apiClient.get<string[]>('/v1/admin/customers/all_customers', {requireAuth: true}));
+        return handleApiCall(() => apiClient.get<any[]>('/v1/admin/customers/all_customers', {requireAuth: true}));
     }
 
     // Bids APIs
@@ -43,7 +43,7 @@ export class AdminService {
     }
 
     static async getAllBids() {
-        return handleApiCall(() => apiClient.get<string[]>('/v1/admin/bids/all_bids', {requireAuth: true}));
+        return handleApiCall(() => apiClient.get<any[]>('/v1/admin/bids/all_bids', {requireAuth: true}));
     }
 }
 

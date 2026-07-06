@@ -91,7 +91,7 @@ const Profile = () => {
 
     const handleValue = (input: {label: string; placeholder: string; type: string; name: string}) => {
         if (input.name === 'email') {
-            return profile?.email;
+            return profile?.email || '';
         }
         if (input.name === 'password') {
             return password;
@@ -100,13 +100,13 @@ const Profile = () => {
             return confirmPassword;
         }
         if (input.name === 'firstname') {
-            return profile?.firstName;
+            return profile?.firstName || '';
         }
         if (input.name === 'lastname') {
-            return profile?.lastName;
+            return profile?.lastName || '';
         }
         if (input.name === 'phone') {
-            return profile?.phoneNumber;
+            return profile?.phoneNumber || '';
         }
     };
 
@@ -116,7 +116,7 @@ const Profile = () => {
 
         const formData = {
             phoneNumber: `${profile?.phoneNumber}`,
-            profileImgKey: imgUrl
+            avatar: imgUrl
         };
 
         try {
@@ -187,7 +187,7 @@ const Profile = () => {
             <div className='flex flex-col justify-center w-[984px] xs:w-full mt-[92px] xs:mt-6 shadow-lg xs:shadow-transparent rounded-lg p-6'>
                 <div className='typo-heading_sm pb-4 mb-6 border-b border-border_gray xs:hidden'>My Profile</div>
                 <div className='flex items-center gap-6 xs:flex-col'>
-                    <form className='typo-body_mr text-text_one flex flex-col gap-[26px] w-[512px] xs:w-full xs:order-2'>
+                    <form className='typo-body_mr text-text_one flex flex-col gap-[26px] w-[512px] xs:w-full xs:order-2 [&_input:disabled]:bg-gray-100 [&_input:disabled]:cursor-not-allowed'>
                         {formInputs.map((item, i) => {
                             return (
                                 <InputBox

@@ -16,7 +16,7 @@ const ProfileDropdown = ({setShowFlyout, isVisible, onMouseEnter, onMouseLeave}:
 
     return (
         <div
-            className='absolute right-0 top-full pt-3 z-50'
+            className='absolute right-0 top-full pt-3 z-dropdown'
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
         >

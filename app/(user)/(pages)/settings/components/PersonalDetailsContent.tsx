@@ -139,8 +139,6 @@ const PersonalDetailsContent = () => {
             setSaving(true);
 
             const updateData: UpdateProfileRequest = {
-                firstName: firstName.trim(),
-                lastName: lastName.trim(),
                 phoneNumber: phoneNumber.trim(),
             };
 
@@ -166,8 +164,8 @@ const PersonalDetailsContent = () => {
     if (loading) {
         return (
             <div>
-                <h2 className='typo-heading-md-medium md:typo-heading-md-medium text-gray-900 mb-4'>Personal Details</h2>
-                <div className='h-px bg-border_gray mb-6 md:mb-8 w-full'></div>
+                <h2 className='typo-heading-md-medium md:typo-heading-md-medium text-gray-900 mb-4 xs:hidden'>Personal Details</h2>
+                <div className='h-px bg-border_gray mb-6 md:mb-8 w-full xs:hidden'></div>
                 <div className='flex items-center justify-center h-64'>
                     <Loading size='lg' text='Loading profile data...' />
                 </div>
@@ -177,13 +175,13 @@ const PersonalDetailsContent = () => {
 
     return (
         <div>
-            <h2 className='typo-heading-md-medium md:typo-heading-md-medium text-gray-900 mb-4'>Personal Details</h2>
-            <div className='h-px bg-border_gray mb-6 md:mb-8 w-full'></div>
+            <h2 className='typo-heading-md-medium md:typo-heading-md-medium text-gray-900 mb-4 xs:hidden'>Personal Details</h2>
+            <div className='h-px bg-border_gray mb-6 md:mb-8 w-full xs:hidden'></div>
 
             <div className='flex flex-col lg:flex-row gap-8 lg:gap-16'>
                 {/* Profile Image - Shows first on mobile, right side on desktop */}
                 <div className='flex flex-col items-center lg:order-2'>
-                    <div className='relative w-[180px] h-[180px] lg:w-[224px] lg:h-[224px] bg-background-secondary rounded-full flex items-center justify-center overflow-hidden mb-4'>
+                    <div className='relative w-[180px] h-[180px] lg:w-[224px] lg:h-[224px] xs:w-[120px] xs:h-[120px] bg-background-secondary rounded-full flex items-center justify-center overflow-hidden mb-4'>
                         {profileImage ? (
                             <Image src={profileImage} alt='Profile' fill className='object-cover' />
                         ) : (
@@ -246,7 +244,7 @@ const PersonalDetailsContent = () => {
                         value={phoneNumber}
                         setValue={(e) => handleInputChange(e, 'phonenumber')}
                     />
-                    <div className='w-[167px]'>
+                    <div className='w-[167px] xs:w-full'>
                         <RegularButton
                             text={saving ? 'Saving...' : 'Save Changes'}
                             action={handleSaveChanges}

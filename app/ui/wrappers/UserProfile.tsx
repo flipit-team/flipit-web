@@ -52,7 +52,7 @@ const UserProfile = (props: Props) => {
                     {/* Profile Image */}
                     <div className="flex-shrink-0">
                         <Image
-                            src={(user as any).profileImageUrl || (user as any).avatar || '/placeholder-avatar.svg'}
+                            src={(user as any).profileImageUrl || (user as any).avatar || '/images/placeholders/placeholder-avatar.svg'}
                             height={120}
                             width={120}
                             alt={`${user.firstName} ${user.lastName}`}
@@ -139,7 +139,7 @@ const UserProfile = (props: Props) => {
                 ) : (
                     <div className="text-center py-12">
                         <Image
-                            src="/empty-state.svg"
+                            src="/images/placeholders/empty-state.svg"
                             height={100}
                             width={100}
                             alt="No items"

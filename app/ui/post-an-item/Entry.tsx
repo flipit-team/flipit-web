@@ -41,25 +41,25 @@ const PostItemPage: React.FC = () => {
     };
 
     const HammerIcon = () => (
-        <Image src='/gavel-large.svg' alt='hammer' width={75} height={75} className='w-[75px] h-[75px] xs:w-[60px] xs:h-[60px]' />
+        <Image src='/icons/action/gavel.svg' alt='hammer' width={75} height={75} className='w-[75px] h-[75px] xs:w-[60px] xs:h-[60px]' />
     );
 
     const PriceTagIcon = () => (
-        <Image src='/listed.svg' alt='price tag' width={75} height={75} className='w-[75px] h-[75px] xs:w-[60px] xs:h-[60px]' />
+        <Image src='/icons/action/listed.svg' alt='price tag' width={75} height={75} className='w-[75px] h-[75px] xs:w-[60px] xs:h-[60px]' />
     );
 
     return (
-        <div className='min-h-screen bg-white'>
+        <div className='min-h-screen bg-white xs:bg-background'>
             <div className='max-w-6xl mx-auto px-4 xs:px-3 py-8 xs:py-4'>
-                {/* Back button */}
-                <GoBack />
+                {/* Back button - desktop only */}
+                <div className='xs:hidden'><GoBack /></div>
 
                 {/* Main content with shadow */}
-                <div className='shadow-lg w-[866px] xs:w-full mx-auto mt-10 xs:mt-6 rounded-lg p-8 xs:p-4'>
+                <div className='shadow-lg xs:shadow-none w-[866px] max-w-full xs:w-full mx-auto mt-10 xs:mt-2 rounded-lg p-8 xs:p-4'>
                     {/* Title section */}
                     <div className='text-center mb-12 xs:mb-8'>
-                        <h1 className='typo-heading_ms xs:typo-heading_sr mb-3 xs:mb-2'>Post an Item</h1>
-                        <p className='typo-body_lr xs:typo-body_sr text-text_three px-4 xs:px-0'>Choose how you&apos;d like to sell your item</p>
+                        <h1 className='typo-heading_ms xs:font-poppins xs:typo-heading-md-bold mb-3 xs:mb-2'>Post an Item</h1>
+                        <p className='typo-body_lr xs:typo-body-md-regular text-text_three px-4 xs:px-0'>Choose how you&apos;d like to sell your item</p>
                     </div>
 
                     {/* Options - Mobile: vertical stack with auction first, Desktop: grid */}

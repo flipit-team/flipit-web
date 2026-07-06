@@ -1,9 +1,8 @@
 'use client';
 import React, {useState, useEffect} from 'react';
-import Image from 'next/image';
-import {TransactionDTO, ShippingDetails} from '~/types/transaction';
+import {TransactionDTO} from '~/types/transaction';
 import ShippingService, {GIGTrackingInfo} from '~/services/shipping.service';
-import TransactionService from '~/services/transaction.service';
+import {ClipboardIcon, TruckFilledIcon} from '../icons';
 
 interface Props {
     transaction: TransactionDTO;
@@ -30,19 +29,13 @@ const ShippingSection = ({transaction, userRole, onShippingUpdate}: Props) => {
         specialInstructions: ''
     });
 
-    const sellerShipping = transaction.sellerShipping;
-    const buyerShipping = transaction.buyerShipping;
-    const userShipping = userRole === 'seller' ? sellerShipping : buyerShipping;
-    const otherShipping = userRole === 'seller' ? buyerShipping : sellerShipping;
+    // Shipping details removed from TransactionDTO — stub out
+    const userShipping = null as any;
+    const otherShipping = null as any;
 
     const needsToShip =
-        (userRole === 'seller' &&
-            ['PAYMENT_RECEIVED', 'SHIPPING_PENDING'].includes(transaction.status) &&
-            !sellerShipping) ||
-        (userRole === 'buyer' &&
-            transaction.transactionType === 'ITEM_EXCHANGE' &&
-            transaction.status === 'SELLER_SHIPPED' &&
-            !buyerShipping);
+        (userRole === 'seller' && transaction.status === 'SUCCESS') ||
+        (userRole === 'buyer' && transaction.type === 'SWAP' && transaction.status === 'DELIVERED');
 
     // Load tracking info when waybill is available
     useEffect(() => {
@@ -81,12 +74,8 @@ const ShippingSection = ({transaction, userRole, onShippingUpdate}: Props) => {
                 receiverAddress: shippingFormData.receiverAddress,
                 receiverState: shippingFormData.receiverState,
                 receiverLGA: shippingFormData.receiverLGA,
-                itemDescription:
-                    userRole === 'seller' ? transaction.sellerItem.title : transaction.buyerItem?.title || '',
-                itemValue:
-                    userRole === 'seller'
-                        ? transaction.sellerItem.cashAmount || 0
-                        : transaction.buyerItem?.cashAmount || 0,
+                itemDescription: transaction.description || '',
+                itemValue: transaction.amount || 0,
                 deliveryType: 'STANDARD',
                 paymentMethod: 'PREPAID',
                 pickupDate: shippingFormData.pickupDate,
@@ -94,12 +83,6 @@ const ShippingSection = ({transaction, userRole, onShippingUpdate}: Props) => {
             });
 
             if (response.data) {
-                // Create shipping record in transaction
-                await TransactionService.createShipping({
-                    transactionId: transaction.id,
-                    ...shippingFormData
-                });
-
                 alert('Shipping arranged successfully! Your waybill number: ' + response.data.waybillNumber);
                 setShowShippingForm(false);
                 onShippingUpdate();
@@ -200,14 +183,7 @@ const ShippingSection = ({transaction, userRole, onShippingUpdate}: Props) => {
                             rel='noopener noreferrer'
                             className='mt-6 w-full h-[48px] border border-primary text-primary rounded-lg typo-body_lr hover:bg-surface-primary-10 hover:text-primary-light hover:border-primary-light transition-colors flex items-center justify-center gap-2'
                         >
-                            <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                <path
-                                    strokeLinecap='round'
-                                    strokeLinejoin='round'
-                                    strokeWidth={2}
-                                    d='M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'
-                                />
-                            </svg>
+                            <ClipboardIcon className='w-5 h-5' />
                             Track on GIG Website
                         </a>
                     )}
@@ -257,10 +233,7 @@ const ShippingSection = ({transaction, userRole, onShippingUpdate}: Props) => {
             {needsToShip && !showShippingForm && (
                 <div className='shadow-lg rounded-lg bg-white p-6 xs:px-4 text-center'>
                     <div className='w-16 h-16 bg-accent-navy/10 rounded-full flex items-center justify-center mx-auto mb-4'>
-                        <svg className='w-8 h-8 text-accent-navy' fill='currentColor' viewBox='0 0 20 20'>
-                            <path d='M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z' />
-                            <path d='M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z' />
-                        </svg>
+                        <TruckFilledIcon className='w-8 h-8 text-accent-navy' />
                     </div>
                     <h3 className='typo-body_lm text-text_one mb-2'>Arrange Shipping with GIG Logistics</h3>
                     <p className='typo-body_mr text-text_four mb-6'>
@@ -465,10 +438,7 @@ const ShippingSection = ({transaction, userRole, onShippingUpdate}: Props) => {
             {!needsToShip && !userShipping && (
                 <div className='shadow-lg rounded-lg bg-white p-6 xs:px-4 text-center py-8'>
                     <div className='w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4'>
-                        <svg className='w-8 h-8 text-gray-400' fill='currentColor' viewBox='0 0 20 20'>
-                            <path d='M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z' />
-                            <path d='M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z' />
-                        </svg>
+                        <TruckFilledIcon className='w-8 h-8 text-gray-400' />
                     </div>
                     <h3 className='typo-body_lm text-text_one mb-2'>Waiting for Shipment</h3>
                     <p className='typo-body_mr text-text_four'>

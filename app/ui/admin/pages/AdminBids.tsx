@@ -7,7 +7,7 @@ import Pagination from '../components/Pagination';
 import StatusBadge from '../components/StatusBadge';
 import {AdminService} from '~/services';
 import {BidsSummaryDTO} from '~/types/api';
-import {CursorArrowRaysIcon, CheckCircleIcon, ClockIcon} from '@heroicons/react/24/outline';
+import {MousePointerClick, CheckCircle, Clock} from 'lucide-react';
 
 const columns = [
     {key: 'bidId', label: 'Bid ID'},
@@ -25,7 +25,7 @@ const columns = [
 export default function AdminBids() {
     const [currentPage, setCurrentPage] = useState(1);
     const [summaryData, setSummaryData] = useState<BidsSummaryDTO | null>(null);
-    const [bids, setBids] = useState<string[]>([]);
+    const [bids, setBids] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -66,7 +66,7 @@ export default function AdminBids() {
               {
                   title: 'Total Bids',
                   amount: summaryData.totalBids.toLocaleString(),
-                  icon: <CursorArrowRaysIcon className='h-6 w-6 text-primary' />,
+                  icon: <MousePointerClick className='h-6 w-6 text-primary' />,
                   trend: {
                       value: Math.abs(summaryData.totalBidsChangePercent),
                       isPositive: summaryData.totalBidsChangePercent >= 0
@@ -75,7 +75,7 @@ export default function AdminBids() {
               {
                   title: 'Pending Bids',
                   amount: summaryData.pendingBids.toLocaleString(),
-                  icon: <ClockIcon className='h-6 w-6 text-primary' />,
+                  icon: <Clock className='h-6 w-6 text-primary' />,
                   trend: {
                       value: Math.abs(summaryData.pendingBidsChangePercent),
                       isPositive: summaryData.pendingBidsChangePercent >= 0
@@ -84,7 +84,7 @@ export default function AdminBids() {
               {
                   title: 'Accepted Bids',
                   amount: summaryData.acceptedBids.toLocaleString(),
-                  icon: <CheckCircleIcon className='h-6 w-6 text-primary' />,
+                  icon: <CheckCircle className='h-6 w-6 text-primary' />,
                   trend: {
                       value: Math.abs(summaryData.acceptedBidsChangePercent),
                       isPositive: summaryData.acceptedBidsChangePercent >= 0
@@ -94,13 +94,13 @@ export default function AdminBids() {
         : [];
 
     // Transform bids data for table display
-    const bidsData = bids.map((bid, index) => ({
-        bidId: `BID-${String(index + 1).padStart(3, '0')}`,
-        listingId: '-',
-        customerId: '-',
-        bidAmount: bid,
-        bidDate: '-',
-        status: 'pending'
+    const bidsData = bids.map((bid) => ({
+        bidId: bid.bidId,
+        listingId: bid.listingId,
+        customerId: bid.customerId,
+        bidAmount: bid.bidAmount,
+        bidDate: bid.bidDate,
+        status: bid.status
     }));
 
     const totalItems = bidsData.length;

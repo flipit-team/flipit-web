@@ -104,7 +104,7 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
     const isAuctionActive = item.auctionStatus === 'active';
 
     return (
-        <div className='border border-[#E8E8E8] rounded-2xl flex xs:flex-col overflow-hidden'>
+        <div className='border border-border-DEFAULT rounded-2xl flex xs:flex-col overflow-hidden'>
             {/* Image */}
             <div
                 className='p-4 xs:p-3 flex-shrink-0 cursor-pointer'
@@ -123,45 +123,45 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
             <div className='py-4 pr-4 xs:px-3 xs:pb-3 xs:pt-0 flex-1 flex flex-col justify-between min-w-0'>
                 <div className='flex items-start justify-between'>
                     <div className='flex-1 min-w-0 cursor-pointer' onClick={handleCardClick}>
-                        <h3 className='font-poppins text-[14px] text-[#4D4D4D] leading-[1.4]'>
+                        <h3 className='typo-body-md-regular text-text-secondary leading-[1.4]'>
                             {item.title}
                         </h3>
 
                         {/* Auction items */}
                         {item.isAuction && (
                             <>
-                                <p className='font-poppins font-bold text-[16px] text-text_one mt-1'>
+                                <p className='typo-body-lg-bold text-text_one mt-1'>
                                     Current bid: {formatAmount(item.currentBid || item.amount)}
                                 </p>
                                 {item.type !== 'deactivated' && (
                                     <div className='flex items-center gap-2 mt-1'>
                                         {isAuctionClosed && (
                                             <>
-                                                <span className='font-poppins text-[13px] text-[#FF674B]'>Auction Closed</span>
-                                                <span className='text-[#A49E9E]'>|</span>
+                                                <span className='typo-body-xs-regular text-accent-coral'>Auction Closed</span>
+                                                <span className='text-text-muted-alt'>|</span>
                                             </>
                                         )}
                                         {isAuctionActive && (
                                             <>
-                                                <span className='font-poppins text-[13px] text-primary'>
+                                                <span className='typo-body-xs-regular text-primary'>
                                                     {getCountdown(item.auctionEndDate)}
                                                 </span>
-                                                <span className='text-[#A49E9E]'>|</span>
+                                                <span className='text-text-muted-alt'>|</span>
                                             </>
                                         )}
-                                        <span className='font-poppins text-[13px] text-[#4D4D4D]'>Views : {item.views}</span>
+                                        <span className='typo-body-xs-regular text-text-secondary'>Views : {item.views}</span>
                                     </div>
                                 )}
                                 {item.type === 'deactivated' && (
-                                    <p className='font-poppins text-[13px] text-[#4D4D4D] mt-1'>Views : {item.views}</p>
+                                    <p className='typo-body-xs-regular text-text-secondary mt-1'>Views : {item.views}</p>
                                 )}
                                 {isAuctionFailed && (
-                                    <span className='inline-block mt-2 px-3 py-0.5 bg-[#FF674B]/10 text-[#FF674B] rounded font-poppins text-[12px] font-medium border border-[#FF674B]/20'>
+                                    <span className='inline-block mt-2 px-3 py-0.5 bg-accent-coral/10 text-accent-coral rounded typo-body-sm-medium border border-accent-coral/20'>
                                         Failed
                                     </span>
                                 )}
                                 {isAuctionSuccessful && (
-                                    <span className='inline-block mt-2 px-3 py-0.5 bg-[#08973F]/10 text-[#08973F] rounded font-poppins text-[12px] font-medium border border-[#08973F]/20'>
+                                    <span className='inline-block mt-2 px-3 py-0.5 bg-success-dark/10 text-success-dark rounded typo-body-sm-medium border border-success-dark/20'>
                                         Successful
                                     </span>
                                 )}
@@ -172,16 +172,16 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
                         {!item.isAuction && (
                             <>
                                 {(item.tradeType === 'cash' || item.tradeType === 'mixed') && item.amount > 0 && (
-                                    <p className='font-poppins font-bold text-[16px] text-text_one mt-1'>
+                                    <p className='typo-body-lg-bold text-text_one mt-1'>
                                         Price: {formatAmount(item.amount)}
                                     </p>
                                 )}
                                 {(item.tradeType === 'swap' || item.tradeType === 'mixed') && item.swapCategory && (
-                                    <p className='font-poppins font-bold text-[16px] text-text_one mt-1'>
+                                    <p className='typo-body-lg-bold text-text_one mt-1'>
                                         Swap category: {item.swapCategory}
                                     </p>
                                 )}
-                                <p className='font-poppins text-[13px] text-[#4D4D4D] mt-1'>Views : {item.views}</p>
+                                <p className='typo-body-xs-regular text-text-secondary mt-1'>Views : {item.views}</p>
                             </>
                         )}
                     </div>
@@ -202,7 +202,7 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
                             <div className='relative' ref={dropdownRef}>
                                 <button
                                     onClick={() => setShowDropdown(!showDropdown)}
-                                    className='p-1 text-[#A49E9E] hover:text-text_one transition-colors'
+                                    className='p-1 text-text-muted-alt hover:text-text_one transition-colors'
                                 >
                                     <MoreVertical className='w-5 h-5' />
                                 </button>
@@ -211,7 +211,7 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
                                     <div className='absolute right-0 top-full mt-1 w-44 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10'>
                                         <button
                                             onClick={() => { setShowDropdown(false); router.push(`/edit-item/${item.id}`); }}
-                                            className='w-full px-4 py-2 text-left font-poppins text-[13px] text-text_one hover:bg-gray-50'
+                                            className='w-full px-4 py-2 text-left typo-body-xs-regular text-text_one hover:bg-gray-50'
                                         >
                                             Edit Item
                                         </button>
@@ -219,7 +219,7 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
                                             <button
                                                 onClick={handleToggleAuction}
                                                 disabled={isUpdatingAuction}
-                                                className='w-full px-4 py-2 text-left font-poppins text-[13px] text-text_one hover:bg-gray-50 disabled:opacity-50'
+                                                className='w-full px-4 py-2 text-left typo-body-xs-regular text-text_one hover:bg-gray-50 disabled:opacity-50'
                                             >
                                                 {item.auctionActive ? 'Deactivate Auction' : 'Activate Auction'}
                                             </button>
@@ -227,7 +227,7 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
                                         <button
                                             onClick={handleDeleteItem}
                                             disabled={isDeleting}
-                                            className='w-full px-4 py-2 text-left font-poppins text-[13px] text-[#FF674B] hover:bg-red-50 disabled:opacity-50'
+                                            className='w-full px-4 py-2 text-left typo-body-xs-regular text-accent-coral hover:bg-red-50 disabled:opacity-50'
                                         >
                                             Delete Item
                                         </button>
@@ -244,12 +244,12 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
                         <>
                             <button
                                 onClick={() => router.push(`/post-an-item/form?from=${item.id}`)}
-                                className='px-4 py-1.5 border border-[#A49E9E] rounded-lg font-poppins text-[12px] text-[#A49E9E] hover:border-primary hover:text-primary transition-colors'
+                                className='px-4 py-1.5 border border-border-muted-alt rounded-lg typo-body-sm-regular text-text-muted-alt hover:border-primary hover:text-primary transition-colors'
                             >
                                 List Item
                             </button>
                             <button
-                                className='px-4 py-1.5 border border-[#A49E9E] rounded-lg font-poppins text-[12px] text-[#A49E9E] hover:border-primary hover:text-primary transition-colors'
+                                className='px-4 py-1.5 border border-border-muted-alt rounded-lg typo-body-sm-regular text-text-muted-alt hover:border-primary hover:text-primary transition-colors'
                             >
                                 Post auction again
                             </button>
@@ -259,14 +259,14 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
                         <>
                             <button
                                 onClick={() => router.push(`/post-an-item/form?from=${item.id}`)}
-                                className='px-4 py-1.5 border border-[#A49E9E] rounded-lg font-poppins text-[12px] text-[#A49E9E] hover:border-primary hover:text-primary transition-colors'
+                                className='px-4 py-1.5 border border-border-muted-alt rounded-lg typo-body-sm-regular text-text-muted-alt hover:border-primary hover:text-primary transition-colors'
                             >
                                 List Item
                             </button>
                             <button
                                 onClick={handleToggleAuction}
                                 disabled={isUpdatingAuction}
-                                className='px-4 py-1.5 border border-[#A49E9E] rounded-lg font-poppins text-[12px] text-[#A49E9E] hover:border-primary hover:text-primary transition-colors disabled:opacity-50'
+                                className='px-4 py-1.5 border border-border-muted-alt rounded-lg typo-body-sm-regular text-text-muted-alt hover:border-primary hover:text-primary transition-colors disabled:opacity-50'
                             >
                                 Deactivate Item
                             </button>
@@ -275,12 +275,12 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
                     {!item.isAuction && item.type === 'listed' && (
                         <>
                             <button
-                                className='px-4 py-1.5 border border-[#A49E9E] rounded-lg font-poppins text-[12px] text-[#A49E9E] hover:border-primary hover:text-primary transition-colors'
+                                className='px-4 py-1.5 border border-border-muted-alt rounded-lg typo-body-sm-regular text-text-muted-alt hover:border-primary hover:text-primary transition-colors'
                             >
                                 Post as Auction
                             </button>
                             <button
-                                className='px-4 py-1.5 border border-[#A49E9E] rounded-lg font-poppins text-[12px] text-[#A49E9E] hover:border-primary hover:text-primary transition-colors'
+                                className='px-4 py-1.5 border border-border-muted-alt rounded-lg typo-body-sm-regular text-text-muted-alt hover:border-primary hover:text-primary transition-colors'
                             >
                                 Deactivate Item
                             </button>
@@ -288,7 +288,7 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
                     )}
                     {item.type === 'deactivated' && (
                         <button
-                            className='px-4 py-1.5 border border-[#A49E9E] rounded-lg font-poppins text-[12px] text-[#A49E9E] hover:border-primary hover:text-primary transition-colors'
+                            className='px-4 py-1.5 border border-border-muted-alt rounded-lg typo-body-sm-regular text-text-muted-alt hover:border-primary hover:text-primary transition-colors'
                         >
                             Reactivate
                         </button>
