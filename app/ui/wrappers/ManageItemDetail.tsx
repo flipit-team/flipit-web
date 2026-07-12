@@ -43,179 +43,50 @@ interface Offer {
     dateCreated: string;
 }
 
-interface ItemData {
-    id: number;
-    title: string;
-    description: string;
-    imageUrls: string[];
-    cashAmount: number;
-    condition: string;
-    brand: string;
-    location: string;
-    category: string;
-    subcategory: string;
-    dateCreated: string;
-    promoted: boolean;
-    views: number;
-    likes: number;
-    isAuction: boolean;
-    // Auction specific
-    auctionEndDate?: string;
-    currentBid?: number;
-    totalBids?: number;
-    reservePrice?: number;
-}
-
-// Dummy data
-const dummyItem: ItemData = {
-    id: 1,
-    title: 'iPhone 13 Pro Max 256GB - Pacific Blue',
-    description:
-        'Excellent condition iPhone 13 Pro Max. Barely used, comes with original box, charger, and protective case. Screen protector applied since day one. Battery health at 98%. No scratches or dents.',
-    imageUrls: [
-        '/images/placeholders/placeholder-product.svg',
-        '/images/placeholders/placeholder-product.svg',
-        '/images/placeholders/placeholder-product.svg'
-    ],
-    cashAmount: 850000,
-    condition: 'Like New',
-    brand: 'Apple',
-    location: 'LA-IKJ, LA',
-    category: 'Electronics & Gadgets',
-    subcategory: 'Smartphones',
-    dateCreated: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    promoted: true,
-    views: 247,
-    likes: 32,
-    isAuction: false
-};
-
-const dummyAuctionItem: ItemData = {
-    ...dummyItem,
-    title: 'MacBook Pro M2 16" - Space Gray (Live Auction)',
-    isAuction: true,
-    auctionEndDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
-    currentBid: 1200000,
-    totalBids: 15,
-    reservePrice: 1500000
-};
-
-const dummyOffers: Offer[] = [
-    {
-        id: 1,
-        bidder: {
-            id: 101,
-            name: 'John Doe',
-            avatar: '/images/placeholders/placeholder-avatar.svg',
-            rating: 4.5,
-            verified: true
-        },
-        withCash: true,
-        cashAmount: 800000,
-        status: 'pending',
-        dateCreated: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString()
-    },
-    {
-        id: 2,
-        bidder: {
-            id: 102,
-            name: 'Sarah Smith',
-            avatar: '/images/placeholders/placeholder-avatar.svg',
-            rating: 4.8,
-            verified: true
-        },
-        withCash: true,
-        cashAmount: 750000,
-        offeredItem: {
-            id: 201,
-            title: 'iPad Pro 12.9" M1',
-            image: '/images/placeholders/placeholder-product.svg',
-            value: 120000
-        },
-        status: 'pending',
-        dateCreated: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString()
-    },
-    {
-        id: 3,
-        bidder: {
-            id: 103,
-            name: 'Mike Johnson',
-            avatar: '/images/placeholders/placeholder-avatar.svg',
-            rating: 4.2,
-            verified: false
-        },
-        withCash: true,
-        cashAmount: 700000,
-        status: 'pending',
-        dateCreated: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString()
-    },
-    {
-        id: 4,
-        bidder: {
-            id: 104,
-            name: 'Emily Davis',
-            avatar: '/images/placeholders/placeholder-avatar.svg',
-            rating: 4.9,
-            verified: true
-        },
-        withCash: true,
-        cashAmount: 820000,
-        offeredItem: {
-            id: 203,
-            title: 'Apple Watch Series 8',
-            image: '/images/placeholders/placeholder-product.svg',
-            value: 80000
-        },
-        status: 'accepted',
-        dateCreated: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString()
-    },
-    {
-        id: 5,
-        bidder: {
-            id: 105,
-            name: 'Robert Wilson',
-            avatar: '/images/placeholders/placeholder-avatar.svg',
-            rating: 3.8,
-            verified: false
-        },
-        withCash: false,
-        offeredItem: {
-            id: 204,
-            title: 'Samsung Galaxy S23 Ultra',
-            image: '/images/placeholders/placeholder-product.svg',
-            value: 850000
-        },
-        status: 'declined',
-        dateCreated: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString()
-    },
-    {
-        id: 6,
-        bidder: {
-            id: 106,
-            name: 'Lisa Anderson',
-            avatar: '/images/placeholders/placeholder-avatar.svg',
-            rating: 4.6,
-            verified: true
-        },
-        withCash: true,
-        cashAmount: 650000,
-        status: 'declined',
-        dateCreated: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString()
-    }
-];
 
 interface Props {
-    item?: any;
+    item: any;
     offers?: any[];
-    isAuction?: boolean;
 }
 
-const ManageItemDetail = ({item: propItem, offers: propOffers, isAuction = false}: Props) => {
-    // Use provided data or fall back to dummy data
-    const item = propItem || (isAuction ? dummyAuctionItem : dummyItem);
-    // TODO: Replace with real API data once offer endpoints return matching shape
-    // Currently using dummy data so the UI can be previewed
-    const [offers, setOffers] = useState<Offer[]>(propOffers || []);
+function normalizeStatus(raw: string): 'pending' | 'accepted' | 'declined' {
+    const s = raw?.toLowerCase() ?? '';
+    if (s === 'accepted') return 'accepted';
+    if (s === 'rejected' || s === 'declined') return 'declined';
+    return 'pending'; // 'pending', 'highest', unknown → pending
+}
+
+function normalizeOffer(raw: any): Offer {
+    const sentBy = raw.sentBy ?? {};
+    const offeredItem = raw.offeredItem ?? null;
+    return {
+        id: raw.id,
+        bidder: {
+            id: sentBy.id ?? 0,
+            name: [sentBy.firstName, sentBy.lastName].filter(Boolean).join(' ') || 'Unknown',
+            avatar: sentBy.avatar || '/images/placeholders/placeholder-avatar.svg',
+            rating: sentBy.avgRating ?? 0,
+            verified: sentBy.phoneNumberVerified ?? false,
+        },
+        withCash: raw.withCash ?? false,
+        cashAmount: raw.cashAmount,
+        offeredItem: offeredItem
+            ? {
+                  id: offeredItem.id,
+                  title: offeredItem.title || offeredItem.name || 'Item',
+                  image: offeredItem.imageUrls?.[0] || '/images/placeholders/placeholder-product.svg',
+                  value: offeredItem.cashAmount ?? 0,
+              }
+            : undefined,
+        status: normalizeStatus(raw.status),
+        dateCreated: raw.dateCreated ?? new Date().toISOString(),
+    };
+}
+
+const ManageItemDetail = ({item, offers: propOffers}: Props) => {
+    const [offers, setOffers] = useState<Offer[]>(() =>
+        propOffers && propOffers.length > 0 ? propOffers.map(normalizeOffer) : []
+    );
     const [hasAcceptedOffer, setHasAcceptedOffer] = useState(false);
     const [activeTab, setActiveTab] = useState<'details' | 'offers'>('details');
     const [isCreatingTransaction, setIsCreatingTransaction] = useState(false);

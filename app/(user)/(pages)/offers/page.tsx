@@ -14,10 +14,37 @@ async function fetchOffers(userId: string, token: string, direction: 'sent' | 'r
         });
 
         if (!res.ok) return [];
-        return await res.json();
+        const data = await res.json();
+        // Handle both plain array and paginated wrapper {content: [...]}
+        if (Array.isArray(data)) return data;
+        if (data?.content && Array.isArray(data.content)) return data.content;
+        return [];
     } catch {
         return [];
     }
+}
+
+async function enrichWithImages(offers: any[], token: string) {
+    const itemIds = Array.from(new Set(offers.map((o: any) => o.item?.id).filter(Boolean))) as number[];
+    const itemMap: Record<number, string[]> = {};
+
+    await Promise.all(itemIds.map(async (id) => {
+        try {
+            const res = await fetch(`${API_BASE_PATH}/items/${id}`, {
+                headers: { Authorization: `Bearer ${token}` },
+                cache: 'no-store',
+            });
+            if (res.ok) {
+                const item = await res.json();
+                itemMap[id] = item.imageUrls || [];
+            }
+        } catch {}
+    }));
+
+    return offers.map(offer => ({
+        ...offer,
+        item: { ...offer.item, imageUrls: itemMap[offer.item?.id] ?? [] },
+    }));
 }
 
 async function fetchUserBids(token: string) {
@@ -31,7 +58,10 @@ async function fetchUserBids(token: string) {
         });
 
         if (!res.ok) return [];
-        return await res.json();
+        const data = await res.json();
+        if (Array.isArray(data)) return data;
+        if (data?.content && Array.isArray(data.content)) return data.content;
+        return [];
     } catch {
         return [];
     }
@@ -46,10 +76,15 @@ export default async function OffersPage() {
         redirect('/login');
     }
 
-    const [sentOffers, receivedOffers, userBids] = await Promise.all([
+    const [rawSent, rawReceived, userBids] = await Promise.all([
         fetchOffers(userId, token, 'sent'),
         fetchOffers(userId, token, 'received'),
         fetchUserBids(token),
+    ]);
+
+    const [sentOffers, receivedOffers] = await Promise.all([
+        enrichWithImages(rawSent, token),
+        enrichWithImages(rawReceived, token),
     ]);
 
     return <Offers sentOffers={sentOffers} receivedOffers={receivedOffers} currentUserId={Number(userId)} userBids={userBids} />;

@@ -38,7 +38,7 @@ const TransactionTypeBadge: React.FC<TransactionTypeBadgeProps> = ({
 
     return (
         <div
-            className={`px-4 py-2 xs:px-2 xs:py-1 rounded-3xl typo-body-sm-regular xs:text-[10px] ${style.className} ${className}`}
+            className={`w-fit px-4 py-2 xs:px-2 xs:py-1 rounded-3xl typo-body-sm-regular xs:text-[10px] ${style.className} ${className}`}
         >
             {style.label}
         </div>

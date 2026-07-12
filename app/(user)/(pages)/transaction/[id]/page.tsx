@@ -3,6 +3,7 @@ import {redirect} from 'next/navigation';
 import TransactionHubV2 from '~/ui/wrappers/TransactionHubV2';
 import {TransactionDTO} from '~/types/transaction';
 import {API_BASE_PATH} from '~/lib/config';
+import {USE_MOCK, getTransaction} from '~/lib/mock-store';
 
 interface PageProps {
     params: Promise<{id: string}>;
@@ -18,14 +19,9 @@ async function getTransactionData(transactionId: string, token: string): Promise
             cache: 'no-store',
         });
 
-        if (!response.ok) {
-            console.error('Failed to fetch transaction:', response.status, response.statusText);
-            return null;
-        }
-
+        if (!response.ok) return null;
         return await response.json();
-    } catch (error) {
-        console.error('Error fetching transaction:', error);
+    } catch {
         return null;
     }
 }
@@ -35,19 +31,17 @@ export default async function TransactionPage({params}: PageProps) {
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
 
-    if (!token) {
-        redirect('/login');
-    }
+    if (!token) redirect('/login');
 
-    const transactionData = await getTransactionData(id, token);
+    const transactionData = USE_MOCK
+        ? getTransaction(Number(id))
+        : await getTransactionData(id, token);
 
     if (!transactionData) {
         return (
             <div className='min-h-screen bg-gray-50 flex items-center justify-center'>
                 <div className='text-center'>
-                    <h2 className='font-poppins typo-heading-md-semibold text-text_one mb-2'>
-                        Transaction Not Found
-                    </h2>
+                    <h2 className='font-poppins typo-heading-md-semibold text-text_one mb-2'>Transaction Not Found</h2>
                     <p className='font-poppins typo-body-md-regular text-text_four'>
                         The transaction you&apos;re looking for doesn&apos;t exist or you don&apos;t have access to it.
                     </p>
@@ -57,7 +51,7 @@ export default async function TransactionPage({params}: PageProps) {
     }
 
     return (
-        <div className='min-h-screen bg-gray-50'>
+        <div className='min-h-screen bg-gray-50 xs:bg-[#FFFFF0]'>
             <TransactionHubV2 transaction={transactionData} />
         </div>
     );

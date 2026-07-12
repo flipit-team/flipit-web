@@ -23,7 +23,7 @@ const ProgressTracker: React.FC<Props> = ({steps, currentStep, status = 'active'
     };
 
     return (
-        <div className='border border-border-DEFAULT rounded-xl p-6 xs:p-4'>
+        <div className='border border-border-DEFAULT rounded-xl p-6 xs:border-0 xs:p-0 xs:rounded-none'>
             {/* Desktop: horizontal layout */}
             <div className='flex items-start justify-between xs:hidden'>
                 {steps.map((step, index) => {
@@ -61,25 +61,37 @@ const ProgressTracker: React.FC<Props> = ({steps, currentStep, status = 'active'
                 })}
             </div>
 
-            {/* Mobile: vertical stepper layout */}
-            <div className='hidden xs:flex flex-col'>
-                {steps.map((step, index) => {
-                    const stepStatus = getStepStatus(index);
-                    const isCurrent = stepStatus === 'current';
-                    const isCompleted = stepStatus === 'completed';
-                    const isLast = index === steps.length - 1;
+            {/* Mobile: absolute progress bar layout */}
+            <div className='hidden xs:block relative px-5 py-4'>
+                {/* Base track — full height, light teal */}
+                <div
+                    className='absolute w-2 rounded-xl bg-surface-teal'
+                    style={{left: '31px', top: '31px', bottom: '31px'}}
+                />
+                {/* Active track — from step 0 center through bottom of currentStep circle */}
+                {currentStep > 0 && status !== 'cancelled' && (
+                    <div
+                        className='absolute w-2 bg-primary rounded-t-xl'
+                        style={{
+                            left: '31px',
+                            top: '31px',
+                            height: `${Math.min(currentStep, steps.length - 1) * 70 + 15}px`,
+                        }}
+                    />
+                )}
+                <div className='flex flex-col gap-10'>
+                    {steps.map((step, index) => {
+                        const stepStatus = getStepStatus(index);
+                        const isCurrent = stepStatus === 'current';
+                        const isCompleted = stepStatus === 'completed';
 
-                    return (
-                        <div key={index} className='flex items-start gap-3'>
-                            {/* Circle + connecting line column */}
-                            <div className='flex flex-col items-center'>
+                        return (
+                            <div key={index} className='flex items-center gap-3 relative z-10'>
                                 <div
-                                    className={`w-[32px] h-[32px] rounded-full flex items-center justify-center text-[13px] font-semibold flex-shrink-0 ${
-                                        isCurrent
+                                    className={`w-[30px] h-[30px] rounded-full flex items-center justify-center text-[14px] font-bold flex-shrink-0 ${
+                                        isCurrent || isCompleted
                                             ? 'bg-primary text-white'
-                                            : isCompleted
-                                              ? 'bg-primary text-white'
-                                              : 'border-2 border-border-muted-alt text-text-muted-alt'
+                                            : 'bg-white border-2 border-primary text-text-muted-alt'
                                     }`}
                                 >
                                     {isCompleted ? (
@@ -88,23 +100,15 @@ const ProgressTracker: React.FC<Props> = ({steps, currentStep, status = 'active'
                                         index + 1
                                     )}
                                 </div>
-                                {/* Vertical connecting line */}
-                                {!isLast && (
-                                    <div className={`w-[2px] h-6 my-1 ${
-                                        isCompleted ? 'bg-primary' : 'bg-border-muted-alt'
-                                    }`} />
-                                )}
+                                <p className={`font-poppins text-[14px] font-medium capitalize ${
+                                    isCurrent || isCompleted ? 'text-text_one' : 'text-text-muted-alt'
+                                }`}>
+                                    {step.label}
+                                </p>
                             </div>
-
-                            {/* Label */}
-                            <p className={`pt-1.5 typo-body-sm-regular ${
-                                isCurrent || isCompleted ? 'text-text_one font-semibold' : 'text-text-muted-alt'
-                            }`}>
-                                {step.label}
-                            </p>
-                        </div>
-                    );
-                })}
+                        );
+                    })}
+                </div>
             </div>
         </div>
     );

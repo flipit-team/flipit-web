@@ -1,15 +1,18 @@
 'use client';
 import Image from 'next/image';
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import {useRouter} from 'next/navigation';
 import NoData from '../common/no-data/NoData';
 import TransactionTypeBadge from '../common/badges/TransactionTypeBadge';
+import LogoLoader from '../common/logo-loader/LogoLoader';
 import {Check} from 'lucide-react';
 import {ClockFilledIcon} from '../icons';
 import {OfferDTO} from '~/types/api';
+import {formatToNaira} from '~/utils/helpers';
 import OffersService from '~/services/offers.service';
 import TransactionService from '~/services/transaction.service';
-import {formatToNaira} from '~/utils/helpers';
+import {TransactionStatus} from '~/types/transaction';
+import ErrorModal from '../common/modals/Error';
 
 // Helpers
 const getOfferTradeType = (offer: OfferDTO): 'cash' | 'swap' | 'mixed' => {
@@ -34,8 +37,14 @@ const getOfferText = (offer: OfferDTO): string => {
     return parts.join(' + ') || 'Offer';
 };
 
+const normalizeStatus = (status: string): string => {
+    const s = status?.toUpperCase();
+    if (s === 'HIGHEST') return 'PENDING';
+    return s;
+};
+
 const getStatusStyle = (status: string) => {
-    switch (status) {
+    switch (normalizeStatus(status)) {
         case 'ACCEPTED': return 'text-success-dark';
         case 'PENDING': return 'text-text-muted-alt';
         case 'REJECTED': return 'text-accent-coral';
@@ -44,7 +53,7 @@ const getStatusStyle = (status: string) => {
 };
 
 const getStatusLabel = (status: string) => {
-    switch (status) {
+    switch (normalizeStatus(status)) {
         case 'ACCEPTED': return 'Accepted';
         case 'PENDING': return 'Pending';
         case 'REJECTED': return 'Rejected';
@@ -67,7 +76,7 @@ const formatTimeAgo = (dateStr: string): string => {
 };
 
 const getItemImage = (offer: OfferDTO): string => {
-    return offer.item?.imageUrls?.[0] || '/images/placeholders/placeholder-product.svg';
+    return (offer.item?.imageUrls ?? [])[0] || '/images/placeholders/placeholder-product.svg';
 };
 
 // User bid from API
@@ -117,52 +126,80 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
     const [sentOffers, setSentOffers] = useState<OfferDTO[]>(initialSent);
     const [receivedOffers, setReceivedOffers] = useState<OfferDTO[]>(initialReceived);
     const [loadingId, setLoadingId] = useState<number | null>(null);
+    const [isNavigating, setIsNavigating] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    // Maps offerId → {txId, status} for accepted offers that have a transaction
+    const [txStatuses, setTxStatuses] = useState<Record<number, {txId: number; status: TransactionStatus}>>({});
+
+    // On mount: first read cached status from localStorage (instant, no flash),
+    // then fetch live status from the API to stay in sync.
+    useEffect(() => {
+        // Step 1 — synchronous localStorage read for both sent and received offers
+        const cached: Record<number, {txId: number; status: TransactionStatus}> = {};
+        for (const offer of [...initialSent, ...initialReceived]) {
+            const stored = localStorage.getItem(`offer_tx_${offer.id}`);
+            if (!stored) continue;
+            const txId = Number(stored);
+            const cachedStatus = localStorage.getItem(`tx_status_${txId}`) as TransactionStatus | null;
+            cached[offer.id] = {txId, status: cachedStatus || 'PENDING'};
+        }
+        if (Object.keys(cached).length > 0) setTxStatuses(cached);
+
+        // Step 2 — async API fetch to get the real current status (parallel)
+        const fetchStatuses = async () => {
+            const offersWithTx = [...initialSent, ...initialReceived].filter(o =>
+                localStorage.getItem(`offer_tx_${o.id}`)
+            );
+            if (offersWithTx.length === 0) return;
+
+            const results = await Promise.all(offersWithTx.map(async (offer) => {
+                const txId = Number(localStorage.getItem(`offer_tx_${offer.id}`));
+                const {data} = await TransactionService.getTransactionById(txId);
+                if (!data) return null;
+                localStorage.setItem(`tx_status_${txId}`, data.status);
+                return [offer.id, {txId, status: data.status as TransactionStatus}] as const;
+            }));
+
+            const updates = Object.fromEntries(results.filter((r): r is NonNullable<typeof r> => r !== null));
+            if (Object.keys(updates).length > 0) setTxStatuses(prev => ({...prev, ...updates}));
+        };
+        fetchStatuses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     // Compute stats from real data
     const stats = {
-        acceptedOffers: receivedOffers.filter(o => o.status === 'ACCEPTED').length,
-        rejectedOffers: receivedOffers.filter(o => o.status === 'REJECTED').length,
-        pendingOffers: receivedOffers.filter(o => o.status === 'PENDING').length,
+        acceptedOffers: receivedOffers.filter(o => normalizeStatus(o.status) === 'ACCEPTED').length,
+        rejectedOffers: receivedOffers.filter(o => normalizeStatus(o.status) === 'REJECTED').length,
+        pendingOffers: receivedOffers.filter(o => normalizeStatus(o.status) === 'PENDING').length,
         totalReceived: receivedOffers.length,
     };
 
     const handleAcceptOffer = async (offerId: number) => {
         setLoadingId(offerId);
         const {error} = await OffersService.acceptOffer(offerId);
+        if (error) { setLoadingId(null); setErrorMessage('Failed to accept offer. Please try again.'); return; }
 
-        if (error) {
-            setLoadingId(null);
-            alert('Failed to accept offer. Please try again.');
-            return;
-        }
+        const offer = receivedOffers.find(o => o.id === offerId);
+        if (!offer) { setLoadingId(null); return; }
 
-        // Update offer in local state
         setReceivedOffers(prev => prev.map(o => o.id === offerId ? {...o, status: 'ACCEPTED'} : o));
 
-        // Create transaction from the accepted offer
-        const offer = receivedOffers.find(o => o.id === offerId);
-        if (offer) {
-            const txType = (offer.offeredItem && offer.withCash)
-                ? 'SWAP_WITH_CASH'
-                : offer.offeredItem
-                  ? 'SWAP'
-                  : 'CASH_ONLY';
-
-            const {data: transactionData, error: txError} = await TransactionService.createTransaction({
-                buyerId: offer.sentBy.id,
-                sellerId: offer.item.seller.id,
-                amount: offer.cashAmount || 0,
-                type: txType,
-                description: offer.item.title,
-            });
-
-            setLoadingId(null);
-
-            if (!txError && transactionData) {
-                router.push(`/transaction/${transactionData.id}`);
-            }
-        } else {
-            setLoadingId(null);
+        const txType = (offer.offeredItem && offer.withCash) ? 'SWAP_WITH_CASH' : offer.offeredItem ? 'SWAP' : 'CASH_ONLY';
+        const {data, error: txError} = await TransactionService.createTransaction({
+            buyerId: offer.sentBy.id,
+            sellerId: offer.item.seller.id,
+            amount: offer.cashAmount || 0,
+            type: txType,
+            description: offer.item.title,
+        });
+        setLoadingId(null);
+        if (!txError && data) {
+            localStorage.setItem(`offer_tx_${offerId}`, String(data.id));
+            localStorage.setItem(`tx_status_${data.id}`, data.status || 'SUCCESS');
+            setTxStatuses(prev => ({...prev, [offerId]: {txId: data.id, status: data.status as TransactionStatus || 'SUCCESS'}}));
+            setIsNavigating(true);
+            router.push(`/transaction/${data.id}`);
         }
     };
 
@@ -170,38 +207,56 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
         setLoadingId(offerId);
         const {error} = await OffersService.rejectOffer(offerId);
         setLoadingId(null);
-
-        if (error) {
-            alert('Failed to decline offer. Please try again.');
-            return;
-        }
-
+        if (error) { setErrorMessage('Failed to decline offer. Please try again.'); return; }
         setReceivedOffers(prev => prev.map(o => o.id === offerId ? {...o, status: 'REJECTED'} : o));
     };
 
     const handleDeleteOffer = async (offerId: number) => {
         if (!confirm('Are you sure you want to delete this offer?')) return;
-
         setLoadingId(offerId);
         const {error} = await OffersService.deleteOffer(offerId);
         setLoadingId(null);
-
-        if (error) {
-            alert('Failed to delete offer. Please try again.');
-            return;
-        }
-
+        if (error) { alert('Failed to delete offer.'); return; }
         setSentOffers(prev => prev.filter(o => o.id !== offerId));
+    };
+
+    const handleProceedToCheckout = async (offer: OfferDTO) => {
+        const tradeType = getOfferTradeType(offer);
+        const txType = tradeType === 'mixed' ? 'SWAP_WITH_CASH' : tradeType === 'swap' ? 'SWAP' : 'CASH_ONLY';
+        setLoadingId(offer.id);
+        const {data, error} = await TransactionService.createTransaction({
+            buyerId: offer.sentBy.id,
+            sellerId: offer.item.seller.id,
+            amount: offer.cashAmount || 0,
+            type: txType,
+            description: offer.item.title,
+        });
+        setLoadingId(null);
+        if (!error && data) {
+            localStorage.setItem(`offer_tx_${offer.id}`, String(data.id));
+            // Signal the transaction page to open the payment overlay immediately
+            sessionStorage.setItem(`checkout_pending_${data.id}`, '1');
+            setIsNavigating(true);
+            router.push(`/transaction/${data.id}`);
+        }
     };
 
     return (
         <div className='mx-[120px] xs:mx-4 my-6 xs:my-0 xs:pt-4 xs:pb-24'>
+            {isNavigating && <LogoLoader />}
+            {errorMessage && (
+                <div className='fixed inset-0 bg-black bg-opacity-50 h-screen flex justify-center items-center z-modal'>
+                    <div className='relative bg-white rounded-2xl w-[558px] h-max xs:w-full py-[48px] px-[56px] xs:px-8 xs:py-8 mx-6'>
+                        <ErrorModal message={errorMessage} onClose={() => setErrorMessage('')} />
+                    </div>
+                </div>
+            )}
             {/* Mobile header with back button */}
-            <div className='hidden xs:flex items-center mb-4 relative'>
-                <button onClick={() => router.back()} className='w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 absolute left-0'>
+            <div className='hidden xs:flex items-center gap-3 mb-4'>
+                <button onClick={() => router.back()} className='w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0'>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                 </button>
-                <h1 className='font-poppins typo-heading-md-semibold text-text_one text-center w-full'>
+                <h1 className='font-poppins typo-heading-md-semibold text-text_one'>
                     {activeTab === 'my-bids' ? 'My Bids' : 'Offers Dashboard'}
                 </h1>
             </div>
@@ -253,6 +308,10 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
                             const tradeType = getOfferTradeType(offer);
                             const tradeProps = getTradeTypeProps(tradeType);
                             const isLoading = loadingId === offer.id;
+                            const status = normalizeStatus(offer.status);
+                            const txInfo = txStatuses[offer.id];
+                            const txId = txInfo?.txId;
+                            const isDone = ['COMPLETED', 'RELEASED'].includes(txInfo?.status ?? '');
                             return (
                                 <div key={offer.id} className='border border-border-DEFAULT rounded-2xl overflow-hidden bg-white'>
                                     <div className='flex'>
@@ -272,40 +331,61 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
 
                                         {/* Details */}
                                         <div className='py-3 pr-3 flex flex-col justify-center flex-1 min-w-0'>
-                                            <h3 className='font-poppins typo-body-md-semibold text-text_one truncate'>
+                                            <h3 className='font-poppins typo-body-md-semibold text-text_one line-clamp-2 leading-tight'>
                                                 {offer.item?.title}
                                             </h3>
-                                            <p className='font-poppins typo-body-xs-regular text-text_four mt-0.5'>Your Offer</p>
-                                            <p className='font-poppins typo-body-sm-semibold text-text_one truncate'>
+                                            <p className='font-poppins typo-body-xs-regular text-text-muted-alt mt-1'>Your Offer</p>
+                                            <p className='font-poppins typo-body-sm-regular text-text_one truncate'>
                                                 {getOfferText(offer)}
                                             </p>
-                                            {offer.status === 'ACCEPTED' && (
-                                                <p className='font-poppins typo-body-sm-semibold text-success-dark mt-0.5 flex items-center gap-1'>
-                                                    <Check size={14} /> Accepted
+                                            {status === 'ACCEPTED' && (
+                                                <p className='font-poppins typo-body-sm-regular text-success-dark mt-1 flex items-center gap-1'>
+                                                    <Check size={14} /> {isDone ? 'Completed' : 'Accepted'}
                                                 </p>
                                             )}
-                                            {offer.status === 'REJECTED' && (
-                                                <p className='font-poppins typo-body-sm-semibold text-accent-coral mt-0.5'>Rejected</p>
+                                            {status === 'REJECTED' && (
+                                                <p className='font-poppins typo-body-sm-regular text-accent-coral mt-1'>Rejected</p>
                                             )}
-                                            {offer.status === 'PENDING' && (
-                                                <p className='font-poppins typo-body-sm-semibold text-text-muted-alt mt-0.5'>Pending</p>
+                                            {status === 'PENDING' && (
+                                                isDone
+                                                    ? <p className='font-poppins typo-body-sm-regular text-success-dark mt-1 flex items-center gap-1'><Check size={14} /> Completed</p>
+                                                    : <p className='font-poppins typo-body-sm-regular text-text-muted-alt mt-1'>Pending</p>
                                             )}
                                         </div>
                                     </div>
 
                                     {/* Action buttons */}
                                     <div className='flex gap-2 px-3 pb-3'>
-                                        {offer.status === 'ACCEPTED' && (
-                                            <>
-                                                <button className='flex-1 py-2.5 bg-primary text-white rounded-lg font-poppins typo-body-xs-medium'>
-                                                    Proceed to checkout
+                                        {(status === 'ACCEPTED' || status === 'PENDING') && (
+                                            txId ? (
+                                                <button
+                                                    onClick={() => { setIsNavigating(true); router.push(`/transaction/${txId}`); }}
+                                                    className='flex-1 py-2.5 bg-primary text-white rounded-lg font-poppins typo-body-xs-medium'
+                                                >
+                                                    {isDone ? 'View Transaction' : 'Continue Transaction'}
                                                 </button>
-                                                <button className='flex-1 py-2.5 border border-primary rounded-lg font-poppins typo-body-xs-medium text-primary'>
-                                                    Cancel Transaction
-                                                </button>
-                                            </>
+                                            ) : (
+                                                <>
+                                                    <button
+                                                        onClick={() => handleProceedToCheckout(offer)}
+                                                        disabled={isLoading}
+                                                        className='flex-1 py-2.5 bg-primary text-white rounded-lg font-poppins typo-body-xs-medium disabled:opacity-50'
+                                                    >
+                                                        {isLoading ? 'Loading...' : 'Proceed to checkout'}
+                                                    </button>
+                                                    {status === 'PENDING' && (
+                                                        <button
+                                                            onClick={() => handleDeleteOffer(offer.id)}
+                                                            disabled={isLoading}
+                                                            className='flex-1 py-2.5 border border-primary rounded-lg font-poppins typo-body-xs-medium text-primary disabled:opacity-50'
+                                                        >
+                                                            {isLoading ? 'Deleting...' : 'Delete Offer'}
+                                                        </button>
+                                                    )}
+                                                </>
+                                            )
                                         )}
-                                        {offer.status === 'REJECTED' && (
+                                        {status === 'REJECTED' && (
                                             <>
                                                 <button
                                                     onClick={() => handleDeleteOffer(offer.id)}
@@ -318,15 +398,6 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
                                                     Resubmit Offer
                                                 </button>
                                             </>
-                                        )}
-                                        {offer.status === 'PENDING' && (
-                                            <button
-                                                onClick={() => handleDeleteOffer(offer.id)}
-                                                disabled={isLoading}
-                                                className='flex-1 py-2.5 bg-primary text-white rounded-lg font-poppins typo-body-xs-medium disabled:opacity-50'
-                                            >
-                                                {isLoading ? 'Deleting...' : 'Delete Offer'}
-                                            </button>
                                         )}
                                     </div>
                                 </div>
@@ -367,7 +438,10 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
                                 const tradeType = getOfferTradeType(offer);
                                 const tradeProps = getTradeTypeProps(tradeType);
                                 const isLoading = loadingId === offer.id;
-                                const isPending = offer.status === 'PENDING';
+                                const isPending = normalizeStatus(offer.status) === 'PENDING';
+                                const txInfo = txStatuses[offer.id];
+                                const txId = txInfo?.txId;
+                                const isDone = ['COMPLETED', 'RELEASED'].includes(txInfo?.status ?? '');
                                 return (
                                     <div
                                         key={offer.id}
@@ -416,19 +490,26 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
                                                             disabled={isLoading}
                                                             className='flex-1 py-2.5 bg-primary text-white rounded-lg font-poppins typo-body-xs-medium disabled:opacity-50'
                                                         >
-                                                            Accept Offer
+                                                            {isLoading ? 'Accepting...' : 'Accept Offer'}
                                                         </button>
                                                         <button
                                                             onClick={() => handleRejectOffer(offer.id)}
                                                             disabled={isLoading}
                                                             className='flex-1 py-2.5 border border-primary text-primary rounded-lg font-poppins typo-body-xs-medium disabled:opacity-50'
                                                         >
-                                                            Decline Offer
+                                                            {isLoading ? 'Declining...' : 'Decline Offer'}
                                                         </button>
                                                     </>
+                                                ) : txId ? (
+                                                    <button
+                                                        onClick={() => { setIsNavigating(true); router.push(`/transaction/${txId}`); }}
+                                                        className='flex-1 py-2.5 bg-primary text-white rounded-lg font-poppins typo-body-xs-medium'
+                                                    >
+                                                        {isDone ? 'View Transaction' : 'Continue Transaction'}
+                                                    </button>
                                                 ) : (
                                                     <span className={`font-poppins typo-body-sm-semibold ${getStatusStyle(offer.status)}`}>
-                                                        {getStatusLabel(offer.status)}
+                                                        {isDone ? 'Completed' : getStatusLabel(offer.status)}
                                                     </span>
                                                 )}
                                             </div>
@@ -500,6 +581,18 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
                                                         >
                                                             {isLoading ? 'Declining...' : 'Decline'}
                                                         </button>
+                                                    </div>
+                                                ) : txId ? (
+                                                    <div className='flex items-center gap-4 mt-4'>
+                                                        <button
+                                                            onClick={() => { setIsNavigating(true); router.push(`/transaction/${txId}`); }}
+                                                            className='px-8 py-2.5 bg-primary text-white rounded-lg font-poppins typo-body-md-medium hover:bg-primary/90 transition-colors'
+                                                        >
+                                                            {isDone ? 'View Transaction' : 'Continue Transaction'}
+                                                        </button>
+                                                        <span className={`font-poppins typo-body-md-semibold ${isDone ? 'text-success-dark' : 'text-primary'}`}>
+                                                            {isDone ? 'Completed' : getStatusLabel(offer.status)}
+                                                        </span>
                                                     </div>
                                                 ) : (
                                                     <div className='mt-4'>

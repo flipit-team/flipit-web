@@ -38,6 +38,28 @@ export class TransactionService {
     );
   }
 
+  // Simulate package arriving at buyer's door (mock-only → ARRIVED)
+  static async markArrived(transactionId: number) {
+    return handleApiCall(() =>
+      apiClient.put<TransactionDTO>(
+        `/v1/transactions/${transactionId}/arrive`,
+        {},
+        { requireAuth: true }
+      )
+    );
+  }
+
+  // Mark item as shipped (seller deposits item → DELIVERED)
+  static async shipItem(transactionId: number) {
+    return handleApiCall(() =>
+      apiClient.put<TransactionDTO>(
+        `/v1/transactions/${transactionId}/ship`,
+        {},
+        { requireAuth: true }
+      )
+    );
+  }
+
   // Release funds for a transaction
   static async releaseTransaction(transactionId: number) {
     return handleApiCall(() =>

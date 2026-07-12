@@ -6,8 +6,8 @@ import {usePathname} from 'next/navigation';
 import {MessagesIcon} from './tab-icons.tsx/MessagesIcon';
 import {PostItemIcon} from './tab-icons.tsx/PostItemIcon';
 import clsx from 'clsx';
-import {ProfileIcon} from './tab-icons.tsx/ProfileIcon';
 import {AuctionIcon} from './tab-icons.tsx/AuctionIcon';
+import {OffersIcon} from './tab-icons.tsx/OffersIcon';
 import {useUnreadCount} from '~/contexts/UnreadCountContext';
 
 interface Tab {
@@ -55,10 +55,10 @@ const BottomNavBar: React.FC = () => {
         },
         {
             id: 5,
-            link: '/profile',
-            icon: (isActive: boolean) => <ProfileIcon isActive={isActive} />,
-            label: 'Profile',
-            listForActiveLink: ['/profile']
+            link: '/offers',
+            icon: (isActive: boolean) => <OffersIcon isActive={isActive} />,
+            label: 'Offers',
+            listForActiveLink: ['/offers']
         }
     ], []);
 

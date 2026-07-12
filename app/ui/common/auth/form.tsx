@@ -32,6 +32,7 @@ const Form = () => {
         setFullName('');
     }, [isLogin]);
 
+
     const loginWithGoogle = () => {
         window.location.href = '/api/auth/google-login';
     };
@@ -202,7 +203,7 @@ const Form = () => {
                 )}
 
                 <form
-                    className='typo-body_mr text-text_one flex flex-col gap-[24px]'
+                    className='login-form typo-body_mr text-text_one flex flex-col gap-[24px]'
                     onSubmit={(e) => {
                         e.preventDefault();
                         if (btnActive) handleAuth();
@@ -291,7 +292,7 @@ const Form = () => {
                         </>
                     )}
 
-                    <div>
+                    <div className={isLogin ? 'autofill-btn' : ''}>
                         <AuthButton
                             bg={btnActive}
                             title={isLogin ? 'Sign In' : 'Sign up'}

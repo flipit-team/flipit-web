@@ -48,10 +48,15 @@ async function getItemOffers(itemId: string, token: string) {
             }).catch(() => null)
         ]);
 
-        const bids = bidsRes && bidsRes.ok ? await bidsRes.json().catch(() => []) : [];
-        const offers = offersRes && offersRes.ok ? await offersRes.json().catch(() => []) : [];
+        const extractArray = (data: any) => {
+            if (Array.isArray(data)) return data;
+            if (data?.content && Array.isArray(data.content)) return data.content;
+            return [];
+        };
 
-        // Combine and return both (bids for auctions, offers for regular items)
+        const bids = bidsRes && bidsRes.ok ? extractArray(await bidsRes.json().catch(() => [])) : [];
+        const offers = offersRes && offersRes.ok ? extractArray(await offersRes.json().catch(() => [])) : [];
+
         return [...bids, ...offers];
     } catch (error) {
         console.error('Failed to fetch offers:', error);

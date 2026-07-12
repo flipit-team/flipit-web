@@ -27,6 +27,7 @@ const NavItem = ({href, icon, label, activeTab, badge}: Props) => {
             >
                 {label}
             </span>
+            {activeTab && <span className='mt-0.5 h-0.5 w-4 rounded-full bg-primary' />}
         </Link>
     );
 };

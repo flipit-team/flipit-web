@@ -10,6 +10,7 @@ export type TransactionStatus =
   | 'FAILED'
   | 'CANCELLED'
   | 'DELIVERED'
+  | 'ARRIVED'    // mock-only: package physically arrived, buyer ready to confirm
   | 'VERIFIED'
   | 'COMPLETED'
   | 'RELEASED';
