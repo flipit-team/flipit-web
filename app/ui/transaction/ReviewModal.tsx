@@ -18,6 +18,7 @@ const ReviewModal = ({transaction, onClose, onReviewSubmitted}: Props) => {
     const [hoverRating, setHoverRating] = useState(0);
     const [comment, setComment] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [formError, setFormError] = useState('');
 
     const userRole = transaction.seller.id === parseInt(user?.userId || '0') ? 'seller' : 'buyer';
     const otherParty = userRole === 'seller' ? transaction.buyer : transaction.seller;
@@ -25,14 +26,15 @@ const ReviewModal = ({transaction, onClose, onReviewSubmitted}: Props) => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setFormError('');
 
         if (rating === 0) {
-            alert('Please select a rating');
+            setFormError('Please select a rating before submitting.');
             return;
         }
 
         if (comment.trim().length < 10) {
-            alert('Please write a review with at least 10 characters');
+            setFormError('Please write a review with at least 10 characters.');
             return;
         }
 
@@ -48,13 +50,14 @@ const ReviewModal = ({transaction, onClose, onReviewSubmitted}: Props) => {
             });
 
             if (response.data) {
-                alert('Thank you for your review!');
                 onReviewSubmitted();
                 onClose();
+            } else {
+                setFormError('Failed to submit review. Please try again.');
             }
         } catch (error) {
             console.error('Failed to submit review:', error);
-            alert('Failed to submit review. Please try again.');
+            setFormError('Failed to submit review. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
@@ -202,6 +205,13 @@ const ReviewModal = ({transaction, onClose, onReviewSubmitted}: Props) => {
                             </p>
                         </div>
                     </div>
+
+                    {/* Inline error */}
+                    {formError && (
+                        <div className='mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-lg'>
+                            <p className='typo-body_sr text-red-600'>{formError}</p>
+                        </div>
+                    )}
 
                     {/* Buttons */}
                     <div className='flex gap-3'>

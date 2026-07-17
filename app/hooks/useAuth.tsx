@@ -24,29 +24,7 @@ export function useAuth() {
   const checkAuth = useCallback(async () => {
     try {
       setAuthState(prev => ({ ...prev, loading: true, error: null }));
-      
-      // Check if we have a token in cookies first
-      let hasToken = false;
-      let tokenValue = '';
-      
-      if (typeof window !== 'undefined') {
-        const cookies = document.cookie.split(';');
-        
-        for (const cookie of cookies) {
-          const [name, value] = cookie.trim().split('=');
-          
-          if (name === 'token' && value && value !== '') {
-            hasToken = true;
-            tokenValue = value;
-            break;
-          }
-        }
-      }
-      
-      if (!hasToken) {
-        // Don't skip - HttpOnly cookies will be sent automatically with API requests
-      }
-      
+
       const { data, error } = await AuthService.me();
       
       if (error) {

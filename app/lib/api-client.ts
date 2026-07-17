@@ -43,35 +43,11 @@ export class ApiClient {
         this.baseURL = baseURL;
     }
 
-    // Get auth token from cookies (client-side) or headers (server-side)
+    // Auth is managed via HttpOnly cookies, sent automatically with every same-origin
+    // request. Client-side JS cannot read the token, and all API calls go through
+    // Next.js proxy routes which forward the cookie to the backend.
     private getAuthToken(): string | null {
-        if (typeof window === 'undefined') {
-            // Server-side - token should be passed via headers or cookies
-            // This will be handled by Next.js API routes middleware
-            return null;
-        } else {
-            // Client-side - retrieve token from storage
-            // Priority: localStorage -> sessionStorage -> cookies
-            try {
-                // Check localStorage first
-                const localToken = localStorage.getItem('auth_token') || localStorage.getItem('jwt');
-                if (localToken) return localToken;
-
-                // Check sessionStorage
-                const sessionToken = sessionStorage.getItem('auth_token') || sessionStorage.getItem('jwt');
-                if (sessionToken) return sessionToken;
-
-                // Check cookies as fallback
-                const cookieMatch = document.cookie.match(/(?:^|;\s*)(?:auth_token|jwt)=([^;]+)/);
-                if (cookieMatch) return cookieMatch[1];
-
-                return null;
-            } catch (error) {
-                // Handle storage access errors (e.g., in incognito mode)
-                console.error('Error accessing token storage:', error);
-                return null;
-            }
-        }
+        return null;
     }
 
     // Create request headers

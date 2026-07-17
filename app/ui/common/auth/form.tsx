@@ -330,6 +330,9 @@ const Form = () => {
                         <Image src='/icons/social/facebook-icon.svg' alt='Facebook' height={24} width={24} className='h-6 w-6' />
                     </div>
                 </div>
+                <p className='hidden xs:block text-center font-poppins text-[12px] font-semibold italic text-text-muted-alt mt-6'>
+                    Buy, sell, or swap &middot; every deal, protected.
+                </p>
             </div>
 
             {isLogin && (

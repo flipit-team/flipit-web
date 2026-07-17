@@ -51,11 +51,6 @@ export const errorMessageMap: Record<string, UserFriendlyError> = {
     message: 'Some required information is missing or invalid.',
     action: 'Please fill in all required fields and try again.'
   },
-  'getPhoneNumber()" is null': {
-    title: 'Phone Number Required',
-    message: 'Please enter your phone number.',
-    action: 'Phone number is required for registration.'
-  },
   'Phone number is required': {
     title: 'Phone Number Required',
     message: 'Please enter your phone number to complete registration.',

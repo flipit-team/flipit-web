@@ -45,14 +45,14 @@ export class UserService {
   }
 
   // Verify phone number - NEW
-  static async verifyPhoneNumber(userId: number, verificationData: any) {
+  static async verifyPhoneNumber(userId: number, verificationData: { code: string }) {
     return handleApiCall(() =>
       apiClient.post<{ message: string }>(`/user/${userId}/verify-phoneNumber?code=${verificationData.code}`, {}, { requireAuth: true })
     );
   }
 
   // Verify user profile - NEW
-  static async verifyProfile(userId: number, verificationData: any) {
+  static async verifyProfile(userId: number, verificationData: { idType?: string; idNumber?: string; idImageUrl?: string }) {
     return handleApiCall(() =>
       apiClient.post<{ message: string }>(`/user/${userId}/verifyProfile`, verificationData, { requireAuth: true })
     );

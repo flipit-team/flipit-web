@@ -24,7 +24,7 @@ interface AppContextProps {
     modalMessage: string;
     profile: Profile | null;
     deleteConfirmCallback: (() => void) | null;
-    refreshNotifications: () => Promise<void>;
+    refreshNotifications: () => Promise<boolean>;
     setShowPopup: React.Dispatch<React.SetStateAction<boolean>>;
     setUser: React.Dispatch<
         React.SetStateAction<{token: string; userId: string | undefined; userName: string | undefined} | null>
@@ -53,9 +53,9 @@ export const AppProvider = ({children, initialUser}: AppProviderProps) => {
     const [profile, setProfile] = useState<Profile | null>(null);
     const [deleteConfirmCallback, setDeleteConfirmCallback] = useState<(() => void) | null>(null);
 
-    // Fetch notifications with useCallback to avoid stale closures
-    const refreshNotifications = useCallback(async () => {
-        if (!user) return;
+    // Fetch notifications — returns true on success, false on failure
+    const refreshNotifications = useCallback(async (): Promise<boolean> => {
+        if (!user) return false;
 
         try {
             const result = await NotificationsService.getNotifications({ page: 0, size: 50 });
@@ -84,9 +84,12 @@ export const AppProvider = ({children, initialUser}: AppProviderProps) => {
                     }
                     : result.data;
                 setNotifications(notificationsData);
+                return true;
             }
+            return false;
         } catch (error) {
             console.error('Failed to fetch notifications:', error);
+            return false;
         }
     }, [user]);
 
@@ -105,8 +108,17 @@ export const AppProvider = ({children, initialUser}: AppProviderProps) => {
                 }).catch(() => {});
             }
 
-            // Poll for new notifications every 30 seconds
-            const interval = setInterval(refreshNotifications, 30000);
+            // Poll every 30 seconds; stop after 5 consecutive failures
+            let consecutiveFailures = 0;
+            const interval = setInterval(async () => {
+                const success = await refreshNotifications();
+                if (!success) {
+                    consecutiveFailures++;
+                    if (consecutiveFailures >= 5) clearInterval(interval);
+                } else {
+                    consecutiveFailures = 0;
+                }
+            }, 30000);
 
             return () => clearInterval(interval);
         }

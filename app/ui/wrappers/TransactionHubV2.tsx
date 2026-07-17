@@ -13,6 +13,7 @@ import ProgressTracker from '../transaction/ProgressTracker';
 import TransactionService from '~/services/transaction.service';
 import ReviewsService from '~/services/reviews.service';
 import ErrorModal from '../common/modals/Error';
+import ConfirmationModal from '../common/modals/ConfirmationModal';
 
 interface Props {
     transaction: TransactionDTO;
@@ -233,6 +234,7 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
     const [reviewPhotos, setReviewPhotos] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
     // Countdown timer for payment transfer screen
     useEffect(() => {
@@ -379,8 +381,12 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
         return 'active';
     };
 
-    const handleCancelTransaction = async () => {
-        if (!confirm('Are you sure you want to cancel this transaction?')) return;
+    const handleCancelTransaction = () => {
+        setShowCancelConfirm(true);
+    };
+
+    const executeCancelTransaction = async () => {
+        setShowCancelConfirm(false);
         setIsLoading(true);
         const {data, error} = await TransactionService.cancelTransaction(transaction.id);
         setIsLoading(false);
@@ -409,11 +415,6 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
         setCheckoutMode(false);
         localStorage.setItem(`tx_status_${transaction.id}`, 'SUCCESS');
         setTransaction({...transaction, ...(data || {status: 'SUCCESS'})});
-    };
-
-    const handleMarkArrived = async () => {
-        const {data} = await TransactionService.markArrived(transaction.id);
-        setTransaction({...transaction, ...(data || {status: 'ARRIVED'})});
     };
 
     const handleReleaseAndComplete = async () => {
@@ -465,6 +466,18 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                         <ErrorModal message={errorMessage} onClose={() => setErrorMessage('')} />
                     </div>
                 </div>
+            )}
+            {showCancelConfirm && (
+                <ConfirmationModal
+                    title='Cancel Transaction'
+                    message='Are you sure you want to cancel this transaction? This action cannot be undone.'
+                    confirmText='Yes, Cancel'
+                    cancelText='Go Back'
+                    isDestructive
+                    isLoading={isLoading}
+                    onConfirm={executeCancelTransaction}
+                    onCancel={() => setShowCancelConfirm(false)}
+                />
             )}
             {/* Mobile header — xs only */}
             <div className='hidden xs:flex items-center gap-5 px-6 pt-6 pb-4'>
@@ -919,13 +932,6 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                                     </div>
                                 </div>
                             </div>
-                            {/* Dev simulation button */}
-                            <button
-                                onClick={handleMarkArrived}
-                                className='w-full py-3 border border-dashed border-text-muted-alt text-text-muted-alt rounded-xl font-poppins text-[13px]'
-                            >
-                                🔧 Simulate: Package Arrived
-                            </button>
                         </div>
                         )}
 

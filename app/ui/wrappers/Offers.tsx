@@ -13,6 +13,7 @@ import OffersService from '~/services/offers.service';
 import TransactionService from '~/services/transaction.service';
 import {TransactionStatus} from '~/types/transaction';
 import ErrorModal from '../common/modals/Error';
+import DeleteConfirmationModal from '../common/delete-confirmation-modal/DeleteConfirmationModal';
 
 // Helpers
 const getOfferTradeType = (offer: OfferDTO): 'cash' | 'swap' | 'mixed' => {
@@ -128,6 +129,7 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
     const [loadingId, setLoadingId] = useState<number | null>(null);
     const [isNavigating, setIsNavigating] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [confirmDeleteOfferId, setConfirmDeleteOfferId] = useState<number | null>(null);
     // Maps offerId → {txId, status} for accepted offers that have a transaction
     const [txStatuses, setTxStatuses] = useState<Record<number, {txId: number; status: TransactionStatus}>>({});
 
@@ -183,8 +185,6 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
         const offer = receivedOffers.find(o => o.id === offerId);
         if (!offer) { setLoadingId(null); return; }
 
-        setReceivedOffers(prev => prev.map(o => o.id === offerId ? {...o, status: 'ACCEPTED'} : o));
-
         const txType = (offer.offeredItem && offer.withCash) ? 'SWAP_WITH_CASH' : offer.offeredItem ? 'SWAP' : 'CASH_ONLY';
         const {data, error: txError} = await TransactionService.createTransaction({
             buyerId: offer.sentBy.id,
@@ -194,13 +194,19 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
             description: offer.item.title,
         });
         setLoadingId(null);
-        if (!txError && data) {
-            localStorage.setItem(`offer_tx_${offerId}`, String(data.id));
-            localStorage.setItem(`tx_status_${data.id}`, data.status || 'SUCCESS');
-            setTxStatuses(prev => ({...prev, [offerId]: {txId: data.id, status: data.status as TransactionStatus || 'SUCCESS'}}));
-            setIsNavigating(true);
-            router.push(`/transaction/${data.id}`);
+
+        if (txError || !data) {
+            setErrorMessage('Offer accepted but failed to start the transaction. Please try again.');
+            return;
         }
+
+        // Update UI only after both calls succeed
+        setReceivedOffers(prev => prev.map(o => o.id === offerId ? {...o, status: 'ACCEPTED'} : o));
+        localStorage.setItem(`offer_tx_${offerId}`, String(data.id));
+        localStorage.setItem(`tx_status_${data.id}`, data.status || 'SUCCESS');
+        setTxStatuses(prev => ({...prev, [offerId]: {txId: data.id, status: data.status as TransactionStatus || 'SUCCESS'}}));
+        setIsNavigating(true);
+        router.push(`/transaction/${data.id}`);
     };
 
     const handleRejectOffer = async (offerId: number) => {
@@ -211,12 +217,18 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
         setReceivedOffers(prev => prev.map(o => o.id === offerId ? {...o, status: 'REJECTED'} : o));
     };
 
-    const handleDeleteOffer = async (offerId: number) => {
-        if (!confirm('Are you sure you want to delete this offer?')) return;
+    const handleDeleteOffer = (offerId: number) => {
+        setConfirmDeleteOfferId(offerId);
+    };
+
+    const executeDeleteOffer = async () => {
+        if (confirmDeleteOfferId === null) return;
+        const offerId = confirmDeleteOfferId;
+        setConfirmDeleteOfferId(null);
         setLoadingId(offerId);
         const {error} = await OffersService.deleteOffer(offerId);
         setLoadingId(null);
-        if (error) { alert('Failed to delete offer.'); return; }
+        if (error) { setErrorMessage('Failed to delete offer. Please try again.'); return; }
         setSentOffers(prev => prev.filter(o => o.id !== offerId));
     };
 
@@ -244,6 +256,14 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
     return (
         <div className='mx-[120px] xs:mx-4 my-6 xs:my-0 xs:pt-4 xs:pb-24'>
             {isNavigating && <LogoLoader />}
+            <DeleteConfirmationModal
+                isOpen={confirmDeleteOfferId !== null}
+                title='Delete Offer'
+                message='Are you sure you want to delete this offer? This action cannot be undone.'
+                onConfirm={executeDeleteOffer}
+                onCancel={() => setConfirmDeleteOfferId(null)}
+                isDeleting={loadingId === confirmDeleteOfferId}
+            />
             {errorMessage && (
                 <div className='fixed inset-0 bg-black bg-opacity-50 h-screen flex justify-center items-center z-modal'>
                     <div className='relative bg-white rounded-2xl w-[558px] h-max xs:w-full py-[48px] px-[56px] xs:px-8 xs:py-8 mx-6'>
@@ -394,7 +414,10 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
                                                 >
                                                     {isLoading ? 'Deleting...' : 'Delete Offer'}
                                                 </button>
-                                                <button className='flex-1 py-2.5 border border-primary rounded-lg font-poppins typo-body-xs-medium text-primary'>
+                                                <button
+                                                    onClick={() => { setIsNavigating(true); router.push(`/items/${offer.item?.id}`); }}
+                                                    className='flex-1 py-2.5 border border-primary rounded-lg font-poppins typo-body-xs-medium text-primary'
+                                                >
                                                     Resubmit Offer
                                                 </button>
                                             </>
