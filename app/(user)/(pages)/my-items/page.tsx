@@ -25,16 +25,16 @@ function transformItemToMyItem(item: ItemDTO): MyItem {
         type = item.published ? 'listed' : 'deactivated';
     }
 
-    // TODO: tradeType should come from API once acceptSwap field is added to ItemDTO
-    // For now, default to 'cash' since API only has acceptCash
-    const tradeType: 'cash' | 'swap' | 'mixed' = item.acceptCash ? 'cash' : 'swap';
+    const tradeType: 'cash' | 'swap' | 'mixed' =
+        item.acceptCash && item.acceptSwap ? 'mixed' :
+        item.acceptSwap ? 'swap' : 'cash';
 
     return {
         id: item.id,
         title: item.title,
         image: item.imageUrls?.[0] || 'https://images.pexels.com/photos/1303084/pexels-photo-1303084.jpeg',
         amount: item.cashAmount,
-        views: 0, // TODO: API doesn't provide views yet
+        views: item.viewsCount ?? 0,
         type,
         isAuction,
         auctionActive,

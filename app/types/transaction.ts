@@ -1,4 +1,4 @@
-import { UserDTO } from './api';
+import { ItemDTO, UserDTO } from './api';
 
 // Transaction Types — matches backend enum
 export type TransactionType = 'SWAP' | 'CASH_ONLY' | 'SWAP_WITH_CASH';
@@ -9,8 +9,9 @@ export type TransactionStatus =
   | 'SUCCESS'
   | 'FAILED'
   | 'CANCELLED'
-  | 'DELIVERED'
-  | 'ARRIVED'    // mock-only: package physically arrived, buyer ready to confirm
+  | 'SHIPPED'    // NEW: seller has shipped the item, in transit
+  | 'DELIVERED'  // item arrived at buyer, pending confirmation
+  | 'ARRIVED'    // legacy/mock alias for DELIVERED
   | 'VERIFIED'
   | 'COMPLETED'
   | 'RELEASED';
@@ -21,7 +22,11 @@ export interface TransactionDTO {
   orderId?: number;
   buyer: UserDTO;
   seller: UserDTO;
+  item?: ItemDTO;           // NEW: the primary item in the transaction
+  offeredItem?: ItemDTO;    // NEW: the buyer's offered item (SWAP / SWAP_WITH_CASH)
   amount?: number;
+  platformFee?: number;     // NEW: platform fee deducted from amount
+  sellerPayout?: number;    // NEW: amount seller actually receives
   reference?: string;
   transactionDate?: string;
   status: TransactionStatus;

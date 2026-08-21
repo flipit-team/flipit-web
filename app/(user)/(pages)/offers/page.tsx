@@ -25,25 +25,39 @@ async function fetchOffers(userId: string, token: string, direction: 'sent' | 'r
 }
 
 async function enrichWithImages(offers: any[], token: string) {
-    const itemIds = Array.from(new Set(offers.map((o: any) => o.item?.id).filter(Boolean))) as number[];
+    // Only fetch items where imageUrls is missing — backend now includes them in OfferDTO
+    const itemIds = Array.from(new Set(
+        offers
+            .filter((o: any) => !o.item?.imageUrls?.length)
+            .map((o: any) => o.item?.id)
+            .filter(Boolean)
+    )) as number[];
+
     const itemMap: Record<number, string[]> = {};
 
-    await Promise.all(itemIds.map(async (id) => {
-        try {
-            const res = await fetch(`${API_BASE_PATH}/items/${id}`, {
-                headers: { Authorization: `Bearer ${token}` },
-                cache: 'no-store',
-            });
-            if (res.ok) {
-                const item = await res.json();
-                itemMap[id] = item.imageUrls || [];
-            }
-        } catch {}
-    }));
+    if (itemIds.length > 0) {
+        await Promise.all(itemIds.map(async (id) => {
+            try {
+                const res = await fetch(`${API_BASE_PATH}/items/${id}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                    cache: 'no-store',
+                });
+                if (res.ok) {
+                    const item = await res.json();
+                    itemMap[id] = item.imageUrls || [];
+                }
+            } catch {}
+        }));
+    }
 
     return offers.map(offer => ({
         ...offer,
-        item: { ...offer.item, imageUrls: itemMap[offer.item?.id] ?? [] },
+        item: {
+            ...offer.item,
+            imageUrls: offer.item?.imageUrls?.length
+                ? offer.item.imageUrls
+                : (itemMap[offer.item?.id] ?? []),
+        },
     }));
 }
 

@@ -105,7 +105,7 @@ const SellerShippingView = ({transaction, onItemDeposited}: {transaction: Transa
                     <div className='hidden xs:block border border-border-DEFAULT rounded-[20px] bg-white shadow-[0px_0px_24px_0px_rgba(2,95,115,0.1)] p-4'>
                         <div className='flex items-start gap-3 mb-4'>
                             <Image
-                                src='/images/placeholders/placeholder-product.svg'
+                                src={transaction.item?.imageUrls?.[0] || '/images/placeholders/placeholder-product.svg'}
                                 alt='item'
                                 width={80}
                                 height={80}
@@ -113,10 +113,10 @@ const SellerShippingView = ({transaction, onItemDeposited}: {transaction: Transa
                             />
                             <div className='min-w-0'>
                                 <p className='font-poppins text-[14px] font-semibold text-text_one line-clamp-2 leading-snug'>
-                                    {transaction.description || 'Item'}
+                                    {transaction.item?.title || transaction.description || 'Item'}
                                 </p>
                                 <span className='inline-block mt-1.5 bg-surface-success/40 text-success-dark font-poppins text-[11px] font-medium px-2.5 py-0.5 rounded-full'>
-                                    Cash only
+                                    {transaction.type === 'SWAP' ? 'Swap only' : transaction.type === 'SWAP_WITH_CASH' ? 'Swap + Cash' : 'Cash only'}
                                 </span>
                             </div>
                         </div>
@@ -249,9 +249,9 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
         return () => clearInterval(interval);
     }, [showPaymentTransfer]);
 
-    // Auto-release countdown for ARRIVED (confirm delivery) state
+    // Auto-release countdown for ARRIVED / DELIVERED (confirm delivery) state
     useEffect(() => {
-        if (transaction.status !== 'ARRIVED') return;
+        if (!['ARRIVED', 'DELIVERED'].includes(transaction.status)) return;
         const interval = setInterval(() => {
             setAutoReleaseTime(prev => {
                 if (prev <= 0) { clearInterval(interval); return 0; }
@@ -314,6 +314,7 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                 statusMap: {
                     PENDING: 0,
                     SUCCESS: 2,
+                    SHIPPED: 3,
                     DELIVERED: 3,
                     ARRIVED: 3,
                     VERIFIED: 4,
@@ -338,6 +339,7 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                 statusMap: {
                     PENDING: 0,
                     SUCCESS: 2,
+                    SHIPPED: 3,
                     DELIVERED: 3,
                     ARRIVED: 3,
                     VERIFIED: 4,
@@ -361,6 +363,7 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
             statusMap: {
                 PENDING: 0,
                 SUCCESS: 1,
+                SHIPPED: 2,
                 DELIVERED: 2,
                 ARRIVED: 2,
                 VERIFIED: 3,
@@ -433,7 +436,7 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
         const avgRating = Math.round((itemConditionRating + sellerRating) / 2);
         await ReviewsService.createReview({
             userId: otherUserId,
-            itemId: transaction.orderId || 0,
+            itemId: transaction.item?.id || transaction.orderId || 0,
             rating: avgRating,
             message: reviewText,
         });
@@ -449,7 +452,8 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
         switch (effectiveStatus) {
             case 'PENDING': return 'Order Summary';
             case 'SUCCESS': return 'Shipping';
-            case 'DELIVERED': return 'Track your Item';
+            case 'SHIPPED': return 'Track your Item';
+            case 'DELIVERED': return 'Confirm Delivery';
             case 'ARRIVED': return 'Confirm Delivery';
             case 'VERIFIED': return 'Rate & Review';
             case 'COMPLETED':
@@ -569,10 +573,10 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                             {/* Item card */}
                             <div className='bg-white border border-border-DEFAULT rounded-[20px] shadow-[0px_0px_24px_0px_rgba(2,95,115,0.1)] flex items-center gap-3 px-4 py-3 mb-3'>
                                 <div className='w-[111px] h-[110px] rounded-[20px] bg-gray-100 overflow-hidden flex-shrink-0'>
-                                    <Image src='/images/placeholders/placeholder-product.svg' alt='item' width={91} height={90} className='w-full h-full object-cover' />
+                                    <Image src={transaction.item?.imageUrls?.[0] || '/images/placeholders/placeholder-product.svg'} alt='item' width={91} height={90} className='w-full h-full object-cover' />
                                 </div>
                                 <div className='flex-1 min-w-0'>
-                                    <p className='font-poppins typo-body-md-semibold text-text_two line-clamp-2 leading-tight'>{transaction.description || 'Item'}</p>
+                                    <p className='font-poppins typo-body-md-semibold text-text_two line-clamp-2 leading-tight'>{transaction.item?.title || transaction.description || 'Item'}</p>
                                     <div className='mt-1'>
                                         <TransactionTypeBadge acceptCash={transaction.type !== 'SWAP'} hasSwapItems={transaction.type !== 'CASH_ONLY'} />
                                     </div>
@@ -844,7 +848,7 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                                     transaction={transaction}
                                     onItemDeposited={async () => {
                                         const {data} = await TransactionService.shipItem(transaction.id);
-                                        setTransaction({...transaction, ...(data || {status: 'DELIVERED'})});
+                                        setTransaction({...transaction, ...(data || {status: 'SHIPPED'})});
                                     }}
                                 />
                             </div>
@@ -852,8 +856,8 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                     </div>
                 )}
 
-                {/* ============ DELIVERED: Confirm delivery ============ */}
-                {effectiveStatus === 'DELIVERED' && !showRateReview && (
+                {/* ============ SHIPPED: Item in transit, awaiting delivery ============ */}
+                {effectiveStatus === 'SHIPPED' && !showRateReview && (
                     <div className='mt-8'>
 
                         {/* ===== MOBILE DELIVERED — SELLER: track your item ===== */}
@@ -941,7 +945,7 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                             <div>
                                 <h3 className='font-poppins typo-body-lg-bold text-text_one'>Delivery Confirmation</h3>
                                 <p className='font-poppins typo-body-md-regular text-text_four mt-1'>
-                                    {transaction.description || 'Item has been delivered'}
+                                    {transaction.item?.title || transaction.description || 'Item has been delivered'}
                                 </p>
                             </div>
                             <div className='flex items-center gap-1.5 border border-success-dark/20 rounded-full px-4 py-1.5'>
@@ -973,44 +977,30 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
 
                             <div className='space-y-4'>
                                 <div className='border border-border-DEFAULT rounded-xl p-5'>
-                                    <h4 className='font-poppins typo-body-lg-bold text-text_one mb-4'>Complete Transaction</h4>
+                                    <h4 className='font-poppins typo-body-lg-bold text-text_one mb-4'>Shipment Details</h4>
                                     <div className='space-y-3'>
                                         <div className='flex justify-between'>
                                             <span className='font-poppins typo-body-md-regular text-text-muted-alt'>Amount</span>
                                             <span className='font-poppins typo-body-md-semibold text-primary'>{formatToNaira(transactionAmount)}</span>
                                         </div>
+                                        <div className='flex justify-between'>
+                                            <span className='font-poppins typo-body-md-regular text-text-muted-alt'>Reference</span>
+                                            <span className='font-poppins typo-body-md-semibold text-text_one'>{transactionRef}</span>
+                                        </div>
                                     </div>
                                 </div>
 
-                                {isBuyer && (
-                                    <button
-                                        onClick={handleReleaseAndComplete}
-                                        disabled={isLoading}
-                                        className='w-full py-5 bg-primary text-white rounded-xl font-poppins typo-body-lg-bold hover:bg-primary/90 transition-colors disabled:opacity-50'
-                                    >
-                                        {isLoading ? 'Processing...' : 'Confirm Receipt & Release Funds'}
-                                    </button>
-                                )}
-
-                                {isSeller && (
-                                    <div className='border border-border-DEFAULT rounded-xl p-4 text-center'>
-                                        <p className='font-poppins typo-body-md-regular text-text_four'>
-                                            Awaiting buyer confirmation. Payment will auto-release after inspection period.
-                                        </p>
-                                    </div>
-                                )}
+                                <div className='border border-border-DEFAULT rounded-xl p-4 text-center'>
+                                    <p className='font-poppins typo-body-md-regular text-text_four'>
+                                        Item is in transit. You will be notified once it has been delivered.
+                                    </p>
+                                </div>
 
                                 <div className='bg-secondary/10 border border-secondary/30 rounded-xl p-4 space-y-3'>
                                     <div className='flex items-start gap-2'>
-                                        <WarningIcon className='w-5 h-5 text-secondary flex-shrink-0 mt-0.5' />
-                                        <p className='font-poppins typo-body-sm-regular text-text_one'>
-                                            Only click this once you have inspected the item. This action is irreversible.
-                                        </p>
-                                    </div>
-                                    <div className='flex items-start gap-2'>
                                         <ClockIcon className='w-5 h-5 text-text-muted-alt flex-shrink-0 mt-0.5' />
                                         <p className='font-poppins typo-body-sm-regular text-text_one'>
-                                            Funds will automatically be released 48 hours after delivery.
+                                            Funds are held in escrow and will be released once the buyer confirms receipt.
                                         </p>
                                     </div>
                                 </div>
@@ -1020,8 +1010,8 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                     </div>
                 )}
 
-                {/* ============ ARRIVED: buyer confirms delivery ============ */}
-                {effectiveStatus === 'ARRIVED' && (
+                {/* ============ ARRIVED / DELIVERED: buyer confirms delivery ============ */}
+                {['ARRIVED', 'DELIVERED'].includes(effectiveStatus) && (
                     <div className='mt-8'>
                         {/* Mobile: Confirm Delivery page */}
                         {isBuyer && (
@@ -1040,10 +1030,10 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                                 />
                             </div>
                             <div className='bg-white border border-border-DEFAULT rounded-2xl p-3 shadow-[0px_0px_24px_0px_rgba(2,95,115,0.1)] flex items-center gap-3 mb-4'>
-                                <Image src='/images/placeholders/placeholder-product.svg' alt='item' width={80} height={80} className='w-[80px] h-[80px] rounded-xl object-cover flex-shrink-0' />
+                                <Image src={transaction.item?.imageUrls?.[0] || '/images/placeholders/placeholder-product.svg'} alt='item' width={80} height={80} className='w-[80px] h-[80px] rounded-xl object-cover flex-shrink-0' />
                                 <div className='min-w-0'>
-                                    <p className='font-poppins text-[14px] font-semibold text-text_one line-clamp-2 leading-snug'>{transaction.description || 'Item'}</p>
-                                    <span className='inline-block mt-1 bg-surface-success/40 text-success-dark font-poppins text-[11px] font-medium px-2.5 py-0.5 rounded-full'>Cash only</span>
+                                    <p className='font-poppins text-[14px] font-semibold text-text_one line-clamp-2 leading-snug'>{transaction.item?.title || transaction.description || 'Item'}</p>
+                                    <span className='inline-block mt-1 bg-surface-success/40 text-success-dark font-poppins text-[11px] font-medium px-2.5 py-0.5 rounded-full'>{transaction.type === 'SWAP' ? 'Swap only' : transaction.type === 'SWAP_WITH_CASH' ? 'Swap + Cash' : 'Cash only'}</span>
                                     <p className='font-poppins text-[14px] font-bold text-primary mt-1'>{formatToNaira(transactionAmount)}</p>
                                 </div>
                             </div>
@@ -1080,7 +1070,7 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                             <div className='border border-border-DEFAULT rounded-2xl p-5 flex items-center justify-between mb-8'>
                                 <div>
                                     <h3 className='font-poppins typo-body-lg-bold text-text_one'>Delivery Confirmation</h3>
-                                    <p className='font-poppins typo-body-md-regular text-text_four mt-1'>{transaction.description || 'Item has been delivered'}</p>
+                                    <p className='font-poppins typo-body-md-regular text-text_four mt-1'>{transaction.item?.title || transaction.description || 'Item has been delivered'}</p>
                                 </div>
                                 <div className='flex items-center gap-1.5 border border-success-dark/20 rounded-full px-4 py-1.5'>
                                     <CheckCircle size={16} className='text-success-dark' />
@@ -1180,7 +1170,7 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                             {/* Item info card */}
                             <div className='bg-white border border-border-DEFAULT rounded-2xl p-3 shadow-[0px_0px_24px_0px_rgba(2,95,115,0.1)] flex items-center gap-3 mb-6'>
                                 <Image
-                                    src='/images/placeholders/placeholder-product.svg'
+                                    src={transaction.item?.imageUrls?.[0] || '/images/placeholders/placeholder-product.svg'}
                                     alt='item'
                                     width={72}
                                     height={72}
@@ -1188,7 +1178,7 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                                 />
                                 <div className='min-w-0'>
                                     <p className='font-poppins text-[14px] font-semibold text-text_one line-clamp-2 leading-snug'>
-                                        {transaction.description || 'Item'}
+                                        {transaction.item?.title || transaction.description || 'Item'}
                                     </p>
                                     <p className='font-poppins text-[12px] font-normal text-text-muted-alt mt-0.5'>Order ID:#{transaction.id}</p>
                                     <p className='font-poppins text-[13px] font-bold text-text_one mt-0.5'>
@@ -1314,7 +1304,7 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                             {/* Item card */}
                             <div className='bg-white border border-border-DEFAULT rounded-2xl p-3 flex items-center gap-3 shadow-[0px_0px_24px_0px_rgba(2,95,115,0.08)]'>
                                 <Image
-                                    src='/images/placeholders/placeholder-product.svg'
+                                    src={transaction.item?.imageUrls?.[0] || '/images/placeholders/placeholder-product.svg'}
                                     alt='item'
                                     width={80}
                                     height={80}
@@ -1322,7 +1312,7 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                                 />
                                 <div className='min-w-0'>
                                     <p className='font-poppins text-[15px] font-semibold text-text_one line-clamp-2 leading-snug'>
-                                        {transaction.description || 'Item'}
+                                        {transaction.item?.title || transaction.description || 'Item'}
                                     </p>
                                     <span className='inline-block mt-1.5 bg-surface-success/60 text-success-dark font-poppins text-[11px] font-medium px-2.5 py-0.5 rounded-full'>
                                         {transaction.type === 'SWAP' ? 'Swap only' : transaction.type === 'SWAP_WITH_CASH' ? 'Swap + Cash' : 'Cash only'}
