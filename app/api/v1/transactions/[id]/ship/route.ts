@@ -8,7 +8,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         const { id } = await params;
 
         if (USE_MOCK) {
-            const tx = updateTransactionStatus(Number(id), 'DELIVERED');
+            const tx = updateTransactionStatus(Number(id), 'SHIPPED');
             if (!tx) return NextResponse.json({ error: 'Transaction not found' }, { status: 404 });
             return NextResponse.json(tx);
         }

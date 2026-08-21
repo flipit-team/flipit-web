@@ -37,6 +37,13 @@ export class ChatService {
     );
   }
 
+  // Mark all messages in a chat as read
+  static async markChatAsRead(chatId: string) {
+    return handleApiCall(() =>
+      apiClient.put<{ message: string }>(`/v1/chats/${chatId}/read`, {}, { requireAuth: true })
+    );
+  }
+
 }
 
 export default ChatService;

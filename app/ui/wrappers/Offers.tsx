@@ -80,13 +80,13 @@ const getItemImage = (offer: OfferDTO): string => {
     return (offer.item?.imageUrls ?? [])[0] || '/images/placeholders/placeholder-product.svg';
 };
 
-// User bid from API
+// User bid from API — matches backend AuctionBiddingDTO
 interface UserBid {
     auctionId: number;
     amount: number;
     bidTime: string;
     status: 'PENDING' | 'WON' | 'OUT_BID';
-    auction: {
+    auctionDTO: {
         id: number;
         item: any;
         status: string;
@@ -651,11 +651,11 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
                 <div className='space-y-4'>
                     {userBids.length > 0 ? (
                         userBids.map((bid, i) => {
-                            const item = bid.auction?.item;
+                            const item = bid.auctionDTO?.item;
                             const imageUrl = item?.imageUrls?.[0] || '/images/placeholders/placeholder-product.svg';
                             const title = item?.title || 'Auction Item';
-                            const auctionEnded = bid.auction ? new Date(bid.auction.endDate) < new Date() : false;
-                            const timeLeft = bid.auction ? formatTimeAgo(bid.auction.endDate) : '';
+                            const auctionEnded = bid.auctionDTO ? new Date(bid.auctionDTO.endDate) < new Date() : false;
+                            const timeLeft = bid.auctionDTO ? formatTimeAgo(bid.auctionDTO.endDate) : '';
 
                             return (
                                 <div key={i} className='border border-border-DEFAULT rounded-2xl overflow-hidden bg-white'>

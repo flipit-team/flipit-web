@@ -49,7 +49,7 @@ export class TransactionService {
     );
   }
 
-  // Mark item as shipped (seller deposits item → DELIVERED)
+  // Mark item as shipped (seller deposits item → SHIPPED)
   static async shipItem(transactionId: number) {
     return handleApiCall(() =>
       apiClient.put<TransactionDTO>(
@@ -155,6 +155,8 @@ export class TransactionService {
         return role === 'buyer' ? 'Make Payment' : 'Waiting for Payment';
       case 'SUCCESS':
         return role === 'seller' ? 'Ship Item' : 'Waiting for Shipment';
+      case 'SHIPPED':
+        return 'Item in Transit';
       case 'DELIVERED':
         return role === 'buyer' ? 'Confirm Delivery' : 'Waiting for Confirmation';
       case 'VERIFIED':

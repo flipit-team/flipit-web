@@ -151,6 +151,7 @@ export interface ItemDTO {
   description: string;
   imageUrls: string[];
   acceptCash: boolean;
+  acceptSwap?: boolean;    // NEW: Whether item accepts swap offers
   cashAmount: number;
   published: boolean;
   sold: boolean;
@@ -161,11 +162,10 @@ export interface ItemDTO {
   dateCreated: string;
   promoted: boolean;        // NEW: Item promotion status
   liked: boolean;          // NEW: Whether current user liked this item
+  viewsCount?: number;     // NEW: View count for the item
   seller: UserDTO;
   itemCategory: CategoryDTO;
   subcategory?: string;    // NEW: Subcategory within the main category
-  stateCode?: string;      // NEW: State code for location
-  lgaCode?: string;        // NEW: LGA code for location
 }
 
 export interface CreateItemRequest {
@@ -173,6 +173,7 @@ export interface CreateItemRequest {
   description: string;
   imageKeys: string[];
   acceptCash: boolean;
+  acceptSwap?: boolean;
   cashAmount: number;
   stateCode: string;       // CHANGED: from location
   lgaCode: string;         // NEW: LGA code
@@ -187,6 +188,7 @@ export interface UpdateItemRequest {
   description: string;
   imageKeys: string[];
   acceptCash: boolean;
+  acceptSwap?: boolean;
   cashAmount: number;
   stateCode: string;       // CHANGED: from location
   lgaCode: string;         // NEW: LGA code
@@ -246,6 +248,7 @@ export interface AuctionBiddingDTO {
   bidder: UserDTO;
   amount: number;
   bidTime: string;
+  auctionDTO?: AuctionDTO;  // embedded auction context (for My Bids tab)
 }
 
 export interface AuctionDTO {
@@ -259,6 +262,8 @@ export interface AuctionDTO {
   status: string;
   item: ItemDTO;
   winner?: UserDTO;
+  winnerId?: number;       // NEW: winner user ID
+  transactionId?: number; // NEW: linked transaction after auction ends
   dateCreated: string;
   biddingsCount?: number;
   biddings?: AuctionBiddingDTO[];
@@ -274,12 +279,15 @@ export interface CreateAuctionRequest {
   title: string;
   description: string;
   imageKeys: string[];
-  stateCode: string;      // CHANGED: from location
-  lgaCode: string;        // NEW: LGA code
+  acceptCash?: boolean;
+  acceptSwap?: boolean;
+  cashAmount?: number;
+  stateCode: string;
+  lgaCode: string;
   condition: string;
   brand: string;
   itemCategory: string;
-  subcategory?: string;   // NEW: Optional subcategory
+  subcategory?: string;
 }
 
 export interface UpdateAuctionRequest {
@@ -332,6 +340,7 @@ export interface ReviewDTO {
   userId: number;
   postedById: number;
   createdDate: string;
+  postedBy?: UserDTO;  // NEW: reviewer identity (eliminates N+1 fetch)
 }
 
 export interface CreateReviewRequest {
@@ -461,11 +470,48 @@ export interface LGADTO {
   state?: StateDTO;
 }
 
+// Dispute Types — NEW
+export type DisputeStatus = 'OPEN' | 'EVIDENCE_SUBMITTED' | 'RESOLVED' | 'CLOSED';
+
+export interface DisputeDTO {
+  id: number;
+  transaction: import('./transaction').TransactionDTO;
+  raisedBy: UserDTO;
+  reason: string;
+  description: string;
+  evidenceUrl?: string;
+  evidenceDescription?: string;
+  resolution?: string;
+  decision?: string;
+  status: DisputeStatus;
+  dateCreated: string;
+  dateUpdated: string;
+}
+
+// Matches backend DisputeOpenRequest
+export interface CreateDisputeRequest {
+  transactionId: number;
+  reason: string;
+  description: string;
+}
+
+// Matches backend DisputeEvidenceRequest
+export interface DisputeEvidenceRequest {
+  description: string;
+  evidenceUrl: string;
+}
+
+// Matches backend DisputeResolveRequest
+export interface DisputeResolveRequest {
+  resolution: string;
+  decision: string;
+}
+
 // Common Types
 export type ItemCondition = 'NEW' | 'LIKE_NEW' | 'GOOD' | 'FAIR' | 'POOR';
 export type OfferStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'WITHDRAWN';
 export type AuctionStatus = 'DRAFT' | 'ACTIVE' | 'ENDED' | 'CANCELLED';
-export type NotificationType = 'BID' | 'OFFER' | 'CHAT' | 'AUCTION' | 'SYSTEM';
+export type NotificationType = 'NEW_BID' | 'OUTBID' | 'OFFER_ACCEPTED' | 'OFFER_REJECTED' | 'NEW_CHAT_MESSAGE' | 'AUCTION_WON' | 'AUCTION_ENDED';
 
 // Admin Types
 export interface DashboardSummaryDTO {
