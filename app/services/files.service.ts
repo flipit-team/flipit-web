@@ -5,14 +5,14 @@ export class FilesService {
   // Get presigned upload URL
   static async getPresignUploadUrl(key: string) {
     return handleApiCall(() =>
-      apiClient.get<PresignUploadUrlResponse>(`/files/presign-upload-url?key=${encodeURIComponent(key)}`, { requireAuth: true })
+      apiClient.get<PresignUploadUrlResponse>(`/v1/files/presign-upload-url?key=${encodeURIComponent(key)}`, { requireAuth: true })
     );
   }
 
   // Get presigned download URL
   static async getPresignDownloadUrl(key: string) {
     return handleApiCall(() =>
-      apiClient.get<PresignDownloadUrlResponse>(`/files/presign-download-url?key=${encodeURIComponent(key)}`, { requireAuth: true })
+      apiClient.get<PresignDownloadUrlResponse>(`/v1/files/presign-download-url?key=${encodeURIComponent(key)}`, { requireAuth: true })
     );
   }
 
@@ -25,7 +25,7 @@ export class FilesService {
     }
 
     return handleApiCall(() =>
-      apiClient.postFormData<UploadFileResponse>('/upload', formData, { requireAuth: true })
+      apiClient.postFormData<UploadFileResponse>('/v1/files/upload', formData, { requireAuth: true })
     );
   }
 

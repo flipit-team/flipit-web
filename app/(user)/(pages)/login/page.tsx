@@ -12,7 +12,7 @@ const Login = async ({searchParams}: {searchParams: Promise<{[key: string]: stri
 
         return (
             <div className='flex-1 grid grid-cols-2 xs:grid-cols-1 w-full xs:grid-sizes h-screen'>
-                <div className='xs:w-full xs:px-6 xs:bg-[#FFFFF0] overflow-y-auto no-scrollbar flex flex-col items-center justify-center h-full'>
+                <div className='xs:w-full xs:px-6 bg-[#FFFFF0] overflow-y-auto no-scrollbar flex flex-col items-center justify-center h-full'>
                     <div className='w-[468px] xs:w-full'>
                         {/* Logo */}
                         <div className='flex items-center gap-0 xs:justify-center'>

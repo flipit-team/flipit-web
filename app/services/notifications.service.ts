@@ -6,14 +6,14 @@ export class NotificationsService {
   static async getNotifications(params?: NotificationsQueryParams) {
     const queryString = params ? buildQueryString(params) : '';
     return handleApiCall(() =>
-      apiClient.get<PaginatedResponse<NotificationDTO>>(`/notifications/get-notifications${queryString}`, { requireAuth: true })
+      apiClient.get<PaginatedResponse<NotificationDTO>>(`/v1/notifications${queryString}`, { requireAuth: true })
     );
   }
 
   // Mark notification as read
   static async markAsRead(notificationId: number) {
     return handleApiCall(() =>
-      apiClient.put<{ message: string }>(`/notifications/${notificationId}/markAsRead`, {}, { requireAuth: true })
+      apiClient.put<{ message: string }>(`/v1/notifications/${notificationId}/markAsRead`, {}, { requireAuth: true })
     );
   }
 

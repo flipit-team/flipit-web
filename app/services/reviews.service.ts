@@ -1,12 +1,5 @@
 import { apiClient, handleApiCall } from '~/lib/api-client';
-import { ReviewDTO } from '~/utils/interface';
-
-export interface CreateReviewRequest {
-  userId: number;
-  itemId: number;
-  rating: number;
-  message: string;
-}
+import { ReviewDTO, CreateReviewRequest } from '~/types/api';
 
 export class ReviewsService {
   // Create review

@@ -5,7 +5,7 @@ export class LocationService {
   // Get all states
   static async getStates() {
     return handleApiCall(() =>
-      apiClient.get<StateDTO[]>('/states')
+      apiClient.get<StateDTO[]>('/v1/states')
     );
   }
 

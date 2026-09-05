@@ -16,6 +16,13 @@ export class BiddingService {
     );
   }
 
+  // Get current user's bids
+  static async getUserBids() {
+    return handleApiCall(() =>
+      apiClient.get<BidDTO[]>('/v1/bidding/user/me', { requireAuth: true })
+    );
+  }
+
 }
 
 export default BiddingService;
