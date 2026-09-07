@@ -8,13 +8,8 @@ export async function GET(req: NextRequest) {
         const token = cookieStore.get('token')?.value;
         if (!token) return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
 
-        const { searchParams } = req.nextUrl;
-        const state = searchParams.get('state') ?? '';
-        const lga = searchParams.get('lga') ?? '';
-        const date = searchParams.get('date') ?? '';
-
         const apiRes = await fetch(
-            `${API_BASE_PATH}/shipping/gig/delivery-slots?state=${encodeURIComponent(state)}&lga=${encodeURIComponent(lga)}&date=${encodeURIComponent(date)}`,
+            `${API_BASE_PATH}/shipping/gig/delivery-slots${req.nextUrl.search}`,
             {
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 cache: 'no-store',

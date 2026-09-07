@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
         const key = req.nextUrl.searchParams.get('key');
         if (!key) return NextResponse.json({ error: 'key parameter is required' }, { status: 400 });
 
-        const apiRes = await fetch(`${API_BASE_PATH}/files/presign-download-url?key=${encodeURIComponent(key)}`, {
+        const apiRes = await fetch(`${API_BASE_PATH}/files/presign-download-url${req.nextUrl.search}`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`,
