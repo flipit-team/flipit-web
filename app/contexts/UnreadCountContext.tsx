@@ -1,7 +1,8 @@
 'use client';
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react';
 import HomeService from '~/services/home.service';
 import { NotificationDTO } from '~/types/api';
+import { useAppContext } from './AppContext';
 
 interface UnreadCounts {
   messagesCount: number;
@@ -22,6 +23,7 @@ interface UnreadCountContextType {
 const UnreadCountContext = createContext<UnreadCountContextType | undefined>(undefined);
 
 export const UnreadCountProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user } = useAppContext();
   const [counts, setCounts] = useState<UnreadCounts>({
     messagesCount: 0,
     notificationsCount: 0,
@@ -31,6 +33,7 @@ export const UnreadCountProvider: React.FC<{ children: React.ReactNode }> = ({ c
   });
 
   const refreshCounts = useCallback(async () => {
+    if (!user) return;
     try {
       const result = await HomeService.getTopNavCounters();
       if (result.data) {
@@ -45,7 +48,7 @@ export const UnreadCountProvider: React.FC<{ children: React.ReactNode }> = ({ c
     } catch (error) {
       console.error('Failed to refresh counts:', error);
     }
-  }, []);
+  }, [user]);
 
   const decrementMessageCount = useCallback((amount: number = 1) => {
     setCounts(prev => ({
@@ -65,26 +68,27 @@ export const UnreadCountProvider: React.FC<{ children: React.ReactNode }> = ({ c
     setCounts(prev => ({ ...prev, ...newCounts }));
   }, []);
 
-  // Initial fetch and polling
+  // Initial fetch and polling — only when logged in
   useEffect(() => {
+    if (!user) return;
+
     refreshCounts();
 
-    // Poll for updates every 10 seconds
-    const interval = setInterval(refreshCounts, 10000);
+    const interval = setInterval(refreshCounts, 30000);
 
     return () => clearInterval(interval);
-  }, [refreshCounts]);
+  }, [user, refreshCounts]);
+
+  const value = useMemo(() => ({
+    counts,
+    decrementMessageCount,
+    decrementNotificationCount,
+    refreshCounts,
+    setCounts: updateCounts,
+  }), [counts, decrementMessageCount, decrementNotificationCount, refreshCounts, updateCounts]);
 
   return (
-    <UnreadCountContext.Provider
-      value={{
-        counts,
-        decrementMessageCount,
-        decrementNotificationCount,
-        refreshCounts,
-        setCounts: updateCounts,
-      }}
-    >
+    <UnreadCountContext.Provider value={value}>
       {children}
     </UnreadCountContext.Provider>
   );

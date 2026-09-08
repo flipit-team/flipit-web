@@ -4,6 +4,8 @@ const defaultApiUrl = process.env.NODE_ENV === 'production'
     : 'http://localhost:8080/api/v1';
 
 const API_BASE_URL = process.env.API_BASE_URL || defaultApiUrl;
-const API_BASE_PATH = process.env.API_BASE_PATH || defaultApiUrl;
+
+// Alias kept for backward compatibility — same value
+const API_BASE_PATH = API_BASE_URL;
 
 export {API_BASE_URL, API_BASE_PATH};

@@ -1,35 +1,34 @@
 'use client';
 import Image from 'next/image';
 import React, {useEffect, useState} from 'react';
-import {useAppContext} from '~/contexts/AppContext';
 import {formatToMonthDay} from '~/utils/helpers';
 import NoData from '../common/no-data/NoData';
 import NotificationsService from '~/services/notifications.service';
+import {NotificationDTO} from '~/types/api';
 import {useRouter} from 'next/navigation';
 import {ChevronLeft, X} from 'lucide-react';
+import {useUnreadCount} from '~/contexts/UnreadCountContext';
 
 const Notifications = () => {
-    const {notifications, refreshNotifications} = useAppContext();
     const router = useRouter();
-    const [localNotifications, setLocalNotifications] = useState(notifications?.content || []);
+    const {decrementNotificationCount} = useUnreadCount();
+    const [localNotifications, setLocalNotifications] = useState<NotificationDTO[]>([]);
 
+    // Fetch notifications on mount
     useEffect(() => {
-        setLocalNotifications(notifications?.content || []);
-    }, [notifications]);
-
-    // Refresh notifications on mount
-    useEffect(() => {
-        if (notifications?.content && notifications.content.length > 0) {
-            refreshNotifications();
-        }
-        // Only run on mount
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        NotificationsService.getNotifications({ page: 0, size: 50 }).then(result => {
+            if (result.data) {
+                const content = Array.isArray(result.data) ? result.data : result.data.content || [];
+                setLocalNotifications(content);
+            }
+        });
     }, []);
 
     const handleNotificationClick = async (notificationId: number, resourceLink: string) => {
         try {
             // Mark as read when clicked
             await NotificationsService.markAsRead(notificationId);
+            decrementNotificationCount();
 
             // Update local state
             setLocalNotifications(prev =>

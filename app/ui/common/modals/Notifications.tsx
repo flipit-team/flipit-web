@@ -3,6 +3,7 @@ import Link from 'next/link';
 import React from 'react';
 import {NotificationDTO} from '~/types/api';
 import NotificationsService from '~/services/notifications.service';
+import {useUnreadCount} from '~/contexts/UnreadCountContext';
 
 interface Props {
     setHovered: React.Dispatch<React.SetStateAction<boolean>>;
@@ -12,11 +13,12 @@ interface Props {
 
 const Notifications = (props: Props) => {
     const {pointer, notifications} = props;
+    const {decrementNotificationCount} = useUnreadCount();
 
     const handleNotificationClick = async (notificationId: number) => {
         try {
-            // Mark as read when clicked
             await NotificationsService.markAsRead(notificationId);
+            decrementNotificationCount();
         } catch (error) {
             console.error('Failed to mark notification as read:', error);
         }

@@ -32,7 +32,7 @@ function HeaderContent(props: Props) {
     const notificationsDropdownTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
     const router = useRouter();
     const pathname = usePathname();
-    const {notifications, profile, user: clientUser} = useAppContext();
+    const {profile, user: clientUser} = useAppContext();
     const {counts} = useUnreadCount();
 
     // Use client user or server user

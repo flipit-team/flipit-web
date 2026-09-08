@@ -20,8 +20,8 @@ export function setupFetchInterceptor() {
         if (!isRedirecting && !window.location.pathname.includes('/login')) {
           isRedirecting = true;
 
-          // Call server-side logout to clear httpOnly cookies (document.cookie cannot touch them)
-          fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }).finally(() => {
+          // Use originalFetch to avoid going through this interceptor again
+          originalFetch('/api/auth/logout', { method: 'POST', credentials: 'include' }).finally(() => {
             window.location.href = '/login';
           });
         }

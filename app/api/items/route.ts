@@ -1,6 +1,7 @@
 import {NextRequest, NextResponse} from 'next/server';
 import {cookies} from 'next/headers';
 import { API_BASE_PATH } from '~/lib/config';
+import { wrapAsPaginated } from '~/lib/pagination';
 
 // GET /api/items - Get items with filtering and pagination
 export async function GET(req: NextRequest) {
@@ -73,27 +74,7 @@ export async function GET(req: NextRequest) {
 
             // If backend returns an array, transform it to paginated format
             if (Array.isArray(retryData)) {
-                const paginatedResponse = {
-                    content: retryData,
-                    totalElements: retryData.length,
-                    totalPages: 1,
-                    size: retryData.length,
-                    number: parseInt(page),
-                    first: true,
-                    last: true,
-                    empty: retryData.length === 0,
-                    numberOfElements: retryData.length,
-                    pageable: {
-                        offset: 0,
-                        sort: { empty: !sort, sorted: !!sort, unsorted: !sort },
-                        pageNumber: parseInt(page),
-                        pageSize: parseInt(size),
-                        paged: true,
-                        unpaged: false
-                    },
-                    sort: { empty: !sort, sorted: !!sort, unsorted: !sort }
-                };
-                return NextResponse.json(paginatedResponse);
+                return NextResponse.json(wrapAsPaginated(retryData, parseInt(page), parseInt(size)));
             }
 
             return NextResponse.json(retryData);
@@ -110,27 +91,7 @@ export async function GET(req: NextRequest) {
 
         // If backend returns an array, transform it to paginated format
         if (Array.isArray(apiData)) {
-            const paginatedResponse = {
-                content: apiData,
-                totalElements: apiData.length,
-                totalPages: 1,
-                size: apiData.length,
-                number: parseInt(page),
-                first: true,
-                last: true,
-                empty: apiData.length === 0,
-                numberOfElements: apiData.length,
-                pageable: {
-                    offset: 0,
-                    sort: { empty: !sort, sorted: !!sort, unsorted: !sort },
-                    pageNumber: parseInt(page),
-                    pageSize: parseInt(size),
-                    paged: true,
-                    unpaged: false
-                },
-                sort: { empty: !sort, sorted: !!sort, unsorted: !sort }
-            };
-            return NextResponse.json(paginatedResponse);
+            return NextResponse.json(wrapAsPaginated(apiData, parseInt(page), parseInt(size)));
         }
 
         return NextResponse.json(apiData);

@@ -1,4 +1,3 @@
-export { hasAuthToken, isPublicPage, isProtectedPage } from './auth-utils';
 export { debugLog, debugError, debugApiResponse } from './debug';
 export {
   getUserFriendlyError,

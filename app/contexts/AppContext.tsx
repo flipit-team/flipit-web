@@ -1,9 +1,7 @@
 'use client';
-import React, {createContext, ReactNode, useContext, useEffect, useState, useCallback} from 'react';
-import {Notification, Profile} from '~/utils/interface';
-import NotificationsService from '~/services/notifications.service';
+import React, {createContext, ReactNode, useContext, useEffect, useState, useCallback, useMemo} from 'react';
+import {Profile} from '~/utils/interface';
 import {UserService} from '~/services/user.service';
-import {PaginatedResponse, NotificationDTO} from '~/types/api';
 
 interface AppContextProps {
     showPopup: boolean;
@@ -20,11 +18,9 @@ interface AppContextProps {
             }[]
         >
     >;
-    notifications: PaginatedResponse<NotificationDTO> | null;
     modalMessage: string;
     profile: Profile | null;
     deleteConfirmCallback: (() => void) | null;
-    refreshNotifications: () => Promise<boolean>;
     setShowPopup: React.Dispatch<React.SetStateAction<boolean>>;
     setUser: React.Dispatch<
         React.SetStateAction<{token: string; userId: string | undefined; userName: string | undefined} | null>
@@ -48,81 +44,21 @@ export const AppProvider = ({children, initialUser}: AppProviderProps) => {
     );
     const [isInitialized, setIsInitialized] = useState<boolean>(false);
     const [defaultCategories, setDefaultCategories] = useState<{name: string; description: string | null}[]>([]);
-    const [notifications, setNotifications] = useState<PaginatedResponse<NotificationDTO> | null>(null);
     const [modalMessage, setModalMessage] = useState('');
     const [profile, setProfile] = useState<Profile | null>(null);
     const [deleteConfirmCallback, setDeleteConfirmCallback] = useState<(() => void) | null>(null);
 
-    // Fetch notifications — returns true on success, false on failure
-    const refreshNotifications = useCallback(async (): Promise<boolean> => {
-        if (!user) return false;
-
-        try {
-            const result = await NotificationsService.getNotifications({ page: 0, size: 50 });
-            if (result.data) {
-                // Handle both array response and paginated response
-                const notificationsData: PaginatedResponse<NotificationDTO> = Array.isArray(result.data)
-                    ? {
-                        content: result.data,
-                        totalPages: 1,
-                        totalElements: result.data.length,
-                        size: result.data.length,
-                        number: 0,
-                        first: true,
-                        last: true,
-                        empty: result.data.length === 0,
-                        numberOfElements: result.data.length,
-                        pageable: {
-                            offset: 0,
-                            sort: { empty: true, sorted: false, unsorted: true },
-                            pageNumber: 0,
-                            pageSize: result.data.length,
-                            paged: true,
-                            unpaged: false
-                        },
-                        sort: { empty: true, sorted: false, unsorted: true }
-                    }
-                    : result.data;
-                setNotifications(notificationsData);
-                return true;
-            }
-            return false;
-        } catch (error) {
-            console.error('Failed to fetch notifications:', error);
-            return false;
-        }
-    }, [user]);
-
-    // Fetch profile and notifications when user is available
+    // Fetch profile when user is available
     useEffect(() => {
-        if (user) {
-            refreshNotifications();
-
-            // Fetch user profile once
-            if (!profile) {
-                UserService.getProfile().then(result => {
-                    if (result.data) {
-                        const data = result.data as any;
-                        setProfile(data.user || data);
-                    }
-                }).catch(() => {});
-            }
-
-            // Poll every 30 seconds; stop after 5 consecutive failures
-            let consecutiveFailures = 0;
-            const interval = setInterval(async () => {
-                const success = await refreshNotifications();
-                if (!success) {
-                    consecutiveFailures++;
-                    if (consecutiveFailures >= 5) clearInterval(interval);
-                } else {
-                    consecutiveFailures = 0;
+        if (user && !profile) {
+            UserService.getProfile().then(result => {
+                if (result.data) {
+                    const data = result.data as any;
+                    setProfile(data.user || data);
                 }
-            }, 30000);
-
-            return () => clearInterval(interval);
+            }).catch(() => {});
         }
-    }, [user, refreshNotifications]);
+    }, [user, profile]);
 
     // Client-side auth validation on mount - ONLY run once and only if token exists
     useEffect(() => {
@@ -169,26 +105,23 @@ export const AppProvider = ({children, initialUser}: AppProviderProps) => {
         }
     }, [isInitialized, initialUser]);
 
+    const value = useMemo(() => ({
+        user,
+        showPopup,
+        defaultCategories,
+        modalMessage,
+        profile,
+        deleteConfirmCallback,
+        setModalMessage,
+        setUser,
+        setShowPopup,
+        setProfile,
+        setDefaultCategories,
+        setDeleteConfirmCallback
+    }), [user, showPopup, defaultCategories, modalMessage, profile, deleteConfirmCallback]);
 
     return (
-        <AppContext.Provider
-            value={{
-                user,
-                showPopup,
-                defaultCategories,
-                notifications,
-                modalMessage,
-                profile,
-                deleteConfirmCallback,
-                refreshNotifications,
-                setModalMessage,
-                setUser,
-                setShowPopup,
-                setProfile,
-                setDefaultCategories,
-                setDeleteConfirmCallback
-            }}
-        >
+        <AppContext.Provider value={value}>
             {children}
         </AppContext.Provider>
     );
