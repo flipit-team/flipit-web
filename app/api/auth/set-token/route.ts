@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(req: NextRequest) {
-    const token = req.nextUrl.searchParams.get('t');
-    const userId = req.nextUrl.searchParams.get('userId');
+export async function POST(req: NextRequest) {
+    const { token, userId } = await req.json();
 
     if (!token || !userId) {
-        return NextResponse.redirect(new URL('/login?error=auth_failed', req.url));
+        return NextResponse.json({ error: 'Missing token or userId' }, { status: 400 });
     }
 
-    const response = NextResponse.redirect(new URL('/', req.url));
+    const response = NextResponse.json({ success: true });
 
     const cookieOptions = {
         httpOnly: true,
@@ -19,7 +18,7 @@ export async function GET(req: NextRequest) {
     };
 
     response.cookies.set('token', token, cookieOptions);
-    response.cookies.set('userId', userId, cookieOptions);
+    response.cookies.set('userId', userId.toString(), cookieOptions);
 
     return response;
 }
