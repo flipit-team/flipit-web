@@ -1,9 +1,12 @@
 // Global fetch interceptor to handle 401 errors and auto-logout
 
+let isSetup = false;
 let isRedirecting = false;
 
 export function setupFetchInterceptor() {
-  if (typeof window === 'undefined') return; // Only run on client-side
+  if (typeof window === 'undefined') return;
+  if (isSetup) return; // Prevent double-wrapping
+  isSetup = true;
 
   const originalFetch = window.fetch;
 
@@ -11,26 +14,16 @@ export function setupFetchInterceptor() {
     try {
       const response = await originalFetch(...args);
 
-      // If we get a 401 Unauthorized or 403 Forbidden, automatically logout and redirect
-      if (response.status === 401 || response.status === 403) {
-        // Prevent multiple redirects and don't redirect if already on login page
+      // Only redirect on 401 Unauthorized (invalid/expired token)
+      // 403 Forbidden is a permissions issue, not an auth issue
+      if (response.status === 401) {
         if (!isRedirecting && !window.location.pathname.includes('/login')) {
           isRedirecting = true;
 
-          console.warn('Token expired or invalid. Logging out...');
-
-          // Clear cookies
-          document.cookie.split(";").forEach((c) => {
-            document.cookie = c
-              .replace(/^ +/, "")
-              .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-          });
-
-          // Redirect to login after a short delay
-          setTimeout(() => {
+          // Call server-side logout to clear httpOnly cookies (document.cookie cannot touch them)
+          fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }).finally(() => {
             window.location.href = '/login';
-            isRedirecting = false;
-          }, 100);
+          });
         }
       }
 
@@ -39,9 +32,4 @@ export function setupFetchInterceptor() {
       throw error;
     }
   };
-}
-
-// Call this in your app initialization
-if (typeof window !== 'undefined') {
-  setupFetchInterceptor();
 }
