@@ -123,7 +123,6 @@ export function useCategories() {
     
     if (result.success && result.data) {
       setCategories(result.data);
-    } else {
     }
     return result;
   }, [execute]);

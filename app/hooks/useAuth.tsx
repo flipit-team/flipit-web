@@ -83,11 +83,6 @@ export function useAuth() {
     }
   }, [setUser]);
 
-  useEffect(() => {
-    // Skip client-side auth check - we're using server-side auth with AppContext
-    // checkAuth();
-  }, [checkAuth]);
-
   const login = useCallback(async (credentials: { username: string; password: string }) => {
     try {
       setAuthState(prev => ({ ...prev, loading: true, error: null }));

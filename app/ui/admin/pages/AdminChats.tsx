@@ -115,7 +115,6 @@ export default function AdminChats() {
     const handleSendMessage = () => {
         if (newMessage.trim()) {
             // Here you would typically send the message to your backend
-            console.log('Sending message:', newMessage);
             setNewMessage('');
         }
     };

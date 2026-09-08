@@ -42,17 +42,17 @@ const sectionOne: MenuItem[] = [
 ];
 
 const sectionTwo: MenuItem[] = [
-    {icon: <User className={iconClass} />, label: 'Personal details', href: '/settings'},
-    {icon: <ShieldCheck className={iconClass} />, label: 'Verification', href: '/settings?tab=verification'},
-    {icon: <Lock className={iconClass} />, label: 'Change Password', href: '/settings?tab=password'},
-    {icon: <Globe className={iconClass} />, label: 'Change Language', href: '/settings?tab=language'},
-    {icon: <Bell className={iconClass} />, label: 'Manage Notifications', href: '/settings?tab=notifications'},
+    {icon: <User className={iconClass} />, label: 'Personal details', href: '/settings?section=personal-details'},
+    {icon: <ShieldCheck className={iconClass} />, label: 'Verification', href: '/settings?section=verification'},
+    {icon: <Lock className={iconClass} />, label: 'Change Password', href: '/settings?section=change-password'},
+    {icon: <Globe className={iconClass} />, label: 'Change Language', href: '/settings?section=change-language'},
+    {icon: <Bell className={iconClass} />, label: 'Manage Notifications', href: '/settings?section=manage-notifications'},
 ];
 
 const sectionThree: MenuItem[] = [
     {icon: <Headphones className={iconClass} />, label: 'Contact Us', href: '/support'},
     {icon: <HelpCircle className={iconClass} />, label: 'Frequently asked questions', href: '/faq'},
-    {icon: <Trash2 className={destructiveIconClass} />, label: 'Delete Account', href: '/settings?tab=delete-account', destructive: true},
+    {icon: <Trash2 className={destructiveIconClass} />, label: 'Delete Account', href: '/settings?section=delete-account', destructive: true},
 ];
 
 const MenuSection = ({items}: {items: MenuItem[]}) => (

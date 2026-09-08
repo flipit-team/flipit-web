@@ -19,14 +19,13 @@ export default async function SettingsPage() {
                 <Sidebar username={userName} />
             </div>
 
-            {/* Mobile Header */}
-            <Suspense fallback={null}>
-                <SettingsMobileHeader />
-            </Suspense>
-
             {/* Main Content Area */}
-            <div className='flex-1 p-4 md:p-6 lg:p-8 xs:px-4 xs:pt-24 xs:pb-6 overflow-x-hidden'>
+            <div className='flex-1 p-4 md:p-6 lg:p-8 xs:p-0 xs:px-4 xs:pt-4 xs:pb-6 overflow-x-hidden'>
                 <div className='max-w-6xl mx-auto'>
+                    {/* Mobile Header */}
+                    <Suspense fallback={null}>
+                        <SettingsMobileHeader />
+                    </Suspense>
                     <h1 className='typo-heading-lg-bold text-gray-900 mb-4 md:mb-6 xs:hidden'>Settings</h1>
 
                     {/* Settings Layout */}

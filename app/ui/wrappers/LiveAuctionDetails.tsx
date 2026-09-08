@@ -172,7 +172,7 @@ const LiveAuctionDetails = (props: Props) => {
         // Check if current user is the winning bidder
         // If so, redirect to: router.push(`/transaction/1?type=auction&auctionId=${item.auctionId}`);
         // Backend should handle creating the transaction when auction ends
-        console.log('Auction ended. Implement win detection and redirect to transaction flow.');
+        // TODO: Check if current user is winning bidder and redirect to transaction flow
     };
 
     return (

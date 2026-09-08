@@ -46,24 +46,11 @@ export class ApiClient {
     // Auth is managed via HttpOnly cookies, sent automatically with every same-origin
     // request. Client-side JS cannot read the token, and all API calls go through
     // Next.js proxy routes which forward the cookie to the backend.
-    private getAuthToken(): string | null {
-        return null;
-    }
+    // The `requireAuth` flag on RequestConfig is kept for documentation purposes only.
 
-    // Create request headers
-    private createHeaders(config?: RequestConfig): Headers {
+    private createHeaders(): Headers {
         const headers = new Headers();
-
         headers.set('Content-Type', 'application/json');
-
-        // Add auth token if required
-        if (config?.requireAuth) {
-            const token = this.getAuthToken();
-            if (token) {
-                headers.set('Authorization', `Bearer ${token}`);
-            }
-        }
-
         return headers;
     }
 
@@ -114,7 +101,7 @@ export class ApiClient {
         const {timeout = this.defaultTimeout, requireAuth = false, ...fetchConfig} = config;
 
         const url = endpoint.startsWith('http') ? endpoint : `${this.baseURL}${endpoint}`;
-        const headers = this.createHeaders(config);
+        const headers = this.createHeaders();
 
         // Create AbortController for timeout
         const controller = new AbortController();
@@ -177,15 +164,8 @@ export class ApiClient {
         const {timeout = this.defaultTimeout, requireAuth = false, ...fetchConfig} = config || {};
 
         const url = endpoint.startsWith('http') ? endpoint : `${this.baseURL}${endpoint}`;
-        const headers = new Headers();
-
         // Don't set Content-Type for FormData - let browser set it with boundary
-        if (requireAuth) {
-            const token = this.getAuthToken();
-            if (token) {
-                headers.set('Authorization', `Bearer ${token}`);
-            }
-        }
+        const headers = new Headers();
 
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), timeout);

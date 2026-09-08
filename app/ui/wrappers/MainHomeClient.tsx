@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useSearchParams } from 'next/navigation';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Item } from '~/utils/interface';
 import { useItems, useCategories } from '~/hooks/useItems';
 import { useInfiniteScroll } from '~/hooks/useInfiniteScroll';
@@ -22,11 +22,15 @@ interface Props {
 
 const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, defaultCategories: serverCategories, authStatus }: Props) => {
     const searchParams = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
     const searchQuery = searchParams.get('q') || '';
+    const categoryParam = searchParams.get('category') || '';
+    const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     // Filter state managed in MainHomeClient
     const [filters, setFilters] = useState({
-        category: '',
+        category: categoryParam,
         subCategory: '',
         stateCode: '',
         lgaCode: '',
@@ -45,19 +49,31 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
         autoFetch: false
     });
 
-    // Update items when search query changes
+    // Sync URL params (search, category) into filters and trigger fetch
     useEffect(() => {
-        if (searchQuery && updateParams) {
-            const params: any = { sort: filters.sort, search: searchQuery };
-            if (filters.stateCode) {
-                params.stateCode = filters.stateCode;
-                if (filters.lgaCode) {
-                    params.lgaCode = filters.lgaCode;
-                }
-            }
-            updateParams(params);
-        }
-    }, [searchQuery]);
+        if (!updateParams) return;
+
+        const hasUrlSearch = searchQuery !== '';
+        const hasUrlCategory = categoryParam !== '';
+
+        if (!hasUrlSearch && !hasUrlCategory) return;
+
+        const updated = { ...filters, search: searchQuery, category: categoryParam };
+        setFilters(updated);
+
+        const apiParams: Record<string, any> = { sort: updated.sort };
+        if (updated.search) apiParams.search = updated.search;
+        if (updated.category) apiParams.category = updated.category;
+        if (updated.stateCode) apiParams.stateCode = updated.stateCode;
+        if (updated.lgaCode) apiParams.lgaCode = updated.lgaCode;
+        if (updated.priceMin) apiParams.minAmount = parseFloat(updated.priceMin);
+        if (updated.priceMax) apiParams.maxAmount = parseFloat(updated.priceMax);
+        if (updated.verifiedSellers) apiParams.isVerifiedSeller = true;
+        if (updated.discount) apiParams.hasDiscount = true;
+
+        updateParams(apiParams, true);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchQuery, categoryParam]);
     const { categories: apiCategories } = useCategories();
     
     // Set up infinite scroll
@@ -112,6 +128,21 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
             description: item.itemCategory?.description || '',
         },
     })) : [], [apiItems]);
+
+    // Handle search input with debounce — updates URL which triggers the useEffect above
+    const handleSearchChange = useCallback((query: string) => {
+        if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+        searchTimeoutRef.current = setTimeout(() => {
+            const params = new URLSearchParams(searchParams.toString());
+            if (query) {
+                params.set('q', query);
+            } else {
+                params.delete('q');
+            }
+            const qs = params.toString();
+            router.replace(`${pathname}${qs ? '?' + qs : ''}`, { scroll: false });
+        }, 500);
+    }, [searchParams, router, pathname]);
 
     // Handle filter changes
     const handleFilterChange = useCallback((newFilters: typeof filters) => {
@@ -173,7 +204,7 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
     };
 
     // Use API data when filters/sorting/search are active AND data has been fetched, otherwise use server data
-    const hasActiveFilters = filters.category !== '' || filters.stateCode !== '' || filters.sort !== 'recent' || searchQuery !== '' ||
+    const hasActiveFilters = filters.category !== '' || categoryParam !== '' || filters.stateCode !== '' || filters.sort !== 'recent' || searchQuery !== '' ||
         filters.priceMin !== '' || filters.priceMax !== '' || filters.verifiedSellers || filters.discount;
 
     // Show API items when filters are active and initialized, otherwise always show server items
@@ -199,6 +230,7 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
             currentSort={filters.sort}
             filters={filters}
             onFilterChange={handleFilterChange}
+            onSearchChange={handleSearchChange}
             searchQuery={searchQuery}
             userName={authStatus?.user?.userName || authStatus?.user?.firstName || ''}
             userAvatar={authStatus?.user?.avatar || ''}

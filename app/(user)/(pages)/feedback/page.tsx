@@ -1,7 +1,8 @@
 'use client';
 import React from 'react';
-import {ChevronLeft, User} from 'lucide-react';
+import {User} from 'lucide-react';
 import Image from 'next/image';
+import {useRouter} from 'next/navigation';
 import GoBack from '~/ui/common/go-back';
 
 // Types
@@ -76,6 +77,7 @@ const ReviewCard: React.FC<{review: Review}> = ({review}) => {
 
 // Main Feedback Page Component
 const FeedbackPage: React.FC = () => {
+    const router = useRouter();
     // Default reviews data (matching your image)
     const defaultReviews: Review[] = [
         {id: '1', name: 'Collins', review: 'Good Product', rating: 5},
@@ -87,10 +89,18 @@ const FeedbackPage: React.FC = () => {
     const displayReviews = defaultReviews;
 
     return (
-        <div className='min-h-screen bg-gray-50 py-8'>
-            <div className='grid-sizes'>
-                {/* Go Back Button */}
-                <GoBack />
+        <div className='min-h-screen bg-gray-50 xs:bg-[#FFFFF0] py-8 xs:py-0 xs:pb-24'>
+            <div className='grid-sizes xs:px-4'>
+                {/* Mobile header */}
+                <div className='hidden xs:flex items-center gap-3 mb-4 pt-4'>
+                    <button onClick={() => router.back()} className='w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0'>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <h1 className='font-poppins typo-heading-md-semibold text-text_one'>Feedback</h1>
+                </div>
+
+                {/* Go Back Button (desktop) */}
+                <div className='xs:hidden'><GoBack /></div>
 
                 {/* Feedback Header */}
                 <div className='bg-white rounded-lg shadow-sm border border-gray-200 mb-6'>

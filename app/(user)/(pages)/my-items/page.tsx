@@ -1,5 +1,6 @@
 'use client';
 import React, {useState, useEffect} from 'react';
+import {useRouter} from 'next/navigation';
 import Sidebar from '~/ui/common/layout/sidebar';
 import GoBack from '~/ui/common/go-back';
 import ItemsContainer from './components/ItemsContainer';
@@ -43,6 +44,7 @@ function transformItemToMyItem(item: ItemDTO): MyItem {
 }
 
 export default function MyItemsPage() {
+    const router = useRouter();
     const {user} = useAuth();
     const {user: contextUser} = useAppContext();
     const {showError} = useToast();
@@ -128,7 +130,7 @@ export default function MyItemsPage() {
 
                     {/* Mobile header */}
                     <div className='hidden xs:flex items-center gap-3 mb-4'>
-                        <button onClick={() => window.history.back()} className='w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0'>
+                        <button onClick={() => router.back()} className='w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0'>
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                         </button>
                         <h1 className='font-poppins typo-heading-md-semibold text-text_one'>My Items</h1>

@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Sidebar from '~/ui/common/layout/sidebar';
 import ItemsService from '~/services/items.service';
 import { useAppContext } from '~/contexts/AppContext';
@@ -8,6 +9,7 @@ import ItemCard from '~/ui/common/item-card/ItemCard';
 import { Item } from '~/utils/interface';
 
 export default function MyAdvertsPage() {
+    const router = useRouter();
     const { user } = useAppContext();
     const [items, setItems] = useState<Item[]>([]);
     const [loading, setLoading] = useState(true);
@@ -47,9 +49,17 @@ export default function MyAdvertsPage() {
             </div>
 
             {/* Main Content Area */}
-            <div className='flex-1 p-4 md:p-6 lg:p-8 overflow-x-hidden'>
+            <div className='flex-1 p-4 md:p-6 lg:p-8 xs:p-0 xs:px-4 xs:pt-4 overflow-x-hidden'>
                 <div className='max-w-6xl mx-auto'>
-                    <h1 className='typo-heading-lg-bold md:typo-display-lg text-gray-900 mb-4 md:mb-6'>My Adverts</h1>
+                    {/* Mobile header */}
+                    <div className='hidden xs:flex items-center gap-3 mb-4'>
+                        <button onClick={() => router.back()} className='w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0'>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                        </button>
+                        <h1 className='font-poppins typo-heading-md-semibold text-text_one'>My Adverts</h1>
+                    </div>
+
+                    <h1 className='typo-heading-lg-bold md:typo-display-lg text-gray-900 mb-4 md:mb-6 xs:hidden'>My Adverts</h1>
 
                     {loading ? (
                         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>

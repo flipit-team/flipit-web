@@ -6,7 +6,7 @@ import React, {useState, useEffect, Suspense} from 'react';
 import {useAppContext} from '~/contexts/AppContext';
 import {useUnreadCount} from '~/contexts/UnreadCountContext';
 import Notifications from '../../modals/Notifications';
-import {ShoppingBag, Megaphone, BarChart3, Settings, Headphones, LogOut, Bell} from 'lucide-react';
+import {User, ShoppingBag, Megaphone, BarChart3, Settings, Headphones, LogOut, Bell} from 'lucide-react';
 import ProfileDropdown from './ProfileDropdown';
 import HomeService from '~/services/home.service';
 import {TopNavDTO} from '~/types/api';
@@ -96,6 +96,11 @@ function HeaderContent(props: Props) {
 
     // Main sidebar menu items
     const mainMenuItems = [
+        {
+            href: '/profile',
+            label: 'Profile',
+            icon: User,
+        },
         {
             href: '/my-items',
             label: 'My Items',

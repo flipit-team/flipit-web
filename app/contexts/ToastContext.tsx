@@ -1,5 +1,5 @@
 'use client';
-import React, { createContext, useContext, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useCallback, useMemo, ReactNode } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { formatErrorForDisplay } from '~/utils/error-messages';
 
@@ -73,13 +73,13 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
     toast(message, { duration, icon: 'ℹ️' });
   }, []);
 
-  const contextValue: ToastContextValue = {
+  const contextValue = useMemo(() => ({
     showToast,
     showError,
     showSuccess,
     showWarning,
     showInfo,
-  };
+  }), [showToast, showError, showSuccess, showWarning, showInfo]);
 
   return (
     <ToastContext.Provider value={contextValue}>

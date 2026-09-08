@@ -412,9 +412,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
             };
 
             try {
-                console.log('Creating auction with data:', auctionData);
                 const result = await AuctionsService.createAuction(auctionData);
-                console.log('Auction creation result:', result);
 
                 if (result.error) {
                     const errorDetails = formatErrorForDisplay(result.error);
