@@ -17,6 +17,7 @@ function transformItem(item: ItemDTO): Item {
         imageUrls: item.imageUrls || [],
         flipForImgUrls: [], // This field doesn't exist in new API
         acceptCash: item.acceptCash || false,
+        acceptSwap: item.acceptSwap || false,
         cashAmount: item.cashAmount || 0,
         condition: item.condition || '',
         published: item.published || false,

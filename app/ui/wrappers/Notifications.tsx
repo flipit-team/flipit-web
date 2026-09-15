@@ -49,9 +49,9 @@ const Notifications = () => {
         }
     };
 
-    const handleDismiss = (e: React.MouseEvent, index: number) => {
+    const handleDismiss = (e: React.MouseEvent, notificationId: number) => {
         e.stopPropagation();
-        setLocalNotifications(prev => prev.filter((_, i) => i !== index));
+        setLocalNotifications(prev => prev.filter(n => n.id !== notificationId));
     };
 
     const handleClearAll = () => {
@@ -94,10 +94,10 @@ const Notifications = () => {
             </div>
 
             <div className='bg-white rounded-lg shadow-sm xs:bg-transparent xs:rounded-none xs:shadow-none flex flex-col xs:gap-0 gap-6'>
-                {localNotifications.map((item, i) => {
+                {localNotifications.map((item) => {
                     return (
                         <div
-                            key={i}
+                            key={item.id}
                             onClick={() => handleNotificationClick(item.id, item.resourceLink)}
                             className={`flex items-center border-b border-border_gray w-full p-6 xs:px-4 xs:py-4 cursor-pointer hover:bg-gray-50 transition-colors ${
                                 !item.read ? 'bg-surface-primary-10 border-l-4 border-l-secondary xs:border-l-0' : ''
@@ -127,7 +127,7 @@ const Notifications = () => {
                             )}
                             {/* Dismiss button */}
                             <button
-                                onClick={(e) => handleDismiss(e, i)}
+                                onClick={(e) => handleDismiss(e, item.id)}
                                 className='flex items-center justify-center ml-3 text-text_four hover:text-text_two flex-shrink-0'
                                 aria-label='Dismiss notification'
                             >

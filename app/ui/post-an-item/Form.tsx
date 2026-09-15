@@ -44,8 +44,9 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 case 'condition':
                     const conditionMapping: {[key: string]: string} = {
                         NEW: 'brand-new',
+                        'New': 'brand-new',
                         FAIRLY_USED: 'fairly-used',
-                        USED: 'fairly-used'
+                        'Fairly Used': 'fairly-used',
                     };
                     return conditionMapping[existingItem.condition || ''] || existingItem.condition || '';
                 case 'location':
@@ -53,7 +54,9 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 case 'brand':
                     return existingItem.brand || '';
                 case 'cash':
-                    return existingItem.acceptCash ? 'yes' : 'no';
+                    if (existingItem.acceptCash && (existingItem as any).acceptSwap) return 'cash-swap';
+                    if ((existingItem as any).acceptSwap) return 'swap-only';
+                    return 'cash-only';
                 case 'category':
                     return existingItem.itemCategory?.name || '';
                 default:
@@ -82,7 +85,9 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
             setPrice(existingItem.cashAmount || 0);
             setLocation(existingItem.location || '');
             setBrand(existingItem.brand || '');
-            setCash(existingItem.acceptCash ? 'yes' : 'no');
+            if (existingItem.acceptCash && (existingItem as any).acceptSwap) setCash('cash-swap');
+            else if ((existingItem as any).acceptSwap) setCash('swap-only');
+            else setCash('cash-only');
 
             // Handle condition mapping
             const conditionMapping: {[key: string]: string} = {
@@ -105,9 +110,8 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
     const [startingBid, setStartingBid] = useState(0);
     const [bidIncrement, setBidIncrement] = useState(0);
     const [auctionStartDate, setAuctionStartDate] = useState(() => {
-        // Default to 1 hour from now
-        const defaultStart = new Date(Date.now() + 60 * 60 * 1000);
-        return defaultStart.toISOString();
+        // Default to now so the auction is immediately visible
+        return new Date().toISOString();
     });
     const [auctionDurationHours, setAuctionDurationHours] = useState(24); // Default 24 hours (1 day)
     const [reservePrice, setReservePrice] = useState(0);
@@ -128,7 +132,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
             urls.length >= 1;
 
         if (formType === 'listing') {
-            return commonFields && cash && (cash === 'no' || price > 0);
+            return commonFields && cash && (cash === 'swap-only' || price > 0);
         } else {
             return commonFields && startingBid > 0 && bidIncrement > 0 && auctionStartDate && auctionDurationHours > 0;
         }
@@ -140,13 +144,17 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
     // Get subcategories for the selected category
     const selectedCategoryData = availableCategories.find(cat => cat.name === category);
     const availableSubcategories = (selectedCategoryData as any)?.subcategories || [];
+    const availableBrands: string[] = (selectedCategoryData as any)?.brands || [];
 
-    // Reset subcategory when category changes
+    // Reset subcategory and brand when category changes
     useEffect(() => {
         if (category && !availableSubcategories.includes(subcategory)) {
             setSubcategory('');
         }
-    }, [category, availableSubcategories, subcategory]);
+        if (category && !availableBrands.includes(brand)) {
+            setBrand('');
+        }
+    }, [category, availableSubcategories, subcategory, availableBrands, brand]);
 
     const handleInput = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
         setError('');
@@ -175,9 +183,6 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
         }
         if (type === 'location') {
             setLocation(e.target.value);
-        }
-        if (type === 'brand') {
-            setBrand(e.target.value);
         }
     };
 
@@ -216,11 +221,11 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 return;
             }
             if (!cash) {
-                setError('Please specify if you accept cash');
+                setError('Please select a trade type');
                 setLoading(false);
                 return;
             }
-            if (cash === 'yes' && price <= 0) {
+            if (cash !== 'swap-only' && price <= 0) {
                 setError('Please set a valid price');
                 setLoading(false);
                 return;
@@ -253,15 +258,16 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                     title: title.trim(),
                     description: description.trim(),
                     imageKeys: urls.filter((url) => url != null && url !== '').map(extractKey),
-                    acceptCash: cash === 'yes',
-                    cashAmount: cash === 'yes' ? price : 0,
+                    acceptCash: cash === 'cash-only' || cash === 'cash-swap',
+                    acceptSwap: cash === 'swap-only' || cash === 'cash-swap',
+                    cashAmount: cash !== 'swap-only' ? price : 0,
                     stateCode: locationCodes?.stateCode || '',
                     lgaCode: locationCodes?.lgaCode || '',
                     condition: condition === 'brand-new' ? 'NEW' : 'FAIRLY_USED',
-                    brand: brand.trim() || 'Unknown',
+                    brand: brand.trim() || 'Other',
                     itemCategory: category ? category : '',
                     subcategory: subcategory || undefined,
-                    published: true // Ensure item remains published after update
+                    published: true
                 };
 
                 try {
@@ -297,12 +303,13 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                     title: title.trim(),
                     description: description.trim(),
                     imageKeys: urls.filter((url) => url != null && url !== ''), // Filter out null/empty URLs
-                    acceptCash: cash === 'yes',
-                    cashAmount: cash === 'yes' ? price : 0,
+                    acceptCash: cash === 'cash-only' || cash === 'cash-swap',
+                    acceptSwap: cash === 'swap-only' || cash === 'cash-swap',
+                    cashAmount: cash !== 'swap-only' ? price : 0,
                     stateCode: locationCodes?.stateCode || '',
                     lgaCode: locationCodes?.lgaCode || '',
                     condition: condition === 'brand-new' ? 'NEW' : 'FAIRLY_USED',
-                    brand: brand.trim() || 'Unknown', // Default brand if not provided
+                    brand: brand.trim() || 'Other',
                     itemCategory: category ? category : '',
                     subcategory: subcategory || undefined,
                 };
@@ -379,11 +386,11 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 return;
             }
 
-            // Validate start date is not in the past
+            // Validate start date is not too far in the past (allow a small buffer for "start now")
             const selectedStartDate = new Date(auctionStartDate);
-            const now = new Date();
-            if (selectedStartDate <= now) {
-                setError('Auction start date must be in the future');
+            const oneMinuteAgo = new Date(Date.now() - 60 * 1000);
+            if (selectedStartDate < oneMinuteAgo) {
+                setError('Auction start date cannot be in the past');
                 setLoading(false);
                 return;
             }
@@ -400,7 +407,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 stateCode: locationCodes?.stateCode || '',
                 lgaCode: locationCodes?.lgaCode || '',
                 condition: condition === 'brand-new' ? 'NEW' : 'FAIRLY_USED',
-                brand: brand.trim() || 'Unknown',
+                brand: brand.trim() || 'Other',
                 itemCategory: category ? category : '',
                 subcategory: subcategory || undefined,
                 startingBid: startingBid,
@@ -500,14 +507,15 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 />
             )}
 
-            <InputBox
-                label='Brand (Optional)'
-                name='brand'
-                placeholder='Enter item brand'
-                type='text'
-                value={brand}
-                setValue={handleInput}
-            />
+            {category && availableBrands.length > 0 && (
+                <Select
+                    label="Brand (Optional)"
+                    value={brand}
+                    onChange={setBrand}
+                    options={availableBrands.map((b: string) => ({value: b, label: b}))}
+                    placeholder="Select brand"
+                />
+            )}
 
             <div className='typo-body_mr xs:typo-body_sr'>
                 <p>
@@ -563,25 +571,29 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
                 </>
             ) : (
                 <>
-                    <InputBox
-                        label='Price'
-                        name='price'
-                        placeholder='Set item price'
-                        type='number'
-                        value={price.toString()}
-                        setValue={handleInput}
-                        required
-                    />
                     <RadioButtons
-                        nameOne='yes'
-                        nameTwo='no'
-                        title='Do you accept cash?'
-                        titleOne='Yes'
-                        titleTwo='No'
+                        nameOne='cash-only'
+                        nameTwo='swap-only'
+                        nameThree='cash-swap'
+                        title='Trade Type'
+                        titleOne='Cash Only'
+                        titleTwo='Swap Only'
+                        titleThree='Cash + Swap'
                         selected={cash}
                         setSelected={setCash}
                         required
                     />
+                    {cash !== 'swap-only' && (
+                        <InputBox
+                            label='Price'
+                            name='price'
+                            placeholder='Set item price'
+                            type='number'
+                            value={price.toString()}
+                            setValue={handleInput}
+                            required
+                        />
+                    )}
                 </>
             )}
 

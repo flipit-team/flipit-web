@@ -578,7 +578,7 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                                 <div className='flex-1 min-w-0'>
                                     <p className='font-poppins typo-body-md-semibold text-text_two line-clamp-2 leading-tight'>{transaction.item?.title || transaction.description || 'Item'}</p>
                                     <div className='mt-1'>
-                                        <TransactionTypeBadge acceptCash={transaction.type !== 'SWAP'} hasSwapItems={transaction.type !== 'CASH_ONLY'} />
+                                        <TransactionTypeBadge acceptCash={transaction.type !== 'SWAP'} acceptSwap={transaction.type !== 'CASH_ONLY'} />
                                     </div>
                                     <p className='font-poppins typo-body-md-semibold text-primary mt-1'>{formatToNaira(transactionAmount)}</p>
                                 </div>

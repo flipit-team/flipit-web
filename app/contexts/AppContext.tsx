@@ -56,7 +56,7 @@ export const AppProvider = ({children, initialUser}: AppProviderProps) => {
                     const data = result.data as any;
                     setProfile(data.user || data);
                 }
-            }).catch(() => {});
+            }).catch(err => console.error('Profile fetch failed:', err));
         }
     }, [user, profile]);
 

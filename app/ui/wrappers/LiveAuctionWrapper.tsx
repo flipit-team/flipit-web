@@ -36,10 +36,13 @@ interface Props {
     loading?: boolean;
     userName?: string;
     userAvatar?: string;
+    activeTab?: 'live' | 'upcoming' | 'ended';
+    onTabChange?: (tab: 'live' | 'upcoming' | 'ended') => void;
+    tabCounts?: { live: number; upcoming: number; ended: number };
 }
 
 const LiveAuctionWrapper = (props: Props) => {
-    const {items: serverItems, defaultCategories: serverCategories, onSortChange, currentSort = 'recent', filters, onFilterChange, searchQuery = '', loading = false, userName = '', userAvatar = ''} = props;
+    const {items: serverItems, defaultCategories: serverCategories, onSortChange, currentSort = 'recent', filters, onFilterChange, searchQuery = '', loading = false, userName = '', userAvatar = '', activeTab = 'live', onTabChange, tabCounts} = props;
 
     // Use only real server-side data (no dummy data)
     const items = serverItems;
@@ -87,7 +90,7 @@ const LiveAuctionWrapper = (props: Props) => {
             <div className='xs:hidden h-[206px] bg-surface-primary-95 flex flex-col gap-7 py-11'>
                 <div className='flex items-center gap-4 mx-auto text-white'>
                     <p className='typo-body_lr capitalize'>
-                        {filters.category ? `${filters.category} Auctions` : 'All Auctions'}
+                        {filters.category ? `${filters.category} Auctions` : 'Auctions'}
                     </p>
                 </div>
                 <SearchBar />
@@ -109,15 +112,53 @@ const LiveAuctionWrapper = (props: Props) => {
                         currentSort={currentSort}
                     />
 
-                    <div className='py-9 xs:py-1 xs:mb-2 flex items-center justify-between'>
-                        <div className='typo-heading_ms xs:typo-body-lg-semibold xs:text-text_one'>Live Auctions</div>
-                        <div className='xs:hidden'>
-                            <SortDropdown
-                                options={sortOptions}
-                                defaultSelection={sortOptions.find(opt => opt.value === currentSort)?.label || "Recent"}
-                                onSelectionChange={handleSortSelect}
-                            />
+                    <div className='py-9 xs:py-4 xs:mb-2'>
+                        <div className='flex items-center justify-between mb-4 xs:mb-3'>
+                            <div className='typo-heading_ms xs:typo-body-lg-semibold xs:text-text_one'>Auctions</div>
+                            <div className='xs:hidden'>
+                                <SortDropdown
+                                    options={sortOptions}
+                                    defaultSelection={sortOptions.find(opt => opt.value === currentSort)?.label || "Recent"}
+                                    onSelectionChange={handleSortSelect}
+                                />
+                            </div>
                         </div>
+
+                        {/* Status filter pills — only show tabs that have auctions */}
+                        {tabCounts && (tabCounts.live > 0 || tabCounts.upcoming > 0 || tabCounts.ended > 0) && (
+                            <div className='flex gap-2'>
+                                {tabCounts.live > 0 && (
+                                    <button
+                                        onClick={() => onTabChange?.('live')}
+                                        className={`px-4 py-2 xs:px-3 xs:py-1.5 rounded-full font-poppins typo-body-sm-medium transition-colors ${
+                                            activeTab === 'live' ? 'bg-primary text-white' : 'bg-gray-100 text-text_one'
+                                        }`}
+                                    >
+                                        Live
+                                    </button>
+                                )}
+                                {tabCounts.upcoming > 0 && (
+                                    <button
+                                        onClick={() => onTabChange?.('upcoming')}
+                                        className={`px-4 py-2 xs:px-3 xs:py-1.5 rounded-full font-poppins typo-body-sm-medium transition-colors ${
+                                            activeTab === 'upcoming' ? 'bg-primary text-white' : 'bg-gray-100 text-text_one'
+                                        }`}
+                                    >
+                                        Upcoming
+                                    </button>
+                                )}
+                                {tabCounts.ended > 0 && (
+                                    <button
+                                        onClick={() => onTabChange?.('ended')}
+                                        className={`px-4 py-2 xs:px-3 xs:py-1.5 rounded-full font-poppins typo-body-sm-medium transition-colors ${
+                                            activeTab === 'ended' ? 'bg-primary text-white' : 'bg-gray-100 text-text_one'
+                                        }`}
+                                    >
+                                        Ended
+                                    </button>
+                                )}
+                            </div>
+                        )}
                     </div>
 
                     {loading ? (

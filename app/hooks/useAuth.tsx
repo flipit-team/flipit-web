@@ -146,6 +146,7 @@ export function useAuth() {
     try {
       await AuthService.logout();
     } catch (error) {
+      console.error('Logout failed:', error);
     } finally {
       setAuthState({
         isAuthenticated: false,

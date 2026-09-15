@@ -37,6 +37,7 @@ function transformAuctionToItem(auction: AuctionDTO): Item {
         currentBid: auction.currentBid,
         bidIncrement: auction.bidIncrement,
         reservePrice: auction.reservePrice,
+        startDate: auction.startDate,
         endDate: auction.endDate,
         auctionStatus: auction.status
     };

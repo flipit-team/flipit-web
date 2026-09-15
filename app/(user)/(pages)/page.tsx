@@ -17,7 +17,8 @@ function transformAuctionToItem(auction: AuctionDTO): Item {
         description: auction.item.description,
         imageUrls: auction.item.imageUrls,
         flipForImgUrls: [], // This field doesn't exist in new API
-        acceptCash: true, // Auctions typically accept cash
+        acceptCash: true,
+        acceptSwap: false,
         cashAmount: auction.currentBid || auction.startingBid,
         condition: auction.item.condition,
         published: true,
@@ -54,6 +55,7 @@ function transformItems(items: ItemDTO[]): Item[] {
         imageUrls: item.imageUrls,
         flipForImgUrls: [], // This field doesn't exist in new API
         acceptCash: item.acceptCash,
+        acceptSwap: item.acceptSwap,
         cashAmount: item.cashAmount,
         condition: item.condition,
         published: item.published,

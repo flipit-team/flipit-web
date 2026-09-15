@@ -346,7 +346,7 @@ const ManageItemDetail = ({item, offers: propOffers}: Props) => {
 
                     <div className='shadow-lg xs:shadow-none p-6 xs:px-4 xs:pt-2'>
                         <div className='flex items-center gap-2'>
-                            <TransactionTypeBadge acceptCash={item.acceptCash} hasSwapItems={false} />
+                            <TransactionTypeBadge acceptCash={item.acceptCash} acceptSwap={(item as any).acceptSwap} />
                             <UsedBadge text={item.condition} />
                         </div>
                         <h2 className='typo-heading_ms xs:typo-heading_ss text-text_one mt-[10px] mb-2'>

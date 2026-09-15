@@ -8,7 +8,6 @@ import Header from '~/ui/common/layout/header';
 import Footer from '~/ui/common/layout/footer';
 import Overlay from '../ui/common/modals/Overlay';
 import {checkAuthServerSide} from '~/lib/server-api';
-import {cookies as getCookies} from 'next/headers';
 import ConditionalBottomNav from '../ui/common/layout/ConditionalBottomNav';
 import AuthInterceptor from '../components/AuthInterceptor';
 
@@ -19,13 +18,8 @@ export default async function UserLayout({
 }>) {
     const authStatus = await checkAuthServerSide();
 
-    // If backend says token is invalid, clear stale cookies
-    if (authStatus.clearCookies) {
-        const cookieStore = await getCookies();
-        cookieStore.delete('token');
-        cookieStore.delete('userId');
-        cookieStore.delete('userName');
-    }
+    // If backend says token is invalid, treat user as unauthenticated.
+    // The client-side fetch interceptor handles clearing cookies on 401.
 
     const user =
         authStatus.isAuthenticated && authStatus.user

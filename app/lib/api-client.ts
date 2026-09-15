@@ -98,7 +98,8 @@ export class ApiClient {
 
     // Generic request method
     private async request<T>(endpoint: string, config: RequestConfig = {}): Promise<T> {
-        const {timeout = this.defaultTimeout, requireAuth = false, ...fetchConfig} = config;
+        const {timeout = this.defaultTimeout, ...fetchConfig} = config;
+        delete (fetchConfig as any).requireAuth;
 
         const url = endpoint.startsWith('http') ? endpoint : `${this.baseURL}${endpoint}`;
         const headers = this.createHeaders();
@@ -161,7 +162,8 @@ export class ApiClient {
 
     // Form data request (for file uploads)
     async postFormData<T>(endpoint: string, formData: FormData, config?: RequestConfig): Promise<T> {
-        const {timeout = this.defaultTimeout, requireAuth = false, ...fetchConfig} = config || {};
+        const {timeout = this.defaultTimeout, ...fetchConfig} = config || {};
+        delete (fetchConfig as any).requireAuth;
 
         const url = endpoint.startsWith('http') ? endpoint : `${this.baseURL}${endpoint}`;
         // Don't set Content-Type for FormData - let browser set it with boundary

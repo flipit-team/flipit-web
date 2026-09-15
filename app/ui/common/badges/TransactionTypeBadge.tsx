@@ -2,24 +2,28 @@ import React from 'react';
 
 interface TransactionTypeBadgeProps {
     acceptCash: boolean;
-    hasSwapItems: boolean;
+    acceptSwap?: boolean;
+    hasSwapItems?: boolean;
     className?: string;
 }
 
 const TransactionTypeBadge: React.FC<TransactionTypeBadgeProps> = ({
     acceptCash,
+    acceptSwap,
     hasSwapItems,
     className = ''
 }) => {
+    const isSwap = acceptSwap || hasSwapItems;
+
     // Determine transaction type and styling
     const getTransactionStyle = () => {
-        if (acceptCash && hasSwapItems) {
+        if (acceptCash && isSwap) {
             // Cash + Swap - using accent.coral color variable
             return {
                 className: 'bg-surface-coral text-accent-coral',
                 label: 'Cash + Swap'
             };
-        } else if (!acceptCash && hasSwapItems) {
+        } else if (!acceptCash && isSwap) {
             // Swap only
             return {
                 className: 'bg-surface-yellow text-warning-dark',

@@ -10,31 +10,31 @@ const LogoLoader = () => {
                     <Image
                         src='/logos/logo-text-cropped.png'
                         alt='Flipit Logo'
-                        width={200}
-                        height={79}
+                        width={120}
+                        height={47}
                         priority
                         className='object-contain'
                     />
                 </div>
-                <div className='flex gap-3'>
+                <div className='flex gap-2'>
                     <div
-                        className='w-2 h-2 bg-primary rounded-full animate-bounce-dot'
+                        className='w-1.5 h-1.5 bg-primary rounded-full animate-bounce-dot'
                         style={{animationDelay: '0ms'}}
                     ></div>
                     <div
-                        className='w-2 h-2 bg-primary rounded-full animate-bounce-dot'
+                        className='w-1.5 h-1.5 bg-primary rounded-full animate-bounce-dot'
                         style={{animationDelay: '150ms'}}
                     ></div>
                     <div
-                        className='w-2 h-2 bg-primary rounded-full animate-bounce-dot'
+                        className='w-1.5 h-1.5 bg-primary rounded-full animate-bounce-dot'
                         style={{animationDelay: '300ms'}}
                     ></div>
                     <div
-                        className='w-2 h-2 bg-primary rounded-full animate-bounce-dot'
+                        className='w-1.5 h-1.5 bg-primary rounded-full animate-bounce-dot'
                         style={{animationDelay: '450ms'}}
                     ></div>
                     <div
-                        className='w-2 h-2 bg-primary rounded-full animate-bounce-dot'
+                        className='w-1.5 h-1.5 bg-primary rounded-full animate-bounce-dot'
                         style={{animationDelay: '600ms'}}
                     ></div>
                 </div>

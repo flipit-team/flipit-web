@@ -87,19 +87,28 @@ const MainHomeServer = ({
             {/* Mobile teal header — greeting + search in one block */}
             <div className='hidden xs:flex xs:flex-col bg-primary rounded-b-[28px] pt-3 pb-6 px-5'>
                 <div className='flex items-center gap-2 mb-5'>
-                    <Link href='/profile' className='w-8 h-8 rounded-full bg-gray-200 overflow-hidden flex-shrink-0'>
-                        {userAvatar && (
-                            <Image
-                                src={userAvatar}
-                                alt=''
-                                width={32}
-                                height={32}
-                                className='w-full h-full object-cover'
-                            />
-                        )}
-                    </Link>
+                    {userName ? (
+                        <Link href='/profile' className='w-8 h-8 rounded-full bg-gray-200 overflow-hidden flex-shrink-0'>
+                            {userAvatar && (
+                                <Image
+                                    src={userAvatar}
+                                    alt=''
+                                    width={32}
+                                    height={32}
+                                    className='w-full h-full object-cover'
+                                />
+                            )}
+                        </Link>
+                    ) : (
+                        <Link
+                            href='/login'
+                            className='px-4 py-1.5 rounded-full bg-white font-poppins typo-body-sm-medium text-primary flex-shrink-0'
+                        >
+                            Sign In
+                        </Link>
+                    )}
                     <p className='font-poppins typo-body-sm-regular text-white'>
-                        Good Morning, <span className='font-semibold'>{userName || 'there'}</span>
+                        Good Morning, <span className='font-semibold'>{userName || 'Stranger'}</span>
                     </p>
                 </div>
                 {/* Search bar inside teal header on mobile */}

@@ -22,6 +22,7 @@ export function setupFetchInterceptor() {
 
           // Use originalFetch to avoid going through this interceptor again
           originalFetch('/api/auth/logout', { method: 'POST', credentials: 'include' }).finally(() => {
+            isRedirecting = false;
             window.location.href = '/login';
           });
         }

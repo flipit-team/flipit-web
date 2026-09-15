@@ -17,6 +17,7 @@ export interface Item {
     imageUrls: string[];
     flipForImgUrls?: string[];
     acceptCash: boolean;
+    acceptSwap?: boolean;
     cashAmount: number;
     condition: string | null;
     published: boolean;

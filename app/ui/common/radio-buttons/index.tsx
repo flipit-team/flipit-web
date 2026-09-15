@@ -20,7 +20,7 @@ const RadioButtons = (props: Props) => {
 
     return (
         <div>
-            <p className='typo-body_mr mb-[18px]'>{title}{required && <span className="text-error ml-1">*</span>}</p>
+            <p className='typo-body_mr mb-2'>{title}{required && <span className="text-error ml-1">*</span>}</p>
             <div className={`flex ${col ? 'flex-col space-y-4' : 'flex-row space-x-6'}`}>
                 {/* Radio Button 1 */}
                 {nameOne && (

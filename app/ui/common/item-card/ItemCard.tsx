@@ -17,6 +17,7 @@ interface ItemCardProps {
     forLiveAuction?: boolean;
     className?: string;
     imageClassName?: string;
+    imageContainerClassName?: string;
     contentClassName?: string;
     showSaveButton?: boolean;
     showPromotedBadge?: boolean;
@@ -35,6 +36,7 @@ const ItemCard: React.FC<ItemCardProps> = memo(
         forLiveAuction = false,
         className = 'w-full rounded-3xl xs:rounded-2xl',
         imageClassName = 'h-[302px] w-full xs:h-[180px] cursor-pointer object-cover rounded-xl',
+        imageContainerClassName = 'h-[302px] xs:h-[180px]',
         contentClassName = 'p-4 xs:p-3 xs:flex xs:flex-col xs:justify-between',
         showSaveButton = true,
         showPromotedBadge = true,
@@ -102,7 +104,7 @@ const ItemCard: React.FC<ItemCardProps> = memo(
         return (
             <>
                 <Link href={href} className={`${className} card-hover block`}>
-                    <div className='relative h-[302px] w-full xs:h-[180px] xs:bg-gray-100'>
+                    <div className={`relative w-full xs:bg-gray-100 ${imageContainerClassName}`}>
                         <Image
                             className={imageClassName}
                             src={url}
@@ -155,6 +157,7 @@ const ItemCard: React.FC<ItemCardProps> = memo(
                             {showTradeBadge ? (
                                 <TransactionTypeBadge
                                     acceptCash={item.acceptCash}
+                                    acceptSwap={item.acceptSwap}
                                     hasSwapItems={!!(item.flipForImgUrls && item.flipForImgUrls.length > 0)}
                                 />
                             ) : showAuctionBadge ? (

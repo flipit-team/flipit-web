@@ -203,8 +203,9 @@ export interface CategoryDTO {
   id: number;
   name: string;
   description: string;
-  thumbnail?: string;      // NEW: Category thumbnail URL
-  subcategories?: string[]; // NEW: List of subcategory names
+  thumbnail?: string;
+  brands?: string[];
+  subcategories?: string[];
 }
 
 export interface ItemsQueryParams {

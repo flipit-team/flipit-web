@@ -3,9 +3,7 @@ import React, {useEffect, useState} from 'react';
 import InputBox from '../input-box';
 import AuthButton from '../buttons/AuthButton';
 import {useRouter, useSearchParams} from 'next/navigation';
-import {useAppContext} from '~/contexts/AppContext';
 import useAuth from '~/hooks/useAuth';
-import { AuthService } from '~/services/auth.service';
 import Image from 'next/image';
 import { formatErrorForDisplay } from '~/utils/error-messages';
 import ErrorDisplay from '../error-display/ErrorDisplay';
@@ -15,7 +13,8 @@ const Form = () => {
     const { login, signup } = useAuth();
     const [isLogin, setIsLogin] = useState(true);
     const [email, setEmail] = useState('');
-    const [fullName, setFullName] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [password, setPassword] = useState('');
     const [phone, setPhone] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -29,7 +28,8 @@ const Form = () => {
         setEmail('');
         setPassword('');
         setPhone('');
-        setFullName('');
+        setFirstName('');
+        setLastName('');
     }, [isLogin]);
 
 
@@ -59,8 +59,11 @@ const Form = () => {
             case 'email':
                 setEmail(value);
                 break;
-            case 'fullName':
-                setFullName(value);
+            case 'firstName':
+                setFirstName(value);
+                break;
+            case 'lastName':
+                setLastName(value);
                 break;
             case 'password':
                 setPassword(value);
@@ -100,14 +103,9 @@ const Form = () => {
                     return;
                 }
 
-                // Split full name into first and last name for API
-                const nameParts = fullName.trim().split(/\s+/);
-                const firstName = nameParts[0] || '';
-                const lastName = nameParts.slice(1).join(' ') || '';
-
                 const result = await signup({
-                    firstName: firstName,
-                    lastName: lastName,
+                    firstName: firstName.trim(),
+                    lastName: lastName.trim(),
                     email: email,
                     phone: phone,
                     password: password,
@@ -148,7 +146,7 @@ const Form = () => {
 
     const btnActive = isLogin
         ? !!email && !!password
-        : !!email && !!fullName && !!phone && isStrong;
+        : !!email && !!firstName && !!lastName && !!phone && isStrong;
 
     return (
         <div className='flex flex-col xs:pb-8'>
@@ -240,14 +238,24 @@ const Form = () => {
                         </>
                     ) : (
                         <>
-                            <InputBox
-                                value={fullName}
-                                setValue={handleInput}
-                                label='Full Name'
-                                name='fullName'
-                                placeholder='Enter Full Name'
-                                type='text'
-                            />
+                            <div className='grid grid-cols-2 gap-4'>
+                                <InputBox
+                                    value={firstName}
+                                    setValue={handleInput}
+                                    label='First Name'
+                                    name='firstName'
+                                    placeholder='First Name'
+                                    type='text'
+                                />
+                                <InputBox
+                                    value={lastName}
+                                    setValue={handleInput}
+                                    label='Last Name'
+                                    name='lastName'
+                                    placeholder='Last Name'
+                                    type='text'
+                                />
+                            </div>
                             <InputBox
                                 value={email}
                                 setValue={handleInput}

@@ -192,7 +192,7 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
                             <div className='w-fit'>
                                 <TransactionTypeBadge
                                     acceptCash={item.tradeType === 'cash' || item.tradeType === 'mixed'}
-                                    hasSwapItems={item.tradeType === 'swap' || item.tradeType === 'mixed'}
+                                    acceptSwap={item.tradeType === 'swap' || item.tradeType === 'mixed'}
                                 />
                             </div>
                         )}

@@ -28,6 +28,13 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
     const categoryParam = searchParams.get('category') || '';
     const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+    // Clean up debounce timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+        };
+    }, []);
+
     // Filter state managed in MainHomeClient
     const [filters, setFilters] = useState({
         category: categoryParam,
@@ -99,6 +106,7 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
         imageUrls: item.imageUrls || [],
         flipForImgUrls: [], // This field doesn't exist in new API
         acceptCash: item.acceptCash,
+        acceptSwap: item.acceptSwap,
         cashAmount: item.cashAmount,
         condition: item.condition,
         published: item.published,

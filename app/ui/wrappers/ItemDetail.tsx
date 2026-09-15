@@ -194,7 +194,7 @@ const ItemDetail = (props: Props) => {
                                 )}
                                 {/* Trade type badge on image — hidden on mobile (shown in content below) */}
                                 <div className='absolute top-3 left-3 xs:hidden'>
-                                    <TransactionTypeBadge acceptCash={item?.acceptCash ?? true} hasSwapItems={false} />
+                                    <TransactionTypeBadge acceptCash={item?.acceptCash ?? true} acceptSwap={item?.acceptSwap} />
                                 </div>
                                 <div className='absolute bottom-4 right-3 xs:hidden'>
                                     <button
@@ -265,7 +265,7 @@ const ItemDetail = (props: Props) => {
                     {/* Mobile: trade badge + title + price + posted time */}
                     <div className='hidden xs:block mt-3'>
                         <div className='mb-2'>
-                            <div className='w-fit'><TransactionTypeBadge acceptCash={item?.acceptCash ?? true} hasSwapItems={false} /></div>
+                            <div className='w-fit'><TransactionTypeBadge acceptCash={item?.acceptCash ?? true} acceptSwap={item?.acceptSwap} /></div>
                         </div>
                         <h2 className='font-poppins font-semibold text-[20px] text-text_one capitalize'>{item?.title}</h2>
                         {item?.acceptCash && (
@@ -387,11 +387,11 @@ const ItemDetail = (props: Props) => {
                         {/* Trade type badge + description */}
                         <div className='mb-3'>
                             {/* Swap only */}
-                            {!item?.acceptCash && !!(item?.flipForImgUrls && item.flipForImgUrls.length > 0) && (
+                            {!item?.acceptCash && item?.acceptSwap && (
                                 <>
                                     <div className='flex items-center gap-3 mb-2'>
                                         <div className='w-fit'>
-                                            <TransactionTypeBadge acceptCash={false} hasSwapItems={true} />
+                                            <TransactionTypeBadge acceptCash={false} acceptSwap={true} />
                                         </div>
                                         <span className='font-poppins typo-body-md-regular text-text_one'>Seller accepts item trades</span>
                                     </div>
@@ -401,11 +401,11 @@ const ItemDetail = (props: Props) => {
                                 </>
                             )}
                             {/* Cash + Swap */}
-                            {item?.acceptCash && !!(item?.flipForImgUrls && item.flipForImgUrls.length > 0) && (
+                            {item?.acceptCash && item?.acceptSwap && (
                                 <>
                                     <div className='flex items-center gap-3 mb-2'>
                                         <div className='w-fit'>
-                                            <TransactionTypeBadge acceptCash={true} hasSwapItems={true} />
+                                            <TransactionTypeBadge acceptCash={true} acceptSwap={true} />
                                         </div>
                                         <span className='font-poppins typo-body-md-regular text-text_one'>Seller accepts item trades plus cash</span>
                                     </div>
@@ -415,9 +415,9 @@ const ItemDetail = (props: Props) => {
                                 </>
                             )}
                             {/* Cash only */}
-                            {item?.acceptCash && !(item?.flipForImgUrls && item.flipForImgUrls.length > 0) && (
+                            {item?.acceptCash && !item?.acceptSwap && (
                                 <div className='w-fit'>
-                                    <TransactionTypeBadge acceptCash={true} hasSwapItems={false} />
+                                    <TransactionTypeBadge acceptCash={true} acceptSwap={false} />
                                 </div>
                             )}
                         </div>

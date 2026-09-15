@@ -26,6 +26,7 @@ function transformAuctionToItem(auction: AuctionDTO): Item {
         imageUrls: auction.item.imageUrls || [],
         flipForImgUrls: [],
         acceptCash: true,
+        acceptSwap: false,
         cashAmount: auction.currentBid || auction.startingBid,
         condition: auction.item.condition,
         published: true,
@@ -63,14 +64,18 @@ function transformAuctionToItem(auction: AuctionDTO): Item {
         currentBid: auction.currentBid,
         bidIncrement: auction.bidIncrement,
         reservePrice: auction.reservePrice,
+        startDate: auction.startDate,
         endDate: auction.endDate,
         auctionStatus: auction.status
     };
 }
 
+type AuctionTab = 'live' | 'upcoming' | 'ended';
+
 const LiveAuctionClient = ({ items: serverItems, defaultCategories, userName = '', userAvatar = '' }: Props) => {
     const searchParams = useSearchParams();
     const searchQuery = searchParams.get('q') || '';
+    const [activeTab, setActiveTab] = useState<AuctionTab>('live');
 
     // Filter state
     const [filters, setFilters] = useState({
@@ -162,7 +167,35 @@ const LiveAuctionClient = ({ items: serverItems, defaultCategories, userName = '
         filters.verifiedSellers || filters.discount || searchQuery !== '';
 
     // Show API items when filters are active and initialized, otherwise show server items
-    const items = (hasActiveFilters && initialized) ? apiAuctions : serverItems;
+    const allItems = (hasActiveFilters && initialized) ? apiAuctions : serverItems;
+
+    // Filter by auction status tab
+    const now = new Date();
+    const filterByTab = (item: Item) => {
+        const start = item.startDate ? new Date(item.startDate) : null;
+        const end = item.endDate ? new Date(item.endDate) : null;
+        const status = item.auctionStatus;
+
+        switch (activeTab) {
+            case 'live':
+                return status === 'ACTIVE' && start && start <= now && end && end > now;
+            case 'upcoming':
+                return status === 'ACTIVE' && start && start > now;
+            case 'ended':
+                return status === 'ENDED' || status === 'CANCELLED' || (end && end <= now);
+            default:
+                return true;
+        }
+    };
+
+    const items = allItems.filter(filterByTab);
+
+    // Determine which tabs have auctions
+    const tabCounts = {
+        live: allItems.filter(i => i.auctionStatus === 'ACTIVE' && i.startDate && new Date(i.startDate) <= now && i.endDate && new Date(i.endDate) > now).length,
+        upcoming: allItems.filter(i => i.auctionStatus === 'ACTIVE' && i.startDate && new Date(i.startDate) > now).length,
+        ended: allItems.filter(i => i.auctionStatus === 'ENDED' || i.auctionStatus === 'CANCELLED' || (i.endDate && new Date(i.endDate) <= now)).length,
+    };
 
     return (
         <LiveAuctionWrapper
@@ -176,6 +209,9 @@ const LiveAuctionClient = ({ items: serverItems, defaultCategories, userName = '
             loading={loading}
             userName={userName}
             userAvatar={userAvatar}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            tabCounts={tabCounts}
         />
     );
 };

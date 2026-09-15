@@ -24,10 +24,10 @@ const getOfferTradeType = (offer: OfferDTO): 'cash' | 'swap' | 'mixed' => {
 
 const getTradeTypeProps = (type: string) => {
     switch (type) {
-        case 'cash': return {acceptCash: true, hasSwapItems: false};
-        case 'swap': return {acceptCash: false, hasSwapItems: true};
-        case 'mixed': return {acceptCash: true, hasSwapItems: true};
-        default: return {acceptCash: true, hasSwapItems: false};
+        case 'cash': return {acceptCash: true, acceptSwap: false};
+        case 'swap': return {acceptCash: false, acceptSwap: true};
+        case 'mixed': return {acceptCash: true, acceptSwap: true};
+        default: return {acceptCash: true, acceptSwap: false};
     }
 };
 
@@ -345,7 +345,7 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
                                                 className='rounded-xl object-cover w-[120px] h-[120px]'
                                             />
                                             <div className='absolute top-4 left-4'>
-                                                <TransactionTypeBadge acceptCash={tradeProps.acceptCash} hasSwapItems={tradeProps.hasSwapItems} />
+                                                <TransactionTypeBadge acceptCash={tradeProps.acceptCash} acceptSwap={tradeProps.acceptSwap} />
                                             </div>
                                         </div>
 
@@ -483,7 +483,7 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
                                                         className='rounded-xl object-cover w-[120px] h-[120px]'
                                                     />
                                                     <div className='absolute top-4 left-4'>
-                                                        <TransactionTypeBadge acceptCash={tradeProps.acceptCash} hasSwapItems={tradeProps.hasSwapItems} />
+                                                        <TransactionTypeBadge acceptCash={tradeProps.acceptCash} acceptSwap={tradeProps.acceptSwap} />
                                                     </div>
                                                 </div>
                                                 {/* Details */}
@@ -629,7 +629,7 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
                                             {/* Right — badge, time */}
                                             <div className='py-[26px] pr-[50px] flex flex-col items-end justify-between flex-shrink-0'>
                                                 <div className='w-fit'>
-                                                    <TransactionTypeBadge acceptCash={tradeProps.acceptCash} hasSwapItems={tradeProps.hasSwapItems} />
+                                                    <TransactionTypeBadge acceptCash={tradeProps.acceptCash} acceptSwap={tradeProps.acceptSwap} />
                                                 </div>
                                                 <p className='font-poppins typo-body-md-regular text-text-muted-alt italic'>
                                                     {formatTimeAgo(offer.dateCreated)}
