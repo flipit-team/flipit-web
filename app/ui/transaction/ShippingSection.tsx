@@ -1,7 +1,8 @@
 'use client';
 import React, {useState, useEffect} from 'react';
 import {TransactionDTO} from '~/types/transaction';
-import ShippingService, {GIGTrackingInfo} from '~/services/shipping.service';
+import ShippingService from '~/services/shipping.service';
+import {ShipmentDTO} from '~/types/api';
 import {ClipboardIcon, TruckFilledIcon} from '../icons';
 
 interface Props {
@@ -13,7 +14,7 @@ interface Props {
 const ShippingSection = ({transaction, userRole, onShippingUpdate}: Props) => {
     const [showShippingForm, setShowShippingForm] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [trackingInfo, setTrackingInfo] = useState<GIGTrackingInfo | null>(null);
+    const [trackingInfo, setTrackingInfo] = useState<ShipmentDTO | null>(null);
     const [shippingFormData, setShippingFormData] = useState({
         senderName: '',
         senderPhone: '',
@@ -42,7 +43,7 @@ const ShippingSection = ({transaction, userRole, onShippingUpdate}: Props) => {
         const loadTrackingInfo = async () => {
             if (userShipping?.waybillNumber) {
                 try {
-                    const response = await ShippingService.trackShipment(userShipping.waybillNumber);
+                    const response = await ShippingService.trackShipment({ courierService: 'GIG', transactionId: transaction.id });
                     if (response.data) {
                         setTrackingInfo(response.data);
                     }
@@ -62,24 +63,19 @@ const ShippingSection = ({transaction, userRole, onShippingUpdate}: Props) => {
         try {
             // Create shipping with GIG Logistics
             const response = await ShippingService.createShipment({
+                courierService: 'GIG',
+                transactionId: transaction.id,
                 senderName: shippingFormData.senderName,
                 senderPhone: shippingFormData.senderPhone,
-                senderEmail: '', // Get from user context
                 senderAddress: shippingFormData.senderAddress,
                 senderState: shippingFormData.senderState,
                 senderLGA: shippingFormData.senderLGA,
                 receiverName: shippingFormData.receiverName,
                 receiverPhone: shippingFormData.receiverPhone,
-                receiverEmail: '', // Get from other party
                 receiverAddress: shippingFormData.receiverAddress,
                 receiverState: shippingFormData.receiverState,
                 receiverLGA: shippingFormData.receiverLGA,
                 itemDescription: transaction.description || '',
-                itemValue: transaction.amount || 0,
-                deliveryType: 'STANDARD',
-                paymentMethod: 'PREPAID',
-                pickupDate: shippingFormData.pickupDate,
-                specialInstructions: shippingFormData.specialInstructions
             });
 
             if (response.data) {
@@ -117,15 +113,14 @@ const ShippingSection = ({transaction, userRole, onShippingUpdate}: Props) => {
                                     formatShippingStatus(userShipping.status).color
                                 } bg-opacity-10`}
                             >
-                                {formatShippingStatus(userShipping.status).icon}{' '}
-                                {formatShippingStatus(userShipping.status).label}
+                                                                {formatShippingStatus(userShipping.status).label}
                             </span>
                         </div>
                         {userShipping.waybillNumber && (
                             <div className='flex items-center justify-between'>
                                 <span className='typo-body_mr text-text_four'>Waybill:</span>
                                 <span className='typo-body_lr text-text_one font-mono'>
-                                    {ShippingService.formatWaybillNumber(userShipping.waybillNumber)}
+                                    {userShipping.waybillNumber}
                                 </span>
                             </div>
                         )}
@@ -148,15 +143,15 @@ const ShippingSection = ({transaction, userRole, onShippingUpdate}: Props) => {
                     </div>
 
                     {/* Tracking Timeline */}
-                    {trackingInfo && trackingInfo.history && trackingInfo.history.length > 0 && (
+                    {trackingInfo && (trackingInfo as any).history && (trackingInfo as any).history.length > 0 && (
                         <div>
                             <h3 className='typo-body_lm text-text_one mb-4'>Tracking History</h3>
                             <div className='space-y-4'>
-                                {trackingInfo.history.map((event, index) => (
+                                {(trackingInfo as any).history.map((event: any, index: number) => (
                                     <div key={index} className='flex gap-4'>
                                         <div className='relative'>
                                             <div className='w-3 h-3 bg-primary rounded-full'></div>
-                                            {index < trackingInfo.history.length - 1 && (
+                                            {index < (trackingInfo as any).history.length - 1 && (
                                                 <div className='absolute top-3 left-[5px] w-[2px] h-full bg-gray-200'></div>
                                             )}
                                         </div>
@@ -205,15 +200,14 @@ const ShippingSection = ({transaction, userRole, onShippingUpdate}: Props) => {
                                     formatShippingStatus(otherShipping.status).color
                                 } bg-opacity-10`}
                             >
-                                {formatShippingStatus(otherShipping.status).icon}{' '}
-                                {formatShippingStatus(otherShipping.status).label}
+                                                                {formatShippingStatus(otherShipping.status).label}
                             </span>
                         </div>
                         {otherShipping.waybillNumber && (
                             <div className='flex items-center justify-between'>
                                 <span className='typo-body_mr text-text_four'>Waybill:</span>
                                 <span className='typo-body_lr text-text_one font-mono'>
-                                    {ShippingService.formatWaybillNumber(otherShipping.waybillNumber)}
+                                    {otherShipping.waybillNumber}
                                 </span>
                             </div>
                         )}

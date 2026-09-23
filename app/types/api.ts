@@ -585,3 +585,67 @@ export interface AdminBidDTO {
   bidDate: string;
   status: string;
 }
+
+// Payment Types
+export type PaymentStatus = 'PENDING' | 'SUCCESS' | 'FAILED' | 'REFUNDED' | 'SETTLED' | 'DECLINED' | 'CANCELLED';
+
+export interface PaymentInitiateRequest {
+  itemId: number;
+  amount: number;
+  gateway?: string;
+  currency?: string;
+  email?: string;
+  courierService?: string; // Only needed if payment includes delivery cost calculation
+}
+
+export interface PaymentDTO {
+  id: number;
+  title?: string;
+  message?: string;
+  status?: number;
+  authorizationUrl?: string;
+  reference?: string;
+  transactionId?: number;
+  amount?: number;
+  dateCreated?: string;
+}
+
+export interface PaymentVerifyRequest {
+  reference: string;
+  gateway?: string;
+}
+
+// Shipping Types (generic — wraps courier-specific data)
+export type ShipmentStatus = 'PENDING' | 'PICKED_UP' | 'IN_TRANSIT' | 'OUT_FOR_DELIVERY' | 'DELIVERED' | 'CANCELLED' | 'RETURNED';
+
+export interface ShipmentCreateRequest {
+  courierService: string;
+  transactionId: number;
+  senderName: string;
+  senderPhone: string;
+  senderAddress: string;
+  senderState: string;
+  senderLGA: string;
+  receiverName: string;
+  receiverPhone: string;
+  receiverAddress: string;
+  receiverState: string;
+  receiverLGA: string;
+  itemDescription: string;
+  itemWeight?: number;
+  itemQuantity?: number;
+}
+
+export interface ShipmentDTO {
+  id: number;
+  title?: string;
+  message?: string;
+  status?: number;
+  shipmentStatus?: ShipmentStatus;
+  trackingNumber?: string;
+  trackingUrl?: string;
+  waybillNumber?: string;
+  estimatedDelivery?: string;
+  dateCreated?: string;
+  dateUpdated?: string;
+}

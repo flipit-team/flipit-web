@@ -30,10 +30,17 @@ export class AuctionsService {
     );
   }
 
-  // Get all auctions (if endpoint exists)
+  // Get all auctions (includes live, upcoming, ended)
   static async getAuctions(page = 0, size = 15) {
     return handleApiCall(() =>
       apiClient.get<AuctionDTO[]>(`/v1/auction?page=${page}&size=${size}`)
+    );
+  }
+
+  // Get only active (live) auctions
+  static async getActiveAuctionsOnly(page = 0, size = 15) {
+    return handleApiCall(() =>
+      apiClient.get<AuctionDTO[]>(`/v1/auction/active?page=${page}&size=${size}`)
     );
   }
 

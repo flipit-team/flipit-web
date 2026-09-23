@@ -1,6 +1,6 @@
 import LiveAuctionClient from '~/ui/wrappers/LiveAuctionClient';
 import {Item} from '~/utils/interface';
-import { getActiveAuctionsServerSide, getCategoriesServerSide, checkAuthServerSide } from '~/lib/server-api';
+import { getAuctionsServerSide, getCategoriesServerSide, checkAuthServerSide } from '~/lib/server-api';
 import { AuctionDTO } from '~/types/api';
 import { Suspense } from 'react';
 
@@ -49,9 +49,9 @@ export default async function Page({searchParams}: {searchParams?: Promise<Searc
         const page = parseInt(resolvedSearchParams?.page || '0');
         
 
-        // Fetch active auctions, categories, and auth in parallel
+        // Fetch all auctions (client-side tabs will filter by status), categories, and auth
         const [auctionsResult, categoriesResult, authStatus] = await Promise.all([
-            getActiveAuctionsServerSide(page, 15),
+            getAuctionsServerSide(page, 50),
             getCategoriesServerSide(),
             checkAuthServerSide()
         ]);

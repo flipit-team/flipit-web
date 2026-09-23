@@ -10,6 +10,8 @@ export { ChatService } from './chat.service';
 export { NotificationsService } from './notifications.service';
 export { FilesService } from './files.service';
 export { LikesService } from './likes.service';
+export { PaymentService } from './payment.service';
+export { ShippingService } from './shipping.service';
 export { AdminService } from './admin.service';
 
 // Re-export API client utilities

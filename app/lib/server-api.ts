@@ -238,7 +238,7 @@ export async function getAuctionsServerSide(page = 0, size = 15): Promise<{ data
 
 export async function getActiveAuctionsServerSide(page = 0, size = 15): Promise<{ data: AuctionDTO[] | null; error: string | null }> {
   try {
-    const apiUrl = `${API_BASE_URL}/api/v1/auction?page=${page}&size=${size}`;
+    const apiUrl = `${API_BASE_URL}/api/v1/auction/active?page=${page}&size=${size}`;
 
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
