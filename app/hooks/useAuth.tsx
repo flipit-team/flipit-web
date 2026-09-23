@@ -89,14 +89,19 @@ export function useAuth() {
       
       const { data, error } = await AuthService.login(credentials);
 
-
       if (error) {
+        // For login, translate generic HTTP errors to specific auth messages
+        const errStatus = 'status' in error ? (error as any).status : null;
+        const errData = 'data' in error ? (error as any).data : null;
+        const loginError = errStatus === 401 || errStatus === 400
+          ? { ...error, message: errData?.message || 'The email or password you entered is incorrect. Please check and try again.' }
+          : error;
         setAuthState(prev => ({
           ...prev,
           loading: false,
-          error: error.message,
+          error: loginError.message,
         }));
-        return { success: false, error };
+        return { success: false, error: loginError };
       }
 
       if (data) {
@@ -172,12 +177,17 @@ export function useAuth() {
       const { data, error } = await AuthService.signup(userData);
 
       if (error) {
+        // Use the backend's actual error message when available
+        const signupErrData = 'data' in error ? (error as any).data : null;
+        const signupError = signupErrData?.message
+          ? { ...error, message: signupErrData.message }
+          : error;
         setAuthState(prev => ({
           ...prev,
           loading: false,
-          error: error.message,
+          error: signupError.message,
         }));
-        return { success: false, error };
+        return { success: false, error: signupError };
       }
 
       if (data) {

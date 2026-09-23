@@ -23,7 +23,10 @@ export async function POST(req: Request) {
     const data = await response.json();
 
     if (!response.ok) {
-        return NextResponse.json({apierror: data.apierror}, {status: response.status});
+        return NextResponse.json(
+            {apierror: data.apierror ?? {message: data.message || 'Registration failed. Please check your details and try again.'}},
+            {status: response.status}
+        );
     }
 
     const res = NextResponse.json({message: data}, {status: 200});

@@ -13,7 +13,10 @@ export async function POST(req: Request) {
 
 
     if (!apiRes.ok) {
-        return NextResponse.json({apierror: apiData.apierror}, {status: apiRes.status});
+        return NextResponse.json(
+            {apierror: apiData.apierror ?? {message: apiData.message || 'The email or password you entered is incorrect.'}},
+            {status: apiRes.status}
+        );
     }
 
     const res = NextResponse.json({message: apiData}, {status: 200});
