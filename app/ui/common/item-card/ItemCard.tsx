@@ -211,24 +211,24 @@ const ItemCard: React.FC<ItemCardProps> = memo(
                         {forLiveAuction ? (
                             <div>
                                 <p className='typo-body-sm-regular text-text_four'>Current bid</p>
-                                <p className='typo-body_lm xs:typo-body_mm'>
-                                    {formatToNaira(item.currentBid || item.startingBid || item.cashAmount)}
-                                </p>
-                                <div className='flex justify-between items-center mt-1'>
+                                <div className='flex justify-between items-center'>
+                                    <p className='typo-body_lm xs:typo-body_mm'>
+                                        {formatToNaira(item.currentBid || item.startingBid || item.cashAmount)}
+                                    </p>
+                                    {item.endDate ? (
+                                        <AuctionCountdown
+                                            endTime={item.endDate}
+                                            startTime={item.startDate}
+                                            className='xs:text-[10px] xs:px-1 xs:h-[16px]'
+                                        />
+                                    ) : (
+                                        <span className='flex items-center px-2 h-[26px] w-max xs:h-[16px] xs:px-1.5 xs:text-xs typo-body_sr bg-surface-light text-primary capitalize'>
+                                            Live
+                                        </span>
+                                    )}
+                                </div>
+                                <div className='mt-1'>
                                     <UsedBadge text={item.condition} />
-                                    <div className='flex-shrink-0 max-w-[50%] truncate'>
-                                        {item.endDate ? (
-                                            <AuctionCountdown
-                                                endTime={item.endDate}
-                                                startTime={item.startDate}
-                                                className='xs:text-xs xs:px-1.5 xs:h-[16px]'
-                                            />
-                                        ) : (
-                                            <span className='flex items-center px-2 h-[26px] w-max xs:h-[16px] xs:px-1.5 xs:text-xs typo-body_sr bg-surface-light text-primary capitalize'>
-                                                Live auction
-                                            </span>
-                                        )}
-                                    </div>
                                 </div>
                             </div>
                         ) : (

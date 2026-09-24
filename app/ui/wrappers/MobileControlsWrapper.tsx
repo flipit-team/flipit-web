@@ -47,6 +47,17 @@ function CategoryPills({ categories, selectedCategory, onSelect }: {
                 <div className='absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-[#FFFFF0] to-transparent z-10 pointer-events-none' />
             )}
             <div ref={scrollRef} className='flex gap-2 overflow-x-auto no-scrollbar px-4'>
+                <button
+                    data-active={!selectedCategory ? 'true' : undefined}
+                    onClick={() => onSelect('')}
+                    className={`flex-shrink-0 px-4 py-2 rounded-full font-poppins typo-body-sm-medium transition-colors ${
+                        !selectedCategory
+                            ? 'bg-[#025F73] text-white'
+                            : 'bg-gray-100 text-text_one'
+                    }`}
+                >
+                    All
+                </button>
                 {categories.map((cat) => (
                     <button
                         key={cat.name}
@@ -113,7 +124,7 @@ const MobileControlsWrapper: React.FC<Props> = ({ defaultCategories }) => {
                     selectedCategory={selectedCategory}
                     onSelect={(catName) => {
                         const params = new URLSearchParams(searchParams.toString());
-                        if (selectedCategory === catName) {
+                        if (!catName || selectedCategory === catName) {
                             params.delete('category');
                             setSelectedCategory(null);
                         } else {

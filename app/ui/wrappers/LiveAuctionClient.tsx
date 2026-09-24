@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import LiveAuctionWrapper from './LiveAuctionWrapper';
 import { Item } from '~/utils/interface';
 import AuctionsService from '~/services/auctions.service';
 import { AuctionDTO } from '~/types/api';
+import { parseUTCDate } from '~/utils/helpers';
 
 interface Props {
     items: Item[];
@@ -75,11 +76,12 @@ type AuctionTab = 'live' | 'upcoming' | 'ended';
 const LiveAuctionClient = ({ items: serverItems, defaultCategories, userName = '', userAvatar = '' }: Props) => {
     const searchParams = useSearchParams();
     const searchQuery = searchParams.get('q') || '';
+    const categoryParam = searchParams.get('category') || '';
     const [activeTab, setActiveTab] = useState<AuctionTab>('live');
 
     // Filter state
     const [filters, setFilters] = useState({
-        category: '',
+        category: categoryParam,
         subCategory: '',
         stateCode: '',
         lgaCode: '',
@@ -111,7 +113,7 @@ const LiveAuctionClient = ({ items: serverItems, defaultCategories, userName = '
         try {
             const apiParams: any = {
                 page: 0,
-                size: 15,
+                size: 50,
                 sort: newFilters.sort,
             };
 
@@ -145,24 +147,31 @@ const LiveAuctionClient = ({ items: serverItems, defaultCategories, userName = '
         handleFilterChange(newFilters);
     }, [handleFilterChange]);
 
-    // Sync URL search query with filter state - without causing infinite loops
+    // Sync URL params (search, category) into filters and trigger fetch
+    const prevCategoryRef = React.useRef(categoryParam);
     React.useEffect(() => {
-        // Skip initial mount
+        const hasUrlSearch = searchQuery !== '';
+        const hasUrlCategory = categoryParam !== '';
+        const categoryChanged = categoryParam !== prevCategoryRef.current;
+        prevCategoryRef.current = categoryParam;
+
         if (isInitialMountRef.current) {
             isInitialMountRef.current = false;
             lastAppliedSearchRef.current = searchQuery;
+            if (hasUrlSearch || hasUrlCategory) {
+                handleFilterChange({ ...filtersRef.current, search: searchQuery, category: categoryParam });
+            }
             return;
         }
 
-        // Only update if search actually changed
-        if (searchQuery !== lastAppliedSearchRef.current) {
+        if (searchQuery !== lastAppliedSearchRef.current || categoryChanged) {
             lastAppliedSearchRef.current = searchQuery;
-            handleFilterChange({ ...filtersRef.current, search: searchQuery });
+            handleFilterChange({ ...filtersRef.current, search: searchQuery, category: categoryParam });
         }
-    }, [searchQuery, handleFilterChange]);
+    }, [searchQuery, categoryParam, handleFilterChange]);
 
     // Check if any filters are active
-    const hasActiveFilters = filters.category !== '' || filters.stateCode !== '' || filters.sort !== 'recent' ||
+    const hasActiveFilters = filters.category !== '' || categoryParam !== '' || filters.stateCode !== '' || filters.sort !== 'recent' ||
         filters.search !== '' || filters.priceMin !== '' || filters.priceMax !== '' ||
         filters.verifiedSellers || filters.discount || searchQuery !== '';
 
@@ -172,8 +181,8 @@ const LiveAuctionClient = ({ items: serverItems, defaultCategories, userName = '
     // Filter by auction status tab
     const now = new Date();
     const filterByTab = (item: Item) => {
-        const start = item.startDate ? new Date(item.startDate) : null;
-        const end = item.endDate ? new Date(item.endDate) : null;
+        const start = item.startDate ? parseUTCDate(item.startDate) : null;
+        const end = item.endDate ? parseUTCDate(item.endDate) : null;
         const status = item.auctionStatus;
 
         switch (activeTab) {
@@ -192,10 +201,19 @@ const LiveAuctionClient = ({ items: serverItems, defaultCategories, userName = '
 
     // Determine which tabs have auctions
     const tabCounts = {
-        live: allItems.filter(i => i.auctionStatus === 'ACTIVE' && i.startDate && new Date(i.startDate) <= now && i.endDate && new Date(i.endDate) > now).length,
-        upcoming: allItems.filter(i => i.auctionStatus === 'ACTIVE' && i.startDate && new Date(i.startDate) > now).length,
-        ended: allItems.filter(i => i.auctionStatus === 'ENDED' || i.auctionStatus === 'CANCELLED' || (i.endDate && new Date(i.endDate) <= now)).length,
+        live: allItems.filter(i => i.auctionStatus === 'ACTIVE' && i.startDate && parseUTCDate(i.startDate) <= now && i.endDate && parseUTCDate(i.endDate) > now).length,
+        upcoming: allItems.filter(i => i.auctionStatus === 'ACTIVE' && i.startDate && parseUTCDate(i.startDate) > now).length,
+        ended: allItems.filter(i => i.auctionStatus === 'ENDED' || i.auctionStatus === 'CANCELLED' || (i.endDate && parseUTCDate(i.endDate) <= now)).length,
     };
+
+    // Auto-select first tab that has auctions if current tab is empty
+    useEffect(() => {
+        if (tabCounts[activeTab] === 0) {
+            if (tabCounts.live > 0) setActiveTab('live');
+            else if (tabCounts.upcoming > 0) setActiveTab('upcoming');
+            else if (tabCounts.ended > 0) setActiveTab('ended');
+        }
+    }, [tabCounts.live, tabCounts.upcoming, tabCounts.ended, activeTab]);
 
     return (
         <LiveAuctionWrapper

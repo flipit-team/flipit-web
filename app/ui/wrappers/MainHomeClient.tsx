@@ -57,13 +57,18 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
     });
 
     // Sync URL params (search, category) into filters and trigger fetch
+    const prevCategoryRef = useRef(categoryParam);
+    const prevSearchRef = useRef(searchQuery);
     useEffect(() => {
         if (!updateParams) return;
 
-        const hasUrlSearch = searchQuery !== '';
-        const hasUrlCategory = categoryParam !== '';
+        const categoryChanged = categoryParam !== prevCategoryRef.current;
+        const searchChanged = searchQuery !== prevSearchRef.current;
+        prevCategoryRef.current = categoryParam;
+        prevSearchRef.current = searchQuery;
 
-        if (!hasUrlSearch && !hasUrlCategory) return;
+        // If both are empty and nothing changed, skip
+        if (!searchQuery && !categoryParam && !categoryChanged && !searchChanged) return;
 
         const updated = { ...filters, search: searchQuery, category: categoryParam };
         setFilters(updated);

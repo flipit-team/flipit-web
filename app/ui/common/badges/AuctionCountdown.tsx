@@ -1,5 +1,6 @@
 'use client';
 import React, {useState, useEffect} from 'react';
+import {parseUTCDate} from '~/utils/helpers';
 
 interface AuctionCountdownProps {
     endTime: Date | string;
@@ -19,8 +20,9 @@ const AuctionCountdown = ({endTime, startTime, className = ''}: AuctionCountdown
     useEffect(() => {
         const timer = setInterval(() => {
             const now = new Date().getTime();
-            const startTimestamp = startTime ? new Date(startTime).getTime() : 0;
-            const endTimestamp = new Date(endTime).getTime();
+            const toTimestamp = (d: Date | string) => parseUTCDate(typeof d === 'string' ? d : d.toISOString()).getTime();
+            const startTimestamp = startTime ? toTimestamp(startTime) : 0;
+            const endTimestamp = toTimestamp(endTime);
 
             let targetTime: number;
             let currentStatus: 'not-started' | 'active' | 'ended';
@@ -66,7 +68,7 @@ const AuctionCountdown = ({endTime, startTime, className = ''}: AuctionCountdown
     // Determine styling based on status and urgency
     const getStyleClass = () => {
         if (status === 'not-started') {
-            return 'bg-blue-100 text-blue-600'; // Blue for not-started
+            return 'bg-surface-primary-16 text-primary';
         } else if (status === 'ended') {
             return 'bg-gray-100 text-gray-600'; // Gray for ended
         } else {
@@ -87,11 +89,11 @@ const AuctionCountdown = ({endTime, startTime, className = ''}: AuctionCountdown
         if (status === 'not-started') {
             // Concise text for not-started auctions
             if (timeLeft.days > 0) {
-                return `Starts ${timeLeft.days}d`;
+                return `Starts in ${timeLeft.days}d ${timeLeft.hours}h`;
             } else if (timeLeft.hours > 0) {
-                return `Starts ${timeLeft.hours}h`;
+                return `Starts in ${timeLeft.hours}h ${timeLeft.minutes}m`;
             } else if (timeLeft.minutes > 0) {
-                return `Starts ${timeLeft.minutes}m`;
+                return `Starts in ${timeLeft.minutes}m`;
             } else {
                 return 'Starting soon';
             }

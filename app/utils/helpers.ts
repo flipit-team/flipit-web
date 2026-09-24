@@ -147,3 +147,8 @@ export function handleApiError(response: ErrorResponse) {
         return 'An unexpected error occurred.';
     }
 }
+
+/** Parse a backend timestamp as UTC (appends Z if missing) */
+export function parseUTCDate(dateStr: string): Date {
+    return new Date(dateStr.endsWith('Z') ? dateStr : dateStr + 'Z');
+}

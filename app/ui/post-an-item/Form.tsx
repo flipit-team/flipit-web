@@ -110,8 +110,8 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
     const [startingBid, setStartingBid] = useState(0);
     const [bidIncrement, setBidIncrement] = useState(0);
     const [auctionStartDate, setAuctionStartDate] = useState(() => {
-        // Default to now so the auction is immediately visible
-        return new Date().toISOString();
+        // Default to 1 hour from now — matches the AuctionStartSelector's initial display
+        return new Date(Date.now() + 60 * 60 * 1000).toISOString();
     });
     const [auctionDurationHours, setAuctionDurationHours] = useState(24); // Default 24 hours (1 day)
     const [reservePrice, setReservePrice] = useState(0);
