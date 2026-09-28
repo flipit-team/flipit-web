@@ -6,6 +6,7 @@ export interface MyItem {
     views: number;
     type: 'auction' | 'listed' | 'deactivated';
     isAuction?: boolean;
+    auctionId?: number;
     auctionActive?: boolean;
     auctionStatus?: 'active' | 'closed_successful' | 'closed_failed';
     auctionEndDate?: string;

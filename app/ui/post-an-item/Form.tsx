@@ -31,9 +31,9 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
     const [errorTitle, setErrorTitle] = useState<string>('');
     const [errorAction, setErrorAction] = useState<string>('');
 
-    // Initialize state with existing item data if editing (only used for initial render)
+    // Initialize state with existing item data if editing or converting
     const getInitialValue = (field: string, defaultValue: any) => {
-        if (isEditing && existingItem) {
+        if (existingItem) {
             switch (field) {
                 case 'title':
                     return existingItem.title || '';
@@ -75,11 +75,11 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
     const [description, setDescription] = useState(() => getInitialValue('description', ''));
     const [location, setLocation] = useState(() => getInitialValue('location', ''));
     const [brand, setBrand] = useState(() => getInitialValue('brand', ''));
-    const [urls, setUrls] = useState<string[]>(() => (isEditing && existingItem ? existingItem.imageUrls || [] : []));
+    const [urls, setUrls] = useState<string[]>(() => (existingItem ? existingItem.imageUrls || [] : []));
 
-    // Update form state when existingItem changes (for async data loading)
+    // Update form state when existingItem changes (for editing or converting)
     useEffect(() => {
-        if (isEditing && existingItem) {
+        if (existingItem) {
             setTitle(existingItem.title || '');
             setDescription(existingItem.description || '');
             setPrice(existingItem.cashAmount || 0);
@@ -92,8 +92,9 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
             // Handle condition mapping
             const conditionMapping: {[key: string]: string} = {
                 NEW: 'brand-new',
+                'New': 'brand-new',
                 FAIRLY_USED: 'fairly-used',
-                USED: 'fairly-used'
+                'Fairly Used': 'fairly-used',
             };
             const mappedCondition = conditionMapping[existingItem.condition || ''] || existingItem.condition || '';
             setCondition(mappedCondition);
@@ -104,6 +105,15 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
 
             // Handle URLs
             setUrls(existingItem.imageUrls || []);
+
+            // Handle location codes — backend returns location as "LGA_CODE, STATE_CODE"
+            const loc = existingItem.location || '';
+            if (loc.includes(',')) {
+                const parts = loc.split(',').map(s => s.trim());
+                setLocationCodes({ lgaCode: parts[0], stateCode: parts[1] });
+            } else if (loc) {
+                setLocationCodes({ stateCode: loc });
+            }
         }
     }, [isEditing, existingItem]);
 

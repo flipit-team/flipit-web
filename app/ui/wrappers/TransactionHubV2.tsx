@@ -12,6 +12,7 @@ import {formatToNaira} from '~/utils/helpers';
 import ProgressTracker from '../transaction/ProgressTracker';
 import TransactionService from '~/services/transaction.service';
 import ReviewsService from '~/services/reviews.service';
+import ShippingService from '~/services/shipping.service';
 import ErrorModal from '../common/modals/Error';
 import ConfirmationModal from '../common/modals/ConfirmationModal';
 
@@ -23,9 +24,47 @@ interface Props {
 const SellerShippingView = ({transaction, onItemDeposited}: {transaction: TransactionDTO; onItemDeposited?: () => void}) => {
     const [selectedLogistics, setSelectedLogistics] = useState<string>('gig');
     const [codeGenerated, setCodeGenerated] = useState(false);
-    const [timeLeft, setTimeLeft] = useState(47 * 3600 + 59 * 60 + 44);
-    const uniqueCode = '8892 – 4930';
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [generationError, setGenerationError] = useState('');
+    const [timeLeft, setTimeLeft] = useState(48 * 3600); // 48h shipping deadline
+    const [uniqueCode, setUniqueCode] = useState('');
     const logisticsName = selectedLogistics === 'gig' ? 'GIG' : 'GUO';
+
+    const handleGenerateCode = async () => {
+        setIsGenerating(true);
+        setGenerationError('');
+        try {
+            const result = await ShippingService.createShipment({
+                courierService: selectedLogistics === 'gig' ? 'GIG' : 'GUO',
+                transactionId: transaction.id,
+                senderName: `${transaction.seller?.firstName || ''} ${transaction.seller?.lastName || ''}`.trim(),
+                senderPhone: transaction.seller?.phoneNumber || '',
+                senderAddress: '',
+                senderState: '',
+                senderLGA: '',
+                receiverName: `${transaction.buyer?.firstName || ''} ${transaction.buyer?.lastName || ''}`.trim(),
+                receiverPhone: transaction.buyer?.phoneNumber || '',
+                receiverAddress: '',
+                receiverState: '',
+                receiverLGA: '',
+                itemDescription: transaction.item?.title || transaction.description || '',
+            });
+
+            if (result.error) {
+                setGenerationError(result.error.message || 'Failed to generate shipping code. Please try again.');
+                setIsGenerating(false);
+                return;
+            }
+
+            const code = result.data?.waybillNumber || result.data?.trackingNumber || transaction.reference || `FLPT-${transaction.id}`;
+            setUniqueCode(code);
+            setCodeGenerated(true);
+        } catch {
+            setGenerationError('Failed to generate shipping code. Please try again.');
+        } finally {
+            setIsGenerating(false);
+        }
+    };
 
     useEffect(() => {
         if (!codeGenerated) return;
@@ -75,12 +114,16 @@ const SellerShippingView = ({transaction, onItemDeposited}: {transaction: Transa
                         <span className='font-poppins typo-body-md-regular text-text_one'>GUO Logistics Services</span>
                     </label>
                 </div>
+                {generationError && (
+                    <p className='text-error typo-body_sr text-center mb-3'>{generationError}</p>
+                )}
                 <div className='flex justify-center'>
                     <button
-                        onClick={() => setCodeGenerated(true)}
-                        className='px-8 xs:w-full py-2.5 border border-primary text-primary rounded-lg font-poppins typo-body-md-medium hover:bg-primary hover:text-white transition-colors'
+                        onClick={handleGenerateCode}
+                        disabled={isGenerating}
+                        className='px-8 xs:w-full py-2.5 border border-primary text-primary rounded-lg font-poppins typo-body-md-medium hover:bg-primary hover:text-white transition-colors disabled:opacity-50'
                     >
-                        Generate code
+                        {isGenerating ? 'Generating...' : 'Generate code'}
                     </button>
                 </div>
             </div>
@@ -422,10 +465,11 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
 
     const handleReleaseAndComplete = async () => {
         setIsLoading(true);
-        const {error} = await TransactionService.confirmDelivery(transaction.id);
-        if (!error) await TransactionService.releaseTransaction(transaction.id);
+        const {error: deliveryError} = await TransactionService.confirmDelivery(transaction.id);
+        if (deliveryError) { setIsLoading(false); setErrorMessage('Failed to confirm receipt. Please try again.'); return; }
+        const {error: releaseError} = await TransactionService.releaseTransaction(transaction.id);
         setIsLoading(false);
-        if (error) { setErrorMessage('Failed to confirm receipt. Please try again.'); return; }
+        if (releaseError) { setErrorMessage('Delivery confirmed but failed to release funds. Please contact support.'); return; }
         setTransaction({...transaction, status: 'VERIFIED'});
         setShowRateReview(true);
     };
@@ -434,14 +478,16 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
         setIsLoading(true);
         const otherUserId = isBuyer ? transaction.seller.id : transaction.buyer.id;
         const avgRating = Math.round((itemConditionRating + sellerRating) / 2);
-        await ReviewsService.createReview({
+        const reviewResult = await ReviewsService.createReview({
             userId: otherUserId,
             itemId: transaction.item?.id || transaction.orderId || 0,
             rating: avgRating,
             message: reviewText,
         });
-        const {data} = await TransactionService.completeTransaction(transaction.id);
+        if (reviewResult.error) { setIsLoading(false); setErrorMessage('Failed to submit review. Please try again.'); return; }
+        const {data, error} = await TransactionService.completeTransaction(transaction.id);
         setIsLoading(false);
+        if (error) { setErrorMessage('Review submitted but failed to complete transaction.'); return; }
         setTransaction({...transaction, ...(data || {status: 'COMPLETED'})});
         setShowRateReview(false);
     };
@@ -847,7 +893,8 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                                 <SellerShippingView
                                     transaction={transaction}
                                     onItemDeposited={async () => {
-                                        const {data} = await TransactionService.shipItem(transaction.id);
+                                        const {data, error} = await TransactionService.shipItem(transaction.id);
+                                        if (error) { setErrorMessage('Failed to mark item as shipped. Please try again.'); return; }
                                         setTransaction({...transaction, ...(data || {status: 'SHIPPED'})});
                                     }}
                                 />

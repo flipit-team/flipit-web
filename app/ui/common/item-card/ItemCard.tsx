@@ -136,11 +136,13 @@ const ItemCard: React.FC<ItemCardProps> = memo(
                                         width={43}
                                         className='h-[46px] w-[43px] xs:hidden'
                                     />
-                                    {/* Mobile: bookmark */}
-                                    <Bookmark
-                                        size={20}
-                                        className={`hidden xs:block ${isLiked ? 'text-primary fill-primary' : forLiveAuction ? 'text-white' : 'text-primary'}`}
-                                    />
+                                    {/* Mobile: bookmark — matches desktop save/liked icons */}
+                                    <div className={`hidden xs:flex items-center justify-center ${isLiked ? 'w-7 h-7 rounded-full bg-white' : ''}`}>
+                                        <Bookmark
+                                            size={isLiked ? 16 : 20}
+                                            className={isLiked ? 'text-primary fill-primary' : 'text-white'}
+                                        />
+                                    </div>
                                 </button>
                             </div>
                         )}

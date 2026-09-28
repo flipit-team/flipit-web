@@ -9,6 +9,7 @@ import SearchBar from '../homepage/search-bar';
 import GridSwiper from '../common/grid-items/GridSwiper';
 import SortDropdown from '../common/sort-dropdown/SortDropdown';
 import MobileControlsWrapper from './MobileControlsWrapper';
+import LogoLoader from '../common/logo-loader/LogoLoader';
 
 interface Props {
     items: Item[];
@@ -157,7 +158,9 @@ const MainHomeServer = ({
                             </div>
                         </>
                     )}
-                    {items.length > 0 ? (
+                    {loading && hasActiveFilters ? (
+                        <LogoLoader inline />
+                    ) : items.length > 0 ? (
                         <>
                             <div className='py-9 xs:py-1 xs:mb-2 flex items-center justify-between px-2 xs:px-0'>
                                 <div className='font-poppins font-semibold text-[24px] leading-[1.6] text-text_one xs:text-[18px]'>

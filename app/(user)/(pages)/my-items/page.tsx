@@ -9,7 +9,7 @@ import {useAuth} from '~/hooks/useAuth';
 import {useAppContext} from '~/contexts/AppContext';
 import {MyItem, TabType} from './types';
 import {ItemDTO} from '~/types/api';
-import Loading from '~/ui/common/loading/Loading';
+import LogoLoader from '~/ui/common/logo-loader/LogoLoader';
 import {useToast} from '~/contexts/ToastContext';
 
 // Transform ItemDTO to MyItem
@@ -107,9 +107,7 @@ export default function MyItemsPage() {
                 </div>
                 <div className='flex-1 p-4 md:p-6 lg:p-8 xs:p-4 overflow-x-hidden'>
                     <div className='max-w-6xl mx-auto'>
-                        <div className='flex items-center justify-center h-64'>
-                            <Loading size='lg' text='Loading your items...' />
-                        </div>
+                        <LogoLoader inline />
                     </div>
                 </div>
             </div>

@@ -16,10 +16,19 @@ export async function POST(req: NextRequest) {
             body: JSON.stringify(body),
         });
 
-        const apiData = await apiRes.json();
-        if (!apiRes.ok) return NextResponse.json({ apierror: apiData.apierror ?? { message: 'Shipping request failed' } }, { status: apiRes.status });
+        const responseText = await apiRes.text();
+        let apiData;
+        try { apiData = JSON.parse(responseText); } catch { apiData = { raw: responseText }; }
+
+        if (!apiRes.ok) {
+            console.error('[POST /shipping/create] Backend returned', apiRes.status, ':', JSON.stringify(apiData));
+            console.error('[POST /shipping/create] Sent body:', JSON.stringify(body));
+            return NextResponse.json({ apierror: apiData.apierror ?? apiData ?? { message: 'Shipping request failed' } }, { status: apiRes.status });
+        }
+
         return NextResponse.json(apiData);
-    } catch {
+    } catch (error) {
+        console.error('[POST /shipping/create] Exception:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }

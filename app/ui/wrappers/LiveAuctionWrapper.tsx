@@ -10,6 +10,7 @@ import {Bell} from 'lucide-react';
 import SearchBar from '../homepage/search-bar';
 import SortDropdown from '../common/sort-dropdown/SortDropdown';
 import MobileControlsWrapper from './MobileControlsWrapper';
+import LogoLoader from '../common/logo-loader/LogoLoader';
 
 interface Props {
     items: Item[];
@@ -162,12 +163,7 @@ const LiveAuctionWrapper = (props: Props) => {
                     </div>
 
                     {loading ? (
-                        <div className="flex justify-center items-center py-8">
-                            <div className="flex items-center gap-2 text-text-secondary">
-                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                                <span className="typo-body-md-regular">Loading auctions...</span>
-                            </div>
-                        </div>
+                        <LogoLoader inline />
                     ) : items.length ? (
                         <GridItems items={items} forLiveAuction />
                     ) : (

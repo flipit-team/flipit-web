@@ -37,12 +37,11 @@ export interface TransactionDTO {
 
 // Create Transaction Request — matches POST /api/v1/transactions
 export interface CreateTransactionRequest {
-  orderId?: number;
   buyerId: number;
   sellerId: number;
-  amount?: number;
-  type: TransactionType;
-  paymentMethod?: string;
+  offerId: number;
+  amount: number;
+  tradeType?: TransactionType;
   description?: string;
 }
 

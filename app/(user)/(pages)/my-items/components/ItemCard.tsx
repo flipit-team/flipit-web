@@ -4,6 +4,7 @@ import {useRouter} from 'next/navigation';
 import {useState, useRef, useEffect} from 'react';
 import {MyItem} from '../types';
 import {ItemsService} from '~/services/items.service';
+import {AuctionsService} from '~/services/auctions.service';
 import {useToast} from '~/contexts/ToastContext';
 import DeleteConfirmationModal from '~/ui/common/delete-confirmation-modal/DeleteConfirmationModal';
 import TransactionTypeBadge from '~/ui/common/badges/TransactionTypeBadge';
@@ -42,6 +43,7 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [isUpdatingAuction, setIsUpdatingAuction] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
+    const [showDeactivateModal, setShowDeactivateModal] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -86,12 +88,54 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
         setShowDropdown(false);
         setIsUpdatingAuction(true);
         try {
-            // TODO: Replace with actual API call
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            if (item.auctionActive) {
+                await AuctionsService.deactivateAuction(item.auctionId || item.id);
+            } else {
+                await AuctionsService.reactivateAuction(item.auctionId || item.id);
+            }
             showSuccess(`Auction ${item.auctionActive ? 'deactivated' : 'activated'} successfully!`);
             onItemUpdated?.(item.id);
         } catch {
             showError('Failed to update auction. Please try again.');
+        } finally {
+            setIsUpdatingAuction(false);
+        }
+    };
+
+    const handleTogglePublished = async (publish: boolean) => {
+        setShowDropdown(false);
+        setIsUpdatingAuction(true);
+        try {
+            // Fetch the full item first, then update with published toggled
+            const itemResult = await ItemsService.getItemById(item.id);
+            if (itemResult.error || !itemResult.data) {
+                showError('Failed to load item details');
+                return;
+            }
+            const fullItem = itemResult.data;
+            const result = await ItemsService.updateItem(item.id, {
+                title: fullItem.title,
+                description: fullItem.description,
+                imageKeys: fullItem.imageUrls || [],
+                acceptCash: fullItem.acceptCash,
+                acceptSwap: fullItem.acceptSwap ?? false,
+                cashAmount: fullItem.cashAmount,
+                stateCode: (fullItem as any).stateCode || '',
+                lgaCode: (fullItem as any).lgaCode || '',
+                condition: fullItem.condition === 'New' ? 'NEW' : fullItem.condition === 'Fairly Used' ? 'FAIRLY_USED' : fullItem.condition || 'NEW',
+                brand: fullItem.brand || 'Other',
+                itemCategory: fullItem.itemCategory?.name || '',
+                subcategory: fullItem.subcategory,
+                published: publish,
+            });
+            if (result.error) {
+                showError(result.error.message || `Failed to ${publish ? 'reactivate' : 'deactivate'} item`);
+            } else {
+                showSuccess(`Item ${publish ? 'reactivated' : 'deactivated'} successfully!`);
+                onItemUpdated?.(item.id);
+            }
+        } catch {
+            showError(`Failed to ${publish ? 'reactivate' : 'deactivate'} item. Please try again.`);
         } finally {
             setIsUpdatingAuction(false);
         }
@@ -104,10 +148,10 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
     const isAuctionActive = item.auctionStatus === 'active';
 
     return (
-        <div className='border border-border-DEFAULT rounded-2xl flex xs:flex-col overflow-hidden'>
+        <div className='border border-border-DEFAULT rounded-2xl flex xs:flex-col xs:border-0 xs:rounded-none overflow-hidden'>
             {/* Image */}
             <div
-                className='p-4 xs:p-3 flex-shrink-0 cursor-pointer'
+                className='p-4 xs:p-0 flex-shrink-0 cursor-pointer'
                 onClick={handleCardClick}
             >
                 <Image
@@ -115,12 +159,12 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
                     alt={item.title}
                     width={140}
                     height={140}
-                    className='rounded-xl object-cover w-[140px] h-[140px] xs:w-full xs:h-[180px]'
+                    className='rounded-xl object-cover w-[140px] h-[140px] xs:w-full xs:h-[180px] xs:rounded-none xs:rounded-t-lg'
                 />
             </div>
 
             {/* Content */}
-            <div className='py-4 pr-4 xs:px-3 xs:pb-3 xs:pt-0 flex-1 flex flex-col justify-between min-w-0'>
+            <div className='py-4 pr-4 xs:px-3 xs:pb-3 xs:pt-3 flex-1 flex flex-col justify-between min-w-0'>
                 <div className='flex items-start justify-between'>
                     <div className='flex-1 min-w-0 cursor-pointer' onClick={handleCardClick}>
                         <h3 className='typo-body-md-regular text-text-secondary leading-[1.4]'>
@@ -249,6 +293,7 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
                                 List Item
                             </button>
                             <button
+                                onClick={() => router.push(`/post-an-item/form?type=auction&from=${item.id}`)}
                                 className='px-4 py-1.5 border border-border-muted-alt rounded-lg typo-body-sm-regular text-text-muted-alt hover:border-primary hover:text-primary transition-colors'
                             >
                                 Post auction again
@@ -275,12 +320,15 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
                     {!item.isAuction && item.type === 'listed' && (
                         <>
                             <button
+                                onClick={() => router.push(`/post-an-item/form?type=auction&from=${item.id}`)}
                                 className='px-4 py-1.5 border border-border-muted-alt rounded-lg typo-body-sm-regular text-text-muted-alt hover:border-primary hover:text-primary transition-colors'
                             >
                                 Post as Auction
                             </button>
                             <button
-                                className='px-4 py-1.5 border border-border-muted-alt rounded-lg typo-body-sm-regular text-text-muted-alt hover:border-primary hover:text-primary transition-colors'
+                                onClick={() => { setShowDropdown(false); setShowDeactivateModal(true); }}
+                                disabled={isUpdatingAuction}
+                                className='px-4 py-1.5 border border-border-muted-alt rounded-lg typo-body-sm-regular text-text-muted-alt hover:border-primary hover:text-primary transition-colors disabled:opacity-50'
                             >
                                 Deactivate Item
                             </button>
@@ -288,7 +336,9 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
                     )}
                     {item.type === 'deactivated' && (
                         <button
-                            className='px-4 py-1.5 border border-border-muted-alt rounded-lg typo-body-sm-regular text-text-muted-alt hover:border-primary hover:text-primary transition-colors'
+                            onClick={() => handleTogglePublished(true)}
+                            disabled={isUpdatingAuction}
+                            className='px-4 py-1.5 border border-border-muted-alt rounded-lg typo-body-sm-regular text-text-muted-alt hover:border-primary hover:text-primary transition-colors disabled:opacity-50'
                         >
                             Reactivate
                         </button>
@@ -303,6 +353,15 @@ export default function ItemCard({item, onItemDeleted, onItemUpdated}: ItemCardP
                 onConfirm={handleConfirmDelete}
                 onCancel={() => setShowDeleteModal(false)}
                 isDeleting={isDeleting}
+            />
+
+            <DeleteConfirmationModal
+                isOpen={showDeactivateModal}
+                title='Deactivate Item'
+                message={`Are you sure you want to deactivate "${item.title}"? It will be hidden from listings but can be reactivated later.`}
+                onConfirm={() => { setShowDeactivateModal(false); handleTogglePublished(false); }}
+                onCancel={() => setShowDeactivateModal(false)}
+                isDeleting={isUpdatingAuction}
             />
         </div>
     );

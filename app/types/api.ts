@@ -233,6 +233,7 @@ export interface OfferDTO {
   item: ItemDTO;
   offeredItem?: ItemDTO;
   dateCreated: string;
+  transactionId?: number;
 }
 
 export interface CreateOfferRequest {
@@ -243,13 +244,17 @@ export interface CreateOfferRequest {
   offerValid?: boolean;
 }
 
+// Bidding Status
+export type BiddingStatus = 'PENDING' | 'WON' | 'OUT_BID';
+
 // Auction Types
 export interface AuctionBiddingDTO {
   auctionId: number;
   bidder: UserDTO;
   amount: number;
   bidTime: string;
-  auctionDTO?: AuctionDTO;  // embedded auction context (for My Bids tab)
+  auctionDTO?: AuctionDTO;
+  status?: BiddingStatus;
 }
 
 export interface AuctionDTO {

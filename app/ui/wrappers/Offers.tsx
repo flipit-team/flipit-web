@@ -189,8 +189,9 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
         const {data, error: txError} = await TransactionService.createTransaction({
             buyerId: offer.sentBy.id,
             sellerId: offer.item.seller.id,
-            amount: offer.cashAmount || 0,
-            type: txType,
+            offerId: offer.id,
+            amount: offer.cashAmount || offer.item.cashAmount || 0,
+            tradeType: txType,
             description: offer.item.title,
         });
         setLoadingId(null);
@@ -239,8 +240,9 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
         const {data, error} = await TransactionService.createTransaction({
             buyerId: offer.sentBy.id,
             sellerId: offer.item.seller.id,
-            amount: offer.cashAmount || 0,
-            type: txType,
+            offerId: offer.id,
+            amount: offer.cashAmount || offer.item.cashAmount || 0,
+            tradeType: txType,
             description: offer.item.title,
         });
         setLoadingId(null);

@@ -67,17 +67,26 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ o
             cache: 'no-store'
         });
 
-
-        const apiData = await apiRes.json();
-
         if (!apiRes.ok) {
+            let apiData;
+            try { apiData = await apiRes.json(); } catch { apiData = {}; }
             return NextResponse.json(
                 {apierror: apiData.apierror ?? {message: 'Failed to delete offer'}},
                 {status: apiRes.status}
             );
         }
 
-        return NextResponse.json(apiData);
+        // Backend may return 204 No Content (empty body)
+        if (apiRes.status === 204 || apiRes.headers.get('content-length') === '0') {
+            return NextResponse.json({message: 'Offer deleted successfully'});
+        }
+
+        try {
+            const apiData = await apiRes.json();
+            return NextResponse.json(apiData);
+        } catch {
+            return NextResponse.json({message: 'Offer deleted successfully'});
+        }
     } catch (error) {
         return NextResponse.json({error: 'Internal server error'}, {status: 500});
     }

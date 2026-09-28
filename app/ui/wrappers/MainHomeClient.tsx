@@ -49,6 +49,9 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
         search: ''
     });
 
+    // Tracks loading immediately when filters change (before async fetch starts)
+    const [filterLoading, setFilterLoading] = useState(false);
+
     // Fetch client-side data with infinite scroll support
     // Don't fetch on mount - we already have server items
     const { items: apiItems, loading: itemsLoading, hasMore, loadMore, updateParams, initialized } = useItems({
@@ -70,6 +73,7 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
         // If both are empty and nothing changed, skip
         if (!searchQuery && !categoryParam && !categoryChanged && !searchChanged) return;
 
+        setFilterLoading(true);
         const updated = { ...filters, search: searchQuery, category: categoryParam };
         setFilters(updated);
 
@@ -83,7 +87,7 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
         if (updated.verifiedSellers) apiParams.isVerifiedSeller = true;
         if (updated.discount) apiParams.hasDiscount = true;
 
-        updateParams(apiParams, true);
+        updateParams(apiParams, true).finally(() => setFilterLoading(false));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchQuery, categoryParam]);
     const { categories: apiCategories } = useCategories();
@@ -237,7 +241,7 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
             auctionItems={auctionItems}
             defaultCategories={defaultCategories}
             loadMoreRef={loadMoreRef}
-            loading={itemsLoading}
+            loading={itemsLoading || filterLoading}
             hasMore={hasMore}
             onSortChange={handleSortChange}
             currentSort={filters.sort}

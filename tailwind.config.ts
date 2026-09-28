@@ -834,9 +834,11 @@ const config: Config = {
                 /*CARD HOVER EFFECTS - Modern subtle lift with shadow*/
                 '.card-hover': {
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    '&:hover': {
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 12px 24px -10px rgba(0, 95, 115, 0.15), 0 4px 8px -4px rgba(0, 95, 115, 0.08)',
+                    '@media (hover: hover)': {
+                        '&:hover': {
+                            transform: 'translateY(-2px)',
+                            boxShadow: '0 12px 24px -10px rgba(0, 95, 115, 0.15), 0 4px 8px -4px rgba(0, 95, 115, 0.08)',
+                        }
                     }
                 },
 

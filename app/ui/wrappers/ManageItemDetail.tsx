@@ -158,13 +158,26 @@ const ManageItemDetail = ({item, offers: propOffers}: Props) => {
         setShowDeclineModal(true);
     };
 
-    const handleDeclineOfferConfirm = () => {
+    const handleDeclineOfferConfirm = async () => {
         if (!selectedOffer) return;
-        setOffers(
-            offers.map((offer) => (offer.id === selectedOffer.id ? {...offer, status: 'declined' as const} : offer))
-        );
-        setShowDeclineModal(false);
-        setSelectedOffer(null);
+        try {
+            const result = await OffersService.rejectOffer(selectedOffer.id);
+            if (result.error) {
+                setErrorMessage(result.error.message || 'Failed to decline offer');
+                setShowDeclineModal(false);
+                setShowErrorModal(true);
+                return;
+            }
+            setOffers(
+                offers.map((offer) => (offer.id === selectedOffer.id ? {...offer, status: 'declined' as const} : offer))
+            );
+        } catch {
+            setErrorMessage('An error occurred while declining the offer');
+            setShowErrorModal(true);
+        } finally {
+            setShowDeclineModal(false);
+            setSelectedOffer(null);
+        }
     };
 
     const handleMarkAsSold = async () => {
@@ -346,7 +359,7 @@ const ManageItemDetail = ({item, offers: propOffers}: Props) => {
 
                     <div className='shadow-lg xs:shadow-none p-6 xs:px-4 xs:pt-2'>
                         <div className='flex items-center gap-2'>
-                            <TransactionTypeBadge acceptCash={item.acceptCash} acceptSwap={(item as any).acceptSwap} />
+                            <TransactionTypeBadge acceptCash={item.acceptCash} acceptSwap={item.acceptSwap} />
                             <UsedBadge text={item.condition} />
                         </div>
                         <h2 className='typo-heading_ms xs:typo-heading_ss text-text_one mt-[10px] mb-2'>
@@ -426,7 +439,7 @@ const ManageItemDetail = ({item, offers: propOffers}: Props) => {
                                     <tr>
                                         <td className='pr-8 py-1 text-text_four'>Trade Type</td>
                                         <td className='text-text_one text-right'>
-                                            {item.acceptCash ? 'Cash accepted' : 'Swap only'}
+                                            {item.acceptCash && item.acceptSwap ? 'Cash + Swap' : item.acceptSwap ? 'Swap Only' : 'Cash Only'}
                                         </td>
                                     </tr>
                                 </tbody>

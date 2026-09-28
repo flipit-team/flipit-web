@@ -20,7 +20,23 @@ async function getTransactionData(transactionId: string, token: string): Promise
         });
 
         if (!response.ok) return null;
-        return await response.json();
+        const tx = await response.json();
+
+        // Backend doesn't sign image URLs in TransactionDTO — fetch item separately to get signed URLs
+        if (tx.item?.id && (!tx.item.imageUrls?.length || !tx.item.imageUrls[0]?.startsWith('http'))) {
+            try {
+                const itemRes = await fetch(`${API_BASE_PATH}/items/${tx.item.id}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                    cache: 'no-store',
+                });
+                if (itemRes.ok) {
+                    const itemData = await itemRes.json();
+                    tx.item.imageUrls = itemData.imageUrls || tx.item.imageUrls;
+                }
+            } catch {}
+        }
+
+        return tx;
     } catch {
         return null;
     }

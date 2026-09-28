@@ -1,5 +1,5 @@
 'use client';
-import {useState, useCallback} from 'react';
+import {useState, useCallback, useEffect} from 'react';
 import TabNavigation from './TabNavigation';
 import ItemCard from './ItemCard';
 import NoData from '~/ui/common/no-data/NoData';
@@ -11,12 +11,17 @@ interface ItemsContainerProps {
 }
 
 export default function ItemsContainer({initialItems, onRefreshItems}: ItemsContainerProps) {
-    const [activeTab, setActiveTab] = useState<TabType>('auction');
+    const [activeTab, setActiveTab] = useState<TabType>('listed');
     const [items, setItems] = useState<Record<TabType, MyItem[]>>(initialItems);
 
+    // Sync when parent re-fetches
+    useEffect(() => {
+        setItems(initialItems);
+    }, [initialItems]);
+
     const tabs: Tab[] = [
-        {id: 'auction', label: 'Auction Items'},
         {id: 'listed', label: 'Listed Items'},
+        {id: 'auction', label: 'Auction Items'},
         {id: 'deactivated', label: 'Deactivated Items'}
     ];
 
