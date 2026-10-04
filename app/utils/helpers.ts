@@ -152,3 +152,16 @@ export function handleApiError(response: ErrorResponse) {
 export function parseUTCDate(dateStr: string): Date {
     return new Date(dateStr.endsWith('Z') ? dateStr : dateStr + 'Z');
 }
+
+export const formatTimeAgo = (dateStr: string): string => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffHours < 1) return 'Just now';
+    if (diffHours < 24) return `${diffHours} Hour${diffHours > 1 ? 's' : ''} ago`;
+    if (diffDays < 7) return `${diffDays} Day${diffDays > 1 ? 's' : ''} ago`;
+    return date.toLocaleDateString();
+};

@@ -8,7 +8,7 @@ import LogoLoader from '../common/logo-loader/LogoLoader';
 import {Check} from 'lucide-react';
 import {ClockFilledIcon} from '../icons';
 import {OfferDTO} from '~/types/api';
-import {formatToNaira} from '~/utils/helpers';
+import {formatToNaira, formatTimeAgo} from '~/utils/helpers';
 import OffersService from '~/services/offers.service';
 import TransactionService from '~/services/transaction.service';
 import {TransactionStatus} from '~/types/transaction';
@@ -61,19 +61,6 @@ const getStatusLabel = (status: string) => {
         case 'WITHDRAWN': return 'Withdrawn';
         default: return status;
     }
-};
-
-const formatTimeAgo = (dateStr: string): string => {
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffHours / 24);
-
-    if (diffHours < 1) return 'Just now';
-    if (diffHours < 24) return `${diffHours} Hour${diffHours > 1 ? 's' : ''} ago`;
-    if (diffDays < 7) return `${diffDays} Day${diffDays > 1 ? 's' : ''} ago`;
-    return date.toLocaleDateString();
 };
 
 const getItemImage = (offer: OfferDTO): string => {
@@ -130,6 +117,7 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
     const [isNavigating, setIsNavigating] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [confirmDeleteOfferId, setConfirmDeleteOfferId] = useState<number | null>(null);
+    const [confirmCancelOfferId, setConfirmCancelOfferId] = useState<number | null>(null);
     // Maps offerId → {txId, status} for accepted offers that have a transaction
     const [txStatuses, setTxStatuses] = useState<Record<number, {txId: number; status: TransactionStatus}>>({});
 
@@ -207,7 +195,7 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
         localStorage.setItem(`tx_status_${data.id}`, data.status || 'SUCCESS');
         setTxStatuses(prev => ({...prev, [offerId]: {txId: data.id, status: data.status as TransactionStatus || 'SUCCESS'}}));
         setIsNavigating(true);
-        router.push(`/transaction/${data.id}`);
+        router.push(`/shipping/${data.id}`);
     };
 
     const handleRejectOffer = async (offerId: number) => {
@@ -233,6 +221,24 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
         setSentOffers(prev => prev.filter(o => o.id !== offerId));
     };
 
+    const executeCancelFromOffers = async () => {
+        if (confirmCancelOfferId === null) return;
+        const offerId = confirmCancelOfferId;
+        setConfirmCancelOfferId(null);
+        setLoadingId(offerId);
+        const txId = txStatuses[offerId]?.txId;
+        if (txId) {
+            const {error} = await TransactionService.cancelTransaction(txId);
+            setLoadingId(null);
+            if (error) { setErrorMessage('Failed to cancel transaction. Please try again.'); return; }
+        } else {
+            const {error} = await OffersService.deleteOffer(offerId);
+            setLoadingId(null);
+            if (error) { setErrorMessage('Failed to cancel offer. Please try again.'); return; }
+        }
+        setSentOffers(prev => prev.filter(o => o.id !== offerId));
+    };
+
     const handleProceedToCheckout = async (offer: OfferDTO) => {
         const tradeType = getOfferTradeType(offer);
         const txType = tradeType === 'mixed' ? 'SWAP_WITH_CASH' : tradeType === 'swap' ? 'SWAP' : 'CASH_ONLY';
@@ -248,10 +254,8 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
         setLoadingId(null);
         if (!error && data) {
             localStorage.setItem(`offer_tx_${offer.id}`, String(data.id));
-            // Signal the transaction page to open the payment overlay immediately
-            sessionStorage.setItem(`checkout_pending_${data.id}`, '1');
             setIsNavigating(true);
-            router.push(`/transaction/${data.id}`);
+            router.push(`/order-summary/${data.id}`);
         }
     };
 
@@ -265,6 +269,14 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
                 onConfirm={executeDeleteOffer}
                 onCancel={() => setConfirmDeleteOfferId(null)}
                 isDeleting={loadingId === confirmDeleteOfferId}
+            />
+            <DeleteConfirmationModal
+                isOpen={confirmCancelOfferId !== null}
+                title='Cancel Transaction'
+                message='Are you sure you want to cancel this transaction? This action cannot be undone.'
+                onConfirm={executeCancelFromOffers}
+                onCancel={() => setConfirmCancelOfferId(null)}
+                isDeleting={loadingId === confirmCancelOfferId}
             />
             {errorMessage && (
                 <div className='fixed inset-0 bg-black bg-opacity-50 h-screen flex justify-center items-center z-modal'>
@@ -334,96 +346,125 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
                             const txInfo = txStatuses[offer.id];
                             const txId = txInfo?.txId;
                             const isDone = ['COMPLETED', 'RELEASED'].includes(txInfo?.status ?? '');
+
                             return (
                                 <div key={offer.id} className='border border-border-DEFAULT rounded-2xl overflow-hidden bg-white'>
-                                    <div className='flex'>
-                                        {/* Image with badge overlay */}
-                                        <div className='p-3 flex-shrink-0 relative'>
+                                    {/* ===== DESKTOP LAYOUT ===== */}
+                                    <div className='xs:hidden flex p-5 gap-5'>
+                                        {/* Image */}
+                                        <div className='flex-shrink-0'>
                                             <Image
                                                 src={getItemImage(offer)}
                                                 alt={offer.item?.title || 'Item'}
-                                                width={120}
-                                                height={120}
-                                                className='rounded-xl object-cover w-[120px] h-[120px]'
+                                                width={160}
+                                                height={160}
+                                                className='rounded-xl object-cover w-[160px] h-[160px]'
                                             />
-                                            <div className='absolute top-4 left-4'>
-                                                <TransactionTypeBadge acceptCash={tradeProps.acceptCash} acceptSwap={tradeProps.acceptSwap} />
+                                        </div>
+
+                                        {/* Middle — title, offer, buttons */}
+                                        <div className='flex flex-col justify-between flex-1 min-w-0 py-1'>
+                                            <div>
+                                                <h3 className='font-poppins typo-body-lg-semibold text-text_one line-clamp-2 leading-tight'>
+                                                    {offer.item?.title}
+                                                </h3>
+                                                <p className='font-poppins typo-body-xs-regular text-text-muted-alt uppercase tracking-wide mt-2'>You Offered</p>
+                                                <p className='font-poppins typo-body-md-semibold text-primary mt-0.5'>
+                                                    {getOfferText(offer)}
+                                                </p>
+                                            </div>
+                                            {/* Desktop action buttons */}
+                                            <div className='mt-3 flex gap-2'>
+                                                {isDone ? (
+                                                    <button onClick={() => { setIsNavigating(true); router.push(`/transaction/${txId}`); }} className='px-8 py-2.5 bg-primary text-white rounded-lg font-poppins typo-body-md-medium hover:bg-primary/90 transition-colors'>View Transaction</button>
+                                                ) : status === 'ACCEPTED' ? (
+                                                    <>
+                                                        <button onClick={() => handleProceedToCheckout(offer)} disabled={isLoading} className='px-8 py-2.5 bg-primary text-white rounded-lg font-poppins typo-body-md-medium hover:bg-primary/90 transition-colors disabled:opacity-50'>{isLoading ? 'Loading...' : 'Proceed to checkout'}</button>
+                                                        <button onClick={() => setConfirmCancelOfferId(offer.id)} disabled={isLoading} className='px-8 py-2.5 border border-primary text-primary rounded-lg font-poppins typo-body-md-medium hover:bg-primary/5 transition-colors disabled:opacity-50'>Cancel Transaction</button>
+                                                    </>
+                                                ) : status === 'PENDING' ? (
+                                                    <button onClick={() => handleDeleteOffer(offer.id)} disabled={isLoading} className='px-8 py-2.5 bg-primary text-white rounded-lg font-poppins typo-body-md-medium hover:bg-primary/90 transition-colors disabled:opacity-50'>{isLoading ? 'Deleting...' : 'Delete Offer'}</button>
+                                                ) : status === 'REJECTED' ? (
+                                                    <>
+                                                        <button onClick={() => handleDeleteOffer(offer.id)} disabled={isLoading} className='px-8 py-2.5 bg-primary text-white rounded-lg font-poppins typo-body-md-medium hover:bg-primary/90 transition-colors disabled:opacity-50'>{isLoading ? 'Deleting...' : 'Delete Offer'}</button>
+                                                        <button onClick={() => { setIsNavigating(true); router.push(`/items/${offer.item?.id}`); }} className='px-8 py-2.5 border border-primary text-primary rounded-lg font-poppins typo-body-md-medium hover:bg-primary/5 transition-colors'>Resubmit Offer</button>
+                                                    </>
+                                                ) : null}
                                             </div>
                                         </div>
 
-                                        {/* Details */}
-                                        <div className='py-3 pr-3 flex flex-col justify-center flex-1 min-w-0'>
-                                            <h3 className='font-poppins typo-body-md-semibold text-text_one line-clamp-2 leading-tight'>
-                                                {offer.item?.title}
-                                            </h3>
-                                            <p className='font-poppins typo-body-xs-regular text-text-muted-alt mt-1'>Your Offer</p>
-                                            <p className='font-poppins typo-body-sm-regular text-text_one truncate'>
-                                                {getOfferText(offer)}
+                                        {/* Right — badge + status + time */}
+                                        <div className='flex flex-col items-end justify-between flex-shrink-0 py-1'>
+                                            <div className='flex items-center gap-3'>
+                                                <TransactionTypeBadge acceptCash={tradeProps.acceptCash} acceptSwap={tradeProps.acceptSwap} />
+                                                {isDone ? (
+                                                    <span className='font-poppins typo-body-sm-semibold text-success-dark flex items-center gap-1'><Check size={14} /> Completed</span>
+                                                ) : status === 'ACCEPTED' ? (
+                                                    <span className='font-poppins typo-body-sm-semibold text-success-dark flex items-center gap-1'><Check size={14} /> Accepted</span>
+                                                ) : status === 'REJECTED' ? (
+                                                    <span className='font-poppins typo-body-sm-semibold text-accent-coral'>Rejected</span>
+                                                ) : (
+                                                    <span className='font-poppins typo-body-sm-semibold text-text-muted-alt'>Pending</span>
+                                                )}
+                                            </div>
+                                            <p className='font-poppins typo-body-sm-regular text-text-muted-alt'>
+                                                {formatTimeAgo(offer.dateCreated)}
                                             </p>
-                                            {status === 'ACCEPTED' && (
-                                                <p className='font-poppins typo-body-sm-regular text-success-dark mt-1 flex items-center gap-1'>
-                                                    <Check size={14} /> {isDone ? 'Completed' : 'Accepted'}
-                                                </p>
-                                            )}
-                                            {status === 'REJECTED' && (
-                                                <p className='font-poppins typo-body-sm-regular text-accent-coral mt-1'>Rejected</p>
-                                            )}
-                                            {status === 'PENDING' && (
-                                                isDone
-                                                    ? <p className='font-poppins typo-body-sm-regular text-success-dark mt-1 flex items-center gap-1'><Check size={14} /> Completed</p>
-                                                    : <p className='font-poppins typo-body-sm-regular text-text-muted-alt mt-1'>Pending</p>
-                                            )}
                                         </div>
                                     </div>
 
-                                    {/* Action buttons */}
-                                    <div className='flex gap-2 px-3 pb-3'>
-                                        {(status === 'ACCEPTED' || status === 'PENDING') && (
-                                            txId ? (
-                                                <button
-                                                    onClick={() => { setIsNavigating(true); router.push(`/transaction/${txId}`); }}
-                                                    className='flex-1 py-2.5 bg-primary text-white rounded-lg font-poppins typo-body-xs-medium'
-                                                >
-                                                    {isDone ? 'View Transaction' : 'Continue Transaction'}
-                                                </button>
-                                            ) : (
+                                    {/* ===== MOBILE LAYOUT ===== */}
+                                    <div className='hidden xs:block'>
+                                        <div className='flex'>
+                                            <div className='p-3 flex-shrink-0 relative'>
+                                                <Image
+                                                    src={getItemImage(offer)}
+                                                    alt={offer.item?.title || 'Item'}
+                                                    width={120}
+                                                    height={120}
+                                                    className='rounded-xl object-cover w-[120px] h-[120px]'
+                                                />
+                                                <div className='absolute top-4 left-4'>
+                                                    <TransactionTypeBadge acceptCash={tradeProps.acceptCash} acceptSwap={tradeProps.acceptSwap} />
+                                                </div>
+                                            </div>
+                                            <div className='py-3 pr-3 flex flex-col justify-center flex-1 min-w-0'>
+                                                <h3 className='font-poppins typo-body-md-semibold text-text_one line-clamp-2 leading-tight'>
+                                                    {offer.item?.title}
+                                                </h3>
+                                                <div className='bg-gray-50 rounded-lg px-2.5 py-1.5 mt-1.5'>
+                                                    <p className='font-poppins typo-body-xs-regular text-text-muted-alt'>Your Offer</p>
+                                                    <p className='font-poppins typo-body-sm-regular text-text_one truncate'>{getOfferText(offer)}</p>
+                                                </div>
+                                                {isDone ? (
+                                                    <span className='font-poppins typo-body-sm-semibold text-success-dark flex items-center gap-1'><Check size={14} /> Completed</span>
+                                                ) : status === 'ACCEPTED' ? (
+                                                    <span className='font-poppins typo-body-sm-semibold text-success-dark flex items-center gap-1'><Check size={14} /> Accepted</span>
+                                                ) : status === 'REJECTED' ? (
+                                                    <span className='font-poppins typo-body-sm-semibold text-accent-coral'>Rejected</span>
+                                                ) : (
+                                                    <span className='font-poppins typo-body-sm-semibold text-text-muted-alt'>Pending</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        {/* Mobile action buttons */}
+                                        <div className='flex gap-2 px-3 pb-3'>
+                                            {isDone ? (
+                                                <button onClick={() => { setIsNavigating(true); router.push(`/transaction/${txId}`); }} className='flex-1 py-2.5 bg-primary text-white rounded-lg font-poppins typo-body-xs-medium'>View Transaction</button>
+                                            ) : status === 'ACCEPTED' ? (
                                                 <>
-                                                    <button
-                                                        onClick={() => handleProceedToCheckout(offer)}
-                                                        disabled={isLoading}
-                                                        className='flex-1 py-2.5 bg-primary text-white rounded-lg font-poppins typo-body-xs-medium disabled:opacity-50'
-                                                    >
-                                                        {isLoading ? 'Loading...' : 'Proceed to checkout'}
-                                                    </button>
-                                                    {status === 'PENDING' && (
-                                                        <button
-                                                            onClick={() => handleDeleteOffer(offer.id)}
-                                                            disabled={isLoading}
-                                                            className='flex-1 py-2.5 border border-primary rounded-lg font-poppins typo-body-xs-medium text-primary disabled:opacity-50'
-                                                        >
-                                                            {isLoading ? 'Deleting...' : 'Delete Offer'}
-                                                        </button>
-                                                    )}
+                                                    <button onClick={() => handleProceedToCheckout(offer)} disabled={isLoading} className='flex-1 py-2.5 bg-primary text-white rounded-lg font-poppins typo-body-xs-medium disabled:opacity-50'>{isLoading ? 'Loading...' : 'Proceed to checkout'}</button>
+                                                    <button onClick={() => setConfirmCancelOfferId(offer.id)} disabled={isLoading} className='flex-1 py-2.5 border border-primary text-primary rounded-lg font-poppins typo-body-xs-medium disabled:opacity-50'>Cancel Transaction</button>
                                                 </>
-                                            )
-                                        )}
-                                        {status === 'REJECTED' && (
-                                            <>
-                                                <button
-                                                    onClick={() => handleDeleteOffer(offer.id)}
-                                                    disabled={isLoading}
-                                                    className='flex-1 py-2.5 bg-primary text-white rounded-lg font-poppins typo-body-xs-medium disabled:opacity-50'
-                                                >
-                                                    {isLoading ? 'Deleting...' : 'Delete Offer'}
-                                                </button>
-                                                <button
-                                                    onClick={() => { setIsNavigating(true); router.push(`/items/${offer.item?.id}`); }}
-                                                    className='flex-1 py-2.5 border border-primary rounded-lg font-poppins typo-body-xs-medium text-primary'
-                                                >
-                                                    Resubmit Offer
-                                                </button>
-                                            </>
-                                        )}
+                                            ) : status === 'PENDING' ? (
+                                                <button onClick={() => handleDeleteOffer(offer.id)} disabled={isLoading} className='flex-1 py-2.5 bg-primary text-white rounded-lg font-poppins typo-body-xs-medium disabled:opacity-50'>{isLoading ? 'Deleting...' : 'Delete Offer'}</button>
+                                            ) : status === 'REJECTED' ? (
+                                                <>
+                                                    <button onClick={() => handleDeleteOffer(offer.id)} disabled={isLoading} className='flex-1 py-2.5 bg-primary text-white rounded-lg font-poppins typo-body-xs-medium disabled:opacity-50'>{isLoading ? 'Deleting...' : 'Delete Offer'}</button>
+                                                    <button onClick={() => { setIsNavigating(true); router.push(`/items/${offer.item?.id}`); }} className='flex-1 py-2.5 border border-primary text-primary rounded-lg font-poppins typo-body-xs-medium'>Resubmit Offer</button>
+                                                </>
+                                            ) : null}
+                                        </div>
                                     </div>
                                 </div>
                             );
@@ -542,19 +583,20 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
 
                                         {/* Desktop card layout */}
                                         <div className='xs:hidden flex'>
-                                            {/* Image */}
-                                            <div className='p-[26px] flex-shrink-0'>
-                                                <Image
-                                                    src={getItemImage(offer)}
-                                                    alt={offer.item?.title || 'Item'}
-                                                    width={180}
-                                                    height={180}
-                                                    className='rounded-2xl object-cover w-[180px] h-[180px]'
-                                                />
+                                            {/* Image — fills card height */}
+                                            <div className='self-stretch flex-shrink-0 p-5'>
+                                                <div className='relative w-[180px] h-full rounded-xl overflow-hidden'>
+                                                    <Image
+                                                        src={getItemImage(offer)}
+                                                        alt={offer.item?.title || 'Item'}
+                                                        fill
+                                                        className='object-cover'
+                                                    />
+                                                </div>
                                             </div>
 
                                             {/* Middle — title, offerer box, buttons */}
-                                            <div className='py-[26px] flex flex-col justify-between flex-1 min-w-0'>
+                                            <div className='py-5 flex flex-col justify-between flex-1 min-w-0'>
                                                 <div>
                                                     <h3 className='font-poppins typo-body-lg-bold text-text-secondary'>
                                                         {offer.item?.title}
@@ -629,7 +671,7 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
                                             </div>
 
                                             {/* Right — badge, time */}
-                                            <div className='py-[26px] pr-[50px] flex flex-col items-end justify-between flex-shrink-0'>
+                                            <div className='py-5 pr-8 flex flex-col items-end justify-between flex-shrink-0'>
                                                 <div className='w-fit'>
                                                     <TransactionTypeBadge acceptCash={tradeProps.acceptCash} acceptSwap={tradeProps.acceptSwap} />
                                                 </div>

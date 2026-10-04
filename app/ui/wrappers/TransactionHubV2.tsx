@@ -18,6 +18,7 @@ import ConfirmationModal from '../common/modals/ConfirmationModal';
 
 interface Props {
     transaction: TransactionDTO;
+    forceCheckoutMode?: boolean;
 }
 
 // Seller Shipping View — shown to seller at shipping step
@@ -159,7 +160,7 @@ const SellerShippingView = ({transaction, onItemDeposited}: {transaction: Transa
                                     {transaction.item?.title || transaction.description || 'Item'}
                                 </p>
                                 <span className='inline-block mt-1.5 bg-surface-success/40 text-success-dark font-poppins text-[11px] font-medium px-2.5 py-0.5 rounded-full'>
-                                    {transaction.type === 'SWAP' ? 'Swap only' : transaction.type === 'SWAP_WITH_CASH' ? 'Swap + Cash' : 'Cash only'}
+                                    {txType === 'SWAP' ? 'Swap only' : txType === 'SWAP_WITH_CASH' ? 'Swap + Cash' : 'Cash only'}
                                 </span>
                             </div>
                         </div>
@@ -259,14 +260,14 @@ const SellerShippingView = ({transaction, onItemDeposited}: {transaction: Transa
     );
 };
 
-const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
+const TransactionHubV2 = ({transaction: initialTransaction, forceCheckoutMode}: Props) => {
     const {user} = useAppContext();
     const router = useRouter();
     const [transaction, setTransaction] = useState<TransactionDTO>(initialTransaction);
     const [showPaymentTransfer, setShowPaymentTransfer] = useState(false);
-    // When buyer arrives via "Proceed to checkout", force the Order Review (PENDING) view
-    // even if the backend already has the transaction at SUCCESS.
-    const [checkoutMode, setCheckoutMode] = useState(false);
+    // When buyer arrives via "Proceed to checkout" or the order-summary page, force the
+    // Order Review (PENDING) view even if the backend already has the transaction at SUCCESS.
+    const [checkoutMode, setCheckoutMode] = useState(forceCheckoutMode ?? false);
     const [timeLeft, setTimeLeft] = useState(30 * 60);
     const [autoReleaseTime, setAutoReleaseTime] = useState(47 * 3600 + 59 * 60 + 44);
     const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
@@ -321,29 +322,17 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
     const isSeller = userRole === 'seller';
     const isBuyer = userRole === 'buyer';
 
-    // If buyer just came from "Proceed to checkout", show Order Review first (PENDING view)
-    // regardless of the actual transaction status on the backend.
-    // Note: intentionally not gated on isBuyer — user context may not be resolved on first
-    // render, causing isBuyer to be false. The flag can only exist if the buyer set it.
-    useEffect(() => {
-        const flag = sessionStorage.getItem(`checkout_pending_${transaction.id}`);
-        if (flag) {
-            sessionStorage.removeItem(`checkout_pending_${transaction.id}`);
-            setCheckoutMode(true);
-        }
-    }, [transaction.id]);
-
     // When in checkoutMode, render as if the transaction is PENDING (Order Review)
     // until the buyer completes the payment flow.
     const effectiveStatus = checkoutMode ? 'PENDING' : transaction.status;
 
     const transactionAmount = transaction.amount || 0;
     const transactionRef = transaction.reference || `FLPT-${transaction.id}`;
+    // Fall back to CASH_ONLY if backend hasn't populated type yet (happens on fresh transactions)
+    const txType = transaction.type || 'CASH_ONLY';
 
     // Map API status to step index based on transaction type
     const getFlowConfig = () => {
-        const txType = transaction.type;
-
         if (txType === 'CASH_ONLY') {
             return {
                 title: 'Direct Purchase',
@@ -624,7 +613,7 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                                 <div className='flex-1 min-w-0'>
                                     <p className='font-poppins typo-body-md-semibold text-text_two line-clamp-2 leading-tight'>{transaction.item?.title || transaction.description || 'Item'}</p>
                                     <div className='mt-1'>
-                                        <TransactionTypeBadge acceptCash={transaction.type !== 'SWAP'} acceptSwap={transaction.type !== 'CASH_ONLY'} />
+                                        <TransactionTypeBadge acceptCash={txType !== 'SWAP'} acceptSwap={txType !== 'CASH_ONLY'} />
                                     </div>
                                     <p className='font-poppins typo-body-md-semibold text-primary mt-1'>{formatToNaira(transactionAmount)}</p>
                                 </div>
@@ -642,18 +631,18 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                                             </div>
                                             <div className='flex justify-between'>
                                                 <span className='font-poppins text-[14px] font-medium text-text_two'>Shipping Fee</span>
-                                                <span className='font-poppins text-[14px] font-bold text-text_one'>{formatToNaira(6000)}</span>
+                                                <span className='font-poppins text-[14px] font-bold text-text_one'>-</span>
                                             </div>
                                             <div className='flex justify-between'>
                                                 <span className='font-poppins text-[14px] font-medium text-text_two'>Platform Service Fee</span>
-                                                <span className='font-poppins text-[14px] font-bold text-text_one'>{formatToNaira(5000)}</span>
+                                                <span className='font-poppins text-[14px] font-bold text-text_one'>{transaction.platformFee != null && transaction.platformFee > 0 ? formatToNaira(transaction.platformFee) : '-'}</span>
                                             </div>
                                         </div>
                                         <div>
                                             <hr className='border-t border-black mb-9' />
                                             <div className='flex justify-between'>
                                                 <span className='font-poppins text-[16px] font-bold text-primary'>Total Amount</span>
-                                                <span className='font-poppins text-[16px] font-bold text-primary'>{formatToNaira(transactionAmount + 11000)}</span>
+                                                <span className='font-poppins text-[16px] font-bold text-primary'>{formatToNaira(transactionAmount + (transaction.platformFee || 0))}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -693,26 +682,49 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
 
                         {/* ===== DESKTOP PENDING VIEW ===== */}
                         <div className='xs:hidden'>
-                        <h3 className='font-poppins typo-body-lg-semibold text-text_one mt-8 mb-2'>Review Order</h3>
+                        <h3 className='font-poppins typo-body-lg-semibold text-text_one mt-8 mb-2'>Order Summary</h3>
 
                         {/* Transaction type banner */}
                         <div className='border border-border-DEFAULT rounded-xl p-5 text-center mb-6'>
                             <div className='flex items-center justify-center gap-2 mb-1'>
                                 <CheckCircle size={18} className='text-success-dark' />
                                 <span className='font-poppins typo-body-lg-semibold text-success-dark'>
-                                    {transaction.type === 'SWAP' ? 'Swap Agreement' : transaction.type === 'SWAP_WITH_CASH' ? 'Swap + Cash Confirmed' : 'Order Confirmed'}
+                                    {txType === 'SWAP' ? 'Swap Agreement' : txType === 'SWAP_WITH_CASH' ? 'Swap + Cash Confirmed' : 'Order Confirmed'}
                                 </span>
                             </div>
                             <p className='font-poppins typo-body-md-regular text-text-muted-alt'>
-                                {transaction.type === 'SWAP'
+                                {txType === 'SWAP'
                                     ? 'Both parties have agreed to swap terms. Review details below.'
-                                    : transaction.type === 'SWAP_WITH_CASH'
+                                    : txType === 'SWAP_WITH_CASH'
                                       ? 'Both parties have agreed. Proceed with payment and shipping.'
                                       : 'Your order has been confirmed. Review the details below.'}
                             </p>
                         </div>
 
-                        {/* Transaction Details */}
+                        {/* Item card */}
+                        <div className='flex gap-4 border border-border-DEFAULT rounded-xl p-4 mb-6'>
+                            <Image
+                                src={transaction.item?.imageUrls?.[0] || '/images/placeholders/placeholder-product.svg'}
+                                alt={transaction.item?.title || 'Item'}
+                                width={120}
+                                height={120}
+                                className='w-[120px] h-[120px] rounded-lg object-cover flex-shrink-0'
+                            />
+                            <div className='flex flex-col justify-center gap-2'>
+                                <p className='font-poppins typo-body-lg-semibold text-text_one capitalize'>
+                                    {transaction.item?.title || transaction.description || 'Item'}
+                                </p>
+                                <TransactionTypeBadge
+                                    acceptCash={txType !== 'SWAP'}
+                                    acceptSwap={txType !== 'CASH_ONLY'}
+                                />
+                                <p className='font-poppins typo-body-lg-semibold text-primary'>
+                                    {formatToNaira(transactionAmount)}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Transaction ID */}
                         <p className='font-poppins typo-body-md-regular text-text_one mb-6'>
                             Transaction ID: <span className='font-semibold'>{transactionRef}</span>
                         </p>
@@ -765,19 +777,25 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                                         <h4 className='font-poppins typo-body-lg-semibold text-text_one mb-4'>Payment Details</h4>
                                         <div className='space-y-3'>
                                             <div className='flex justify-between'>
-                                                <span className='font-poppins typo-body-md-regular text-text-muted-alt'>Amount</span>
+                                                <span className='font-poppins typo-body-md-regular text-text-muted-alt'>Agreed Price</span>
                                                 <span className='font-poppins typo-body-md-regular text-text_one'>{formatToNaira(transactionAmount)}</span>
                                             </div>
-                                            {transaction.paymentMethod && (
-                                                <div className='flex justify-between'>
-                                                    <span className='font-poppins typo-body-md-regular text-text-muted-alt'>Payment Method</span>
-                                                    <span className='font-poppins typo-body-md-regular text-text_one'>{transaction.paymentMethod}</span>
-                                                </div>
-                                            )}
+                                            <div className='flex justify-between'>
+                                                <span className='font-poppins typo-body-md-regular text-text-muted-alt'>Shipping Fee</span>
+                                                <span className='font-poppins typo-body-md-regular text-text_one'>-</span>
+                                            </div>
+                                            <div className='flex justify-between'>
+                                                <span className='font-poppins typo-body-md-regular text-text-muted-alt'>Platform Service Fee</span>
+                                                <span className='font-poppins typo-body-md-regular text-text_one'>{transaction.platformFee != null && transaction.platformFee > 0 ? formatToNaira(transaction.platformFee) : '-'}</span>
+                                            </div>
+                                            <div className='border-t border-border-DEFAULT pt-3 flex justify-between'>
+                                                <span className='font-poppins typo-body-md-semibold text-primary'>Total Amount</span>
+                                                <span className='font-poppins typo-body-md-semibold text-primary'>{formatToNaira(transactionAmount + (transaction.platformFee || 0))}</span>
+                                            </div>
                                             <div className='flex justify-between'>
                                                 <span className='font-poppins typo-body-md-regular text-text-muted-alt'>Type</span>
                                                 <span className='font-poppins typo-body-md-regular text-text_one'>
-                                                    {transaction.type === 'SWAP' ? 'Item Exchange' : transaction.type === 'SWAP_WITH_CASH' ? 'Item + Cash' : 'Cash Only'}
+                                                    {txType === 'SWAP' ? 'Item Exchange' : txType === 'SWAP_WITH_CASH' ? 'Item + Cash' : 'Cash Only'}
                                                 </span>
                                             </div>
                                         </div>
@@ -810,7 +828,7 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                                         </div>
                                     </div>
 
-                                    {isBuyer && transaction.type !== 'SWAP' && (
+                                    {isBuyer && txType !== 'SWAP' && (
                                         <button
                                             onClick={handleVerifyPayment}
                                             disabled={isLoading}
@@ -820,7 +838,7 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                                         </button>
                                     )}
 
-                                    {isBuyer && transaction.type === 'SWAP' && (
+                                    {isBuyer && txType === 'SWAP' && (
                                         <button
                                             onClick={handleVerifyPayment}
                                             disabled={isLoading}
@@ -1080,7 +1098,7 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                                 <Image src={transaction.item?.imageUrls?.[0] || '/images/placeholders/placeholder-product.svg'} alt='item' width={80} height={80} className='w-[80px] h-[80px] rounded-xl object-cover flex-shrink-0' />
                                 <div className='min-w-0'>
                                     <p className='font-poppins text-[14px] font-semibold text-text_one line-clamp-2 leading-snug'>{transaction.item?.title || transaction.description || 'Item'}</p>
-                                    <span className='inline-block mt-1 bg-surface-success/40 text-success-dark font-poppins text-[11px] font-medium px-2.5 py-0.5 rounded-full'>{transaction.type === 'SWAP' ? 'Swap only' : transaction.type === 'SWAP_WITH_CASH' ? 'Swap + Cash' : 'Cash only'}</span>
+                                    <span className='inline-block mt-1 bg-surface-success/40 text-success-dark font-poppins text-[11px] font-medium px-2.5 py-0.5 rounded-full'>{txType === 'SWAP' ? 'Swap only' : txType === 'SWAP_WITH_CASH' ? 'Swap + Cash' : 'Cash only'}</span>
                                     <p className='font-poppins text-[14px] font-bold text-primary mt-1'>{formatToNaira(transactionAmount)}</p>
                                 </div>
                             </div>
@@ -1362,7 +1380,7 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                                         {transaction.item?.title || transaction.description || 'Item'}
                                     </p>
                                     <span className='inline-block mt-1.5 bg-surface-success/60 text-success-dark font-poppins text-[11px] font-medium px-2.5 py-0.5 rounded-full'>
-                                        {transaction.type === 'SWAP' ? 'Swap only' : transaction.type === 'SWAP_WITH_CASH' ? 'Swap + Cash' : 'Cash only'}
+                                        {txType === 'SWAP' ? 'Swap only' : txType === 'SWAP_WITH_CASH' ? 'Swap + Cash' : 'Cash only'}
                                     </span>
                                 </div>
                             </div>
@@ -1405,7 +1423,7 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                                     <div className='flex justify-between'>
                                         <span className='font-poppins typo-body-md-regular text-text-muted-alt'>Type</span>
                                         <span className='font-poppins typo-body-md-regular text-text_one'>
-                                            {transaction.type === 'SWAP' ? 'Item Exchange' : transaction.type === 'SWAP_WITH_CASH' ? 'Item + Cash' : 'Direct Purchase'}
+                                            {txType === 'SWAP' ? 'Item Exchange' : txType === 'SWAP_WITH_CASH' ? 'Item + Cash' : 'Direct Purchase'}
                                         </span>
                                     </div>
                                     {transactionAmount > 0 && (
@@ -1524,7 +1542,10 @@ const TransactionHubV2 = ({transaction: initialTransaction}: Props) => {
                             {formatToNaira(transactionAmount)} has been paid successfully to Flipit MarketPlace
                         </p>
                         <button
-                            onClick={() => setShowPaymentSuccess(false)}
+                            onClick={() => {
+                                setShowPaymentSuccess(false);
+                                if (forceCheckoutMode) router.replace(`/transaction/${transaction.id}`);
+                            }}
                             className='w-[200px] h-[48px] bg-success-dark text-white rounded-lg font-poppins typo-body-lg-medium hover:bg-success-dark/90 transition-colors'
                         >
                             Ok!

@@ -13,10 +13,11 @@ import {PlusIcon} from '~/ui/icons';
 interface Props {
     item?: Item | null;
     onClose: () => void;
+    tradeType?: 'CASH_ONLY' | 'SWAP' | 'SWAP_WITH_CASH';
 }
 
 const MakeAnOffer = (props: Props) => {
-    const {item, onClose} = props;
+    const {item, onClose, tradeType} = props;
     const router = useRouter();
     const {user} = useAppContext();
     const {showError, showSuccess} = useToast();
@@ -36,6 +37,12 @@ const MakeAnOffer = (props: Props) => {
         | undefined
     >();
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (tradeType === 'CASH_ONLY') setWithCash(true);
+        if (tradeType === 'SWAP') setWithItem(true);
+        if (tradeType === 'SWAP_WITH_CASH') { setWithCash(true); setWithItem(true); }
+    }, [tradeType]);
 
     useEffect(() => {
         const fetchItems = async () => {
@@ -68,55 +75,42 @@ const MakeAnOffer = (props: Props) => {
 
     const handleSubmit = async () => {
         setLoading(true);
-
-        // Validation - at least one option must be selected
-        if (!withCash && !withItem) {
-            showError('Please select at least one offer type (Cash or Item)');
-            setLoading(false);
-            return;
-        }
-
-        if (withCash && (!amount || Number(amount) <= 0)) {
-            showError('Please enter a valid cash amount');
-            setLoading(false);
-            return;
-        }
-
-        if (withItem && !selectedOption) {
-            showError('Please select an item to offer');
-            setLoading(false);
-            return;
-        }
-
-        if (!item?.id) {
-            showError('Item information is missing');
-            setLoading(false);
-            return;
-        }
-
-        // Build payload based on selections
-        const payload: any = {
-            itemId: item?.id,
-            withCash: withCash,
-            offerValid: true
-        };
-
-        if (withCash) {
-            payload.cashAmount = Number(amount);
-        }
-
-        if (withItem) {
-            payload.offeredItemId = selectedOption?.id;
-        }
-
-        // Additional validation for null IDs
-        if (withItem && !selectedOption?.id) {
-            showError('Selected item ID is missing');
-            setLoading(false);
-            return;
-        }
-
         try {
+            if (!tradeType && !withCash && !withItem) {
+                showError('Please select at least one offer type (Cash or Item)');
+                return;
+            }
+
+            if ((tradeType === 'CASH_ONLY' || withCash) && (!amount || Number(amount) <= 0)) {
+                showError('Please enter a valid cash amount');
+                return;
+            }
+
+            if (withItem && !selectedOption) {
+                showError('Please select an item to offer');
+                return;
+            }
+
+            if (!item?.id) {
+                showError('Item information is missing');
+                return;
+            }
+
+            if (withItem && !selectedOption?.id) {
+                showError('Selected item ID is missing');
+                return;
+            }
+
+            const effectiveWithCash = tradeType === 'CASH_ONLY' ? true : withCash;
+            const payload: any = {
+                itemId: item.id,
+                withCash: effectiveWithCash,
+                offerValid: true,
+            };
+
+            if (effectiveWithCash) payload.cashAmount = Number(amount);
+            if (withItem) payload.offeredItemId = selectedOption?.id;
+
             const res = await fetch('/api/v1/offer', {
                 method: 'POST',
                 headers: {
@@ -200,33 +194,38 @@ const MakeAnOffer = (props: Props) => {
                                 className='h-[439px] w-[443px] xs:h-[327px] xs:w-full object-cover'
                             />
                             <div className='flex flex-col gap-6'>
-                                <p className='typo-heading_ss xs:typo-body_ls'>How do you want to bid?</p>
-                                <div className='flex space-x-6 xs:flex-col xs:space-x-0 xs:space-y-3'>
-                                    {/* Checkbox 1 - With Cash */}
-                                    <label className='flex items-center space-x-2 cursor-pointer'>
-                                        <input
-                                            type='checkbox'
-                                            checked={withCash}
-                                            onChange={(e) => setWithCash(e.target.checked)}
-                                            className='w-5 h-5 text-primary accent-primary border-border_gray rounded focus:ring-primary focus:ring-2'
-                                        />
-                                        <span className='typo-body_lr xs:typo-body_mr'>With Cash</span>
-                                    </label>
+                                <p className='typo-heading_ss xs:typo-body_ls'>
+                                    {tradeType === 'CASH_ONLY' ? 'Enter your offer price' : tradeType === 'SWAP' ? 'Select an item to offer' : 'How do you want to bid?'}
+                                </p>
 
-                                    {/* Checkbox 2 - With Item */}
-                                    <label className='flex items-center space-x-2 cursor-pointer'>
-                                        <input
-                                            type='checkbox'
-                                            checked={withItem}
-                                            onChange={(e) => setWithItem(e.target.checked)}
-                                            className='w-5 h-5 text-primary accent-primary border-border_gray rounded focus:ring-primary focus:ring-2'
-                                        />
-                                        <span className='typo-body_lr xs:typo-body_mr'>With an Item</span>
-                                    </label>
-                                </div>
+                                {/* Offer type checkboxes — hidden for CASH_ONLY and SWAP, shown for SWAP_WITH_CASH and default */}
+                                {tradeType !== 'CASH_ONLY' && tradeType !== 'SWAP' && (
+                                    <div className='flex space-x-6 xs:flex-col xs:space-x-0 xs:space-y-3'>
+                                        {/* Checkbox 1 - With Cash */}
+                                        <label className='flex items-center space-x-2 cursor-pointer'>
+                                            <input
+                                                type='checkbox'
+                                                checked={withCash}
+                                                onChange={(e) => setWithCash(e.target.checked)}
+                                                className='w-5 h-5 text-primary accent-primary border-border_gray rounded focus:ring-primary focus:ring-2'
+                                            />
+                                            <span className='typo-body_lr xs:typo-body_mr'>With Cash</span>
+                                        </label>
 
-                                {/* Cash Input - Show when withCash is checked */}
-                                {withCash && (
+                                        {/* Checkbox 2 - With Item */}
+                                        <label className='flex items-center space-x-2 cursor-pointer'>
+                                            <input
+                                                type='checkbox'
+                                                checked={withItem}
+                                                onChange={(e) => setWithItem(e.target.checked)}
+                                                className='w-5 h-5 text-primary accent-primary border-border_gray rounded focus:ring-primary focus:ring-2'
+                                            />
+                                            <span className='typo-body_lr xs:typo-body_mr'>With an Item</span>
+                                        </label>
+                                    </div>
+                                )}
+
+                                {(tradeType === 'CASH_ONLY' || withCash) && (
                                     <div className='relative w-full xs:flex-none mx-auto outline-none border-none'>
                                         <label htmlFor='cash-amount' className='typo-body_mr xs:typo-body_mr'>
                                             Offer your price
@@ -242,8 +241,7 @@ const MakeAnOffer = (props: Props) => {
                                     </div>
                                 )}
 
-                                {/* Item Selector - Show when withItem is checked */}
-                                {withItem && (
+                                {tradeType !== 'CASH_ONLY' && (tradeType === 'SWAP' || withItem) && (
                                     <div className='relative w-full xs:flex-none mx-auto outline-none border-none'>
                                         <label htmlFor='item-select' className='typo-body_mr xs:typo-body_mr'>
                                             Select an Item

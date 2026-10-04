@@ -4,6 +4,7 @@ import React, {useEffect, useState, useCallback} from 'react';
 import SellersInfo from '../homepage/sellers-info';
 import RegularButton from '../common/buttons/RegularButton';
 import {createMessage, formatToNaira, timeAgo} from '~/utils/helpers';
+import OffersService from '~/services/offers.service';
 import {ChatService} from '~/services/chat.service';
 import {formatErrorForDisplay} from '~/utils/error-messages';
 import UsedBadge from '../common/badges/UsedBadge';
@@ -12,7 +13,9 @@ import {Item} from '~/utils/interface';
 import PopupSheet from '../common/popup-sheet/PopupSheet';
 import ProfilePopup from '../homepage/profile-popup';
 import MakeAnOffer from '../homepage/make-an-offer';
-import {Loader, ChevronLeft, Bookmark, ChevronRight} from 'lucide-react';
+import {ChevronLeft, ChevronRight, MessageSquare, Loader} from 'lucide-react';
+import TransactionService from '~/services/transaction.service';
+import {useToast} from '~/contexts/ToastContext';
 import SafetyTips from '../common/safety-tips/SafetyTips';
 import ReportModalContent from '../homepage/report-issue';
 import CallbackRequest from '../homepage/callback-request';
@@ -43,10 +46,12 @@ const ItemDetail = (props: Props) => {
     const [messageSent, setMessageSent] = useState(false);
     const [showUnlikeModal, setShowUnlikeModal] = useState(false);
     const [expandedSection, setExpandedSection] = useState<string | null>(null);
+    const [buyLoading, setBuyLoading] = useState(false);
     const router = useRouter();
     const pathname = usePathname();
 
-    const {setShowPopup} = useAppContext();
+    const {setShowPopup, user} = useAppContext();
+    const {showError} = useToast();
 
     // Like functionality
     const {isLiked, toggleLike, loading: likeLoading} = useItemLike(item.id);
@@ -155,12 +160,73 @@ const ItemDetail = (props: Props) => {
         }
     }, [toggleLike]);
 
-    // Determine CTA text
-    const ctaText = item?.acceptCash && !(item?.flipForImgUrls && item.flipForImgUrls.length > 0)
-        ? 'Buy Right Away'
-        : !item?.acceptCash && !!(item?.flipForImgUrls && item.flipForImgUrls.length > 0)
+    const tradeType = item?.acceptCash && item?.acceptSwap ? 'SWAP_WITH_CASH'
+        : item?.acceptCash ? 'CASH_ONLY'
+        : item?.acceptSwap ? 'SWAP'
+        : undefined;
+
+    const ctaText = tradeType === 'SWAP' && item?.flipForImgUrls?.length
         ? 'Make a Barter Offer'
         : 'Make an Offer';
+
+    // Buy Right Away: create offer + transaction then open the Order Review (PENDING) view
+    const handleBuyRightAway = async () => {
+        if (!user?.userId) {
+            router.push('/login');
+            return;
+        }
+
+        setBuyLoading(true);
+        try {
+            // Step 1: create an offer at the full asking price
+            const offerRes = await fetch('/api/v1/offer', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    itemId: item.id,
+                    withCash: true,
+                    cashAmount: item.cashAmount,
+                    offerValid: true
+                })
+            });
+
+            const offerData = await offerRes.json();
+
+            if (!offerRes.ok) {
+                const msg =
+                    offerData.apierror?.message ||
+                    offerData.details ||
+                    offerData.error ||
+                    'Failed to initiate purchase';
+                showError(msg);
+                return;
+            }
+
+            // Step 2: create the transaction — backend creates it at SUCCESS immediately;
+            // the checkout_pending flag tells TransactionHubV2 to render Order Review first.
+            const {data: txData, error: txError} = await TransactionService.createTransaction({
+                buyerId: parseInt(user.userId),
+                sellerId: parseInt(item.seller.id),
+                offerId: offerData.id,
+                amount: item.cashAmount ?? 0,
+                tradeType: 'CASH_ONLY',
+                description: item.title
+            });
+
+            if (txError || !txData) {
+                    try { await OffersService.deleteOffer(offerData.id); } catch {}
+                    showError('Failed to create order. Please try again.');
+                    return;
+                }
+
+            // Navigate to the Order Summary page — forceCheckoutMode renders the PENDING view
+            router.push(`/order-summary/${txData.id}`);
+        } catch (err: any) {
+            showError(err.message || 'Something went wrong');
+        } finally {
+            setBuyLoading(false);
+        }
+    };
 
     return (
         <>
@@ -436,10 +502,22 @@ const ItemDetail = (props: Props) => {
 
                         <p className='font-poppins typo-body-xs-regular text-text_four mt-1 mb-4'>{timeAgo(item?.dateCreated)}</p>
 
-                        {/* Action button */}
-                        {item?.acceptCash && !(item?.flipForImgUrls && item.flipForImgUrls.length > 0) ? (
-                            <RegularButton text='Buy Right Away' slug='make-an-offer' usePopup />
-                        ) : !item?.acceptCash && !!(item?.flipForImgUrls && item.flipForImgUrls.length > 0) ? (
+                        {/* Action buttons */}
+                        {tradeType === 'CASH_ONLY' ? (
+                            <div className='flex gap-3'>
+                                <div className='flex-1'>
+                                    <div
+                                        onClick={buyLoading ? undefined : handleBuyRightAway}
+                                        className={`w-full flex items-center justify-center h-[51px] bg-primary text-white rounded-lg typo-body_ls ${buyLoading ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer hover:bg-primary-light transition-colors'}`}
+                                    >
+                                        {buyLoading ? <Loader size={16} className='animate-spin' /> : 'Buy Right Away'}
+                                    </div>
+                                </div>
+                                <div className='flex-1'>
+                                    <RegularButton text='Make an Offer' slug='make-an-offer' usePopup isLight />
+                                </div>
+                            </div>
+                        ) : tradeType === 'SWAP' && item?.flipForImgUrls?.length ? (
                             <RegularButton text='Make a Barter Offer' slug='make-an-offer' usePopup />
                         ) : (
                             <RegularButton text='Make an Offer' slug='make-an-offer' usePopup />
@@ -496,20 +574,61 @@ const ItemDetail = (props: Props) => {
                 </div>
             </div>
             {/* Mobile fixed bottom action bar */}
-            <div className='hidden xs:flex items-center fixed bottom-0 left-0 right-0 bg-white px-4 py-3 z-[9999] gap-6'>
+            <div className='hidden xs:flex items-center fixed bottom-0 left-0 right-0 bg-white px-4 py-3 z-[9999] gap-2 border-t border-gray-100'>
                 <button
                     onClick={handleLikeClick}
                     disabled={likeLoading}
-                    className='w-11 h-11 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0'
+                    className='w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0'
                 >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill={isLiked ? '#025F73' : 'none'} stroke="#025F73" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill={isLiked ? '#025F73' : 'none'} stroke="#025F73" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
                 </button>
-                <button
-                    onClick={() => pushParam('make-an-offer')}
-                    className='flex-1 h-[48px] bg-primary text-white rounded-xl font-poppins typo-body-md-semibold'
-                >
-                    {ctaText}
-                </button>
+                {tradeType === 'CASH_ONLY' ? (
+                    <>
+                        <button
+                            onClick={buyLoading ? undefined : handleBuyRightAway}
+                            disabled={buyLoading}
+                            className='flex-1 h-[48px] bg-primary text-white rounded-xl font-poppins typo-body-md-semibold flex items-center justify-center'
+                        >
+                            {buyLoading ? <Loader size={16} className='animate-spin' /> : 'Buy Right Away'}
+                        </button>
+                        <button
+                            onClick={() => pushParam('make-an-offer')}
+                            className='flex-1 h-[48px] bg-surface-primary-16 text-primary border border-primary rounded-xl font-poppins typo-body-md-semibold'
+                        >
+                            Make an Offer
+                        </button>
+                        <button
+                            onClick={() => pushParam('send-message')}
+                            className='w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0'
+                            title='Message seller'
+                        >
+                            <MessageSquare size={18} className='text-text_one' />
+                        </button>
+                    </>
+                ) : (tradeType === 'SWAP' || tradeType === 'SWAP_WITH_CASH') ? (
+                    <>
+                        <button
+                            onClick={() => pushParam('make-an-offer')}
+                            className='flex-1 h-[48px] bg-primary text-white rounded-xl font-poppins typo-body-md-semibold'
+                        >
+                            Make an Offer
+                        </button>
+                        <button
+                            onClick={() => pushParam('send-message')}
+                            className='w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0'
+                            title='Message seller'
+                        >
+                            <MessageSquare size={18} className='text-text_one' />
+                        </button>
+                    </>
+                ) : (
+                    <button
+                        onClick={() => pushParam('make-an-offer')}
+                        className='flex-1 h-[48px] bg-primary text-white rounded-xl font-poppins typo-body-md-semibold'
+                    >
+                        {ctaText}
+                    </button>
+                )}
             </div>
 
             <PopupSheet>
@@ -537,7 +656,7 @@ const ItemDetail = (props: Props) => {
                     onClose={() => removeParam()}
                     onSubmit={() => removeParam()}
                 />
-                <MakeAnOffer item={item} onClose={() => removeParam()} />
+                <MakeAnOffer item={item} onClose={() => removeParam()} tradeType={tradeType} />
                 <ReportModalContent
                     title={`Report ${item?.title || 'this item'}`}
                     onClose={() => removeParam()}

@@ -8,7 +8,7 @@ interface PageProps {
     params: Promise<{id: string}>;
 }
 
-export default async function TransactionPage({params}: PageProps) {
+export default async function ShippingPage({params}: PageProps) {
     const {id} = await params;
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
@@ -23,9 +23,9 @@ export default async function TransactionPage({params}: PageProps) {
         return (
             <div className='min-h-screen bg-gray-50 flex items-center justify-center'>
                 <div className='text-center'>
-                    <h2 className='font-poppins typo-heading-md-semibold text-text_one mb-2'>Transaction Not Found</h2>
+                    <h2 className='font-poppins typo-heading-md-semibold text-text_one mb-2'>Shipment Not Found</h2>
                     <p className='font-poppins typo-body-md-regular text-text_four'>
-                        The transaction you&apos;re looking for doesn&apos;t exist or you don&apos;t have access to it.
+                        This shipment doesn&apos;t exist or you don&apos;t have access to it.
                     </p>
                 </div>
             </div>

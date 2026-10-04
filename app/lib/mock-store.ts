@@ -79,8 +79,9 @@ export function updateTransactionStatus(id: number, status: TransactionStatus): 
     const all = allTxs();
     const tx = all[id];
     if (!tx) return null;
-    tx.status = status;
-    return { ...tx };
+    // Route mutation through dynamicTransactions to avoid mutating seeded data
+    dynamicTransactions[id] = {...tx, status};
+    return {...tx, status};
 }
 
 export function createTransaction(body: {
@@ -123,7 +124,7 @@ export function createTransaction(body: {
         buyer: resolveUser(body.buyerId),
         seller: resolveUser(body.sellerId),
         amount: body.amount ?? 0,
-        status: 'PENDING',
+        status: 'SUCCESS',
         type: body.type,
         description: body.description || 'Item',
         reference: `FLPT-${id}`,
