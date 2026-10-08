@@ -179,7 +179,9 @@ export async function checkAuthServerSide(): Promise<{ isAuthenticated: boolean;
         }
         // For other errors, fall through to use cookie data
       } else {
-        const verifiedUserData = await verifyResponse.json();
+        const rawData = await verifyResponse.json();
+        // Backend returns { user: {...} } or flat {...} — normalize to flat
+        const verifiedUserData = rawData.user || rawData;
         return { isAuthenticated: true, user: verifiedUserData };
       }
     } catch {
