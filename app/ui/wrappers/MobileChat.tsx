@@ -8,6 +8,7 @@ import {ChevronLeft} from 'lucide-react';
 import {useUnreadCount} from '~/contexts/UnreadCountContext';
 import {useChatMessages} from '~/hooks/useChatMessages';
 import {formatTimeTo12Hour, formatMessageTime, sendMessage} from '~/utils/helpers';
+import LogoLoader from '../common/logo-loader/LogoLoader';
 import {Message} from '~/utils/interface';
 const MobileChat = () => {
     const params = useParams();
@@ -119,10 +120,7 @@ const MobileChat = () => {
             <div className='flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-4'>
                 {isLoading ? (
                     <div className='flex justify-center items-center h-full'>
-                        <div className='flex items-center gap-2 text-text-secondary'>
-                            <div className='animate-spin rounded-full h-6 w-6 border-b-2 border-primary'></div>
-                            <span className='typo-body-md-regular'>Loading messages...</span>
-                        </div>
+                        <LogoLoader inline />
                     </div>
                 ) : (
                     messages?.map((item, i) => {

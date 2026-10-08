@@ -206,7 +206,7 @@ const ItemDetail = (props: Props) => {
             // the checkout_pending flag tells TransactionHubV2 to render Order Review first.
             const {data: txData, error: txError} = await TransactionService.createTransaction({
                 buyerId: parseInt(user.userId),
-                sellerId: parseInt(item.seller.id),
+                sellerId: parseInt(String(item.seller.id)),
                 offerId: offerData.id,
                 amount: item.cashAmount ?? 0,
                 tradeType: 'CASH_ONLY',
@@ -446,6 +446,10 @@ const ItemDetail = (props: Props) => {
                             </div>
                         )}
                     </div>
+                    {/* Safety Tips - mobile only */}
+                    <div className='hidden xs:block mt-4 px-4 pb-4'>
+                        <SafetyTips />
+                    </div>
                 </div>
                 <div className='xs:hidden'>
                     {/* Item info box */}
@@ -660,7 +664,6 @@ const ItemDetail = (props: Props) => {
                 <ReportModalContent
                     title={`Report ${item?.title || 'this item'}`}
                     onClose={() => removeParam()}
-                    onSubmit={() => removeParam()}
                 />
                 <CallbackRequest
                     title='Request for Callback'

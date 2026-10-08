@@ -8,6 +8,7 @@ import StatusBadge from '../components/StatusBadge';
 import {AdminService} from '~/services';
 import {DashboardSummaryDTO} from '~/types/api';
 import {List, Users, MousePointerClick, Clock, Eye} from 'lucide-react';
+import LogoLoader from '~/ui/common/logo-loader/LogoLoader';
 
 const columns = [
     {key: 'no', label: 'No'},
@@ -127,12 +128,7 @@ export default function AdminOverview() {
 
     if (loading) {
         return (
-            <div className='flex items-center justify-center min-h-screen'>
-                <div className='text-center'>
-                    <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto'></div>
-                    <p className='mt-4 text-gray-600'>Loading dashboard...</p>
-                </div>
-            </div>
+            <LogoLoader />
         );
     }
 

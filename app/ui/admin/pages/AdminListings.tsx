@@ -1,5 +1,6 @@
 'use client';
 import {useState, useEffect} from 'react';
+import LogoLoader from '~/ui/common/logo-loader/LogoLoader';
 import PageHeader from '../components/PageHeader';
 import StatsCard from '../components/StatsCard';
 import DataTable from '../components/DataTable';
@@ -145,16 +146,7 @@ export default function AdminListings() {
 
     if (loading) {
         return (
-            <div className='flex items-center justify-center min-h-screen' role='status' aria-live='polite'>
-                <div className='text-center'>
-                    <div
-                        className='animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto'
-                        aria-hidden='true'
-                    ></div>
-                    <p className='mt-4 text-gray-600'>Loading listings...</p>
-                    <span className='sr-only'>Loading listings data, please wait</span>
-                </div>
-            </div>
+            <LogoLoader />
         );
     }
 

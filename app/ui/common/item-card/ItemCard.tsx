@@ -34,8 +34,8 @@ const ItemCard: React.FC<ItemCardProps> = memo(
         item,
         forEdit = false,
         forLiveAuction = false,
-        className = 'w-full rounded-3xl xs:rounded-2xl',
-        imageClassName = 'h-[302px] w-full xs:h-[180px] cursor-pointer object-cover rounded-xl',
+        className = 'w-full rounded-3xl xs:rounded-2xl overflow-hidden bg-white xs:shadow-sm',
+        imageClassName = 'h-[302px] w-full xs:h-[180px] cursor-pointer object-cover',
         imageContainerClassName = 'h-[302px] xs:h-[180px]',
         contentClassName = 'p-4 xs:p-3 xs:flex xs:flex-col xs:justify-between',
         showSaveButton = true,
@@ -104,7 +104,7 @@ const ItemCard: React.FC<ItemCardProps> = memo(
         return (
             <>
                 <Link href={href} className={`${className} card-hover block`}>
-                    <div className={`relative w-full xs:bg-gray-100 ${imageContainerClassName}`}>
+                    <div className={`relative w-full xs:bg-gray-100 overflow-hidden ${imageContainerClassName}`}>
                         <Image
                             className={imageClassName}
                             src={url}

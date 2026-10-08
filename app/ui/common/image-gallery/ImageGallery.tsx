@@ -80,11 +80,19 @@ const ImageGallery = ({
                             quality={75}
                         />
                         {overlayElements}
+                        {/* Mobile image counter */}
+                        {imageList.length > 1 && (
+                            <div className="xs:flex hidden absolute bottom-2 right-2 items-center gap-1 bg-black/50 text-white px-2.5 py-1 rounded-full">
+                                <span className="text-xs font-medium leading-none">{currentImageIndex + 1}</span>
+                                <span className="text-xs text-white/60 leading-none">/</span>
+                                <span className="text-xs text-white/60 leading-none">{imageList.length}</span>
+                            </div>
+                        )}
                     </div>
 
                     {/* Thumbnail Navigation */}
                     {imageList.length > 1 && (
-                        <div className={`relative max-w-[712px] ${thumbnailsClassName}`}>
+                        <div className={`relative max-w-[712px] xs:mt-3 ${thumbnailsClassName}`}>
                             <div className="flex items-center gap-2 w-full">
                                 {/* Left Arrow */}
                                 {thumbnailStartIndex > 0 && (
@@ -99,20 +107,20 @@ const ImageGallery = ({
                                 
                                 {/* Thumbnails Container */}
                                 <div className="flex-1 overflow-hidden">
-                                    <div className="grid grid-cols-3 gap-6">
+                                    <div className="grid grid-cols-3 gap-6 xs:gap-2">
                                         {visibleThumbnails.map((image, index) => {
                                             const actualIndex = thumbnailStartIndex + index;
                                             const isActive = actualIndex === currentImageIndex;
                                             const handleImageClick = () => selectImage(index);
                                             return (
-                                                <div key={actualIndex} className="w-full h-[150px] xs:h-[76px]">
+                                                <div key={actualIndex} className="w-full h-[150px] xs:h-[76px] rounded-md xs:rounded-lg overflow-hidden">
                                                     <Image
                                                         src={image}
                                                         height={150}
                                                         width={222}
                                                         alt={`Thumbnail ${actualIndex + 1}`}
                                                         className={`w-full h-full object-cover cursor-pointer transition-all duration-200 ${
-                                                            isActive ? 'ring-2 ring-primary opacity-100' : 'opacity-70 hover:opacity-100'
+                                                            isActive ? 'ring-2 ring-primary opacity-100' : 'opacity-60 hover:opacity-100'
                                                         } ${thumbnailClassName}`}
                                                         onClick={handleImageClick}
                                                         sizes="222px"

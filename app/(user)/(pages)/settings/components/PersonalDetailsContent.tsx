@@ -8,7 +8,7 @@ import {UserService} from '~/services/user.service';
 import {useAuth} from '~/hooks/useAuth';
 import {useToast} from '~/contexts/ToastContext';
 import {UpdateProfileRequest} from '~/types/api';
-import Loading from '~/ui/common/loading/Loading';
+import LogoLoader from '~/ui/common/logo-loader/LogoLoader';
 
 const PersonalDetailsContent = () => {
     const {user} = useAuth();
@@ -139,6 +139,8 @@ const PersonalDetailsContent = () => {
             setSaving(true);
 
             const updateData: UpdateProfileRequest = {
+                firstName: firstName.trim(),
+                lastName: lastName.trim(),
                 phoneNumber: phoneNumber.trim(),
             };
 
@@ -166,9 +168,7 @@ const PersonalDetailsContent = () => {
             <div>
                 <h2 className='typo-heading-md-medium md:typo-heading-md-medium text-gray-900 mb-4 xs:hidden'>Personal Details</h2>
                 <div className='h-px bg-border_gray mb-6 md:mb-8 w-full xs:hidden'></div>
-                <div className='flex items-center justify-center h-64'>
-                    <Loading size='lg' text='Loading profile data...' />
-                </div>
+                <LogoLoader inline />
             </div>
         );
     }

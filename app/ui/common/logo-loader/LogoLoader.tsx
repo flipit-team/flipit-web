@@ -9,7 +9,7 @@ interface LogoLoaderProps {
 const LogoLoader = ({ inline = false }: LogoLoaderProps) => {
     return (
         <div className={inline
-            ? 'flex items-center justify-center min-h-[40vh]'
+            ? 'flex items-center justify-center min-h-[40vh] h-full'
             : 'fixed inset-0 flex items-center justify-center bg-white z-40'
         }>
             <div className={`flex flex-col items-center ${inline ? 'gap-2' : 'gap-4'}`}>

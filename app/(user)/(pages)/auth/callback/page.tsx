@@ -1,10 +1,10 @@
 import {Suspense} from 'react';
 import GoogleCallbackHandler from '~/ui/wrappers/Callback';
-import Loading from '~/ui/common/loading/Loading';
+import LogoLoader from '~/ui/common/logo-loader/LogoLoader';
 
 export default function page() {
     return (
-        <Suspense fallback={<Loading size="md" />}>
+        <Suspense fallback={<LogoLoader />}>
             <GoogleCallbackHandler />
         </Suspense>
     );

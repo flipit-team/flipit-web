@@ -123,6 +123,8 @@ export interface UserDTO {
 
 // Matches backend ProfileRequest — only phoneNumber and avatar are updatable
 export interface UpdateProfileRequest {
+  firstName?: string;
+  lastName?: string;
   phoneNumber: string;
   avatar?: string;
 }

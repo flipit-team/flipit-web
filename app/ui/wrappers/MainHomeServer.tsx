@@ -182,9 +182,14 @@ const MainHomeServer = ({
                             {/* Infinite scroll loading indicator */}
                             <div ref={loadMoreRef} className='flex justify-center items-center py-8'>
                                 {loading && hasMore && (
-                                    <div className='flex items-center gap-2 text-text-secondary'>
-                                        <div className='animate-spin rounded-full h-6 w-6 border-b-2 border-primary'></div>
-                                        <span className='typo-body-md-regular'>Loading more items...</span>
+                                    <div className='flex items-center gap-1.5'>
+                                        {[0, 150, 300, 450, 600].map((delay) => (
+                                            <div
+                                                key={delay}
+                                                className='w-1.5 h-1.5 bg-primary rounded-full animate-bounce-dot'
+                                                style={{animationDelay: `${delay}ms`}}
+                                            />
+                                        ))}
                                     </div>
                                 )}
                                 {!hasMore && items.length > 0 && (

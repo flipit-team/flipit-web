@@ -4,7 +4,7 @@ import React, {useEffect, useState} from 'react';
 import Form from '~/ui/post-an-item/Form';
 import {ItemsService} from '~/services/items.service';
 import {ItemDTO} from '~/types/api';
-import Loading from '~/ui/common/loading/Loading';
+import LogoLoader from '~/ui/common/logo-loader/LogoLoader';
 import ErrorDisplay from '~/ui/common/error-display/ErrorDisplay';
 import {useParams} from 'next/navigation';
 import {useToast} from '~/contexts/ToastContext';
@@ -54,9 +54,7 @@ const EditItemPage = () => {
         return (
             <div className='w-full h-full'>
                 <div className='flex flex-col items-center mt-[35px] xs:mt-0 py-6 mx-auto h-max w-[648px] xs:w-full lg:shadow-lg px-[30px]'>
-                    <div className='flex items-center justify-center h-64'>
-                        <Loading size='lg' text='Loading item details...' />
-                    </div>
+                    <LogoLoader inline />
                 </div>
             </div>
         );

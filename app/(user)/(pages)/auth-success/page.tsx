@@ -1,10 +1,10 @@
 import React, {Suspense} from 'react';
 import AuthSuccessPage from '~/ui/wrappers/AuthSuccess';
-import Loading from '~/ui/common/loading/Loading';
+import LogoLoader from '~/ui/common/logo-loader/LogoLoader';
 
 const page = () => {
     return (
-        <Suspense fallback={<Loading size="md" />}>
+        <Suspense fallback={<LogoLoader />}>
             <AuthSuccessPage />
         </Suspense>
     );

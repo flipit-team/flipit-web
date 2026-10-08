@@ -8,7 +8,6 @@ import Select from '../common/select';
 import AuctionDurationSelector from '../common/auction-duration-selector/AuctionDurationSelector';
 import AuctionStartSelector from '../common/auction-start-selector/AuctionStartSelector';
 import StateLGASelector from '../common/state-lga-selector/StateLGASelector';
-import Loading from '../common/loading/Loading';
 import {useRouter} from 'next/navigation';
 import {useAppContext} from '~/contexts/AppContext';
 import {useCategories} from '~/hooks/useItems';
@@ -627,7 +626,7 @@ const Form: React.FC<FormProps> = ({formType, existingItem, isEditing = false}) 
             />
 
             <div className='flex gap-4'>
-                <Suspense fallback={<Loading size='sm' />}>
+                <Suspense fallback={null}>
                     <RegularButton
                         isLight
                         text='Cancel'

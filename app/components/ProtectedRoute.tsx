@@ -3,7 +3,7 @@
 import { ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import useAuth from '~/hooks/useAuth';
-import Loader from '~/ui/common/loader/Loader';
+import LogoLoader from '~/ui/common/logo-loader/LogoLoader';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -29,11 +29,7 @@ export function ProtectedRoute({
   }, [isAuthenticated, loading, requireAuth, redirectTo, router]);
 
   if (loading) {
-    return fallback || (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader color="purple" />
-      </div>
-    );
+    return fallback || <LogoLoader />;
   }
 
   if (error) {

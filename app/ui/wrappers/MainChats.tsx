@@ -16,6 +16,7 @@ import {useRouter, useSearchParams} from 'next/navigation';
 import {useChatMessages, useUserMessages} from '~/hooks/useChatMessages';
 import {Loader} from 'lucide-react';
 const LoaderMain = dynamic(() => import('../common/loader/Loader'), {ssr: false});
+import LogoLoader from '../common/logo-loader/LogoLoader';
 
 interface Props {
     chatData: {buyer: Chat[]; seller: Chat[]};
@@ -99,13 +100,29 @@ const MainChats = (props: Props) => {
     const chatId = searchParams.get('chatId');
     const [activeTab, setActiveTab] = useState<'seller' | 'buyer'>('buyer');
     const [mobileTab, setMobileTab] = useState<'all' | 'purchases' | 'sales'>('all');
+    const [mobileSearchQuery, setMobileSearchQuery] = useState('');
     const displayedChat = activeTab === 'buyer' ? chatData.buyer : chatData.seller;
-    const mobileDisplayedChats =
+    const mobileTabChats =
         mobileTab === 'all'
             ? [...chatData.buyer, ...chatData.seller]
             : mobileTab === 'purchases'
               ? chatData.buyer
               : chatData.seller;
+    const mobileDisplayedChats = mobileSearchQuery.trim()
+        ? mobileTabChats.filter((chat) => {
+              const q = mobileSearchQuery.toLowerCase();
+              const currentUserId = Number(user?.userId);
+              const isInitiator = chat.initiatorId === currentUserId;
+              const otherName = (isInitiator ? chat.receiverName : chat.initiatorName) || '';
+              const title = chat.title || '';
+              const lastMsg = lastMessages[chat.chatId] || '';
+              return (
+                  otherName.toLowerCase().includes(q) ||
+                  title.toLowerCase().includes(q) ||
+                  lastMsg.toLowerCase().includes(q)
+              );
+          })
+        : mobileTabChats;
     const [activeChat, setActiveChat] = useState<Chat | null>(null);
     const markedAsReadRef = useRef<Set<string>>(new Set());
 
@@ -243,11 +260,7 @@ const MainChats = (props: Props) => {
     };
 
     if (userMessagesLoading || isInitialLoading)
-        return (
-            <div className='w-full py-10'>
-                <LoaderMain color='green' />
-            </div>
-        );
+        return <LogoLoader />;
     if (!chatData.seller?.length && !chatData.buyer?.length) {
         return (
             <div className='h-full my-auto'>
@@ -345,6 +358,8 @@ const MainChats = (props: Props) => {
                         <input
                             type='text'
                             placeholder='Search chats'
+                            value={mobileSearchQuery}
+                            onChange={(e) => setMobileSearchQuery(e.target.value)}
                             className='w-full h-[48px] px-4 pr-10 border border-border-DEFAULT rounded-lg font-poppins typo-body-md-regular outline-none focus:border-primary transition-colors bg-white'
                         />
                         <svg
@@ -404,6 +419,9 @@ const MainChats = (props: Props) => {
                     </div>
 
                     {/* Chat list */}
+                    {mobileDisplayedChats?.length === 0 ? (
+                        <NoData text='No chats here yet' />
+                    ) : (
                     <div className='bg-white rounded-xl overflow-hidden'>
                     {mobileDisplayedChats?.map((chat: any, i: number) => {
                         const otherPerson = getOtherPerson(chat);
@@ -445,6 +463,7 @@ const MainChats = (props: Props) => {
                         );
                     })}
                     </div>
+                    )}
                 </div>
                 <div className='shadow-lg xs:shadow-transparent xs:hidden'>
                     {activeChat &&

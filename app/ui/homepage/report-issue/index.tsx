@@ -1,9 +1,9 @@
 import {useSearchParams, useRouter} from 'next/navigation';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Image from 'next/image';
 import { SupportService } from '~/services/support.service';
-import { AbuseReportRequest } from '~/utils/interface';
 import { useAppContext } from '~/contexts/AppContext';
+import { useToast } from '~/contexts/ToastContext';
 
 interface ReportModalContentProps {
     title: string;
@@ -24,41 +24,32 @@ const ReportModalContent: React.FC<ReportModalContentProps> = ({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const searchParams = useSearchParams();
     const query = searchParams.get('q');
-    const router = useRouter();
-    const { setModalMessage } = useAppContext();
+    const { showSuccess, showError } = useToast();
+
+    // Reset form state whenever the popup closes
+    useEffect(() => {
+        if (query !== 'report-issue') {
+            setReason('');
+            setDescription('');
+            setIsDropdownOpen(false);
+        }
+    }, [query]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
 
         try {
-            if (onSubmit) {
-                // Use custom submit handler if provided
-                onSubmit(reason, description);
+            const result = await SupportService.reportAbuse({ reason, description });
+
+            if (result.data && !result.error) {
+                showSuccess('Your report has been submitted. We will review it shortly.');
+                onClose();
             } else {
-                // Use new API service
-                const reportData: AbuseReportRequest = {
-                    reason,
-                    description,
-                };
-
-                const result = await SupportService.reportAbuse(reportData);
-
-                if (result.data && !result.error) {
-                    setModalMessage('Your report has been submitted successfully! We will review it and take appropriate action.');
-                    onClose();
-                    router.push('?modal=success');
-                } else {
-                    setModalMessage('Failed to submit report. Please try again.');
-                    onClose();
-                    router.push('?modal=error');
-                }
+                showError(result.error?.message || 'Failed to submit report. Please try again.');
             }
         } catch (error) {
-            console.error('Error submitting report:', error);
-            setModalMessage('Failed to submit report. Please try again.');
-            onClose();
-            router.push('?modal=error');
+            showError('An error occurred while submitting your report. Please try again.');
         } finally {
             setIsSubmitting(false);
         }

@@ -387,7 +387,7 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
                                                 ) : status === 'REJECTED' ? (
                                                     <>
                                                         <button onClick={() => handleDeleteOffer(offer.id)} disabled={isLoading} className='px-8 py-2.5 bg-primary text-white rounded-lg font-poppins typo-body-md-medium hover:bg-primary/90 transition-colors disabled:opacity-50'>{isLoading ? 'Deleting...' : 'Delete Offer'}</button>
-                                                        <button onClick={() => { setIsNavigating(true); router.push(`/items/${offer.item?.id}`); }} className='px-8 py-2.5 border border-primary text-primary rounded-lg font-poppins typo-body-md-medium hover:bg-primary/5 transition-colors'>Resubmit Offer</button>
+                                                        <button onClick={() => { setIsNavigating(true); router.push(`/${offer.item?.id}`); }} className='px-8 py-2.5 border border-primary text-primary rounded-lg font-poppins typo-body-md-medium hover:bg-primary/5 transition-colors'>Resubmit Offer</button>
                                                     </>
                                                 ) : null}
                                             </div>
@@ -461,7 +461,7 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
                                             ) : status === 'REJECTED' ? (
                                                 <>
                                                     <button onClick={() => handleDeleteOffer(offer.id)} disabled={isLoading} className='flex-1 py-2.5 bg-primary text-white rounded-lg font-poppins typo-body-xs-medium disabled:opacity-50'>{isLoading ? 'Deleting...' : 'Delete Offer'}</button>
-                                                    <button onClick={() => { setIsNavigating(true); router.push(`/items/${offer.item?.id}`); }} className='flex-1 py-2.5 border border-primary text-primary rounded-lg font-poppins typo-body-xs-medium'>Resubmit Offer</button>
+                                                    <button onClick={() => { setIsNavigating(true); router.push(`/${offer.item?.id}`); }} className='flex-1 py-2.5 border border-primary text-primary rounded-lg font-poppins typo-body-xs-medium'>Resubmit Offer</button>
                                                 </>
                                             ) : null}
                                         </div>

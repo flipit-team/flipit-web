@@ -105,9 +105,9 @@ const GridSwiper = (props: Props) => {
                             item={item}
                             forEdit={props.forEdit}
                             forLiveAuction={props.forLiveAuction}
-                            className='h-full w-full'
-                            imageClassName='h-[200px] w-full xs:h-[140px] cursor-pointer object-cover rounded-t-lg'
-                            imageContainerClassName='h-[200px] xs:h-[140px] rounded-lg overflow-hidden'
+                            className='h-full w-full xs:rounded-2xl xs:overflow-hidden xs:bg-white'
+                            imageClassName='h-[200px] w-full xs:h-[140px] cursor-pointer object-cover rounded-t-lg xs:rounded-none'
+                            imageContainerClassName='h-[200px] xs:h-[140px] rounded-lg xs:rounded-none overflow-hidden xs:overflow-visible'
                             contentClassName={props.forLiveAuction ? 'p-3 xs:py-2 xs:px-0 h-[100px] xs:h-auto xs:flex xs:flex-col xs:gap-0.5 xs:overflow-hidden' : 'p-3 xs:py-2 xs:px-0 h-[80px] xs:h-[80px] xs:flex xs:flex-col xs:justify-between xs:overflow-hidden'}
                             showSaveButton={true}
                             showPromotedBadge={false}

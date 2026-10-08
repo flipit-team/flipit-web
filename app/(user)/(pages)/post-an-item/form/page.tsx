@@ -2,7 +2,7 @@ import {redirect} from 'next/navigation';
 import {Suspense} from 'react';
 import GoBack from '~/ui/common/go-back';
 import Form from '~/ui/post-an-item/Form';
-import Loading from '~/ui/common/loading/Loading';
+import LogoLoader from '~/ui/common/logo-loader/LogoLoader';
 import {getSingleItemServerSide} from '~/lib/server-api';
 
 const page = async ({searchParams}: {searchParams: Promise<{type?: string; from?: string}>}) => {
@@ -26,7 +26,7 @@ const page = async ({searchParams}: {searchParams: Promise<{type?: string; from?
                     <GoBack />
                 </div>
                 <div className='flex flex-col items-center mt-[35px] xs:mt-6 py-6 xs:py-4 mx-auto h-max w-[648px] xs:w-full lg:shadow-lg xs:shadow-none px-[30px] xs:px-0'>
-                    <Suspense fallback={<Loading size="md" />}>
+                    <Suspense fallback={<LogoLoader inline />}>
                         <Form formType={formType} existingItem={prefillItem} />
                     </Suspense>
                 </div>

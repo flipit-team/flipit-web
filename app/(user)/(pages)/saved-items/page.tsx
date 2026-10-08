@@ -54,23 +54,23 @@ const SavedItemsPage = () => {
             </div>
 
             {/* Mobile tab pills - hidden on desktop */}
-            <div className='hidden xs:flex gap-3 px-4 pb-3'>
+            <div className='hidden xs:flex items-center gap-3 px-4 pb-3'>
                 <button
                     onClick={() => setActiveTab('listed')}
-                    className={`flex-1 py-2.5 rounded-full typo-body_mr text-center transition-colors ${
+                    className={`px-4 py-1.5 rounded-full font-poppins typo-body-sm-medium border transition-colors ${
                         activeTab === 'listed'
-                            ? 'bg-primary text-white'
-                            : 'bg-gray-100 text-text_two'
+                            ? 'border-primary text-primary bg-white'
+                            : 'border-border-DEFAULT text-text_four bg-white'
                     }`}
                 >
                     Listed Items
                 </button>
                 <button
                     onClick={() => setActiveTab('auction')}
-                    className={`flex-1 py-2.5 rounded-full typo-body_mr text-center transition-colors ${
+                    className={`px-4 py-1.5 rounded-full font-poppins typo-body-sm-medium border transition-colors ${
                         activeTab === 'auction'
-                            ? 'bg-primary text-white'
-                            : 'bg-gray-100 text-text_two'
+                            ? 'border-primary text-primary bg-white'
+                            : 'border-border-DEFAULT text-text_four bg-white'
                     }`}
                 >
                     Auction Items
@@ -79,9 +79,7 @@ const SavedItemsPage = () => {
 
             {/* Listed items tab (always visible on desktop, toggled on mobile) */}
             {activeTab === 'listed' && (
-                <div className='xs:[&>div]:pr-0 xs:[&>div]:px-4 xs:[&>div>div:first-child]:hidden'>
-                    <SavedItemsGrid />
-                </div>
+                <SavedItemsGrid />
             )}
 
             {/* Auction items tab (mobile only) */}

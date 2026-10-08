@@ -160,7 +160,7 @@ const SellerShippingView = ({transaction, onItemDeposited}: {transaction: Transa
                                     {transaction.item?.title || transaction.description || 'Item'}
                                 </p>
                                 <span className='inline-block mt-1.5 bg-surface-success/40 text-success-dark font-poppins text-[11px] font-medium px-2.5 py-0.5 rounded-full'>
-                                    {txType === 'SWAP' ? 'Swap only' : txType === 'SWAP_WITH_CASH' ? 'Swap + Cash' : 'Cash only'}
+                                    {transaction.type === 'SWAP' ? 'Swap only' : transaction.type === 'SWAP_WITH_CASH' ? 'Swap + Cash' : 'Cash only'}
                                 </span>
                             </div>
                         </div>

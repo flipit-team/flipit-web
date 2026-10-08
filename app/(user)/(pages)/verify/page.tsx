@@ -1,12 +1,12 @@
 import {redirect} from 'next/navigation';
 import {Suspense} from 'react';
 import Verify from '~/ui/wrappers/Verify';
-import Loading from '~/ui/common/loading/Loading';
+import LogoLoader from '~/ui/common/logo-loader/LogoLoader';
 
 export default function page() {
     try {
         return (
-            <Suspense fallback={<Loading size="md" />}>
+            <Suspense fallback={<LogoLoader />}>
                 <Verify />
             </Suspense>
         );

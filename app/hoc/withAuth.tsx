@@ -3,7 +3,7 @@
 import { ComponentType, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import useAuth from '~/hooks/useAuth';
-import Loader from '~/ui/common/loader/Loader';
+import LogoLoader from '~/ui/common/logo-loader/LogoLoader';
 
 interface WithAuthOptions {
   redirectTo?: string;
@@ -35,11 +35,7 @@ export function withAuth<P extends object>(
       if (FallbackComponent) {
         return <FallbackComponent />;
       }
-      return (
-        <div className="flex items-center justify-center min-h-screen">
-          <Loader color="purple" />
-        </div>
-      );
+      return <LogoLoader />;
     }
 
     if (error) {

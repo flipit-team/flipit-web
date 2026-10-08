@@ -2,12 +2,12 @@ import {redirect} from 'next/navigation';
 import React, {Suspense} from 'react';
 import Profile from '~/ui/wrappers/Profile';
 import MobileProfileMenu from './MobileProfileMenu';
-import Loading from '~/ui/common/loading/Loading';
+import LogoLoader from '~/ui/common/logo-loader/LogoLoader';
 
 const page = () => {
     try {
         return (
-            <Suspense fallback={<Loading size="md" />}>
+            <Suspense fallback={<LogoLoader />}>
                 {/* Desktop: existing form-based profile */}
                 <div className='xs:hidden'>
                     <Profile />

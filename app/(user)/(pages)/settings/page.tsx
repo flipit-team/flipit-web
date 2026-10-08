@@ -4,7 +4,7 @@ import Sidebar from '~/ui/common/layout/sidebar';
 import SettingsSidebar from './components/SettingsSidebar';
 import SettingsContent from './components/SettingsContent';
 import SettingsMobileHeader from './components/SettingsMobileHeader';
-import Loading from '~/ui/common/loading/Loading';
+import LogoLoader from '~/ui/common/logo-loader/LogoLoader';
 
 
 
@@ -32,13 +32,13 @@ export default async function SettingsPage() {
                     <div className='flex flex-col md:flex-row md:gap-6 w-full'>
                         {/* Settings sidebar tabs - hidden on mobile */}
                         <div className='xs:hidden'>
-                            <Suspense fallback={<Loading size="md" />}>
+                            <Suspense fallback={<LogoLoader inline />}>
                                 <SettingsSidebar />
                             </Suspense>
                         </div>
 
                         <div className='flex-1 w-full'>
-                            <Suspense fallback={<Loading size="md" />}>
+                            <Suspense fallback={<LogoLoader inline />}>
                                 <SettingsContent />
                             </Suspense>
                         </div>

@@ -4,6 +4,7 @@ import React from 'react';
 import NoData from '../no-data/NoData';
 import ItemCard from '../item-card/ItemCard';
 import { useLikedItems } from '~/hooks/useLikes';
+import LogoLoader from '../logo-loader/LogoLoader';
 
 // Remove the SavedItemCard component entirely since we'll use regular ItemCard
 
@@ -12,21 +13,16 @@ const SavedItemsGrid: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="grid-sizes xs:w-full pr-[60px]">
+      <div className="grid-sizes xs:w-full pr-[60px] xs:pr-4 xs:pl-4">
         <div className="py-9 xs:pt-6 xs:py-0 xs:mb-4 typo-heading-md-semibold">Saved Items</div>
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="typo-body-md-regular text-text-secondary">Loading saved items...</p>
-          </div>
-        </div>
+        <LogoLoader inline />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="grid-sizes xs:w-full pr-[60px]">
+      <div className="grid-sizes xs:w-full pr-[60px] xs:pr-4 xs:pl-4">
         <div className="py-9 xs:pt-6 xs:py-0 xs:mb-4 typo-heading-md-semibold">Saved Items</div>
         <div className="text-center py-12">
           <p className="typo-body-md-regular text-error mb-4">Failed to load saved items</p>
@@ -42,7 +38,7 @@ const SavedItemsGrid: React.FC = () => {
   }
 
   return (
-    <div className="grid-sizes xs:w-full pr-[60px] no-scrollbar">
+    <div className="grid-sizes xs:w-full pr-[60px] xs:pr-4 xs:pl-4 no-scrollbar">
       <div className="py-9 xs:pt-6 xs:py-0 xs:mb-4 typo-heading-md-semibold">Saved Items</div>
       {items.length > 0 ? (
         <div className="grid grid-cols-3 xs:grid-cols-2 gap-6 xs:gap-4">
