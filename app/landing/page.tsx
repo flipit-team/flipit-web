@@ -1,8 +1,10 @@
 'use client';
 
+import {useState} from 'react';
 import Image from 'next/image';
 import {ArrowRightLeft, DollarSign, Gavel, CheckCircle} from 'lucide-react';
 import CountdownTimer from '~/ui/landing/CountdownTimer';
+import WaitlistService from '~/services/waitlist.service';
 
 const TARGET_DATE = new Date('2026-06-27T00:00:00');
 
@@ -53,8 +55,30 @@ const STEPS = [
 ];
 
 export default function LandingPage() {
+    const [waitlistEmail, setWaitlistEmail] = useState('');
+    const [waitlistStatus, setWaitlistStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+    const [waitlistMessage, setWaitlistMessage] = useState('');
+
     const scrollToEmail = () => {
         document.getElementById('email-section')?.scrollIntoView({behavior: 'smooth'});
+    };
+
+    const handleJoinWaitlist = async () => {
+        if (!waitlistEmail.trim() || !waitlistEmail.includes('@')) {
+            setWaitlistStatus('error');
+            setWaitlistMessage('Please enter a valid email address');
+            return;
+        }
+        setWaitlistStatus('loading');
+        const {error} = await WaitlistService.joinWaitlist(waitlistEmail.trim());
+        if (error) {
+            setWaitlistStatus('error');
+            setWaitlistMessage('Something went wrong. Please try again.');
+        } else {
+            setWaitlistStatus('success');
+            setWaitlistMessage("You're on the list! We'll notify you when we launch.");
+            setWaitlistEmail('');
+        }
     };
 
     return (
@@ -123,12 +147,23 @@ export default function LandingPage() {
                         <input
                             type='email'
                             placeholder='Enter your email  address'
+                            value={waitlistEmail}
+                            onChange={(e) => { setWaitlistEmail(e.target.value); if (waitlistStatus !== 'idle') setWaitlistStatus('idle'); }}
                             className='w-[520px] px-4 h-[86px] rounded-xl border border-border-muted-alt bg-transparent font-poppins text-xl text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all'
                         />
-                        <button className='bg-primary text-white font-poppins text-xl font-semibold px-6 h-[86px] rounded-xl hover:bg-primary/90 transition-colors whitespace-nowrap'>
-                            Get Early Access
+                        <button
+                            onClick={handleJoinWaitlist}
+                            disabled={waitlistStatus === 'loading' || waitlistStatus === 'success'}
+                            className='bg-primary text-white font-poppins text-xl font-semibold px-6 h-[86px] rounded-xl hover:bg-primary/90 transition-colors whitespace-nowrap disabled:opacity-50'
+                        >
+                            {waitlistStatus === 'loading' ? 'Joining...' : waitlistStatus === 'success' ? 'Joined!' : 'Get Early Access'}
                         </button>
                     </div>
+                    {waitlistMessage && (
+                        <p className={`font-poppins text-sm mt-3 ${waitlistStatus === 'error' ? 'text-red-500' : 'text-green-600'}`}>
+                            {waitlistMessage}
+                        </p>
+                    )}
                 </div>
             </section>
 

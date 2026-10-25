@@ -1,5 +1,6 @@
 import { apiClient, handleApiCall } from '~/lib/api-client';
 import { OfferDTO, CreateOfferRequest } from '~/types/api';
+import { TransactionDTO } from '~/types/transaction';
 
 export class OffersService {
   // Create offer
@@ -44,10 +45,10 @@ export class OffersService {
     );
   }
 
-  // Accept offer
+  // Accept offer — backend auto-creates transaction and returns TransactionDTO
   static async acceptOffer(offerId: number) {
     return handleApiCall(() =>
-      apiClient.post<OfferDTO>(`/v1/offer/${offerId}/accept`, {}, { requireAuth: true })
+      apiClient.post<TransactionDTO>(`/v1/offer/${offerId}/accept`, {}, { requireAuth: true })
     );
   }
 

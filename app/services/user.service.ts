@@ -51,8 +51,8 @@ export class UserService {
     );
   }
 
-  // Verify user profile - NEW
-  static async verifyProfile(userId: number, verificationData: { idType?: string; idNumber?: string; idImageUrl?: string }) {
+  // Verify user profile (ID + BVN) — matches backend ProfileVerificationRequest
+  static async verifyProfile(userId: number, verificationData: { idFilePath: string; idType: string; bvn: string }) {
     return handleApiCall(() =>
       apiClient.post<{ message: string }>(`/user/${userId}/verifyProfile`, verificationData, { requireAuth: true })
     );

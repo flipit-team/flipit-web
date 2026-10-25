@@ -117,28 +117,27 @@ export default function AdminListings() {
 
     const paginatedData = listingsData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
+    const handleUpdateStatus = async (listingId: string, newStatus: string) => {
+        const result = await AdminService.updateListingStatus(listingId, newStatus);
+        if (result.error) {
+            setError(`Failed to update status: ${result.error.message}`);
+            return;
+        }
+        setListings(prev => prev.map(l => l.id === listingId ? {...l, status: newStatus} : l));
+    };
+
     const actions = [
         {
-            label: 'Update Status',
+            label: 'Activate',
             onClick: (row: {listingId: string; title: string; status: string}) => {
-                // TODO: Implement status update modal
-                const newStatus = prompt(
-                    `Update status for "${row.title}"?\nCurrent status: ${row.status}\n\nEnter new status (active/inactive/pending):`
-                );
-                if (newStatus) {
-                    alert(`Status updated to: ${newStatus}`);
-                    // Future: Call API to update status
-                }
+                handleUpdateStatus(row.listingId, row.status === 'active' ? 'inactive' : 'active');
             },
             className: 'text-blue-600'
         },
         {
-            label: 'Blacklist',
+            label: 'Suspend',
             onClick: (row: {listingId: string; title: string}) => {
-                if (confirm(`Are you sure you want to blacklist "${row.title}"?`)) {
-                    alert(`Listing ${row.listingId} has been blacklisted`);
-                    // Future: Call API to blacklist listing
-                }
+                handleUpdateStatus(row.listingId, 'suspended');
             },
             className: 'text-red-600'
         }

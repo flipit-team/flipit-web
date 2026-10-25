@@ -4,13 +4,41 @@ import {API_BASE_PATH} from '~/lib/config';
 export async function POST(req: Request) {
     const body = await req.json();
 
-    const apiRes = await fetch(`${API_BASE_PATH}/auth/login`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(body)
-    });
-    const apiData = await apiRes.json();
+    let apiRes: Response;
+    try {
+        apiRes = await fetch(`${API_BASE_PATH}/auth/login`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(body)
+        });
+    } catch (networkErr) {
+        console.error('Login network error:', networkErr);
+        return NextResponse.json(
+            {apierror: {message: 'Unable to reach the server. Please try again later.'}},
+            {status: 503}
+        );
+    }
 
+    // Guard against non-JSON responses (e.g. HTML error pages from proxy/gateway)
+    const contentType = apiRes.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+        console.error(`Login: backend returned non-JSON (${apiRes.status}): content-type=${contentType}`);
+        return NextResponse.json(
+            {apierror: {message: 'Server returned an unexpected response. Please try again later.'}},
+            {status: 502}
+        );
+    }
+
+    let apiData: any;
+    try {
+        apiData = await apiRes.json();
+    } catch {
+        console.error('Login: failed to parse JSON response');
+        return NextResponse.json(
+            {apierror: {message: 'Server returned an invalid response. Please try again later.'}},
+            {status: 502}
+        );
+    }
 
     if (!apiRes.ok) {
         return NextResponse.json(
@@ -49,7 +77,7 @@ export async function POST(req: Request) {
         sameSite: 'lax'
     });
     
-    res.cookies.set('userName', user.firstName || user.username || '', {
+    res.cookies.set('userName', user.firstName || '', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         path: '/',

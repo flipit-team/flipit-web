@@ -63,7 +63,25 @@ export async function GET(req: NextRequest) {
                 cache: 'no-store'
             });
 
-            const retryData = await retryRes.json();
+            const _ct = retryRes.headers.get('content-type') || '';
+
+
+            if (!_ct.includes('application/json')) {
+
+
+                console.error(`Backend non-JSON (${retryRes.status}): ${retryRes.url}`);
+
+
+                return NextResponse.json({ apierror: { message: 'Server returned an unexpected response.' } }, { status: 502 });
+
+
+            }
+
+
+            let retryData: any;
+
+
+            try { retryData = await retryRes.json(); } catch { return NextResponse.json({ apierror: { message: 'Invalid server response.' } }, { status: 502 }); }
 
             if (!retryRes.ok) {
                 return NextResponse.json(
@@ -80,7 +98,25 @@ export async function GET(req: NextRequest) {
             return NextResponse.json(retryData);
         }
 
-        const apiData = await apiRes.json();
+        const _ct = apiRes.headers.get('content-type') || '';
+
+
+        if (!_ct.includes('application/json')) {
+
+
+            console.error(`Backend non-JSON (${apiRes.status}): ${apiRes.url}`);
+
+
+            return NextResponse.json({ apierror: { message: 'Server returned an unexpected response.' } }, { status: 502 });
+
+
+        }
+
+
+        let apiData: any;
+
+
+        try { apiData = await apiRes.json(); } catch { return NextResponse.json({ apierror: { message: 'Invalid server response.' } }, { status: 502 }); }
 
         if (!apiRes.ok) {
             return NextResponse.json(
@@ -130,7 +166,31 @@ export async function POST(req: NextRequest) {
         });
 
 
-        const apiData = await apiRes.json();
+        const _ct = apiRes.headers.get('content-type') || '';
+
+
+
+        if (!_ct.includes('application/json')) {
+
+
+
+            console.error(`Backend non-JSON (${apiRes.status}): ${apiRes.url}`);
+
+
+
+            return NextResponse.json({ apierror: { message: 'Server returned an unexpected response.' } }, { status: 502 });
+
+
+
+        }
+
+
+
+        let apiData: any;
+
+
+
+        try { apiData = await apiRes.json(); } catch { return NextResponse.json({ apierror: { message: 'Invalid server response.' } }, { status: 502 }); }
 
         if (!apiRes.ok) {
             return NextResponse.json(

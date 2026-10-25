@@ -14,13 +14,16 @@ export function setupFetchInterceptor() {
     try {
       const response = await originalFetch(...args);
 
-      // Only redirect on 401 Unauthorized (invalid/expired token)
-      // 403 Forbidden is a permissions issue, not an auth issue
+      // Only redirect on 401 from auth-related endpoints (expired/invalid token).
+      // Non-auth endpoints (payments, shipping, etc.) may return 401 for business
+      // reasons (e.g. "account not verified") — those should NOT trigger logout.
       if (response.status === 401) {
-        if (!isRedirecting && !window.location.pathname.includes('/login')) {
-          isRedirecting = true;
+        const url = typeof args[0] === 'string' ? args[0] : (args[0] as Request).url || '';
+        const isAuthEndpoint = url.includes('/api/auth/') || url.includes('/api/profile/') || url.includes('/api/user/');
+        const isApiRoute = url.startsWith('/api/');
 
-          // Use originalFetch to avoid going through this interceptor again
+        if (isAuthEndpoint && !isRedirecting && !window.location.pathname.includes('/login')) {
+          isRedirecting = true;
           originalFetch('/api/auth/logout', { method: 'POST', credentials: 'include' }).finally(() => {
             isRedirecting = false;
             window.location.href = '/login';

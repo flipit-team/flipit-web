@@ -26,7 +26,7 @@ export default async function UserLayout({
             ? {
                   token: 'managed-by-cookies',
                   userId: authStatus.user.id?.toString(),
-                  userName: authStatus.user.firstName || authStatus.user.username || authStatus.user.email || ''
+                  userName: authStatus.user.firstName || authStatus.user.email || ''
               }
             : null;
 

@@ -65,7 +65,7 @@ const TransactionItems = ({transaction, userRole}: Props) => {
                             </p>
                             <div className='flex items-center gap-3'>
                                 <Image
-                                    src={transaction.seller.profileImageUrl || '/images/placeholders/placeholder-avatar.svg'}
+                                    src={transaction.seller.avatar || '/images/placeholders/placeholder-avatar.svg'}
                                     alt={transaction.seller.firstName}
                                     width={40}
                                     height={40}
@@ -152,7 +152,7 @@ const TransactionItems = ({transaction, userRole}: Props) => {
                                     </p>
                                     <div className='flex items-center gap-3'>
                                         <Image
-                                            src={transaction.buyer.profileImageUrl || '/images/placeholders/placeholder-avatar.svg'}
+                                            src={transaction.buyer.avatar || '/images/placeholders/placeholder-avatar.svg'}
                                             alt={transaction.buyer.firstName}
                                             width={40}
                                             height={40}
@@ -190,7 +190,7 @@ const TransactionItems = ({transaction, userRole}: Props) => {
                             <div className='border border-border_gray rounded-lg p-4'>
                                 <div className='flex items-center gap-3 mb-4'>
                                     <Image
-                                        src={transaction.buyer.profileImageUrl || '/images/placeholders/placeholder-avatar.svg'}
+                                        src={transaction.buyer.avatar || '/images/placeholders/placeholder-avatar.svg'}
                                         alt={transaction.buyer.firstName}
                                         width={48}
                                         height={48}

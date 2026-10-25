@@ -34,7 +34,7 @@ const ItemCard: React.FC<ItemCardProps> = memo(
         item,
         forEdit = false,
         forLiveAuction = false,
-        className = 'w-full rounded-3xl xs:rounded-2xl overflow-hidden bg-white xs:shadow-sm',
+        className = 'w-full rounded-3xl xs:rounded-2xl overflow-hidden bg-white xs:bg-transparent xs:shadow-none',
         imageClassName = 'h-[302px] w-full xs:h-[180px] cursor-pointer object-cover',
         imageContainerClassName = 'h-[302px] xs:h-[180px]',
         contentClassName = 'p-4 xs:p-3 xs:flex xs:flex-col xs:justify-between',

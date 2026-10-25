@@ -1,5 +1,5 @@
 import {apiClient, handleApiCall} from '~/lib/api-client';
-import {DashboardSummaryDTO, ListingsSummaryDTO, ListingDTO, CustomersSummaryDTO, BidsSummaryDTO} from '~/types/api';
+import {DashboardSummaryDTO, ListingsSummaryDTO, ListingDTO, CustomersSummaryDTO, BidsSummaryDTO, ChatDTO, MessageDTO} from '~/types/api';
 
 export class AdminService {
     // Dashboard/Overview APIs
@@ -44,6 +44,45 @@ export class AdminService {
 
     static async getAllBids() {
         return handleApiCall(() => apiClient.get<any[]>('/v1/admin/bids/all_bids', {requireAuth: true}));
+    }
+
+    // Listing status update
+    static async updateListingStatus(listingId: string, status: string) {
+        return handleApiCall(() =>
+            apiClient.put<any>(`/v1/admin/listings/${listingId}/status`, {status}, {requireAuth: true})
+        );
+    }
+
+    // Customer blacklist / whitelist
+    static async blacklistCustomer(userId: string) {
+        return handleApiCall(() =>
+            apiClient.put<void>(`/v1/admin/customers/${userId}/blacklist`, {}, {requireAuth: true})
+        );
+    }
+
+    // Admin chats
+    static async getChats() {
+        return handleApiCall(() =>
+            apiClient.get<ChatDTO[]>('/v1/admin/chats', {requireAuth: true})
+        );
+    }
+
+    static async getChatMessages(chatId: string) {
+        return handleApiCall(() =>
+            apiClient.get<MessageDTO[]>(`/v1/admin/chats/${chatId}/messages`, {requireAuth: true})
+        );
+    }
+
+    static async sendAdminMessage(chatId: string, message: string) {
+        return handleApiCall(() =>
+            apiClient.post<MessageDTO>(`/v1/admin/chats/${chatId}/message`, {message}, {requireAuth: true})
+        );
+    }
+
+    static async whitelistCustomer(userId: string) {
+        return handleApiCall(() =>
+            apiClient.put<void>(`/v1/admin/customers/${userId}/whitelist`, {}, {requireAuth: true})
+        );
     }
 }
 

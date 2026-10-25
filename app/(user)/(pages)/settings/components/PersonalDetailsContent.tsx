@@ -45,7 +45,7 @@ const PersonalDetailsContent = () => {
                     setFirstName(user.firstName || '');
                     setLastName(user.lastName || '');
                     setEmail(user.email || '');
-                    setPhoneNumber(user.phoneNumber || user.phone || '');
+                    setPhoneNumber(user.phoneNumber || '');
                     setProfileImage(user.avatar || null);
                 } else {
                     showError(result.error || 'Failed to load profile data');
@@ -56,7 +56,7 @@ const PersonalDetailsContent = () => {
                     setFirstName(user.firstName || '');
                     setLastName(user.lastName || '');
                     setEmail(user.email || '');
-                    setPhoneNumber(user.phoneNumber || user.phone || '');
+                    setPhoneNumber(user.phoneNumber || '');
                     setProfileImage(user.avatar || null);
                 } else {
                     showError('An error occurred while loading your profile');

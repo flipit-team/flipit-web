@@ -91,15 +91,16 @@ export interface ResetPasswordRequest {
   confirmPassword: string;
 }
 
+// Matches backend ChangePasswordRequest
 export interface ChangePasswordRequest {
+  currentPassword: string;
   newPassword: string;
   confirmPassword: string;
 }
 
-// User Types
+// User Types — matches backend UserDTO
 export interface UserDTO {
   id: number;
-  username?: string;
   email: string;
   firstName: string;
   middleName?: string;
@@ -110,15 +111,10 @@ export interface UserDTO {
   avgRating?: number;
   reviewCount?: number;
   status?: string;
-  mostRecentReview?: ReviewDTO;  // Updated to use ReviewDTO
-  phoneNumberVerified: boolean;  // NEW: Enhanced seller verification (for verified profile)
-  idVerified?: boolean;          // NEW: ID document verification (for verified ID badge)
-  dateVerified: string;         // NEW: Verification date
+  mostRecentReview?: ReviewDTO;
+  phoneNumberVerified: boolean;
+  dateVerified: string;
   dateCreated: string;
-  bio?: string;
-  // Legacy compatibility fields
-  phone?: string;
-  profileImageUrl?: string;
 }
 
 // Matches backend ProfileRequest — only phoneNumber and avatar are updatable
@@ -175,7 +171,7 @@ export interface CreateItemRequest {
   description: string;
   imageKeys: string[];
   acceptCash: boolean;
-  acceptSwap?: boolean;
+  acceptSwap: boolean;
   cashAmount: number;
   stateCode: string;       // CHANGED: from location
   lgaCode: string;         // NEW: LGA code
@@ -190,7 +186,7 @@ export interface UpdateItemRequest {
   description: string;
   imageKeys: string[];
   acceptCash: boolean;
-  acceptSwap?: boolean;
+  acceptSwap: boolean;
   cashAmount: number;
   stateCode: string;       // CHANGED: from location
   lgaCode: string;         // NEW: LGA code
@@ -201,8 +197,8 @@ export interface UpdateItemRequest {
   published: boolean;
 }
 
+// Matches backend CategoryDTO — no id field, name is the identifier
 export interface CategoryDTO {
-  id: number;
   name: string;
   description: string;
   thumbnail?: string;
@@ -259,6 +255,7 @@ export interface AuctionBiddingDTO {
   status?: BiddingStatus;
 }
 
+// Matches backend AuctionDTO
 export interface AuctionDTO {
   id: number;
   startDate: string;
@@ -269,10 +266,8 @@ export interface AuctionDTO {
   currentBid: number;
   status: string;
   item: ItemDTO;
-  winner?: UserDTO;
-  winnerId?: number;       // NEW: winner user ID
-  transactionId?: number; // NEW: linked transaction after auction ends
-  dateCreated: string;
+  winnerId?: number;
+  transactionId?: number;
   biddingsCount?: number;
   biddings?: AuctionBiddingDTO[];
 }
@@ -605,16 +600,24 @@ export interface PaymentInitiateRequest {
   courierService?: string; // Only needed if payment includes delivery cost calculation
 }
 
+// Matches backend PaymentDTO<T> — generic wrapper around gateway-specific data
 export interface PaymentDTO {
-  id: number;
-  title?: string;
-  message?: string;
   status?: number;
-  authorizationUrl?: string;
-  reference?: string;
-  transactionId?: number;
-  amount?: number;
-  dateCreated?: string;
+  message?: string;
+  gateway?: string;
+  bank?: {
+    name?: string;
+    code?: string;
+    accountNumber?: string;
+    accountName?: string;
+  };
+  data?: {
+    authorizationUrl?: string;
+    reference?: string;
+    transactionId?: number;
+    amount?: number;
+    [key: string]: any;
+  };
 }
 
 export interface PaymentVerifyRequest {
@@ -643,6 +646,16 @@ export interface ShipmentCreateRequest {
   itemQuantity?: number;
 }
 
+// Matches backend ShipmentDTO<T>
+export interface AddressDTO {
+  id?: number;
+  line1?: string;
+  line2?: string;
+  zipCode?: string;
+  city?: string;
+  fullAddress?: string;
+}
+
 export interface ShipmentDTO {
   id: number;
   title?: string;
@@ -651,8 +664,16 @@ export interface ShipmentDTO {
   shipmentStatus?: ShipmentStatus;
   trackingNumber?: string;
   trackingUrl?: string;
-  waybillNumber?: string;
+  pickupAddress?: AddressDTO;
+  dropOffAddress?: AddressDTO;
   estimatedDelivery?: string;
   dateCreated?: string;
   dateUpdated?: string;
+  waybillNumber?: string;
+  transaction?: import('./transaction').TransactionDTO;
+  buyer?: UserDTO;
+  courierDTO?: any;
+  courierService?: string;
+  shippingFee?: number;
+  platformFee?: number;
 }

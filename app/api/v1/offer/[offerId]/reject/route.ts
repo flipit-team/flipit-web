@@ -20,7 +20,19 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ off
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             cache: 'no-store',
         });
-        const apiData = await apiRes.json();
+        const _ct = apiRes.headers.get('content-type') || '';
+
+        if (!_ct.includes('application/json')) {
+
+            console.error(`Backend non-JSON (${apiRes.status}): ${apiRes.url}`);
+
+            return NextResponse.json({ apierror: { message: 'Server returned an unexpected response.' } }, { status: 502 });
+
+        }
+
+        let apiData: any;
+
+        try { apiData = await apiRes.json(); } catch { return NextResponse.json({ apierror: { message: 'Invalid server response.' } }, { status: 502 }); }
         if (!apiRes.ok) return NextResponse.json({ apierror: apiData.apierror ?? { message: 'Failed to reject offer' } }, { status: apiRes.status });
         return NextResponse.json(apiData);
     } catch {

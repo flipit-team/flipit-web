@@ -13,6 +13,7 @@ export { LikesService } from './likes.service';
 export { PaymentService } from './payment.service';
 export { ShippingService } from './shipping.service';
 export { AdminService } from './admin.service';
+export { DisputesService } from './disputes.service';
 
 // Re-export API client utilities
 export { apiClient, handleApiCall, buildQueryString, ApiClientError } from '~/lib/api-client';

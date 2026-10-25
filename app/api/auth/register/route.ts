@@ -14,13 +14,39 @@ export async function POST(req: Request) {
     };
 
 
-    const response = await fetch(`${API_BASE_PATH}/user/signup`, {
-        method: 'POST',
-        body: JSON.stringify(backendBody),
-        headers: {'Content-Type': 'application/json'}
-    });
+    let response: Response;
+    try {
+        response = await fetch(`${API_BASE_PATH}/user/signup`, {
+            method: 'POST',
+            body: JSON.stringify(backendBody),
+            headers: {'Content-Type': 'application/json'}
+        });
+    } catch (networkErr) {
+        console.error('Register network error:', networkErr);
+        return NextResponse.json(
+            {apierror: {message: 'Unable to reach the server. Please try again later.'}},
+            {status: 503}
+        );
+    }
 
-    const data = await response.json();
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+        console.error(`Register: backend returned non-JSON (${response.status}): content-type=${contentType}`);
+        return NextResponse.json(
+            {apierror: {message: 'Server returned an unexpected response. Please try again later.'}},
+            {status: 502}
+        );
+    }
+
+    let data: any;
+    try {
+        data = await response.json();
+    } catch {
+        return NextResponse.json(
+            {apierror: {message: 'Server returned an invalid response. Please try again later.'}},
+            {status: 502}
+        );
+    }
 
     if (!response.ok) {
         return NextResponse.json(
@@ -57,7 +83,7 @@ export async function POST(req: Request) {
         maxAge: 60 * 60 * 24 * 7 // 1 week
     });
     
-    res.cookies.set('userName', user.firstName || user.username || '', {
+    res.cookies.set('userName', user.firstName || '', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         path: '/',

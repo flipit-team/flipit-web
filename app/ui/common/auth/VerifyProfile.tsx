@@ -7,14 +7,23 @@ import RadioButtons from '../radio-buttons';
 import VerifyToggle from './VerifyToggle';
 import AuthButton from '../buttons/AuthButton';
 import {usePathname, useSearchParams} from 'next/navigation';
+import {useAppContext} from '~/contexts/AppContext';
+import UserService from '~/services/user.service';
+import FilesService from '~/services/files.service';
 
 const VerifyProfile = ({forVerify}: {forVerify: boolean}) => {
+    const {user} = useAppContext();
     const [isVerify, setIsVerify] = useState(forVerify);
     const [image, setImage] = useState<string | null>(null);
     const [imageTwo, setImageTwo] = useState<string | null>(null);
+    const [idFile, setIdFile] = useState<globalThis.File | null>(null);
     const [fileInfo, setFileInfo] = useState<{name: string; size: string} | null>(null);
+    const [bvn, setBvn] = useState('');
     const [code, setCode] = useState<string[]>(Array(6).fill(''));
     const [selected, setSelected] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitError, setSubmitError] = useState('');
+    const [submitSuccess, setSubmitSuccess] = useState(false);
     const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
     const searchParams = useSearchParams();
     const pathname = usePathname();
@@ -23,6 +32,50 @@ const VerifyProfile = ({forVerify}: {forVerify: boolean}) => {
         const params = new URLSearchParams(searchParams.toString());
         params.set('auth', text);
         return `${pathname}?${params.toString()}`;
+    };
+
+    const handleVerifySubmit = async () => {
+        if (!bvn.trim()) { setSubmitError('BVN is required'); return; }
+        if (!selected) { setSubmitError('Please select an ID type'); return; }
+        if (!idFile) { setSubmitError('Please upload your government-issued ID'); return; }
+        const userId = user?.userId ? parseInt(user.userId) : 0;
+        if (!userId) { setSubmitError('Please log in to verify your profile'); return; }
+
+        setIsSubmitting(true);
+        setSubmitError('');
+
+        // Upload the ID document file
+        const uploadResult = await FilesService.uploadFile(idFile);
+        if (uploadResult.error || !uploadResult.data) {
+            setIsSubmitting(false);
+            setSubmitError('Failed to upload ID document. Please try again.');
+            return;
+        }
+
+        const idFilePath = uploadResult.data.key || uploadResult.data.url || '';
+
+        const {error} = await UserService.verifyProfile(userId, {
+            idFilePath,
+            idType: selected,
+            bvn: bvn.trim(),
+        });
+        setIsSubmitting(false);
+        if (error) { setSubmitError('Verification failed. Please try again.'); return; }
+        setSubmitSuccess(true);
+    };
+
+    const handlePhoneVerify = async () => {
+        const otp = code.join('');
+        if (otp.length < 6) { setSubmitError('Please enter the full 6-digit code'); return; }
+        const userId = user?.userId ? parseInt(user.userId) : 0;
+        if (!userId) { setSubmitError('Please log in first'); return; }
+
+        setIsSubmitting(true);
+        setSubmitError('');
+        const {error} = await UserService.verifyPhoneNumber(userId, {code: otp});
+        setIsSubmitting(false);
+        if (error) { setSubmitError('Verification failed. Please check the code and try again.'); return; }
+        setSubmitSuccess(true);
     };
 
     const handleChange = (index: number, value: string) => {
@@ -60,9 +113,10 @@ const VerifyProfile = ({forVerify}: {forVerify: boolean}) => {
                     setImage(reader.result as string);
                 } else {
                     setImageTwo(reader.result as string);
+                    setIdFile(file);
                     setFileInfo({
                         name: file.name,
-                        size: (file.size / 1024 / 1024).toFixed(2) + ' MB' // Convert bytes to MB
+                        size: (file.size / 1024 / 1024).toFixed(2) + ' MB'
                     });
                 }
             };
@@ -110,7 +164,7 @@ const VerifyProfile = ({forVerify}: {forVerify: boolean}) => {
                         </div>
                     </div>
                     <div className='mb-6'>
-                        <InputBox label='BVN' name='bvn' placeholder='1234567890' type='number' />
+                        <InputBox label='BVN' name='bvn' placeholder='1234567890' type='number' value={bvn} setValue={(e) => setBvn(e.target.value)} />
                     </div>
                     <RadioButtons
                         selected={selected}
@@ -179,14 +233,26 @@ const VerifyProfile = ({forVerify}: {forVerify: boolean}) => {
                     </div>
                 </div>
             )}
-            <AuthButton
-                title={isVerify ? 'Continue' : 'Verify your account'}
-                bg
-                link={pushParam(isVerify ? 'verify' : 'code')}
-            />
-            <div className='flex items-center gap-2 mt-6 justify-center typo-body_mr'>
-                <RefreshCcw size={16} /> Resend Code
-            </div>
+            {submitError && (
+                <p className='text-red-500 typo-body_sr text-center mb-3'>{submitError}</p>
+            )}
+            {submitSuccess && (
+                <p className='text-green-600 typo-body_sr text-center mb-3'>
+                    {isVerify ? 'Profile verification submitted successfully!' : 'Phone number verified successfully!'}
+                </p>
+            )}
+            <button
+                onClick={isVerify ? handleVerifySubmit : handlePhoneVerify}
+                disabled={isSubmitting || submitSuccess}
+                className='w-full h-[50px] bg-primary text-white rounded-lg font-poppins typo-body_ls disabled:opacity-50'
+            >
+                {isSubmitting ? 'Submitting...' : submitSuccess ? 'Verified' : isVerify ? 'Continue' : 'Verify your account'}
+            </button>
+            {!isVerify && (
+                <div className='flex items-center gap-2 mt-6 justify-center typo-body_mr cursor-pointer hover:text-primary'>
+                    <RefreshCcw size={16} /> Resend Code
+                </div>
+            )}
         </div>
     );
 };

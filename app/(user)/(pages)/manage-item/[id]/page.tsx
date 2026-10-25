@@ -30,34 +30,23 @@ async function getItemData(itemId: string, token: string) {
 
 async function getItemOffers(itemId: string, token: string) {
     try {
-        // Fetch both bids (for auctions) and offers (for regular items)
-        const [bidsRes, offersRes] = await Promise.all([
-            fetch(`${API_BASE_PATH}/bids/item/${itemId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                cache: 'no-store'
-            }).catch(() => null),
-            fetch(`${API_BASE_PATH}/offer/items/${itemId}/offers`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                cache: 'no-store'
-            }).catch(() => null)
-        ]);
+        const offersRes = await fetch(`${API_BASE_PATH}/offer/items/${itemId}/offers`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            cache: 'no-store'
+        }).catch(() => null);
 
-        const extractArray = (data: any) => {
-            if (Array.isArray(data)) return data;
-            if (data?.content && Array.isArray(data.content)) return data.content;
-            return [];
-        };
+        if (!offersRes || !offersRes.ok) return [];
 
-        const bids = bidsRes && bidsRes.ok ? extractArray(await bidsRes.json().catch(() => [])) : [];
-        const offers = offersRes && offersRes.ok ? extractArray(await offersRes.json().catch(() => [])) : [];
+        const ct = offersRes.headers.get('content-type') || '';
+        if (!ct.includes('application/json')) return [];
 
-        return [...bids, ...offers];
+        const data = await offersRes.json().catch(() => []);
+        if (Array.isArray(data)) return data;
+        if (data?.content && Array.isArray(data.content)) return data.content;
+        return [];
     } catch (error) {
         console.error('Failed to fetch offers:', error);
         return [];

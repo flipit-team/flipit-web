@@ -167,35 +167,18 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
 
     const handleAcceptOffer = async (offerId: number) => {
         setLoadingId(offerId);
-        const {error} = await OffersService.acceptOffer(offerId);
-        if (error) { setLoadingId(null); setErrorMessage('Failed to accept offer. Please try again.'); return; }
-
-        const offer = receivedOffers.find(o => o.id === offerId);
-        if (!offer) { setLoadingId(null); return; }
-
-        const txType = (offer.offeredItem && offer.withCash) ? 'SWAP_WITH_CASH' : offer.offeredItem ? 'SWAP' : 'CASH_ONLY';
-        const {data, error: txError} = await TransactionService.createTransaction({
-            buyerId: offer.sentBy.id,
-            sellerId: offer.item.seller.id,
-            offerId: offer.id,
-            amount: offer.cashAmount || offer.item.cashAmount || 0,
-            tradeType: txType,
-            description: offer.item.title,
-        });
+        // Backend auto-creates transaction and returns TransactionDTO
+        const {data, error} = await OffersService.acceptOffer(offerId);
         setLoadingId(null);
+        if (error || !data) { setErrorMessage('Failed to accept offer. Please try again.'); return; }
 
-        if (txError || !data) {
-            setErrorMessage('Offer accepted but failed to start the transaction. Please try again.');
-            return;
-        }
-
-        // Update UI only after both calls succeed
-        setReceivedOffers(prev => prev.map(o => o.id === offerId ? {...o, status: 'ACCEPTED'} : o));
-        localStorage.setItem(`offer_tx_${offerId}`, String(data.id));
-        localStorage.setItem(`tx_status_${data.id}`, data.status || 'SUCCESS');
-        setTxStatuses(prev => ({...prev, [offerId]: {txId: data.id, status: data.status as TransactionStatus || 'SUCCESS'}}));
+        const txId = data.id;
+        setReceivedOffers(prev => prev.map(o => o.id === offerId ? {...o, status: 'ACCEPTED', transactionId: txId} : o));
+        localStorage.setItem(`offer_tx_${offerId}`, String(txId));
+        localStorage.setItem(`tx_status_${txId}`, data.status || 'PENDING');
+        setTxStatuses(prev => ({...prev, [offerId]: {txId, status: (data.status as TransactionStatus) || 'PENDING'}}));
         setIsNavigating(true);
-        router.push(`/shipping/${data.id}`);
+        router.push(`/transaction/${txId}`);
     };
 
     const handleRejectOffer = async (offerId: number) => {
@@ -240,23 +223,19 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
     };
 
     const handleProceedToCheckout = async (offer: OfferDTO) => {
-        const tradeType = getOfferTradeType(offer);
-        const txType = tradeType === 'mixed' ? 'SWAP_WITH_CASH' : tradeType === 'swap' ? 'SWAP' : 'CASH_ONLY';
-        setLoadingId(offer.id);
-        const {data, error} = await TransactionService.createTransaction({
-            buyerId: offer.sentBy.id,
-            sellerId: offer.item.seller.id,
-            offerId: offer.id,
-            amount: offer.cashAmount || offer.item.cashAmount || 0,
-            tradeType: txType,
-            description: offer.item.title,
-        });
-        setLoadingId(null);
-        if (!error && data) {
-            localStorage.setItem(`offer_tx_${offer.id}`, String(data.id));
+        // Transaction was already created by the seller's acceptOffer call.
+        // Check localStorage first, then offer.transactionId, then txStatuses.
+        const storedTxId = localStorage.getItem(`offer_tx_${offer.id}`);
+        const txId = storedTxId ? Number(storedTxId) : offer.transactionId || txStatuses[offer.id]?.txId;
+
+        if (txId) {
             setIsNavigating(true);
-            router.push(`/order-summary/${data.id}`);
+            router.push(`/order-summary/${txId}`);
+            return;
         }
+
+        // Fallback: if no txId found, the buyer may need to trigger accept (edge case)
+        setErrorMessage('Transaction not found for this offer. The seller may not have accepted yet.');
     };
 
     return (
@@ -573,6 +552,13 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
                                                     >
                                                         {isDone ? 'View Transaction' : 'Continue Transaction'}
                                                     </button>
+                                                ) : normalizeStatus(offer.status) === 'ACCEPTED' ? (
+                                                    <button
+                                                        onClick={() => { setIsNavigating(true); offer.transactionId ? router.push(`/transaction/${offer.transactionId}`) : handleAcceptOffer(offer.id); }}
+                                                        className='flex-1 py-2.5 bg-primary text-white rounded-lg font-poppins typo-body-xs-medium'
+                                                    >
+                                                        Process Shipping
+                                                    </button>
                                                 ) : (
                                                     <span className={`font-poppins typo-body-sm-semibold ${getStatusStyle(offer.status)}`}>
                                                         {isDone ? 'Completed' : getStatusLabel(offer.status)}
@@ -660,6 +646,16 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
                                                         <span className={`font-poppins typo-body-md-semibold ${isDone ? 'text-success-dark' : 'text-primary'}`}>
                                                             {isDone ? 'Completed' : getStatusLabel(offer.status)}
                                                         </span>
+                                                    </div>
+                                                ) : normalizeStatus(offer.status) === 'ACCEPTED' ? (
+                                                    <div className='flex items-center gap-4 mt-4'>
+                                                        <button
+                                                            onClick={() => { setIsNavigating(true); offer.transactionId ? router.push(`/transaction/${offer.transactionId}`) : handleAcceptOffer(offer.id); }}
+                                                            className='px-8 py-2.5 bg-primary text-white rounded-lg font-poppins typo-body-md-medium hover:bg-primary/90 transition-colors'
+                                                        >
+                                                            Process Shipping
+                                                        </button>
+                                                        <span className='font-poppins typo-body-md-semibold text-success-dark'>Accepted</span>
                                                     </div>
                                                 ) : (
                                                     <div className='mt-4'>

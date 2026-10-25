@@ -188,7 +188,7 @@ const MainChats = (props: Props) => {
                 seller: prev.seller.map((c) => (c.chatId === chat.chatId ? {...c, unreadCount: 0} : c))
             }));
 
-            // Note: markMessagesAsRead endpoint not available
+            ChatService.markChatAsRead(chat.chatId).catch(() => {});
         }
     };
 

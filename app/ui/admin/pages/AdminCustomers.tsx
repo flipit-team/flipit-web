@@ -109,32 +109,36 @@ export default function AdminCustomers() {
 
     const paginatedData = customersData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
+    const handleBlacklist = async (custId: string) => {
+        const result = await AdminService.blacklistCustomer(custId);
+        if (result.error) {
+            setError(`Failed to blacklist: ${result.error.message}`);
+            return;
+        }
+        setCustomers(prev => prev.map((c: any) => c.id?.toString() === custId ? {...c, status: 'BLACKLISTED'} : c));
+    };
+
+    const handleWhitelist = async (custId: string) => {
+        const result = await AdminService.whitelistCustomer(custId);
+        if (result.error) {
+            setError(`Failed to whitelist: ${result.error.message}`);
+            return;
+        }
+        setCustomers(prev => prev.map((c: any) => c.id?.toString() === custId ? {...c, status: 'ACTIVE'} : c));
+    };
+
     const actions = [
         {
-            label: 'View',
-            onClick: (row: {custId: string; name: string}) => {
-                // TODO: Navigate to customer details page
-                alert(`Viewing customer ${row.name} (${row.custId})`);
-            },
-            className: 'text-blue-600'
-        },
-        {
             label: 'Blacklist',
-            onClick: (row: {custId: string; name: string}) => {
-                if (confirm(`Are you sure you want to blacklist customer ${row.name}?`)) {
-                    alert(`Customer ${row.custId} has been blacklisted`);
-                    // Future: Call API to blacklist customer
+            onClick: (row: {custId: string; name: string; status: string}) => {
+                if (row.status === 'BLACKLISTED') {
+                    handleWhitelist(row.custId);
+                } else {
+                    handleBlacklist(row.custId);
                 }
             },
-            className: 'text-red-600'
-        },
-        {
-            label: 'Chat',
-            onClick: (row: {custId: string; name: string}) => {
-                // TODO: Open chat interface
-                alert(`Opening chat with ${row.name}`);
-            },
-            className: 'text-green-600'
+            className: 'text-red-600',
+            getLabel: (row: {status: string}) => row.status === 'BLACKLISTED' ? 'Whitelist' : 'Blacklist'
         }
     ];
 

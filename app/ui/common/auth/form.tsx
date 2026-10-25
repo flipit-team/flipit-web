@@ -169,10 +169,10 @@ const Form = () => {
 
                 {isLogin && (
                     <>
-                        <p className='font-poppins typo-body-lg-medium leading-[1.4] text-text_two mb-[32px] xs:hidden'>
+                        <p className='font-poppins typo-body-lg-medium leading-[1.4] text-text_two mb-5 xs:hidden'>
                             Log in to continue shopping for items
                         </p>
-                        <div className='hidden xs:flex items-center justify-center gap-1 mb-[32px]'>
+                        <div className='flex items-center gap-1 mb-5 xs:justify-center'>
                             <p className='font-poppins typo-body-lg-regular leading-[1.2] text-text_one'>
                                 Don&apos;t have an account?
                             </p>
@@ -341,21 +341,8 @@ const Form = () => {
                 <p className='hidden xs:block text-center font-poppins text-[12px] font-semibold italic text-text-muted-alt mt-6'>
                     Buy, sell, or swap &middot; every deal, protected.
                 </p>
-            </div>
 
-            {isLogin && (
-                <div className='flex items-center justify-center gap-1 mt-[40px] xs:hidden'>
-                    <p className='font-poppins typo-body-lg-regular leading-[1.2] text-text_one'>
-                        Don&apos;t have an account?
-                    </p>
-                    <p
-                        onClick={() => setIsLogin(false)}
-                        className='font-poppins typo-body-lg-bold leading-[1.2] text-primary cursor-pointer'
-                    >
-                        Create one
-                    </p>
-                </div>
-            )}
+            </div>
         </div>
     );
 };

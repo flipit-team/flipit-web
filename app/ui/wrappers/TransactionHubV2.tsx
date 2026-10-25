@@ -13,6 +13,8 @@ import ProgressTracker from '../transaction/ProgressTracker';
 import TransactionService from '~/services/transaction.service';
 import ReviewsService from '~/services/reviews.service';
 import ShippingService from '~/services/shipping.service';
+import DisputesService from '~/services/disputes.service';
+import PaymentService from '~/services/payment.service';
 import ErrorModal from '../common/modals/Error';
 import ConfirmationModal from '../common/modals/ConfirmationModal';
 
@@ -35,14 +37,18 @@ const SellerShippingView = ({transaction, onItemDeposited}: {transaction: Transa
         setIsGenerating(true);
         setGenerationError('');
         try {
+            // Item location is "LGA, State" or just a string — parse for addresses
+            const itemLocation = transaction.item?.location || '';
+            const locationParts = itemLocation.includes(',') ? itemLocation.split(',').map((s: string) => s.trim()) : [itemLocation, ''];
+
             const result = await ShippingService.createShipment({
                 courierService: selectedLogistics === 'gig' ? 'GIG' : 'GUO',
                 transactionId: transaction.id,
                 senderName: `${transaction.seller?.firstName || ''} ${transaction.seller?.lastName || ''}`.trim(),
                 senderPhone: transaction.seller?.phoneNumber || '',
-                senderAddress: '',
-                senderState: '',
-                senderLGA: '',
+                senderAddress: itemLocation,
+                senderState: locationParts[1] || locationParts[0] || '',
+                senderLGA: locationParts[0] || '',
                 receiverName: `${transaction.buyer?.firstName || ''} ${transaction.buyer?.lastName || ''}`.trim(),
                 receiverPhone: transaction.buyer?.phoneNumber || '',
                 receiverAddress: '',
@@ -279,6 +285,11 @@ const TransactionHubV2 = ({transaction: initialTransaction, forceCheckoutMode}: 
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+    const [showDisputeModal, setShowDisputeModal] = useState(false);
+    const [disputeReason, setDisputeReason] = useState('');
+    const [disputeDescription, setDisputeDescription] = useState('');
+    const [paymentDetails, setPaymentDetails] = useState<{bankName?: string; accountNumber?: string; accountName?: string} | null>(null);
+    const [paymentLoading, setPaymentLoading] = useState(false);
 
     // Countdown timer for payment transfer screen
     useEffect(() => {
@@ -292,6 +303,35 @@ const TransactionHubV2 = ({transaction: initialTransaction, forceCheckoutMode}: 
         }, 1000);
         return () => clearInterval(interval);
     }, [showPaymentTransfer]);
+
+    // Initiate payment when transfer screen opens — fetch dynamic bank details
+    useEffect(() => {
+        if (!showPaymentTransfer) return;
+        setPaymentLoading(true);
+        PaymentService.initiatePayment({
+            itemId: transaction.item?.id || 0,
+            amount: (transaction.amount || 0) + (transaction.platformFee || 0),
+            gateway: 'credo',
+        }).then(({data, error}) => {
+            setPaymentLoading(false);
+            if (error) {
+                const err = error as any;
+                const msg = err?.data?.apierror?.message || err?.data?.message || err?.message || 'Failed to initiate payment.';
+                setErrorMessage(msg);
+                setShowPaymentTransfer(false);
+                return;
+            }
+            if (!data) return;
+            const bank = data.bank;
+            if (bank) {
+                setPaymentDetails({
+                    bankName: bank.name,
+                    accountNumber: bank.accountNumber,
+                    accountName: bank.accountName,
+                });
+            }
+        });
+    }, [showPaymentTransfer, transaction.item?.id, transaction.amount, transaction.platformFee]);
 
     // Auto-release countdown for ARRIVED / DELIVERED (confirm delivery) state
     useEffect(() => {
@@ -430,6 +470,23 @@ const TransactionHubV2 = ({transaction: initialTransaction, forceCheckoutMode}: 
         setTransaction({...transaction, ...(data || {status: 'CANCELLED'})});
     };
 
+    const handleOpenDispute = async () => {
+        if (!disputeReason.trim()) { setErrorMessage('Please select a reason for the dispute.'); return; }
+        setIsLoading(true);
+        const {error} = await DisputesService.openDispute({
+            transactionId: transaction.id,
+            reason: disputeReason,
+            description: disputeDescription,
+        });
+        setIsLoading(false);
+        if (error) { setErrorMessage('Failed to open dispute. Please try again.'); return; }
+        setShowDisputeModal(false);
+        setDisputeReason('');
+        setDisputeDescription('');
+        setErrorMessage('');
+        router.push(`/transaction/${transaction.id}`);
+    };
+
     const handleVerifyPayment = async () => {
         setIsLoading(true);
         // If the transaction is already at SUCCESS (real backend creates it there),
@@ -469,7 +526,7 @@ const TransactionHubV2 = ({transaction: initialTransaction, forceCheckoutMode}: 
         const avgRating = Math.round((itemConditionRating + sellerRating) / 2);
         const reviewResult = await ReviewsService.createReview({
             userId: otherUserId,
-            itemId: transaction.item?.id || transaction.orderId || 0,
+            itemId: transaction.item?.id || 0,
             rating: avgRating,
             message: reviewText,
         });
@@ -517,6 +574,54 @@ const TransactionHubV2 = ({transaction: initialTransaction, forceCheckoutMode}: 
                     onConfirm={executeCancelTransaction}
                     onCancel={() => setShowCancelConfirm(false)}
                 />
+            )}
+            {showDisputeModal && (
+                <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-modal'>
+                    <div className='bg-white rounded-2xl w-[520px] xs:w-full xs:mx-4 p-8'>
+                        <h3 className='font-poppins typo-body-lg-bold text-text_one mb-4'>Open a Dispute</h3>
+                        <p className='font-poppins typo-body-sm-regular text-text_four mb-6'>
+                            If you have an issue with this transaction, let us know and we will help resolve it.
+                        </p>
+                        <label className='block mb-2 font-poppins typo-body-sm-medium text-text_one'>Reason</label>
+                        <select
+                            value={disputeReason}
+                            onChange={(e) => setDisputeReason(e.target.value)}
+                            className='w-full h-[44px] border border-border_gray rounded-lg px-3 mb-4 font-poppins typo-body-sm-regular focus:outline-none focus:ring-2 focus:ring-primary/30'
+                        >
+                            <option value=''>Select a reason</option>
+                            <option value='Item not as described'>Item not as described</option>
+                            <option value='Item not received'>Item not received</option>
+                            <option value='Item damaged'>Item damaged</option>
+                            <option value='Wrong item received'>Wrong item received</option>
+                            <option value='Seller not responding'>Seller not responding</option>
+                            <option value='Other'>Other</option>
+                        </select>
+                        <label className='block mb-2 font-poppins typo-body-sm-medium text-text_one'>Description (optional)</label>
+                        <textarea
+                            value={disputeDescription}
+                            onChange={(e) => setDisputeDescription(e.target.value)}
+                            placeholder='Provide more details about the issue...'
+                            maxLength={1000}
+                            rows={4}
+                            className='w-full border border-border_gray rounded-lg p-3 mb-6 font-poppins typo-body-sm-regular resize-none focus:outline-none focus:ring-2 focus:ring-primary/30'
+                        />
+                        <div className='flex gap-3'>
+                            <button
+                                onClick={() => { setShowDisputeModal(false); setDisputeReason(''); setDisputeDescription(''); }}
+                                className='flex-1 h-[44px] border-2 border-primary text-primary rounded-lg font-poppins typo-body-md-medium'
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleOpenDispute}
+                                disabled={isLoading || !disputeReason}
+                                className='flex-1 h-[44px] bg-red-600 text-white rounded-lg font-poppins typo-body-md-medium hover:bg-red-700 disabled:opacity-50'
+                            >
+                                {isLoading ? 'Submitting...' : 'Submit Dispute'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
             {/* Mobile header — xs only */}
             <div className='hidden xs:flex items-center gap-5 px-6 pt-6 pb-4'>
@@ -1125,7 +1230,9 @@ const TransactionHubV2 = ({transaction: initialTransaction, forceCheckoutMode}: 
                                     <p className='font-poppins text-[13px] font-normal text-text_one'>Funds would automatically be released 48hours after delivery so ensure that you confirm receipt and condition of item immediately</p>
                                 </div>
                             </div>
-                            <p className='font-poppins text-[13px] font-normal text-text-muted-alt text-center'>Report a problem with delivery</p>
+                            <button onClick={() => setShowDisputeModal(true)} className='w-full font-poppins text-[13px] font-medium text-red-500 text-center hover:underline mt-2'>
+                                Report a problem with delivery
+                            </button>
                         </div>
                         )}
 
@@ -1148,6 +1255,12 @@ const TransactionHubV2 = ({transaction: initialTransaction, forceCheckoutMode}: 
                                 className='w-full py-5 bg-primary text-white rounded-xl font-poppins typo-body-lg-bold hover:bg-primary/90 transition-colors disabled:opacity-50'
                             >
                                 {isLoading ? 'Processing...' : 'Confirm Receipt & Release Funds'}
+                            </button>
+                            <button
+                                onClick={() => setShowDisputeModal(true)}
+                                className='w-full py-3 mt-3 border-2 border-red-500 text-red-500 rounded-xl font-poppins typo-body-md-medium hover:bg-red-50 transition-colors'
+                            >
+                                Report an Issue
                             </button>
                         </div>
                         )}
@@ -1327,8 +1440,9 @@ const TransactionHubV2 = ({transaction: initialTransaction, forceCheckoutMode}: 
                             <button
                                 onClick={async () => {
                                     setIsLoading(true);
-                                    const {data} = await TransactionService.completeTransaction(transaction.id);
+                                    const {data, error} = await TransactionService.completeTransaction(transaction.id);
                                     setIsLoading(false);
+                                    if (error) { setErrorMessage('Failed to complete transaction. Please try again.'); return; }
                                     setTransaction({...transaction, ...(data || {status: 'COMPLETED'})});
                                     setShowRateReview(false);
                                 }}
@@ -1454,7 +1568,7 @@ const TransactionHubV2 = ({transaction: initialTransaction, forceCheckoutMode}: 
                     <div className='flex justify-between items-start px-[30px] pt-[68px] pb-4'>
                         <div className='flex flex-col gap-1.5'>
                             <p className='font-poppins text-[16px] font-normal text-text_one'>You are Paying</p>
-                            <p className='font-poppins text-[16px] font-semibold text-text_one'>{formatToNaira(transactionAmount + 11000)}</p>
+                            <p className='font-poppins text-[16px] font-semibold text-text_one'>{formatToNaira(transactionAmount + (transaction.platformFee || 0))}</p>
                         </div>
                         <button
                             onClick={() => setShowPaymentTransfer(false)}
@@ -1468,7 +1582,7 @@ const TransactionHubV2 = ({transaction: initialTransaction, forceCheckoutMode}: 
                     <div className='px-[27px] flex flex-col gap-[17px] mt-[98px] mb-[56px]'>
                         <p className='font-poppins text-[16px] font-semibold text-text_one'>Pay with Transfer</p>
                         <p className='font-poppins text-[14px] font-normal text-text_one'>
-                            Transfer exactly ₦{(transactionAmount + 11000).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} (including the decimal) to the account below
+                            Transfer exactly ₦{(transactionAmount + (transaction.platformFee || 0)).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} (including the decimal) to the account below
                         </p>
                     </div>
 
@@ -1483,20 +1597,20 @@ const TransactionHubV2 = ({transaction: initialTransaction, forceCheckoutMode}: 
                     <div className='mx-[25px] bg-white rounded-xl shadow-[0px_0px_24px_0px_rgba(2,95,115,0.1)] px-4 py-3 flex flex-col gap-6 mb-[44px]'>
                         <div className='flex justify-between items-center'>
                             <span className='font-poppins text-[14px] font-light text-text_one'>Bank Name</span>
-                            <span className='font-poppins text-[14px] font-semibold text-text_one'>Zenith Bank</span>
+                            <span className='font-poppins text-[14px] font-semibold text-text_one'>{paymentDetails?.bankName || 'Loading...'}</span>
                         </div>
                         <div className='flex justify-between items-center'>
                             <span className='font-poppins text-[14px] font-light text-text_one'>Account Number</span>
                             <div className='flex items-center gap-3'>
-                                <span className='font-poppins text-[14px] font-semibold text-text_one'>4432890753</span>
-                                <button onClick={() => navigator.clipboard.writeText('4432890753')}>
+                                <span className='font-poppins text-[14px] font-semibold text-text_one'>{paymentDetails?.accountNumber || 'Loading...'}</span>
+                                <button onClick={() => navigator.clipboard.writeText(paymentDetails?.accountNumber || '')}>
                                     <CopyIcon className='w-6 h-6 text-primary' />
                                 </button>
                             </div>
                         </div>
                         <div className='flex justify-between items-center'>
                             <span className='font-poppins text-[14px] font-light text-text_one'>Account Name</span>
-                            <span className='font-poppins text-[14px] font-semibold text-text_one'>CREDO( Flipit MarketPlace)</span>
+                            <span className='font-poppins text-[14px] font-semibold text-text_one'>{paymentDetails?.accountName || 'Loading...'}</span>
                         </div>
                         <div className='flex justify-between items-center'>
                             <span className='font-poppins text-[14px] font-light text-text_one'>Account expires in</span>

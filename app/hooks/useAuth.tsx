@@ -61,7 +61,7 @@ export function useAuth() {
         setUser({
           token: 'managed-by-cookies',
           userId: data.user.id.toString(),
-          userName: data.user.firstName || data.user.username || data.user.email || '',
+          userName: data.user.firstName || data.user.email || '',
         });
       } else {
         setAuthState({
@@ -130,7 +130,7 @@ export function useAuth() {
         setUser({
           token: 'managed-by-cookies',
           userId: user.id.toString(),
-          userName: user.firstName || user.username || user.email || '',
+          userName: user.firstName || user.email || '',
         });
         return { success: true, user: user };
       }
@@ -213,7 +213,7 @@ export function useAuth() {
         setUser({
           token: 'managed-by-cookies',
           userId: user.id.toString(),
-          userName: user.firstName || user.username || user.email || '',
+          userName: user.firstName || user.email || '',
         });
         return { success: true, user: user };
       }

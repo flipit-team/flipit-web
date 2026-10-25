@@ -47,7 +47,7 @@ export async function POST(req: Request) {
       maxAge: 60 * 60 * 24 * 7
     });
     
-    res.cookies.set('userName', user.firstName || user.username || user.email || '', {
+    res.cookies.set('userName', user.firstName || user.email || '', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       path: '/',

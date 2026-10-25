@@ -45,8 +45,7 @@ const ReviewModal = ({transaction, onClose, onReviewSubmitted}: Props) => {
                 rating,
                 message: comment,
                 userId: otherParty.id,
-                // TODO: TransactionDTO needs item ID from backend
-                itemId: transaction.orderId || 0
+                itemId: transaction.item?.id || 0
             });
 
             if (response.data) {

@@ -9,10 +9,26 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({error: 'Missing code parameter'}, {status: 400});
     }
 
-    const res = await fetch(`${API_BASE_PATH}/auth/google/callback?code=${code}`);
+    let res: Response;
+    try {
+        res = await fetch(`${API_BASE_PATH}/auth/google/callback?code=${code}`);
+    } catch {
+        return NextResponse.json({error: 'Unable to reach the server.'}, {status: 503});
+    }
+
     if (!res.ok) return NextResponse.json({error: 'Invalid code'}, {status: 401});
 
-    const apiData = await res.json();
+    const contentType = res.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+        return NextResponse.json({error: 'Server returned an unexpected response.'}, {status: 502});
+    }
+
+    let apiData: any;
+    try {
+        apiData = await res.json();
+    } catch {
+        return NextResponse.json({error: 'Server returned an invalid response.'}, {status: 502});
+    }
 
     const token = apiData.token || apiData.jwt;
     const user = apiData.user;
@@ -43,7 +59,7 @@ export async function GET(req: NextRequest) {
         sameSite: 'lax'
     });
 
-    response.cookies.set('userName', user.firstName || user.username || '', {
+    response.cookies.set('userName', user.firstName || '', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         path: '/',

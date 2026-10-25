@@ -37,19 +37,17 @@ export interface Item {
         email: string;
         phoneNumber: string;
         avatar?: string;
-        profileImageUrl?: string;
         avg_rating?: number;
         avgRating?: number;
         status?: string;
-        phoneNumberVerified: boolean;  // NEW: Enhanced seller verification (for verified profile)
-        idVerified?: boolean;         // NEW: ID document verification (for verified ID badge)
-        dateVerified: string;         // NEW: Verification date
+        phoneNumberVerified: boolean;
+        idVerified?: boolean;         // Derived from dateVerified on BE (non-null = verified)
+        dateVerified: string;
         dateCreated?: string;
-        reviewCount: number;         // Enhanced review count
-        mostRecentReview: ReviewDTO; // Latest review
+        reviewCount: number;
+        mostRecentReview: ReviewDTO;
     };
     itemCategory: {
-        id?: number;
         name: string;
         description: string;
         thumbnail?: string;

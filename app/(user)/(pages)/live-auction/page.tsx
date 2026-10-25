@@ -55,7 +55,7 @@ export default async function Page({searchParams}: {searchParams?: Promise<Searc
             getCategoriesServerSide(),
             checkAuthServerSide()
         ]);
-        const userName = authStatus?.user?.firstName || authStatus?.user?.username || '';
+        const userName = authStatus?.user?.firstName || '';
         const userAvatar = authStatus?.user?.avatar || '';
 
         if (auctionsResult.error) {

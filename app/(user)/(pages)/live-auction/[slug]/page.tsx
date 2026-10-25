@@ -32,7 +32,7 @@ function transformAuctionToItem(auction: AuctionDTO): Item {
             id: auction.item.seller.id.toString(),
             avgRating: auction.item.seller.avgRating || 0,
             avg_rating: auction.item.seller.avgRating || 0,
-            avatar: auction.item.seller.avatar || auction.item.seller.profileImageUrl || '',
+            avatar: auction.item.seller.avatar || '',
             status: auction.item.seller.status || 'Active'
         },
         itemCategory: auction.item.itemCategory,

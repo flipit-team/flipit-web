@@ -47,6 +47,7 @@ const ChangePasswordContent = () => {
         try {
             setLoading(true);
             const result = await UserService.changePassword({
+                currentPassword: currentPassword.trim(),
                 newPassword: newPassword.trim(),
                 confirmPassword: confirmPassword.trim(),
             });

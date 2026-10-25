@@ -646,7 +646,7 @@ const ItemDetail = (props: Props) => {
                                   lastName: item.seller.lastName,
                                   email: item.seller.email,
                                   phoneNumber: item.seller.phoneNumber,
-                                  avatar: item.seller.avatar || item.seller.profileImageUrl || '',
+                                  avatar: item.seller.avatar || '',
                                   avg_rating: item.seller.avg_rating || item.seller.avgRating || 0,
                                   status: item.seller.status || 'Active',
                                   phoneNumberVerified: item.seller.phoneNumberVerified || false,

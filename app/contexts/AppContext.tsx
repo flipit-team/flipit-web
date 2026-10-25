@@ -83,7 +83,7 @@ export const AppProvider = ({children, initialUser}: AppProviderProps) => {
                         const validatedUser = {
                             token: 'managed-by-cookies',
                             userId: userData.user.id?.toString(),
-                            userName: userData.user.firstName || userData.user.username || userData.user.email || ''
+                            userName: userData.user.firstName || userData.user.email || ''
                         };
                         setUser(validatedUser);
                     } else {

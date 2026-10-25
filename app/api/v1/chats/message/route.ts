@@ -36,7 +36,25 @@ export async function POST(req: NextRequest) {
             body: JSON.stringify(backendBody)
         });
 
-        const apiData = await apiRes.json();
+        const _ct = apiRes.headers.get('content-type') || '';
+
+
+        if (!_ct.includes('application/json')) {
+
+
+            console.error(`Backend non-JSON (${apiRes.status}): ${apiRes.url}`);
+
+
+            return NextResponse.json({ apierror: { message: 'Server returned an unexpected response.' } }, { status: 502 });
+
+
+        }
+
+
+        let apiData: any;
+
+
+        try { apiData = await apiRes.json(); } catch { return NextResponse.json({ apierror: { message: 'Invalid server response.' } }, { status: 502 }); }
 
         if (!apiRes.ok) {
             return NextResponse.json(

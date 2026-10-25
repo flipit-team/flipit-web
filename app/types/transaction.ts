@@ -16,22 +16,22 @@ export type TransactionStatus =
   | 'COMPLETED'
   | 'RELEASED';
 
-// Main Transaction DTO — matches API response exactly
+// Main Transaction DTO — matches backend TransactionDTO exactly
 export interface TransactionDTO {
   id: number;
-  orderId?: number;
   buyer: UserDTO;
   seller: UserDTO;
-  item?: ItemDTO;           // NEW: the primary item in the transaction
-  offeredItem?: ItemDTO;    // NEW: the buyer's offered item (SWAP / SWAP_WITH_CASH)
+  item?: ItemDTO;
+  offeredItem?: ItemDTO;
   amount?: number;
-  platformFee?: number;     // NEW: platform fee deducted from amount
-  sellerPayout?: number;    // NEW: amount seller actually receives
+  platformFee?: number;
+  sellerPayout?: number;
   reference?: string;
   transactionDate?: string;
   status: TransactionStatus;
   type: TransactionType;
   paymentMethod?: string;
+  paymentGateway?: string;
   description?: string;
 }
 

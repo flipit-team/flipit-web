@@ -16,8 +16,26 @@ export async function POST(req: NextRequest) {
             body: JSON.stringify(body),
         });
 
-        const apiData = await apiRes.json();
-        if (!apiRes.ok) return NextResponse.json({ apierror: apiData.apierror ?? { message: 'Failed to initiate payment' } }, { status: apiRes.status });
+        const _ct = apiRes.headers.get('content-type') || '';
+
+
+        if (!_ct.includes('application/json')) {
+
+
+            console.error(`Backend non-JSON (${apiRes.status}): ${apiRes.url}`);
+
+
+            return NextResponse.json({ apierror: { message: 'Server returned an unexpected response.' } }, { status: 502 });
+
+
+        }
+
+
+        let apiData: any;
+
+
+        try { apiData = await apiRes.json(); } catch { return NextResponse.json({ apierror: { message: 'Invalid server response.' } }, { status: 502 }); }
+        if (!apiRes.ok) return NextResponse.json({ apierror: apiData.apierror ?? { message: apiData.message || apiData.debugMessage || 'Failed to initiate payment' } }, { status: apiRes.status });
         return NextResponse.json(apiData);
     } catch {
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
