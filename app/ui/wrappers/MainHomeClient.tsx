@@ -251,6 +251,7 @@ const MainHomeClient = ({ items: serverItems, auctionItems: serverAuctionItems, 
             searchQuery={searchQuery}
             userName={authStatus?.user?.userName || authStatus?.user?.firstName || ''}
             userAvatar={authStatus?.user?.avatar || ''}
+            isVerified={!!authStatus?.user?.dateVerified}
         />
     );
 };

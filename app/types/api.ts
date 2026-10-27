@@ -591,13 +591,14 @@ export interface AdminBidDTO {
 // Payment Types
 export type PaymentStatus = 'PENDING' | 'SUCCESS' | 'FAILED' | 'REFUNDED' | 'SETTLED' | 'DECLINED' | 'CANCELLED';
 
+// Matches backend PaymentRequest — all three required by PaymentServiceImpl validation
 export interface PaymentInitiateRequest {
   itemId: number;
   amount: number;
-  gateway?: string;
+  gateway: string;
+  courierService: string;
   currency?: string;
   email?: string;
-  courierService?: string; // Only needed if payment includes delivery cost calculation
 }
 
 // Matches backend PaymentDTO<T> — generic wrapper around gateway-specific data

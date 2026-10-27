@@ -182,10 +182,26 @@ const Profile = () => {
         }
     };
 
+    const isVerified = !!profile?.dateVerified;
+
     return (
         <div className='flex items-center justify-center flex-col'>
             <div className='flex flex-col justify-center w-[984px] xs:w-full mt-[92px] xs:mt-6 shadow-lg xs:shadow-transparent rounded-lg p-6'>
-                <div className='typo-heading_sm pb-4 mb-6 border-b border-border_gray xs:hidden'>My Profile</div>
+                <div className='flex items-center justify-between pb-4 mb-6 border-b border-border_gray xs:hidden'>
+                    <div className='flex items-center gap-3'>
+                        <span className='typo-heading_sm'>My Profile</span>
+                        {isVerified ? (
+                            <span className='inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 border border-green-200 text-green-700 font-poppins text-xs font-semibold'>
+                                <Image src='/icons/status/verified.svg' alt='verified' width={14} height={14} className='w-3.5 h-3.5' />
+                                Verified
+                            </span>
+                        ) : (
+                            <span className='inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700 font-poppins text-xs font-semibold'>
+                                Not Verified
+                            </span>
+                        )}
+                    </div>
+                </div>
                 <div className='flex items-center gap-6 xs:flex-col'>
                     <form className='typo-body_mr text-text_one flex flex-col gap-[26px] w-[512px] xs:w-full xs:order-2 [&_input:disabled]:bg-gray-100 [&_input:disabled]:cursor-not-allowed'>
                         {formInputs.map((item, i) => {

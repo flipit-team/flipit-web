@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
+import {BadgeCheck} from 'lucide-react';
 import NoData from '../common/no-data/NoData';
 import {Item} from '~/utils/interface';
 import FilterSidebar from '../homepage/FilterSidebar';
@@ -40,6 +41,7 @@ interface Props {
     searchQuery?: string;
     userName?: string;
     userAvatar?: string;
+    isVerified?: boolean;
 }
 
 const MainHomeServer = ({
@@ -56,7 +58,8 @@ const MainHomeServer = ({
     onSearchChange,
     searchQuery = '',
     userName = '',
-    userAvatar = ''
+    userAvatar = '',
+    isVerified = false
 }: Props) => {
     const sortOptions = [
         {value: 'recent', label: 'Recent'},
@@ -108,8 +111,9 @@ const MainHomeServer = ({
                             Sign In
                         </Link>
                     )}
-                    <p className='font-poppins typo-body-sm-regular text-white'>
+                    <p className='font-poppins typo-body-sm-regular text-white flex items-center gap-1'>
                         Good Morning, <span className='font-semibold'>{userName || 'Stranger'}</span>
+                        {isVerified && <BadgeCheck size={16} className='text-white flex-shrink-0' />}
                     </p>
                 </div>
                 {/* Search bar inside teal header on mobile */}

@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
 
 
         try { apiData = await apiRes.json(); } catch { return NextResponse.json({ apierror: { message: 'Invalid server response.' } }, { status: 502 }); }
-        if (!apiRes.ok) return NextResponse.json({ apierror: apiData.apierror ?? { message: 'Failed to get presign download URL' } }, { status: apiRes.status });
+        if (!apiRes.ok) return NextResponse.json({ apierror: apiData.apierror ?? { message: apiData.message || apiData.debugMessage || 'An error occurred' } }, { status: apiRes.status });
         return NextResponse.json(apiData);
     } catch {
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

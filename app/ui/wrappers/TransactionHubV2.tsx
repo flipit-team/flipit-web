@@ -312,6 +312,7 @@ const TransactionHubV2 = ({transaction: initialTransaction, forceCheckoutMode}: 
             itemId: transaction.item?.id || 0,
             amount: (transaction.amount || 0) + (transaction.platformFee || 0),
             gateway: 'credo',
+            courierService: 'GIG',
         }).then(({data, error}) => {
             setPaymentLoading(false);
             if (error) {

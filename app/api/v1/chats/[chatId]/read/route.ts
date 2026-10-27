@@ -44,7 +44,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ chat
 
         if (!apiRes.ok) {
             return NextResponse.json(
-                { apierror: apiData.apierror ?? { message: 'Failed to mark chat as read' } },
+                { apierror: apiData.apierror ?? { message: apiData.message || apiData.debugMessage || 'An error occurred' } },
                 { status: apiRes.status }
             );
         }

@@ -30,7 +30,7 @@ export async function GET() {
 
         if (!apiRes.ok) {
             return NextResponse.json(
-                { apierror: apiData.apierror ?? { message: 'Failed to fetch liked items' } },
+                { apierror: apiData.apierror ?? { message: apiData.message || apiData.debugMessage || 'An error occurred' } },
                 { status: apiRes.status }
             );
         }
@@ -77,7 +77,7 @@ export async function POST(request: Request) {
 
         if (!apiRes.ok) {
             return NextResponse.json(
-                { apierror: apiData.apierror ?? { message: 'Failed to check liked status' } },
+                { apierror: apiData.apierror ?? { message: apiData.message || apiData.debugMessage || 'An error occurred' } },
                 { status: apiRes.status }
             );
         }

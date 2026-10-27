@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
 
         if (!apiRes.ok) {
             return NextResponse.json(
-                { apierror: apiData.apierror ?? { message: 'Failed to fetch user bids' } },
+                { apierror: apiData.apierror ?? { message: apiData.message || apiData.debugMessage || 'An error occurred' } },
                 { status: apiRes.status }
             );
         }

@@ -6,7 +6,7 @@ import React, {useState, useEffect, Suspense} from 'react';
 import {useAppContext} from '~/contexts/AppContext';
 import {useUnreadCount} from '~/contexts/UnreadCountContext';
 import Notifications from '../../modals/Notifications';
-import {User, ShoppingBag, Megaphone, BarChart3, Settings, Headphones, LogOut, Bell} from 'lucide-react';
+import {User, ShoppingBag, Megaphone, BarChart3, Settings, Headphones, LogOut, Bell, BadgeCheck} from 'lucide-react';
 import ProfileDropdown from './ProfileDropdown';
 import HomeService from '~/services/home.service';
 import {TopNavDTO} from '~/types/api';
@@ -309,7 +309,10 @@ function HeaderContent(props: Props) {
                                     className='h-7 w-7 xs:h-[30px] xs:w-[30px] rounded-full object-cover'
                                 />
                                 {/* Username - Hidden on mobile */}
-                                <div className='typo-body_ls capitalize xs:hidden'>{user.userName ?? 'User'}</div>
+                                <div className='flex items-center gap-1 xs:hidden'>
+                                    <span className='typo-body_ls capitalize'>{user.userName ?? 'User'}</span>
+                                    {profile?.dateVerified && <BadgeCheck size={16} className='text-white flex-shrink-0' />}
+                                </div>
                                 {/* Dropdown Arrow - Hidden on mobile */}
                                 <Image
                                     src={'/icons/ui/arrow-down.svg'}

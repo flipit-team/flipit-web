@@ -202,8 +202,7 @@ const ItemDetail = (props: Props) => {
                 return;
             }
 
-            // Step 2: create the transaction — backend creates it at SUCCESS immediately;
-            // the checkout_pending flag tells TransactionHubV2 to render Order Review first.
+            // Step 2: create the transaction from the offer
             const {data: txData, error: txError} = await TransactionService.createTransaction({
                 buyerId: parseInt(user.userId),
                 sellerId: parseInt(String(item.seller.id)),
@@ -215,7 +214,8 @@ const ItemDetail = (props: Props) => {
 
             if (txError || !txData) {
                     try { await OffersService.deleteOffer(offerData.id); } catch {}
-                    showError('Failed to create order. Please try again.');
+                    const msg = (txError as any)?.data?.apierror?.message || (txError as any)?.data?.message || (txError as any)?.message || 'Failed to create order. Please try again.';
+                    showError(msg);
                     return;
                 }
 

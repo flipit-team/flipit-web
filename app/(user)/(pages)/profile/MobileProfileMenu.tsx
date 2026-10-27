@@ -90,7 +90,9 @@ const MobileProfileMenu = () => {
         : (user?.userName || 'User');
     const email = (profile as any)?.email || '';
     const rating = (profile as any)?.avgRating || 0;
-    const isVerified = (profile as any)?.phoneNumberVerified || false;
+    const isIdVerified = !!(profile as any)?.dateVerified;
+    const isPhoneVerified = (profile as any)?.phoneNumberVerified || false;
+    const isVerified = isIdVerified || isPhoneVerified;
 
     return (
         <div className='min-h-screen pb-28 px-4 pt-4'>
@@ -107,14 +109,27 @@ const MobileProfileMenu = () => {
                         alt={fullName}
                         className='h-[72px] w-[72px] rounded-full object-cover'
                     />
-                    <h2 className='font-poppins typo-body-lg-bold text-text_one mt-2'>{fullName}</h2>
+                    <div className='flex items-center gap-1.5 mt-2'>
+                        <h2 className='font-poppins typo-body-lg-bold text-text_one'>{fullName}</h2>
+                        {isVerified && (
+                            <BadgeCheck size={18} className='text-primary' />
+                        )}
+                    </div>
                     <p className='font-poppins typo-body-xs-regular text-text_four mt-0.5'>{email}</p>
 
-                    <div className='flex items-center gap-0.5 mt-1.5'>
-                        <Star size={14} className='text-secondary fill-secondary' />
-                        <span className='font-poppins typo-body-xs-regular text-text_one'>({rating.toFixed(1)})</span>
-                        {isVerified && (
-                            <BadgeCheck size={16} className='text-primary fill-primary ml-0.5' />
+                    <div className='flex items-center gap-2 mt-2'>
+                        <div className='flex items-center gap-0.5'>
+                            <Star size={14} className='text-secondary fill-secondary' />
+                            <span className='font-poppins typo-body-xs-regular text-text_one'>({rating.toFixed(1)})</span>
+                        </div>
+                        {isVerified ? (
+                            <span className='inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-50 border border-green-200 text-green-700 font-poppins text-[10px] font-semibold'>
+                                Verified
+                            </span>
+                        ) : (
+                            <Link href='/settings?section=verification' className='inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 font-poppins text-[10px] font-semibold'>
+                                Verify Now
+                            </Link>
                         )}
                     </div>
 

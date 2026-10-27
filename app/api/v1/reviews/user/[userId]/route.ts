@@ -21,7 +21,7 @@ export async function GET(
 
         if (!apiRes.ok) {
             return NextResponse.json(
-                { apierror: apiData.apierror ?? { message: 'Failed to fetch user reviews' } },
+                { apierror: apiData.apierror ?? { message: apiData.message || apiData.debugMessage || 'An error occurred' } },
                 { status: apiRes.status }
             );
         }
