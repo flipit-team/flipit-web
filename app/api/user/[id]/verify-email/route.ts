@@ -27,7 +27,7 @@ export async function GET(req: NextRequest, {params}: {params: Promise<{id: stri
 
         if (!apiRes.ok) {
             return NextResponse.json(
-                {apierror: apiData.apierror ?? {message: 'Email verification failed'}},
+                { apierror: (() => { const _e = apiData.apierror ?? apiData; return { ..._e, message: _e.debugMessage || _e.message || 'An error occurred' }; })() },
                 {status: apiRes.status}
             );
         }

@@ -35,7 +35,11 @@ export async function POST(req: NextRequest) {
 
 
         try { apiData = await apiRes.json(); } catch { return NextResponse.json({ apierror: { message: 'Invalid server response.' } }, { status: 502 }); }
-        if (!apiRes.ok) return NextResponse.json({ apierror: apiData.apierror ?? { message: apiData.message || apiData.debugMessage || 'Failed to initiate payment' } }, { status: apiRes.status });
+        if (!apiRes.ok) {
+            const apierror = apiData.apierror ?? apiData;
+            const msg = apierror.debugMessage || apierror.message || apiData.message || 'Failed to initiate payment';
+            return NextResponse.json({ apierror: { ...apierror, message: msg } }, { status: apiRes.status });
+        }
         return NextResponse.json(apiData);
     } catch {
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

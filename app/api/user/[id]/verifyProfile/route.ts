@@ -29,7 +29,7 @@ export async function POST(req: NextRequest, {params}: {params: Promise<{id: str
 
         if (!apiRes.ok) {
             return NextResponse.json(
-                {apierror: apiData.apierror ?? {message: 'Profile verification failed'}},
+                { apierror: (() => { const _e = apiData.apierror ?? apiData; return { ..._e, message: _e.debugMessage || _e.message || 'An error occurred' }; })() },
                 {status: apiRes.status}
             );
         }

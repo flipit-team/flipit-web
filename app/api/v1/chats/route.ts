@@ -48,7 +48,7 @@ export async function GET() {
 
         if (!apiRes.ok) {
             return NextResponse.json(
-                {apierror: apiData.apierror ?? {message: 'Failed to fetch chats'}},
+                { apierror: (() => { const _e = apiData.apierror ?? apiData; return { ..._e, message: _e.debugMessage || _e.message || 'An error occurred' }; })() },
                 {status: apiRes.status}
             );
         }
@@ -111,7 +111,7 @@ export async function POST(request: Request) {
 
         if (!apiRes.ok) {
             return NextResponse.json(
-                {apierror: apiData.apierror ?? {message: 'Failed to create chat'}},
+                { apierror: (() => { const _e = apiData.apierror ?? apiData; return { ..._e, message: _e.debugMessage || _e.message || 'An error occurred' }; })() },
                 {status: apiRes.status}
             );
         }

@@ -308,6 +308,14 @@ export function getUserFriendlyError(error: any): UserFriendlyError {
     }
   }
 
+  // If we have a real error message from the backend, show it directly
+  if (errorMessage && errorMessage !== 'An error occurred') {
+    return {
+      title: 'Error',
+      message: errorMessage,
+    };
+  }
+
   // Default fallback error
   return {
     title: 'Something Went Wrong',

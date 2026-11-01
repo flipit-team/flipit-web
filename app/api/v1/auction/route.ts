@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
 
         if (!apiRes.ok) {
             return NextResponse.json(
-                {apierror: apiData.apierror ?? {message: 'Failed to create auction'}},
+                { apierror: (() => { const _e = apiData.apierror ?? apiData; return { ..._e, message: _e.debugMessage || _e.message || 'An error occurred' }; })() },
                 {status: apiRes.status}
             );
         }
@@ -114,7 +114,7 @@ export async function GET(req: NextRequest) {
 
         if (!apiRes.ok) {
             return NextResponse.json(
-                {apierror: apiData.apierror ?? {message: 'Failed to fetch auctions'}},
+                { apierror: (() => { const _e = apiData.apierror ?? apiData; return { ..._e, message: _e.debugMessage || _e.message || 'An error occurred' }; })() },
                 {status: apiRes.status}
             );
         }

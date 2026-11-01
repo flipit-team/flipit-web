@@ -52,7 +52,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
         if (!apiRes.ok) {
             return NextResponse.json(
-                {apierror: apiData.apierror ?? {message: 'Failed to fetch item'}},
+                { apierror: (() => { const _e = apiData.apierror ?? apiData; return { ..._e, message: _e.debugMessage || _e.message || 'An error occurred' }; })() },
                 {status: apiRes.status}
             );
         }
@@ -123,7 +123,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
         if (!apiRes.ok) {
             return NextResponse.json(
-                {apierror: apiData.apierror ?? {message: 'Failed to update item'}},
+                { apierror: (() => { const _e = apiData.apierror ?? apiData; return { ..._e, message: _e.debugMessage || _e.message || 'An error occurred' }; })() },
                 {status: apiRes.status}
             );
         }
@@ -186,7 +186,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
         if (!apiRes.ok) {
             console.log('Backend returned error status:', apiRes.status);
             return NextResponse.json(
-                {apierror: apiData.apierror ?? {message: 'Failed to delete item'}},
+                { apierror: (() => { const _e = apiData.apierror ?? apiData; return { ..._e, message: _e.debugMessage || _e.message || 'An error occurred' }; })() },
                 {status: apiRes.status}
             );
         }

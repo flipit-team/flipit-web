@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
         if (!apiRes.ok) {
             const apiData = await apiRes.json().catch(() => ({}));
             return NextResponse.json(
-                {apierror: apiData.apierror ?? {message: 'Failed to fetch top nav counters'}},
+                { apierror: (() => { const _e = apiData.apierror ?? apiData; return { ..._e, message: _e.debugMessage || _e.message || 'An error occurred' }; })() },
                 {status: apiRes.status}
             );
         }

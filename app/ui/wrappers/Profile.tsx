@@ -172,6 +172,8 @@ const Profile = () => {
             if (!res.ok) {
                 const message = handleApiError(data);
                 setErrorMessage(message);
+                setPasswordLoading(false);
+                return;
             }
             setSuccessMessage('Password changed successfully');
             setPasswordLoading(false);

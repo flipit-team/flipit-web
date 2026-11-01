@@ -53,6 +53,11 @@ const VerifyProfile = ({forVerify}: {forVerify: boolean}) => {
         }
 
         const idFilePath = uploadResult.data.key || uploadResult.data.url || '';
+        if (!idFilePath) {
+            setIsSubmitting(false);
+            setSubmitError('Upload succeeded but file path is missing. Please try again.');
+            return;
+        }
 
         const {error} = await UserService.verifyProfile(userId, {
             idFilePath,

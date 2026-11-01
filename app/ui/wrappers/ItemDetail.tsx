@@ -31,10 +31,11 @@ import RemoveItemConfirmation from '../common/modals/RemoveItemConfirmation';
 
 interface Props {
     item: Item;
+    hasAcceptedOffer?: boolean;
 }
 
 const ItemDetail = (props: Props) => {
-    const {item} = props;
+    const {item, hasAcceptedOffer = false} = props;
     const [error, setError] = useState<string | null>(null);
     const [viewPhone, setViewPhone] = useState(false);
     const [input, setInput] = useState('');
@@ -179,30 +180,19 @@ const ItemDetail = (props: Props) => {
         setBuyLoading(true);
         try {
             // Step 1: create an offer at the full asking price
-            const offerRes = await fetch('/api/v1/offer', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    itemId: item.id,
-                    withCash: true,
-                    cashAmount: item.cashAmount,
-                    offerValid: true
-                })
+            const {data: offerData, error: offerError} = await OffersService.createOffer({
+                itemId: item.id,
+                withCash: true,
+                cashAmount: item.cashAmount ?? 0,
             });
 
-            const offerData = await offerRes.json();
-
-            if (!offerRes.ok) {
-                const msg =
-                    offerData.apierror?.message ||
-                    offerData.details ||
-                    offerData.error ||
-                    'Failed to initiate purchase';
+            if (offerError || !offerData?.id) {
+                const msg = (offerError as any)?.message || 'Failed to initiate purchase';
                 showError(msg);
                 return;
             }
 
-            // Step 2: create the transaction from the offer
+            // Step 2: create the transaction from the offer (BE auto-accepts and creates tx)
             const {data: txData, error: txError} = await TransactionService.createTransaction({
                 buyerId: parseInt(user.userId),
                 sellerId: parseInt(String(item.seller.id)),
@@ -213,16 +203,16 @@ const ItemDetail = (props: Props) => {
             });
 
             if (txError || !txData) {
-                    try { await OffersService.deleteOffer(offerData.id); } catch {}
-                    const msg = (txError as any)?.data?.apierror?.message || (txError as any)?.data?.message || (txError as any)?.message || 'Failed to create order. Please try again.';
-                    showError(msg);
-                    return;
-                }
+                try { await OffersService.deleteOffer(offerData.id); } catch {}
+                const msg = (txError as any)?.message || 'Failed to create order. Please try again.';
+                showError(msg);
+                return;
+            }
 
             // Navigate to the Order Summary page — forceCheckoutMode renders the PENDING view
             router.push(`/order-summary/${txData.id}`);
         } catch (err: any) {
-            showError(err.message || 'Something went wrong');
+            showError(err?.message || 'Something went wrong');
         } finally {
             setBuyLoading(false);
         }
@@ -507,7 +497,15 @@ const ItemDetail = (props: Props) => {
                         <p className='font-poppins typo-body-xs-regular text-text_four mt-1 mb-4'>{timeAgo(item?.dateCreated)}</p>
 
                         {/* Action buttons */}
-                        {tradeType === 'CASH_ONLY' ? (
+                        {item?.sold ? (
+                            <div className='flex items-center justify-center h-[51px] bg-gray-100 text-text_four rounded-lg font-poppins typo-body_ls'>
+                                This item has been sold
+                            </div>
+                        ) : hasAcceptedOffer ? (
+                            <div className='flex items-center justify-center h-[51px] bg-amber-50 border border-amber-200 text-amber-700 rounded-lg font-poppins typo-body_ls'>
+                                This item is currently in a transaction
+                            </div>
+                        ) : tradeType === 'CASH_ONLY' ? (
                             <div className='flex gap-3'>
                                 <div className='flex-1'>
                                     <div
@@ -586,7 +584,15 @@ const ItemDetail = (props: Props) => {
                 >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill={isLiked ? '#025F73' : 'none'} stroke="#025F73" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
                 </button>
-                {tradeType === 'CASH_ONLY' ? (
+                {item?.sold ? (
+                    <div className='flex-1 h-[48px] bg-gray-100 text-text_four rounded-xl font-poppins typo-body-md-semibold flex items-center justify-center'>
+                        Sold
+                    </div>
+                ) : hasAcceptedOffer ? (
+                    <div className='flex-1 h-[48px] bg-amber-50 border border-amber-200 text-amber-700 rounded-xl font-poppins typo-body-xs-semibold flex items-center justify-center'>
+                        Item is in a transaction
+                    </div>
+                ) : tradeType === 'CASH_ONLY' ? (
                     <>
                         <button
                             onClick={buyLoading ? undefined : handleBuyRightAway}

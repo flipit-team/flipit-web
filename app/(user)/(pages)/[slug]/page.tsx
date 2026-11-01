@@ -1,8 +1,10 @@
 import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
 import ItemDetail from '~/ui/wrappers/ItemDetail';
 import { getSingleItemServerSide } from '~/lib/server-api';
 import { Item } from '~/utils/interface';
 import { ItemDTO } from '~/types/api';
+import { API_BASE_PATH } from '~/lib/config';
 
 type Props = {
     params: Promise<{slug: string}>;
@@ -72,10 +74,31 @@ const page = async ({ params }: Props) => {
             redirect('/error-page');
         }
 
+        // Check if any offer on this item is already accepted
+        let hasAcceptedOffer = false;
+        try {
+            const cookieStore = await cookies();
+            const token = cookieStore.get('token')?.value;
+            if (token) {
+                const offersRes = await fetch(`${API_BASE_PATH}/offer/items/${slug}/offers`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                    cache: 'no-store',
+                });
+                if (offersRes.ok) {
+                    const ct = offersRes.headers.get('content-type') || '';
+                    if (ct.includes('application/json')) {
+                        const offers = await offersRes.json();
+                        const list = Array.isArray(offers) ? offers : offers?.content || [];
+                        hasAcceptedOffer = list.some((o: any) => o.status?.toUpperCase() === 'ACCEPTED');
+                    }
+                }
+            }
+        } catch {}
+
         // Transform item to legacy format for Home component
         const transformedItem = transformItem(itemData);
 
-        return <ItemDetail item={transformedItem} />;
+        return <ItemDetail item={transformedItem} hasAcceptedOffer={hasAcceptedOffer} />;
 
     } catch (error) {
         console.error('Error in item details page:', error);

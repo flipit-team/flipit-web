@@ -52,7 +52,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ offe
 
         if (!apiRes.ok) {
             return NextResponse.json(
-                {apierror: apiData.apierror ?? {message: 'Failed to fetch offer'}},
+                { apierror: (() => { const _e = apiData.apierror ?? apiData; return { ..._e, message: _e.debugMessage || _e.message || 'An error occurred' }; })() },
                 {status: apiRes.status}
             );
         }
@@ -95,7 +95,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ o
             let apiData;
             try { apiData = await apiRes.json(); } catch { apiData = {}; }
             return NextResponse.json(
-                {apierror: apiData.apierror ?? {message: 'Failed to delete offer'}},
+                { apierror: (() => { const _e = apiData.apierror ?? apiData; return { ..._e, message: _e.debugMessage || _e.message || 'An error occurred' }; })() },
                 {status: apiRes.status}
             );
         }

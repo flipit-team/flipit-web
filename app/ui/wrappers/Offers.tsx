@@ -201,6 +201,9 @@ const Offers = ({sentOffers: initialSent, receivedOffers: initialReceived, userB
         const {error} = await OffersService.deleteOffer(offerId);
         setLoadingId(null);
         if (error) { setErrorMessage('Failed to delete offer. Please try again.'); return; }
+        localStorage.removeItem(`offer_tx_${offerId}`);
+        const txId = txStatuses[offerId]?.txId;
+        if (txId) localStorage.removeItem(`tx_status_${txId}`);
         setSentOffers(prev => prev.filter(o => o.id !== offerId));
     };
 

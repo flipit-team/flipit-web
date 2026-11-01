@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
         });
 
         const apiData = await apiRes.json();
-        if (!apiRes.ok) return NextResponse.json({ apierror: apiData.apierror ?? { message: 'Shipping request failed' } }, { status: apiRes.status });
+        if (!apiRes.ok) return NextResponse.json({ apierror: (() => { const _e = apiData.apierror ?? apiData; return { ..._e, message: _e.debugMessage || _e.message || 'Shipping request failed' }; })() }, { status: apiRes.status });
         return NextResponse.json(apiData);
     } catch {
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

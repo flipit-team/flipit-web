@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
         if (!apiRes.ok) {
             console.error('[POST /shipping/create] Backend returned', apiRes.status, ':', JSON.stringify(apiData));
             console.error('[POST /shipping/create] Sent body:', JSON.stringify(body));
-            return NextResponse.json({ apierror: apiData.apierror ?? apiData ?? { message: 'Shipping request failed' } }, { status: apiRes.status });
+            return NextResponse.json({ apierror: (() => { const _e = apiData.apierror ?? apiData; return { ..._e, message: _e.debugMessage || _e.message || 'Shipping request failed' }; })() }, { status: apiRes.status });
         }
 
         return NextResponse.json(apiData);

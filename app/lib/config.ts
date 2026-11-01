@@ -1,3 +1,5 @@
+import { NextResponse } from 'next/server';
+
 // Local dev uses localhost:8080, production uses real backend
 const defaultApiUrl = process.env.NODE_ENV === 'production'
     ? 'https://api.flipit.ng/api/v1'
@@ -33,8 +35,6 @@ export async function parseApiResponse(apiRes: Response): Promise<{ data: any; s
  * Build a safe JSON response from a backend fetch.
  * Use in Next.js API routes instead of `const data = await res.json()`.
  */
-import { NextResponse } from 'next/server';
-
 export async function forwardApiResponse(apiRes: Response) {
     const parsed = await parseApiResponse(apiRes);
 

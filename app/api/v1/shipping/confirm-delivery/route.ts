@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
         if (!apiRes.ok) {
             let apiData;
             try { apiData = JSON.parse(responseText); } catch { apiData = { message: responseText }; }
-            return NextResponse.json({ apierror: apiData.apierror ?? { message: apiData.message || apiData.debugMessage || 'An error occurred' } }, { status: apiRes.status });
+            return NextResponse.json({ apierror: (() => { const _e = apiData.apierror ?? apiData; return { ..._e, message: _e.debugMessage || _e.message || 'An error occurred' }; })() }, { status: apiRes.status });
         }
         return NextResponse.json({ success: true });
     } catch {

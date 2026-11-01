@@ -34,7 +34,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
 
         try { apiData = await apiRes.json(); } catch { return NextResponse.json({ apierror: { message: 'Invalid server response.' } }, { status: 502 }); }
-        if (!apiRes.ok) return NextResponse.json({ apierror: apiData.apierror ?? { message: apiData.message || apiData.debugMessage || 'An error occurred' } }, { status: apiRes.status });
+        if (!apiRes.ok) { const _err = apiData.apierror ?? apiData; return NextResponse.json({ apierror: { ..._err, message: _err.debugMessage || _err.message || 'An error occurred' } }, { status: apiRes.status }); }
         return NextResponse.json(apiData);
     } catch {
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

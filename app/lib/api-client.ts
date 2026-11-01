@@ -75,20 +75,21 @@ export class ApiClient {
                 );
             }
 
-            // Handle API errors
+            // Handle API errors — prefer debugMessage (contains the real error) over message (often generic)
             if (isJson && responseData.apierror) {
                 throw new ApiClientError(
                     response.status,
                     response.statusText,
                     responseData.apierror,
-                    responseData.apierror.message || `Request failed with status ${response.status}`
+                    responseData.apierror.debugMessage || responseData.apierror.message || `Request failed with status ${response.status}`
                 );
             } else {
+                const msg = isJson ? (responseData.debugMessage || responseData.message || `Request failed with status ${response.status}`) : `Request failed with status ${response.status}`;
                 throw new ApiClientError(
                     response.status,
                     response.statusText,
                     responseData,
-                    `Request failed with status ${response.status}`
+                    msg
                 );
             }
         }
